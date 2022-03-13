@@ -6,8 +6,8 @@ import { SomeService } from '../some/some.service';
 export class HelloService {
     public constructor(
       private readonly someService: SomeService,
-      private readonly wordService: WordService) {
-    }
+      private readonly wordService: WordService,
+    ) {}
 
     public getHello() {
         console.log('hello world!');
