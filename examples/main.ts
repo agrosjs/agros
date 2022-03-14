@@ -4,6 +4,6 @@ import { HelloService } from './hello/hello.service';
 
 const factory = new Factory();
 
-const helloModule = factory.createModule(HelloModule);
+const helloModule = factory.create(HelloModule);
 
-helloModule.get(HelloService).getHello();
+helloModule.rootModule.get(HelloService).getHello();

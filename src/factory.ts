@@ -19,7 +19,14 @@ export class Factory {
     private moduleInstances: Map<any, any> = new Map();
     private routeViews: Set<ViewItem> = new Set();
 
-    public createModule(module: Type) {
+    public create<T>(module: Type<T>) {
+        return {
+            rootModule: this.createModule(module),
+            views: Array.from(this.routeViews),
+        };
+    }
+
+    private createModule(module: Type) {
         const imports: Set<Type> = Reflect.getMetadata(DI_IMPORTS_SYMBOL, module);
         const providers: Set<any> = Reflect.getMetadata(DI_PROVIDERS_SYMBOL, module);
         const moduleViews: Set<Type<AbstractView>> = Reflect.getMetadata(DI_VIEWS_SYMBOL, module);
