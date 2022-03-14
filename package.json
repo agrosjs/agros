@@ -2,7 +2,9 @@
     "name": "khamsa",
     "version": "1.0.0",
     "scripts": {
-        "build": "rimraf ./dist && tsc --build tsconfig.package.json"
+        "build": "rimraf ./lib && tsc --build tsconfig.package.json",
+        "checksum": "node ./scripts/checksum.js",
+        "publish": "node ./scripts/publish.js"
     },
     "dependencies": {
         "reflect-metadata": "^0.1.13"

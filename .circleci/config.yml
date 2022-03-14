@@ -1,0 +1,99 @@
+version: 2
+
+aliases: [
+  &dependency-paths [
+    "node_modules",
+    "checksum.txt",
+  ],
+  &output-paths [
+    "lib",
+    "checksum.txt",
+  ],
+]
+
+defaults: &defaults
+  working_directory: ~/repo
+  docker:
+    - image: circleci/node:14.15
+
+jobs:
+  install:
+    <<: *defaults
+    steps:
+      - checkout
+      - run: npm install
+      - run: npm run checksum
+      - save_cache:
+          paths: *dependency-paths
+          key: v1-dependencies-{{ checksum "checksum.txt" }}
+      - persist_to_workspace:
+          root: ~/repo
+          paths: .
+  build:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/repo
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "checksum.txt" }}
+      - run: npm run build
+      - save_cache:
+          paths: *output-paths
+          key: v1-dist-{{ checksum "checksum.txt" }}
+
+  deploy:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/repo
+      - restore_cache:
+          keys:
+            - v1-dist-{{ checksum "checksum.txt" }}
+            - v1-dependencies-{{ checksum "checksum.txt" }}
+      - run: npm run publish
+
+  deploy_docs:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/repo
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "checksum.txt" }}
+            - v1-dependencies-
+      - run: npm run docs:build
+      - run: npm run docs:deploy
+
+workflows:
+  version: 2
+  build_and_deploy:
+    jobs:
+      - install:
+          filters:
+            tags:
+              only: /.*/
+      - build:
+          requires:
+            - install
+          filters:
+            tags:
+              only: /.*/
+      - deploy:
+          requires:
+            - build
+          filters:
+            tags:
+              only:
+                - /^khamsa@(\d+)\.(\d+)\.(\d+).*/
+            branches:
+              ignore: /.*/
+      - deploy_docs:
+          requires:
+            - install
+          filters:
+            tags:
+              only:
+                - /^docs-.*/
+            branches:
+              ignore: /.*/
