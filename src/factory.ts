@@ -10,7 +10,7 @@ import {
 } from './types';
 
 export class Factory {
-    public moduleInstances: Map<any, any> = new Map();
+    private moduleInstances: Map<any, any> = new Map();
 
     public create(module: Type) {
         const imports: Set<Type> = Reflect.getMetadata(DI_IMPORTS_SYMBOL, module);
@@ -19,23 +19,25 @@ export class Factory {
 
         const importModules = Array.from(imports).map((importModule) => {
             let moduleInstance: ModuleInstance = this.moduleInstances.get(importModule);
+
             if (!moduleInstance) {
                 moduleInstance = this.create(importModule);
                 this.moduleInstances.set(importModule, moduleInstance);
             }
+
             return moduleInstance;
         });
 
         const moduleInstance = new ModuleInstance(importModules, providersMap);
 
-        providers.forEach((provider) => {
-            this.createProvider(provider, providers, moduleInstance);
+        providers.forEach((Provider) => {
+            this.createProvider(Provider, providers, moduleInstance);
         });
 
         return moduleInstance;
     }
 
-    public createProvider(Provider: any, providers: Set<any>, moduleInstance: ModuleInstance) {
+    private createProvider(Provider: any, providers: Set<any>, moduleInstance: ModuleInstance) {
         let providerInstance = moduleInstance.providers.get(Provider);
 
         if (providerInstance) {
