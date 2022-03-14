@@ -33,6 +33,14 @@ module.exports = {
             'before': false,
             'after': true,
         }],
+        'arrow-parens': ['error', 'always'],
+        'keyword-spacing': [
+            'error',
+            {
+                'before': true,
+                'after': true,
+            },
+        ],
         'key-spacing': [2, {
             'beforeColon': false,
             'afterColon': true,

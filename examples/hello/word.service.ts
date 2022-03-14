@@ -3,6 +3,6 @@ import { Injectable } from '../../src';
 @Injectable()
 export class WordService {
     public getName() {
-        console.log('hungtcs');
+        console.log('WordService: khamsa is working');
     }
 }
