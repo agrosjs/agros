@@ -1,25 +1,23 @@
+import { AbstractView } from './classes';
+
 export type Type<T = any> = new (...args: Array<any>) => T;
 
-export class ModuleInstance {
-    public constructor(
-      public imports: Array<ModuleInstance>,
-      public providers: Map<any, any>,
-    ) {}
+export interface ModuleDecoratorOptions {
+    imports?: Array<any>;
+    providers?: Array<any>;
+    views?: Array<any>;
+}
 
-    public get<T>(provider: Type<T>) {
-        let instance: T = this.providers.get(provider);
+export interface ViewDecoratorOptions {
+    pathname: string;
+}
 
-        if (!instance) {
-            this.imports.some((imp) => {
-                instance = imp.get(provider);
-                return !!instance;
-            });
-        }
+export interface ViewMetadata {
+    options: ViewDecoratorOptions;
+    dependencies: any[];
+}
 
-        if (!instance) {
-            throw new Error(`No provider named: ${ provider.name }`);
-        }
-
-        return instance;
-    }
+export interface ViewItem {
+    instance: AbstractView;
+    options: ViewDecoratorOptions;
 }
