@@ -2,9 +2,9 @@ import React from 'react';
 
 type ReactComponent<Props = any> = React.FC<Props>;
 
-export abstract class AbstractView {
-    public getView<Props = any>(): ReactComponent<Props> {
-        return this.withServices(this.generateView());
+export abstract class AbstractComponent {
+    public getComponent<Props = any>(): ReactComponent<Props> {
+        return this.withServices(this.generateComponent());
     }
 
     protected withServices<C = any, N = any>(component: ReactComponent<C>): ReactComponent<C & N> {
@@ -13,5 +13,5 @@ export abstract class AbstractView {
         };
     }
 
-    protected abstract generateView<Props = any>(): ReactComponent<Props>;
+    protected abstract generateComponent<Props = any>(): ReactComponent<Props>;
 }
