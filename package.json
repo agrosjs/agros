@@ -6,7 +6,7 @@
         "build": "rimraf ./lib && tsc --build tsconfig.package.json",
         "watch": "tsc --watch --project tsconfig.package.json",
         "checksum": "node ./scripts/checksum.js",
-        "publish": "node ./scripts/publish.js"
+        "publish:main": "node ./scripts/publish.js"
     },
     "files": [
         "lib",

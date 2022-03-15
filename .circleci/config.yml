@@ -51,7 +51,7 @@ jobs:
           keys:
             - v1-dist-{{ checksum "checksum.txt" }}
             - v1-dependencies-{{ checksum "checksum.txt" }}
-      - run: npm run publish
+      - run: npm run publish:main
 
   deploy_docs:
     <<: *defaults
