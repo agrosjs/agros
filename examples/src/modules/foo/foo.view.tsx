@@ -20,7 +20,7 @@ type FooComponentWithServicesProps = PropsWithChildren<{
 @Injectable()
 export class FooView extends AbstractView implements AbstractView {
     public constructor(
-        public readonly fooService: FooService,
+        protected readonly fooService: FooService,
     ) {
         super();
     }

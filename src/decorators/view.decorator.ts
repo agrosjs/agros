@@ -1,4 +1,3 @@
-import 'reflect-metadata';
 import {
     DI_VIEWS_SYMBOL,
 } from '../constants';

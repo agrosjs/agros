@@ -1,4 +1,3 @@
-import 'reflect-metadata';
 import {
     DI_IMPORTS_SYMBOL,
     DI_PROVIDERS_SYMBOL,

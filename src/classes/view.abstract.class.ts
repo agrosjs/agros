@@ -7,9 +7,9 @@ export abstract class AbstractView {
         return this.withServices(this.generateView());
     }
 
-    protected withServices<C = any, N = any>(component: ReactComponent<C>): ReactComponent<C & N> {
+    protected withServices<C = any, N = any>(Component: ReactComponent<C>): ReactComponent<C & N> {
         return (props: C & N) => {
-            return React.createElement(component, props);
+            return React.createElement(Component, props);
         };
     }
 
