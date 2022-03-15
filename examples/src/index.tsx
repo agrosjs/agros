@@ -10,7 +10,7 @@ const modules = factory.create(FooModule);
 
 const [foo] = modules.views;
 
-const Foo = foo.instance.getView();
+const Foo = foo.instance.getComponent();
 
 ReactDOM.render(
     <Foo />,

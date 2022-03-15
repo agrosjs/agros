@@ -1,43 +1,56 @@
-import React, {
+import {
     FunctionComponent,
-    PropsWithChildren,
     useEffect,
 } from 'react';
 import {
-    AbstractView,
-    Injectable,
+    AbstractComponent,
     View,
 } from '../../../../lib';
+import { BarComponent } from '../bar/bar.component';
+import { BarService } from '../bar/bar.service';
 import { FooService } from './foo.service';
-
-type FooComponentWithServicesProps = PropsWithChildren<{
-    fooService: FooService;
-}>;
 
 @View({
     pathname: '/foo',
 })
-@Injectable()
-export class FooView extends AbstractView implements AbstractView {
+export class FooView extends AbstractComponent implements AbstractComponent {
     public constructor(
         protected readonly fooService: FooService,
+        protected readonly barComponentService: BarComponent,
+        protected readonly barService: BarService,
     ) {
         super();
     }
 
-    protected withServices<C = any, N = any>(FooComponent: React.FunctionComponent<C>): React.FunctionComponent<C & N> {
-        return (props) => {
-            return <FooComponent {...props} fooService={this.fooService} />;
+    protected injectServices(): Record<string, any> {
+        const {
+            fooService,
+            barService,
+            barComponentService,
+        } = this;
+
+        return {
+            fooService,
+            barService,
+            barComponentService,
         };
     }
 
-    protected generateView(): FunctionComponent<FooComponentWithServicesProps> {
-        return (props: FooComponentWithServicesProps) => {
+    protected generateComponent(injectedServices): FunctionComponent<any> {
+        const BarComponent = injectedServices.barComponentService.getComponent();
+
+        return () => {
             useEffect(() => {
-                props.fooService.logHello();
+                injectedServices.fooService.logHello();
+                injectedServices.barService.sayHello();
             }, []);
 
-            return <div>Khamsa is working!</div>;
+            return (
+                <>
+                    <div>Khamsa is working!</div>
+                    <BarComponent />
+                </>
+            );
         };
     }
 }
