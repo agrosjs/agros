@@ -12,11 +12,6 @@ export interface ViewDecoratorOptions {
     pathname: string;
 }
 
-export interface ViewMetadata {
-    options: ViewDecoratorOptions;
-    dependencies: any[];
-}
-
 export interface ViewItem {
     instance: AbstractView;
     options: ViewDecoratorOptions;

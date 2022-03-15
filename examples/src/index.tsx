@@ -1,13 +1,19 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import App from './App';
 import reportWebVitals from './reportWebVitals';
+import { Factory } from '../../lib';
+import { FooModule } from './modules/foo/foo.module';
+
+const factory = new Factory();
+const modules = factory.create(FooModule);
+
+const [foo] = modules.views;
+
+const Foo = foo.instance.getView();
 
 ReactDOM.render(
-    <React.StrictMode>
-        <App />
-    </React.StrictMode>,
+    <Foo />,
     document.getElementById('root'),
 );
 

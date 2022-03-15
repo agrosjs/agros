@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import { DI_DEPS_SYMBOL } from '../constants';
 
 export function Injectable(): ClassDecorator {

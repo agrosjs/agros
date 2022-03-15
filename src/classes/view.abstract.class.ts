@@ -13,5 +13,5 @@ export abstract class AbstractView {
         };
     }
 
-    protected abstract generateView<Props = any>(): ReactComponent<Props>;
+    protected abstract generateView(): ReactComponent<any>;
 }

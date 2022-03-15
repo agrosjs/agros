@@ -11,8 +11,8 @@ import {
 } from './constants';
 import {
     Type,
+    ViewDecoratorOptions,
     ViewItem,
-    ViewMetadata,
 } from './types';
 
 export class Factory {
@@ -67,8 +67,7 @@ export class Factory {
         Array
             .from(moduleViews)
             .forEach((View) => {
-                const viewMetadata: ViewMetadata = Reflect.getMetadata(DI_VIEWS_SYMBOL, View);
-                const { options } = viewMetadata;
+                const options: ViewDecoratorOptions = Reflect.getMetadata(DI_VIEWS_SYMBOL, View);
                 const instance = this.createView(View, moduleInstance);
 
                 this.routeViews.add({ instance, options } as ViewItem);
@@ -117,16 +116,14 @@ export class Factory {
     }
 
     private createView(View: Type<AbstractView>, moduleInstance: ModuleInstance) {
-        const metadata: ViewMetadata = Reflect.getMetadata(DI_VIEWS_SYMBOL, View);
+        const deps = Reflect.getMetadata(DI_DEPS_SYMBOL, View);
         const providersMap: Map<any, any> = moduleInstance.providers;
-
-        const { dependencies: deps } = metadata;
 
         if (!deps) {
             throw new Error(`No provider named ${View.name}, did you add @View() to this provider?`);
         }
 
-        const args = deps.map((dep) => {
+        const args = deps.map((dep: any) => {
             const depInstance = providersMap.get(dep);
 
             if (!depInstance) {
