@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import {
-    AbstractView,
+    AbstractComponent,
     ModuleInstance,
 } from './classes';
 import {
@@ -11,8 +11,8 @@ import {
 } from './constants';
 import {
     Type,
-    ViewDecoratorOptions,
     ViewItem,
+    ViewMetadata,
 } from './types';
 
 export class Factory {
@@ -29,7 +29,7 @@ export class Factory {
     private createModule(module: Type) {
         const imports: Set<Type> = Reflect.getMetadata(DI_IMPORTS_SYMBOL, module);
         const providers: Set<any> = Reflect.getMetadata(DI_PROVIDERS_SYMBOL, module);
-        const moduleViews: Set<Type<AbstractView>> = Reflect.getMetadata(DI_VIEWS_SYMBOL, module);
+        const moduleViews: Set<Type<AbstractComponent>> = Reflect.getMetadata(DI_VIEWS_SYMBOL, module);
 
         const providersMap = new Map();
 
@@ -67,7 +67,8 @@ export class Factory {
         Array
             .from(moduleViews)
             .forEach((View) => {
-                const options: ViewDecoratorOptions = Reflect.getMetadata(DI_VIEWS_SYMBOL, View);
+                const metadataValue: ViewMetadata = Reflect.getMetadata(DI_VIEWS_SYMBOL, View);
+                const { options } = metadataValue;
                 const instance = this.createView(View, moduleInstance);
 
                 this.routeViews.add({ instance, options } as ViewItem);
@@ -115,16 +116,29 @@ export class Factory {
         return providerInstance;
     }
 
-    private createView(View: Type<AbstractView>, moduleInstance: ModuleInstance) {
-        const deps = Reflect.getMetadata(DI_DEPS_SYMBOL, View);
+    private createView(View: Type<AbstractComponent>, moduleInstance: ModuleInstance) {
+        const metadataValue: ViewMetadata = Reflect.getMetadata(DI_VIEWS_SYMBOL, View);
         const providersMap: Map<any, any> = moduleInstance.providers;
+        const importedModules = moduleInstance.imports;
+
+        const { dependencies: deps } = metadataValue;
 
         if (!deps) {
             throw new Error(`No provider named ${View.name}, did you add @View() to this provider?`);
         }
 
         const args = deps.map((dep: any) => {
-            const depInstance = providersMap.get(dep);
+            let depInstance = providersMap.get(dep);
+
+            if (!depInstance) {
+                const moduleIndex = importedModules.findIndex((importedModule) => {
+                    return Boolean(importedModule.providers.get(dep));
+                });
+
+                if (moduleIndex !== -1) {
+                    depInstance = importedModules[moduleIndex].providers.get(dep);
+                }
+            }
 
             if (!depInstance) {
                 throw new Error(`Dependency ${dep.name} not found, did you add it to 'imports' parameter?`);

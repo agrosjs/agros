@@ -1,4 +1,4 @@
-import { AbstractView } from './classes';
+import { AbstractComponent } from './classes';
 
 export type Type<T = any> = new (...args: Array<any>) => T;
 
@@ -8,11 +8,16 @@ export interface ModuleDecoratorOptions {
     views?: Array<any>;
 }
 
+export interface ViewMetadata {
+    options: ViewDecoratorOptions;
+    dependencies: any[];
+}
+
 export interface ViewDecoratorOptions {
     pathname: string;
 }
 
 export interface ViewItem {
-    instance: AbstractView;
+    instance: AbstractComponent;
     options: ViewDecoratorOptions;
 }

@@ -1,17 +1,13 @@
 import React from 'react';
+import { InjectServices } from './inject-services.class';
 
 type ReactComponent<Props = any> = React.FC<Props>;
 
-export abstract class AbstractComponent {
+export abstract class AbstractComponent extends InjectServices {
     public getComponent<Props = any>(): ReactComponent<Props> {
-        return this.withServices(this.generateComponent());
+        const injectedServices = this.injectServices() || {};
+        return this.generateComponent(injectedServices);
     }
 
-    protected withServices<C = any, N = any>(component: ReactComponent<C>): ReactComponent<C & N> {
-        return (props: C & N) => {
-            return React.createElement(component, props);
-        };
-    }
-
-    protected abstract generateComponent<Props = any>(): ReactComponent<Props>;
+    protected abstract generateComponent(injectedServices: Record<string, any>): ReactComponent<any>;
 }
