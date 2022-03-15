@@ -8,6 +8,12 @@
         "checksum": "node ./scripts/checksum.js",
         "publish": "node ./scripts/publish.js"
     },
+    "files": [
+        "lib",
+        "package.json",
+        "README.md",
+        "LICENSE"
+    ],
     "dependencies": {
         "react": "^16.14.0",
         "reflect-metadata": "^0.1.13"
