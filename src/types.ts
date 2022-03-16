@@ -48,3 +48,5 @@ export interface RouteConfigItem extends RouteItem {
 }
 
 export type RouteConfig = RouteConfigItem[];
+
+export type AsyncModule = Promise<any>;
