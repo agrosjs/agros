@@ -86,10 +86,28 @@ export class Factory {
         return moduleInstance;
     }
 
-    private async getModule(moduleOrPromise: Type | Promise<Type>): Promise<Type> {
-        return isPromise(moduleOrPromise)
-            ? await moduleOrPromise
-            : moduleOrPromise;
+    private async getModule(moduleOrPromise: Type | AsyncModule): Promise<Type> {
+        if (isPromise(moduleOrPromise)) {
+            const moduleObject: any = await moduleOrPromise;
+
+            if (Reflect.getMetadata(DI_DEPS_SYMBOL, moduleObject)) {
+                return moduleObject;
+            }
+
+            if (typeof moduleObject !== 'object') {
+                return null;
+            }
+
+            const [moduleKey] = Object.keys(moduleObject);
+
+            if (!moduleKey) {
+                return null;
+            }
+
+            return moduleObject[moduleKey];
+        }
+
+        return moduleOrPromise;
     }
 
     private createProvider(Provider: any, providers: Set<any>, moduleInstance: ModuleInstance) {
