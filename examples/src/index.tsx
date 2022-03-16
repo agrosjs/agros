@@ -13,6 +13,7 @@ import {
 import { FooModule } from './modules/foo/foo.module';
 import {
     HashRouter as Router,
+    Navigate,
     Routes as ReactRouterRoutes,
     Route,
 } from 'react-router-dom';
@@ -42,20 +43,24 @@ const Wrapper: React.FC<WrapperProps> = ({
     }, []);
 
     return (
-        <Router>
-            <ReactRouterRoutes>
-                {
-                    routeConfig.map((routeConfigItem) => {
-                        const {
-                            path,
-                            component: RouteView,
-                        } = routeConfigItem;
+        <>
+            It's working!
+            <Router>
+                <ReactRouterRoutes>
+                    {
+                        routeConfig.map((routeConfigItem) => {
+                            const {
+                                path,
+                                component: RouteView,
+                            } = routeConfigItem;
 
-                        return <Route key={path} path={path} element={<RouteView />} />;
-                    })
-                }
-            </ReactRouterRoutes>
-        </Router>
+                            return <Route key={path} path={path} element={<RouteView />} />;
+                        })
+                    }
+                    <Route path="*" element={<Navigate to="/foo" />} />
+                </ReactRouterRoutes>
+            </Router>
+        </>
     );
 };
 
