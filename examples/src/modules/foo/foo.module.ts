@@ -1,11 +1,10 @@
 import { Module } from '../../../../lib';
-import { BarModule } from '../bar/bar.module';
 import { FooService } from './foo.service';
 import { FooView } from './foo.view';
 
 @Module({
     imports: [
-        BarModule,
+        import('../bar/bar.module'),
     ],
     providers: [
         FooService,

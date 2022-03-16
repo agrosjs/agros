@@ -1,12 +1,21 @@
-import React from 'react';
+import React, {
+    useEffect,
+    useState,
+} from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
 import {
     Factory,
+    RouteConfig,
     Routes,
 } from '../../lib';
 import { FooModule } from './modules/foo/foo.module';
+import {
+    HashRouter as Router,
+    Routes as ReactRouterRoutes,
+    Route,
+} from 'react-router-dom';
 
 const routes: Routes = [
     {
@@ -14,17 +23,44 @@ const routes: Routes = [
     },
 ];
 
-const factory = new Factory();
-const routeViews = factory.create(FooModule, routes);
+interface WrapperProps {
+    routes: Routes;
+    RootModule: any;
+}
 
-console.log(routeViews);
+const Wrapper: React.FC<WrapperProps> = ({
+    routes = [],
+    RootModule,
+}) => {
+    const [routeConfig, setRouteConfig] = useState<RouteConfig>([]);
 
-const [foo] = routeViews;
+    useEffect(() => {
+        const factory = new Factory();
+        factory.create(RootModule, routes).then((config) => {
+            setRouteConfig(config);
+        });
+    }, []);
 
-const Foo = foo.component;
+    return (
+        <Router>
+            <ReactRouterRoutes>
+                {
+                    routeConfig.map((routeConfigItem) => {
+                        const {
+                            path,
+                            component: RouteView,
+                        } = routeConfigItem;
+
+                        return <Route key={path} path={path} element={<RouteView />} />;
+                    })
+                }
+            </ReactRouterRoutes>
+        </Router>
+    );
+};
 
 ReactDOM.render(
-    <Foo />,
+    <Wrapper routes={routes} RootModule={FooModule} />,
     document.getElementById('root'),
 );
 
