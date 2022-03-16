@@ -22,27 +22,13 @@ export class FooView extends AbstractComponent implements AbstractComponent {
         super();
     }
 
-    protected injectServices(): Record<string, any> {
-        const {
-            fooService,
-            barService,
-            barComponentService,
-        } = this;
-
-        return {
-            fooService,
-            barService,
-            barComponentService,
-        };
-    }
-
-    protected generateComponent(injectedServices): FunctionComponent<any> {
-        const BarComponent = injectedServices.barComponentService.getComponent();
+    protected generateComponent(): FunctionComponent<any> {
+        const BarComponent = this.barComponentService.getComponent();
 
         return () => {
             useEffect(() => {
-                injectedServices.fooService.logHello();
-                injectedServices.barService.sayHello();
+                this.fooService.logHello();
+                this.barService.sayHello();
             }, []);
 
             return (

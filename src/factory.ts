@@ -10,6 +10,7 @@ import {
     DI_VIEWS_SYMBOL,
 } from './constants';
 import {
+    Routes,
     Type,
     ViewItem,
     ViewMetadata,
@@ -19,7 +20,7 @@ export class Factory {
     private moduleInstances: Map<any, any> = new Map();
     private routeViews: Set<ViewItem> = new Set();
 
-    public create<T>(module: Type<T>) {
+    public create<T>(module: Type<T>, routes: Routes = []) {
         return {
             rootModule: this.createModule(module),
             views: Array.from(this.routeViews),
