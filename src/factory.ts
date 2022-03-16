@@ -10,6 +10,7 @@ import {
     DI_VIEWS_SYMBOL,
 } from './constants';
 import {
+    AsyncModule,
     RouteConfig,
     RouteConfigItem,
     Routes,
@@ -17,33 +18,40 @@ import {
     ViewItem,
     ViewMetadata,
 } from './types';
+import isPromise from 'is-promise';
 
 export class Factory {
     private moduleInstances: Map<any, any> = new Map();
     private routeViews: Set<ViewItem> = new Set();
 
-    public create<T>(module: Type<T>, routes: Routes = []): RouteConfig {
-        this.createModule(module);
+    public async create<T>(module: Type<T>, routes: Routes = []): Promise<RouteConfig> {
+        await this.createModule(module);
         return this.createNestedRoute('', routes);
     }
 
-    private createModule(module: Type) {
+    private async createModule(moduleOrPromise: Type | AsyncModule) {
+        const module = await this.getModule(moduleOrPromise);
+
         const imports: Set<Type> = Reflect.getMetadata(DI_IMPORTS_SYMBOL, module);
         const providers: Set<any> = Reflect.getMetadata(DI_PROVIDERS_SYMBOL, module);
         const moduleViews: Set<Type<AbstractComponent>> = Reflect.getMetadata(DI_VIEWS_SYMBOL, module);
 
         const providersMap = new Map();
 
-        const importedModules = Array.from(imports).map((importModule) => {
-            let moduleInstance: ModuleInstance = this.moduleInstances.get(importModule);
+        const importedModules = [];
+
+        for (const importedModuleOrPromise of imports) {
+            const importedModule = await this.getModule(importedModuleOrPromise);
+
+            let moduleInstance: ModuleInstance = this.moduleInstances.get(importedModule);
 
             if (!moduleInstance) {
-                moduleInstance = this.createModule(importModule);
-                this.moduleInstances.set(importModule, moduleInstance);
+                moduleInstance = await this.createModule(importedModule);
+                this.moduleInstances.set(importedModule, moduleInstance);
             }
 
-            return moduleInstance;
-        });
+            importedModules.push(moduleInstance);
+        }
 
         const moduleInstance = new ModuleInstance(
             importedModules,
@@ -76,6 +84,12 @@ export class Factory {
             });
 
         return moduleInstance;
+    }
+
+    private async getModule(moduleOrPromise: Type | Promise<Type>): Promise<Type> {
+        return isPromise(moduleOrPromise)
+            ? await moduleOrPromise
+            : moduleOrPromise;
     }
 
     private createProvider(Provider: any, providers: Set<any>, moduleInstance: ModuleInstance) {

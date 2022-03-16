@@ -15,12 +15,14 @@
         "LICENSE"
     ],
     "dependencies": {
+        "is-promise": "^4.0.0",
         "react": "^16.14.0",
         "reflect-metadata": "^0.1.13"
     },
     "devDependencies": {
         "@babel/plugin-proposal-class-properties": "^7.16.7",
         "@babel/plugin-proposal-decorators": "^7.17.2",
+        "@types/is-promise": "^2.2.0",
         "@types/jest": "^26.0.23",
         "@types/node": "^15.12.2",
         "@types/react": "^16.14.24",
