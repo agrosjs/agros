@@ -10,6 +10,8 @@ import {
     DI_VIEWS_SYMBOL,
 } from './constants';
 import {
+    RouteConfig,
+    RouteConfigItem,
     Routes,
     Type,
     ViewItem,
@@ -20,11 +22,9 @@ export class Factory {
     private moduleInstances: Map<any, any> = new Map();
     private routeViews: Set<ViewItem> = new Set();
 
-    public create<T>(module: Type<T>, routes: Routes = []) {
-        return {
-            rootModule: this.createModule(module),
-            views: Array.from(this.routeViews),
-        };
+    public create<T>(module: Type<T>, routes: Routes = []): RouteConfig {
+        this.createModule(module);
+        return this.createNestedRoute('', routes);
     }
 
     private createModule(module: Type) {
@@ -149,5 +149,48 @@ export class Factory {
         });
 
         return new View(...args);
+    }
+
+    private normalizePath(path: string) {
+        let newPath: string = path;
+
+        if (!newPath.startsWith('/')) {
+            newPath = `/${path}`;
+        }
+
+        newPath = newPath
+            .replace(/\/+/g, '/')
+            .replace(/\/+$/g, '');
+
+        return newPath;
+    }
+
+    private createNestedRoute(basePath = '', routes: Routes = []): RouteConfig {
+        return routes
+            .map((route) => {
+                const {
+                    path,
+                    children,
+                } = route;
+
+                const result: RouteConfigItem = {
+                    path: basePath + this.normalizePath(path),
+                    component: null,
+                };
+
+                const routeView = Array.from(this.routeViews)
+                    .find((routeView) => routeView.options.pathname === result.path);
+
+                if (routeView?.instance && typeof routeView.instance.getComponent === 'function') {
+                    result.component = routeView.instance.getComponent();
+                }
+
+                if (Array.isArray(children) && children.length > 0) {
+                    result.children = this.createNestedRoute(result.path, Array.from(children));
+                }
+
+                return result;
+            })
+            .filter((route) => !!route.component);
     }
 }

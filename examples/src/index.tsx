@@ -2,15 +2,26 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
-import { Factory } from '../../lib';
+import {
+    Factory,
+    Routes,
+} from '../../lib';
 import { FooModule } from './modules/foo/foo.module';
 
+const routes: Routes = [
+    {
+        path: '/foo',
+    },
+];
+
 const factory = new Factory();
-const modules = factory.create(FooModule);
+const routeViews = factory.create(FooModule, routes);
 
-const [foo] = modules.views;
+console.log(routeViews);
 
-const Foo = foo.instance.getComponent();
+const [foo] = routeViews;
+
+const Foo = foo.component;
 
 ReactDOM.render(
     <Foo />,
