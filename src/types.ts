@@ -35,17 +35,17 @@ export interface NavigateOptions {
     path?: string;
 }
 
-export interface RouteConfigItem<T = any> extends Omit<ViewDecoratorOptions, 'parent' | 'pathname'> {
+export interface RouteConfigItem extends Omit<ViewDecoratorOptions, 'parent' | 'pathname'> {
     path: string;
     ViewClass: Type<AbstractComponent>;
     component: ReactComponent;
     children?: RouteConfigItem[];
 }
 
-export type RouteConfig<T = any> = RouteConfigItem<T>[];
+export type RouteConfig = RouteConfigItem[];
 
 export type AsyncModule = Promise<any>;
 
-export interface RouterContainerProps<T = any, M = any> {
+export interface RouterContainerProps<M = any> {
     module: Type<M>;
 }

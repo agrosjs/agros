@@ -24,9 +24,9 @@ export class Factory {
     private routeViews: Set<ViewItem> = new Set();
     private nestedRoute: RouteConfigItem[] = [];
 
-    public async create<T = any, E = any>(module: Type<T>): Promise<RouteConfig<E>> {
+    public async create<T = any>(module: Type<T>): Promise<RouteConfig> {
         await this.createModule(module);
-        return this.createNestedRoute<E>();
+        return this.createNestedRoute();
     }
 
     private async createModule(moduleOrPromise: Type | AsyncModule) {
@@ -195,69 +195,76 @@ export class Factory {
         }
 
         newPath = newPath
-            .replace(/\/+/g, '/')
+            .replace(/\/+/g, '')
             .replace(/\/+$/g, '');
 
         return newPath;
     }
 
-    private createNestedRoute<E>(): RouteConfig<E> {
+    private createNestedRoute(): RouteConfig {
         const routeViews = Array.from(this.routeViews);
+
+        for (const [index, routeView] of routeViews.entries()) {
+            if (!routeView?.options?.parent) {
+                this.nestedRoute.push(this.createRouteConfigItem(routeView));
+                routeViews.splice(index, 1);
+            }
+        }
 
         while (routeViews.length > 0) {
             const currentRouteView = routeViews.shift();
 
-            const {
-                options,
-                clazz,
-            } = currentRouteView;
-
-            const {
-                name,
-                extra,
-                navigateTo,
-                pathname,
-                parent: ParentViewComponent,
-            } = options;
-
-            const result: RouteConfigItem<E> = {
-                name,
-                ViewClass: clazz,
-                component: null,
-                path: this.normalizePath(pathname),
-                ...(
-                    typeof extra === 'undefined'
-                        ? {}
-                        : { extra }
-                ),
-                ...(
-                    !navigateTo
-                        ? {}
-                        : { navigateTo }
-                ),
-            };
-
-            if (currentRouteView?.instance && typeof currentRouteView.instance.getComponent === 'function') {
-                result.component = currentRouteView.instance.getComponent();
-            }
-
-            if (!ParentViewComponent) {
-                this.nestedRoute.push(result);
-                continue;
-            }
+            const routeConfigItem = this.createRouteConfigItem(currentRouteView);
 
             const succeeded = this.setToParentRouteView(
                 this.nestedRoute,
-                result,
-                ParentViewComponent,
+                routeConfigItem,
+                currentRouteView.options?.parent,
             );
 
             if (!succeeded) {
-                routeViews.push(currentRouteView);
+                throw new Error(`Cannot find parent view for ${currentRouteView.clazz.name}`);
             }
         }
 
         return this.nestedRoute;
+    }
+
+    private createRouteConfigItem(routeView: ViewItem): RouteConfigItem {
+        const {
+            options,
+            clazz,
+        } = routeView;
+
+        const {
+            name,
+            extra,
+            navigateTo,
+            pathname,
+        } = options;
+
+        const result: RouteConfigItem = {
+            name,
+            ViewClass: clazz,
+            component: null,
+            path: this.normalizePath(pathname),
+            ...(
+                typeof extra === 'undefined'
+                    ? {}
+                    : { extra }
+            ),
+            ...(
+                !navigateTo
+                    ? {}
+                    : { navigateTo }
+            ),
+        };
+
+        if (routeView?.instance && typeof routeView.instance.getComponent === 'function') {
+            result.component = routeView.instance.getComponent();
+        }
+
+        return result;
     }
 
     private setToParentRouteView(

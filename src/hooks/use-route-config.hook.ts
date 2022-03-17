@@ -54,7 +54,7 @@ const createRoutes = (routeConfig: RouteConfig, level = 0): React.ReactNode[] =>
 };
 
 export const useRoutes = <T>(Module: Type): React.ReactNode => {
-    const [routeConfig, setRouteConfig] = useState<RouteConfig<T>>([]);
+    const [routeConfig, setRouteConfig] = useState<RouteConfig>([]);
     const [elements, setElements] = useState<React.ReactNode>(null);
 
     useEffect(() => {
