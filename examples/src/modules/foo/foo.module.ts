@@ -1,8 +1,6 @@
 import { Module } from '../../../../lib';
-import { FooChildView } from './foo-child.view';
 import { FooNavigateView } from './foo-navigate.view';
 import { FooService } from './foo.service';
-import { FooView } from './foo.view';
 
 @Module({
     imports: [
@@ -12,8 +10,8 @@ import { FooView } from './foo.view';
         FooService,
     ],
     views: [
-        FooView,
-        FooChildView,
+        import('./foo.view'),
+        import('./foo-child.view'),
         FooNavigateView,
     ],
 })
