@@ -30,18 +30,18 @@ export class Factory {
     }
 
     private async createModule(moduleOrPromise: Type | AsyncModule) {
-        const module = await this.getModule(moduleOrPromise);
+        const module = await this.getAsyncExport(moduleOrPromise);
 
         const imports: Set<Type> = Reflect.getMetadata(DI_IMPORTS_SYMBOL, module);
         const providers: Set<any> = Reflect.getMetadata(DI_PROVIDERS_SYMBOL, module);
-        const moduleViews: Set<Type<AbstractComponent>> = Reflect.getMetadata(DI_VIEWS_SYMBOL, module);
+        const moduleViews: Set<Type<AbstractComponent> | Promise<Type<AbstractComponent>>> = Reflect.getMetadata(DI_VIEWS_SYMBOL, module);
 
         const providersMap = new Map();
 
         const importedModules = [];
 
         for (const importedModuleOrPromise of imports) {
-            const importedModule = await this.getModule(importedModuleOrPromise);
+            const importedModule = await this.getAsyncExport(importedModuleOrPromise);
 
             let moduleInstance: ModuleInstance = this.moduleInstances.get(importedModule);
 
@@ -73,41 +73,37 @@ export class Factory {
             moduleInstance.providers.set(clazz, instance);
         });
 
-        Array
-            .from(moduleViews)
-            .forEach((View) => {
-                const metadataValue: ViewMetadata = Reflect.getMetadata(DI_VIEWS_SYMBOL, View);
-                const { options } = metadataValue;
-                const instance = this.createView(View, moduleInstance);
+        for (const moduleView of moduleViews) {
+            const View = await this.getAsyncExport<Type<AbstractComponent>>(moduleView);
 
-                this.routeViews.add({ instance, options, clazz: View } as ViewItem);
-            });
+            const metadataValue: ViewMetadata = Reflect.getMetadata(DI_VIEWS_SYMBOL, View);
+            const { options } = metadataValue;
+            const instance = this.createView(View, moduleInstance);
+
+            this.routeViews.add({ instance, options, clazz: View } as ViewItem);
+        }
 
         return moduleInstance;
     }
 
-    private async getModule(moduleOrPromise: Type | AsyncModule): Promise<Type> {
-        if (isPromise(moduleOrPromise)) {
-            const moduleObject: any = await moduleOrPromise;
+    private async getAsyncExport<T>(objectOrPromise: T | Promise<T>): Promise<T> {
+        if (isPromise(objectOrPromise)) {
+            const importedObject: any = await objectOrPromise;
 
-            if (Reflect.getMetadata(DI_DEPS_SYMBOL, moduleObject)) {
-                return moduleObject;
-            }
-
-            if (typeof moduleObject !== 'object') {
+            if (typeof importedObject !== 'object') {
                 return null;
             }
 
-            const [moduleKey] = Object.keys(moduleObject);
+            const [moduleKey] = Object.keys(importedObject);
 
             if (!moduleKey) {
                 return null;
             }
 
-            return moduleObject[moduleKey];
+            return importedObject[moduleKey];
         }
 
-        return moduleOrPromise;
+        return objectOrPromise;
     }
 
     private createProvider(Provider: any, providers: Set<any>, moduleInstance: ModuleInstance) {
