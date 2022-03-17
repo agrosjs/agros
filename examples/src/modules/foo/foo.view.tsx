@@ -9,6 +9,7 @@ import {
 import { BarComponent } from '../bar/bar.component';
 import { BarService } from '../bar/bar.service';
 import { FooService } from './foo.service';
+import { Outlet } from 'react-router-dom';
 
 @View({
     pathname: '/foo',
@@ -35,6 +36,7 @@ export class FooView extends AbstractComponent implements AbstractComponent {
                 <>
                     <div>Khamsa is working!</div>
                     <BarComponent />
+                    <Outlet />
                 </>
             );
         };

@@ -3,8 +3,8 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
 import { RouterContainer } from '../../lib';
-import { FooModule } from './modules/foo/foo.module';
 import { HashRouter as Router } from 'react-router-dom';
+import { AppModule } from './app.module';
 
 interface WrapperProps {
     RootModule: any;
@@ -24,7 +24,7 @@ const Wrapper: React.FC<WrapperProps> = ({
 };
 
 ReactDOM.render(
-    <Wrapper RootModule={FooModule} />,
+    <Wrapper RootModule={AppModule} />,
     document.getElementById('root'),
 );
 
