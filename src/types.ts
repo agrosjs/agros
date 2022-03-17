@@ -18,7 +18,6 @@ export interface ViewDecoratorOptions {
     pathname: string;
     name?: string;
     extra?: any;
-    navigateTo?: string;
     parent?: Type<AbstractComponent>;
 }
 

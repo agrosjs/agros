@@ -8,8 +8,6 @@ import {
     Type,
 } from '../types';
 import {
-    Navigate,
-    NavigateProps,
     Route,
     RouteProps,
 } from 'react-router-dom';
@@ -20,7 +18,6 @@ const createRoutes = (routeConfig: RouteConfig, level = 0): React.ReactNode[] =>
             path,
             extra = {},
             children = [],
-            navigateTo,
             component: Component,
         } = routeConfigItem;
 
@@ -30,13 +27,6 @@ const createRoutes = (routeConfig: RouteConfig, level = 0): React.ReactNode[] =>
                 path,
                 key: `level${level}_${index}`,
                 ...(
-                    navigateTo
-                        ? {
-                            element: React.createElement(Navigate, { to: navigateTo } as NavigateProps),
-                        }
-                        : {}
-                ),
-                ...(
                     Component
                         ? {
                             element: React.createElement(Component, extra),
@@ -45,7 +35,7 @@ const createRoutes = (routeConfig: RouteConfig, level = 0): React.ReactNode[] =>
                 ),
             } as RouteProps,
             ...(
-                (children.length > 0 && !navigateTo)
+                children.length > 0
                     ? createRoutes(children, level + 1)
                     : []
             ),

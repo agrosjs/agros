@@ -239,7 +239,6 @@ export class Factory {
         const {
             name,
             extra,
-            navigateTo,
             pathname,
         } = options;
 
@@ -252,11 +251,6 @@ export class Factory {
                 typeof extra === 'undefined'
                     ? {}
                     : { extra }
-            ),
-            ...(
-                !navigateTo
-                    ? {}
-                    : { navigateTo }
             ),
         };
 
