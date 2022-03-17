@@ -13,7 +13,6 @@ import {
     AsyncModule,
     RouteConfig,
     RouteConfigItem,
-    Routes,
     Type,
     ViewItem,
     ViewMetadata,

@@ -2,32 +2,15 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
-import {
-    Routes,
-    RouterContainer,
-} from '../../lib';
+import { RouterContainer } from '../../lib';
 import { FooModule } from './modules/foo/foo.module';
-import {
-    HashRouter as Router,
-} from 'react-router-dom';
-
-const routes: Routes = [
-    {
-        path: '/foo',
-    },
-    {
-        path: '*',
-        navigateTo: '/foo',
-    },
-];
+import { HashRouter as Router } from 'react-router-dom';
 
 interface WrapperProps {
-    routes: Routes;
     RootModule: any;
 }
 
 const Wrapper: React.FC<WrapperProps> = ({
-    routes = [],
     RootModule,
 }) => {
     return (
@@ -41,7 +24,7 @@ const Wrapper: React.FC<WrapperProps> = ({
 };
 
 ReactDOM.render(
-    <Wrapper routes={routes} RootModule={FooModule} />,
+    <Wrapper RootModule={FooModule} />,
     document.getElementById('root'),
 );
 

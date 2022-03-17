@@ -35,27 +35,8 @@ export interface NavigateOptions {
     path?: string;
 }
 
-/**
- * {
- *      "path": "/foo",
- *      "children": [
- *          {
- *              "path": "/bar"
- *          }
- *      ],
- * }
- */
-export interface RouteItem<T = any> {
+export interface RouteConfigItem<T = any> extends Omit<ViewDecoratorOptions, 'parent' | 'pathname'> {
     path: string;
-    navigateTo?: string;
-    name?: string;
-    extra?: T;
-    children?: RouteItem<T>[];
-}
-
-export type Routes<T = any> = RouteItem<T>[];
-
-export interface RouteConfigItem<T = any> extends Omit<RouteItem<T>, 'children'> {
     ViewClass: Type<AbstractComponent>;
     component: ReactComponent;
     children?: RouteConfigItem[];

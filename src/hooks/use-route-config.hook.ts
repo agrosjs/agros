@@ -5,7 +5,6 @@ import React, {
 import { Factory } from '../factory';
 import {
     RouteConfig,
-    Routes,
     Type,
 } from '../types';
 import {
