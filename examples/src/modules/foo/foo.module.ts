@@ -1,5 +1,6 @@
 import { Module } from '../../../../lib';
 import { FooChildView } from './foo-child.view';
+import { FooNavigateView } from './foo-navigate.view';
 import { FooService } from './foo.service';
 import { FooView } from './foo.view';
 
@@ -13,6 +14,7 @@ import { FooView } from './foo.view';
     views: [
         FooView,
         FooChildView,
+        FooNavigateView,
     ],
 })
 export class FooModule {}
