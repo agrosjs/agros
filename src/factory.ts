@@ -24,9 +24,9 @@ export class Factory {
     private moduleInstances: Map<any, any> = new Map();
     private routeViews: Set<ViewItem> = new Set();
 
-    public async create<T>(module: Type<T>, routes: Routes = []): Promise<RouteConfig> {
+    public async create<T, E>(module: Type<T>, routes: Routes<E> = []): Promise<RouteConfig<E>> {
         await this.createModule(module);
-        return this.createNestedRoute('', routes);
+        return this.createNestedRoute<E>('', routes);
     }
 
     private async createModule(moduleOrPromise: Type | AsyncModule) {
@@ -186,7 +186,11 @@ export class Factory {
     private normalizePath(path: string) {
         let newPath: string = path;
 
-        if (!newPath.startsWith('/')) {
+        if (
+            !newPath.startsWith('/') &&
+            !newPath.endsWith('*') &&
+            !newPath.startsWith('*')
+        ) {
             newPath = `/${path}`;
         }
 
@@ -197,17 +201,31 @@ export class Factory {
         return newPath;
     }
 
-    private createNestedRoute(basePath = '', routes: Routes = []): RouteConfig {
+    private createNestedRoute<E>(basePath = '', routes: Routes<E> = []): RouteConfig<E> {
         return routes
             .map((route) => {
                 const {
                     path,
+                    name,
                     children,
+                    extra,
+                    navigateTo,
                 } = route;
 
-                const result: RouteConfigItem = {
-                    path: basePath + this.normalizePath(path),
+                const result: RouteConfigItem<E> = {
+                    name,
                     component: null,
+                    path: basePath + this.normalizePath(path),
+                    ...(
+                        typeof extra === 'undefined'
+                            ? {}
+                            : { extra }
+                    ),
+                    ...(
+                        !navigateTo
+                            ? {}
+                            : { navigateTo }
+                    ),
                 };
 
                 const routeView = Array.from(this.routeViews)
@@ -223,6 +241,6 @@ export class Factory {
 
                 return result;
             })
-            .filter((route) => !!route.component);
+            .filter((route) => !(!route.component && !route.navigateTo));
     }
 }

@@ -1,26 +1,23 @@
-import React, {
-    useEffect,
-    useState,
-} from 'react';
+import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
 import {
-    Factory,
-    RouteConfig,
     Routes,
+    RouterContainer,
 } from '../../lib';
 import { FooModule } from './modules/foo/foo.module';
 import {
     HashRouter as Router,
-    Navigate,
-    Routes as ReactRouterRoutes,
-    Route,
 } from 'react-router-dom';
 
 const routes: Routes = [
     {
         path: '/foo',
+    },
+    {
+        path: '*',
+        navigateTo: '/foo',
     },
 ];
 
@@ -33,32 +30,11 @@ const Wrapper: React.FC<WrapperProps> = ({
     routes = [],
     RootModule,
 }) => {
-    const [routeConfig, setRouteConfig] = useState<RouteConfig>([]);
-
-    useEffect(() => {
-        const factory = new Factory();
-        factory.create(RootModule, routes).then((config) => {
-            setRouteConfig(config);
-        });
-    }, []);
-
     return (
         <>
             It's working!
             <Router>
-                <ReactRouterRoutes>
-                    {
-                        routeConfig.map((routeConfigItem) => {
-                            const {
-                                path,
-                                component: RouteView,
-                            } = routeConfigItem;
-
-                            return <Route key={path} path={path} element={<RouteView />} />;
-                        })
-                    }
-                    <Route path="*" element={<Navigate to="/foo" />} />
-                </ReactRouterRoutes>
+                <RouterContainer routes={routes} module={RootModule} />
             </Router>
         </>
     );

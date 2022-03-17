@@ -25,6 +25,11 @@ export interface ViewItem {
 
 export type ReactComponent<Props = any> = React.FC<Props>;
 
+export interface NavigateOptions {
+    to: string;
+    path?: string;
+}
+
 /**
  * {
  *      "path": "/foo",
@@ -35,18 +40,26 @@ export type ReactComponent<Props = any> = React.FC<Props>;
  *      ],
  * }
  */
-export interface RouteItem {
+export interface RouteItem<T = any> {
     path: string;
+    navigateTo?: string;
     name?: string;
-    children?: RouteItem[];
+    extra?: T;
+    children?: RouteItem<T>[];
 }
 
-export type Routes = RouteItem[];
+export type Routes<T = any> = RouteItem<T>[];
 
-export interface RouteConfigItem extends RouteItem {
+export interface RouteConfigItem<T = any> extends Omit<RouteItem<T>, 'children'> {
     component: ReactComponent;
+    children?: RouteConfigItem[];
 }
 
-export type RouteConfig = RouteConfigItem[];
+export type RouteConfig<T = any> = RouteConfigItem<T>[];
 
 export type AsyncModule = Promise<any>;
+
+export interface RouterContainerProps<T = any, M = any> {
+    routes: Routes<T>;
+    module: Type<M>;
+}
