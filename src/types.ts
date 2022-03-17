@@ -16,9 +16,14 @@ export interface ViewMetadata {
 
 export interface ViewDecoratorOptions {
     pathname: string;
+    name?: string;
+    extra?: any;
+    navigateTo?: string;
+    parent?: Type<AbstractComponent>;
 }
 
 export interface ViewItem {
+    clazz: Type<AbstractComponent>;
     instance: AbstractComponent;
     options: ViewDecoratorOptions;
 }
@@ -51,6 +56,7 @@ export interface RouteItem<T = any> {
 export type Routes<T = any> = RouteItem<T>[];
 
 export interface RouteConfigItem<T = any> extends Omit<RouteItem<T>, 'children'> {
+    ViewClass: Type<AbstractComponent>;
     component: ReactComponent;
     children?: RouteConfigItem[];
 }
@@ -60,6 +66,5 @@ export type RouteConfig<T = any> = RouteConfigItem<T>[];
 export type AsyncModule = Promise<any>;
 
 export interface RouterContainerProps<T = any, M = any> {
-    routes: Routes<T>;
     module: Type<M>;
 }

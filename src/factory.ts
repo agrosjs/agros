@@ -23,10 +23,11 @@ import isPromise from 'is-promise';
 export class Factory {
     private moduleInstances: Map<any, any> = new Map();
     private routeViews: Set<ViewItem> = new Set();
+    private nestedRoute: RouteConfigItem[] = [];
 
-    public async create<T, E>(module: Type<T>, routes: Routes<E> = []): Promise<RouteConfig<E>> {
+    public async create<T = any, E = any>(module: Type<T>): Promise<RouteConfig<E>> {
         await this.createModule(module);
-        return this.createNestedRoute<E>('', routes);
+        return this.createNestedRoute<E>();
     }
 
     private async createModule(moduleOrPromise: Type | AsyncModule) {
@@ -80,7 +81,7 @@ export class Factory {
                 const { options } = metadataValue;
                 const instance = this.createView(View, moduleInstance);
 
-                this.routeViews.add({ instance, options } as ViewItem);
+                this.routeViews.add({ instance, options, clazz: View } as ViewItem);
             });
 
         return moduleInstance;
@@ -201,46 +202,94 @@ export class Factory {
         return newPath;
     }
 
-    private createNestedRoute<E>(basePath = '', routes: Routes<E> = []): RouteConfig<E> {
-        return routes
-            .map((route) => {
-                const {
-                    path,
-                    name,
-                    children,
-                    extra,
-                    navigateTo,
-                } = route;
+    private createNestedRoute<E>(): RouteConfig<E> {
+        const routeViews = Array.from(this.routeViews);
 
-                const result: RouteConfigItem<E> = {
-                    name,
-                    component: null,
-                    path: basePath + this.normalizePath(path),
-                    ...(
-                        typeof extra === 'undefined'
-                            ? {}
-                            : { extra }
-                    ),
-                    ...(
-                        !navigateTo
-                            ? {}
-                            : { navigateTo }
-                    ),
-                };
+        while (routeViews.length > 0) {
+            const currentRouteView = routeViews.shift();
 
-                const routeView = Array.from(this.routeViews)
-                    .find((routeView) => routeView.options.pathname === result.path);
+            const {
+                options,
+                clazz,
+            } = currentRouteView;
 
-                if (routeView?.instance && typeof routeView.instance.getComponent === 'function') {
-                    result.component = routeView.instance.getComponent();
+            const {
+                name,
+                extra,
+                navigateTo,
+                pathname,
+                parent: ParentViewComponent,
+            } = options;
+
+            const result: RouteConfigItem<E> = {
+                name,
+                ViewClass: clazz,
+                component: null,
+                path: this.normalizePath(pathname),
+                ...(
+                    typeof extra === 'undefined'
+                        ? {}
+                        : { extra }
+                ),
+                ...(
+                    !navigateTo
+                        ? {}
+                        : { navigateTo }
+                ),
+            };
+
+            if (currentRouteView?.instance && typeof currentRouteView.instance.getComponent === 'function') {
+                result.component = currentRouteView.instance.getComponent();
+            }
+
+            if (!ParentViewComponent) {
+                this.nestedRoute.push(result);
+                continue;
+            }
+
+            const succeeded = this.setToParentRouteView(
+                this.nestedRoute,
+                result,
+                ParentViewComponent,
+            );
+
+            if (!succeeded) {
+                routeViews.push(currentRouteView);
+            }
+        }
+
+        return this.nestedRoute;
+    }
+
+    private setToParentRouteView(
+        routes: RouteConfigItem[],
+        routeConfigItem: RouteConfigItem,
+        ParentViewComponent: Type<AbstractComponent>,
+    ): boolean {
+        for (const currentRouteConfigItem of routes) {
+            const {
+                ViewClass,
+            } = currentRouteConfigItem;
+
+            if (ViewClass === ParentViewComponent) {
+                if (!Array.isArray(currentRouteConfigItem.children)) {
+                    currentRouteConfigItem.children = [];
                 }
 
-                if (Array.isArray(children) && children.length > 0) {
-                    result.children = this.createNestedRoute(result.path, Array.from(children));
-                }
+                currentRouteConfigItem.children.push(routeConfigItem);
 
-                return result;
-            })
-            .filter((route) => !(!route.component && !route.navigateTo));
+                return true;
+            } else {
+                if (Array.isArray(currentRouteConfigItem.children)) {
+                    return this.setToParentRouteView(
+                        currentRouteConfigItem.children,
+                        routeConfigItem,
+                        ParentViewComponent,
+                    );
+                }
+            }
+        }
+
+        return false;
     }
 }

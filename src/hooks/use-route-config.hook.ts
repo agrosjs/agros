@@ -54,17 +54,17 @@ const createRoutes = (routeConfig: RouteConfig, level = 0): React.ReactNode[] =>
     });
 };
 
-export const useRoutes = <T>(Module: Type, routes: Routes): React.ReactNode => {
+export const useRoutes = <T>(Module: Type): React.ReactNode => {
     const [routeConfig, setRouteConfig] = useState<RouteConfig<T>>([]);
     const [elements, setElements] = useState<React.ReactNode>(null);
 
     useEffect(() => {
         const RootModule = Module;
         const factory = new Factory();
-        factory.create(RootModule, routes).then((config) => {
+        factory.create<T>(RootModule).then((config) => {
             setRouteConfig(config);
         });
-    }, [Module, routes]);
+    }, [Module]);
 
     useEffect(() => {
         const routeElements = createRoutes(routeConfig);

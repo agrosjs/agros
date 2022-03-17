@@ -6,9 +6,8 @@ import { useRoutes } from '../hooks';
 import { Routes } from 'react-router-dom';
 
 export const RouterContainer: React.FC<RouterContainerProps> = ({
-    routes = [],
     module: Module,
 }) => {
-    const elements = useRoutes(Module, routes);
+    const elements = useRoutes(Module);
     return React.createElement(Routes, {}, elements);
 };

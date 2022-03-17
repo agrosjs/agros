@@ -34,7 +34,7 @@ const Wrapper: React.FC<WrapperProps> = ({
         <>
             It's working!
             <Router>
-                <RouterContainer routes={routes} module={RootModule} />
+                <RouterContainer module={RootModule} />
             </Router>
         </>
     );
