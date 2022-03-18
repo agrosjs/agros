@@ -5,6 +5,7 @@ export class ModuleInstance {
       public imports: Array<ModuleInstance>,
       public providers: Map<any, any>,
       public views: Array<any> = [],
+      public isGlobal = false,
     ) {}
 
     public get<T>(provider: Type<T>) {

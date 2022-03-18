@@ -5,6 +5,7 @@ import {
 } from './classes';
 import {
     DI_DEPS_SYMBOL,
+    DI_GLOBAL_MODULE_SYMBOL,
     DI_IMPORTS_SYMBOL,
     DI_PROVIDERS_SYMBOL,
     DI_VIEWS_SYMBOL,
@@ -20,21 +21,24 @@ import {
 import isPromise from 'is-promise';
 
 export class Factory {
-    private moduleInstances: Map<any, any> = new Map();
+    private moduleInstances: Map<Type<any>, ModuleInstance> = new Map();
     private routeViews: Set<ViewItem> = new Set();
     private nestedRoute: RouteConfigItem[] = [];
 
     public async create<T = any>(module: Type<T>): Promise<RouteConfig> {
-        await this.createModule(module);
+        await this.createModule(module, true);
         return this.createNestedRoute();
     }
 
-    private async createModule(moduleOrPromise: Type | AsyncModule) {
+    private async createModule(moduleOrPromise: Type | AsyncModule, isGlobal = false) {
         const module = await this.getAsyncExport(moduleOrPromise);
 
         const imports: Set<Type> = Reflect.getMetadata(DI_IMPORTS_SYMBOL, module);
         const providers: Set<any> = Reflect.getMetadata(DI_PROVIDERS_SYMBOL, module);
-        const moduleViews: Set<Type<AbstractComponent> | Promise<Type<AbstractComponent>>> = Reflect.getMetadata(DI_VIEWS_SYMBOL, module);
+        const moduleViews: Set<Type<AbstractComponent> | Promise<Type<AbstractComponent>>> = Reflect.getMetadata(
+            DI_VIEWS_SYMBOL,
+            module,
+        );
 
         const providersMap = new Map();
 
@@ -42,11 +46,12 @@ export class Factory {
 
         for (const importedModuleOrPromise of imports) {
             const importedModule = await this.getAsyncExport(importedModuleOrPromise);
+            const isGlobalModule = Reflect.getMetadata(DI_GLOBAL_MODULE_SYMBOL, importedModule) || false;
 
             let moduleInstance: ModuleInstance = this.moduleInstances.get(importedModule);
 
             if (!moduleInstance) {
-                moduleInstance = await this.createModule(importedModule);
+                moduleInstance = await this.createModule(importedModule, isGlobalModule);
                 this.moduleInstances.set(importedModule, moduleInstance);
             }
 
@@ -56,7 +61,8 @@ export class Factory {
         const moduleInstance = new ModuleInstance(
             importedModules,
             providersMap,
-            Array.from(this.routeViews),
+            [],
+            isGlobal,
         );
 
         const registeredProviders = Array
@@ -126,9 +132,11 @@ export class Factory {
                 if (providers.has(dep)) {
                     depInstance = this.createProvider(dep, providers, moduleInstance);
                 } else {
-                    moduleInstance.imports.some((imp) => {
+                    const dependedModuleInstances = Array.from(moduleInstance.imports);
+                    this.addGlobalModuleInstances(dependedModuleInstances);
+
+                    dependedModuleInstances.forEach((imp) => {
                         depInstance = this.createProvider(dep, new Set(), imp);
-                        return !!depInstance;
                     });
                 }
             }
@@ -149,6 +157,7 @@ export class Factory {
         const metadataValue: ViewMetadata = Reflect.getMetadata(DI_VIEWS_SYMBOL, View);
         const providersMap: Map<any, any> = moduleInstance.providers;
         const importedModules = moduleInstance.imports;
+        this.addGlobalModuleInstances(importedModules);
 
         const { dependencies: deps } = metadataValue;
 
@@ -176,7 +185,10 @@ export class Factory {
             return depInstance;
         });
 
-        return new View(...args);
+        const viewInstance =  new View(...args);
+        moduleInstance.views.push(viewInstance);
+
+        return viewInstance;
     }
 
     private normalizePath(path: string, topLeveled = false) {
@@ -193,17 +205,17 @@ export class Factory {
 
     private createNestedRoute(): RouteConfig {
         const routeViews = Array.from(this.routeViews);
+        const topLeveledRouteViews = routeViews.filter((routeView) => !routeView?.options?.parent);
+        const downLeveledRouteViews = routeViews.filter((routeView) => !!routeView?.options?.parent);
 
-        for (const [index, routeView] of routeViews.entries()) {
-            if (!routeView?.options?.parent) {
-                this.nestedRoute.push(this.createRouteConfigItem(routeView));
-                routeViews.splice(index, 1);
-            }
+        while (topLeveledRouteViews.length > 0) {
+            const currentRouteView = topLeveledRouteViews.shift();
+            const routeConfigItem = this.createRouteConfigItem(currentRouteView);
+            this.nestedRoute.push(routeConfigItem);
         }
 
-        while (routeViews.length > 0) {
-            const currentRouteView = routeViews.shift();
-
+        while (downLeveledRouteViews.length > 0) {
+            const currentRouteView = downLeveledRouteViews.shift();
             const routeConfigItem = this.createRouteConfigItem(currentRouteView);
 
             const succeeded = this.setToParentRouteView(
@@ -282,5 +294,13 @@ export class Factory {
         }
 
         return false;
+    }
+
+    private addGlobalModuleInstances(dependedModuleInstances: ModuleInstance[]) {
+        for (const moduleInstance of this.moduleInstances.values()) {
+            if (moduleInstance.isGlobal) {
+                dependedModuleInstances.push(moduleInstance);
+            }
+        }
     }
 }
