@@ -15,7 +15,7 @@ export class FooChildView extends AbstractComponent implements AbstractComponent
     protected generateComponent(): FunctionComponent<any> {
         return () => {
             return (
-                <div style={{ color: 'red' }}>Greeting from foo/child page!</div>
+                <div style={{ color: 'red' }}>Greet from foo/child page!</div>
             );
         };
     }

@@ -14,12 +14,9 @@ const Wrapper: React.FC<WrapperProps> = ({
     RootModule,
 }) => {
     return (
-        <>
-            It's working!
-            <Router>
-                <RouterContainer module={RootModule} />
-            </Router>
-        </>
+        <Router>
+            <RouterContainer module={RootModule} />
+        </Router>
     );
 };
 
