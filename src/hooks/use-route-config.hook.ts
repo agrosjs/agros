@@ -11,25 +11,26 @@ import {
     Route,
     RouteProps,
 } from 'react-router-dom';
+import omit from 'lodash/omit';
 
 const createRoutes = (routeConfig: RouteConfig, level = 0): React.ReactNode[] => {
     return routeConfig.map((routeConfigItem, index) => {
         const {
-            path,
-            extra = {},
+            elementProps = {},
             children = [],
             component: Component,
+            ...routeProps
         } = routeConfigItem;
 
         return React.createElement(
             Route,
             {
-                path,
                 key: `level${level}_${index}`,
+                ...omit(routeProps, ['ViewClass']),
                 ...(
                     Component
                         ? {
-                            element: React.createElement(Component, extra),
+                            element: React.createElement(Component, elementProps),
                         }
                         : {}
                 ),

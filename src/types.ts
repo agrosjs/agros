@@ -1,4 +1,5 @@
 import React from 'react';
+import { RouteProps } from 'react-router-dom';
 import { AbstractComponent } from './classes';
 
 export type Type<T = any> = new (...args: Array<any>) => T;
@@ -14,10 +15,9 @@ export interface ViewMetadata {
     dependencies: any[];
 }
 
-export interface ViewDecoratorOptions {
-    pathname: string;
+export interface ViewDecoratorOptions extends Omit<RouteProps, 'element' | 'children'> {
     name?: string;
-    extra?: any;
+    elementProps?: any;
     parent?: Type<AbstractComponent>;
 }
 

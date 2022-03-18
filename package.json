@@ -16,6 +16,7 @@
     ],
     "dependencies": {
         "is-promise": "^4.0.0",
+        "lodash": "^4.17.21",
         "react": "^16.14.0",
         "react-router": "^6.2.2",
         "react-router-dom": "^6.2.2",
@@ -26,6 +27,7 @@
         "@babel/plugin-proposal-decorators": "^7.17.2",
         "@types/is-promise": "^2.2.0",
         "@types/jest": "^26.0.23",
+        "@types/lodash": "^4.14.180",
         "@types/node": "^15.12.2",
         "@types/react": "^16.14.24",
         "@types/react-dom": "^16.9.14",

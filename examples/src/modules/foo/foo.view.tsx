@@ -12,7 +12,7 @@ import { FooService } from './foo.service';
 import { Outlet } from 'react-router-dom';
 
 @View({
-    pathname: '/foo',
+    path: '/foo',
 })
 export class FooView extends AbstractComponent implements AbstractComponent {
     public constructor(

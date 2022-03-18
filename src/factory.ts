@@ -179,20 +179,14 @@ export class Factory {
         return new View(...args);
     }
 
-    private normalizePath(path: string) {
+    private normalizePath(path: string, topLeveled = false) {
         let newPath: string = path;
 
-        if (
-            !newPath.startsWith('/') &&
-            !newPath.endsWith('*') &&
-            !newPath.startsWith('*')
-        ) {
-            newPath = `/${path}`;
-        }
+        newPath = newPath.replace(/\/+$/g, '');
 
-        newPath = newPath
-            .replace(/\/+/g, '')
-            .replace(/\/+$/g, '');
+        if (!topLeveled) {
+            newPath = newPath.replace(/^\/+/g, '');
+        }
 
         return newPath;
     }
@@ -234,19 +228,20 @@ export class Factory {
 
         const {
             name,
-            extra,
-            pathname,
+            elementProps,
+            path: pathname,
+            parent: ParentViewComponent,
         } = options;
 
         const result: RouteConfigItem = {
             name,
             ViewClass: clazz,
             component: null,
-            path: this.normalizePath(pathname),
+            path: this.normalizePath(pathname, !ParentViewComponent),
             ...(
-                typeof extra === 'undefined'
+                typeof elementProps === 'undefined'
                     ? {}
-                    : { extra }
+                    : { elementProps }
             ),
         };
 

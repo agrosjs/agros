@@ -8,7 +8,7 @@ import {
 import { Navigate } from 'react-router-dom';
 
 @View({
-    pathname: '*',
+    path: '*',
 })
 export class FooNavigateView extends AbstractComponent implements AbstractComponent {
     protected generateComponent(): FunctionComponent<any> {

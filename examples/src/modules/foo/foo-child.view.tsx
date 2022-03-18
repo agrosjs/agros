@@ -8,7 +8,7 @@ import {
 import { FooView } from './foo.view';
 
 @View({
-    pathname: '/child',
+    path: '/child',
     parent: FooView,
 })
 export class FooChildView extends AbstractComponent implements AbstractComponent {
