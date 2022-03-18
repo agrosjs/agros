@@ -6,7 +6,7 @@ import {
     ViewMetadata,
 } from '../types';
 
-export function View(options: ViewDecoratorOptions): ClassDecorator {
+export function View<T>(options: ViewDecoratorOptions<T>): ClassDecorator {
     return (target) => {
         const metadataValue: ViewMetadata = {
             options,

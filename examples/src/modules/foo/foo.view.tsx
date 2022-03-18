@@ -11,7 +11,7 @@ import { BarService } from '../bar/bar.service';
 import { FooService } from './foo.service';
 import { Outlet } from 'react-router-dom';
 
-@View({
+@View<any>({
     path: '/foo',
 })
 export class FooView extends AbstractComponent implements AbstractComponent {
