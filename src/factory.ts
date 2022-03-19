@@ -33,8 +33,9 @@ export class Factory {
         this.createProviderClassToModuleClassMap();
         await this.createProviderInstances(rootModuleInstance);
         await this.createViews(rootModuleInstance);
-        const nestedRoute = this.createNestedRoute();
-        return nestedRoute;
+        this.createNestedRoute();
+        this.nestedRoute = this.sequenceNestedRoute(Array.from(this.nestedRoute));
+        return Array.from(this.nestedRoute);
     }
 
     private async createModuleInstance<T>(ModuleClassOrPromise: Type<T> | AsyncModule<T>) {
@@ -236,7 +237,7 @@ export class Factory {
         return newPath;
     }
 
-    private createNestedRoute(): RouteConfig {
+    private createNestedRoute() {
         const routeViews = Array.from(this.routeViews);
 
         while (routeViews.length > 0) {
@@ -256,8 +257,20 @@ export class Factory {
                 }
             }
         }
+    }
 
-        return Array.from(this.nestedRoute);
+    private sequenceNestedRoute(nestedRoutes: RouteConfig) {
+        const newNestedRoutes = nestedRoutes.sort((a, b) => {
+            return ((a.priority || 0) + (a.sequence || 0)) - ((b.priority || 0) + (b.sequence || 0));
+        });
+
+        for (const nestedRouteItem of newNestedRoutes) {
+            if (Array.isArray(nestedRouteItem.children) && nestedRouteItem.children.length > 0) {
+                nestedRouteItem.children = this.sequenceNestedRoute(nestedRouteItem.children);
+            }
+        }
+
+        return newNestedRoutes;
     }
 
     private createRouteConfigItem(routeView: ViewItem): RouteConfigItem {
@@ -269,12 +282,14 @@ export class Factory {
         const {
             elementProps,
             path: pathname,
+            priority = 0,
             parent: ParentViewComponent,
         } = options;
 
         const result: RouteConfigItem = {
             ViewClass: Class,
             component: null,
+            priority,
             path: this.normalizePath(pathname, !ParentViewComponent),
             ...(
                 typeof elementProps === 'undefined'
@@ -304,6 +319,8 @@ export class Factory {
                 if (!Array.isArray(currentRouteConfigItem.children)) {
                     currentRouteConfigItem.children = [];
                 }
+
+                routeConfigItem.sequence = currentRouteConfigItem.children.length;
 
                 currentRouteConfigItem.children.push(routeConfigItem);
 

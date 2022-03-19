@@ -16,6 +16,7 @@ export interface ViewMetadata {
 }
 
 export interface ViewDecoratorOptions<T = any> extends Omit<RouteProps, 'element' | 'children'> {
+    priority?: number;
     elementProps?: T;
     parent?: Type<AbstractComponent>;
 }
@@ -37,6 +38,7 @@ export interface RouteConfigItem extends Omit<ViewDecoratorOptions, 'parent' | '
     path: string;
     ViewClass: Type<AbstractComponent>;
     component: ReactComponent;
+    sequence?: number;
     children?: RouteConfigItem[];
 }
 
