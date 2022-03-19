@@ -4,17 +4,17 @@ import {
 import {
     AbstractComponent,
     View,
-} from '../../../../lib';
+} from '../../lib';
 import { Navigate } from 'react-router-dom';
 
 @View({
     path: '*',
 })
-export class FooNavigateView extends AbstractComponent implements AbstractComponent {
+export class AppNavigateView extends AbstractComponent implements AbstractComponent {
     protected generateComponent(): FunctionComponent<any> {
         return () => {
             return (
-                <Navigate to="/foo/child" />
+                <Navigate to="/app/foo/child" />
             );
         };
     }

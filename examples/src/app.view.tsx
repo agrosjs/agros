@@ -7,7 +7,7 @@ import {
 import './app.view.css';
 
 @View({
-    path: '/',
+    path: '/app',
 })
 export class AppView extends AbstractComponent implements AbstractComponent {
     protected generateComponent(): ReactComponent<any> {

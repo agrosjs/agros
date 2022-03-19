@@ -34,7 +34,6 @@ export class Factory {
         await this.createProviderInstances(rootModuleInstance);
         await this.createViews(rootModuleInstance);
         const nestedRoute = this.createNestedRoute();
-        console.log(nestedRoute);
         return nestedRoute;
     }
 
