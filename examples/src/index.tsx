@@ -6,22 +6,8 @@ import { RouterContainer } from '../../lib';
 import { HashRouter as Router } from 'react-router-dom';
 import { AppModule } from './app.module';
 
-interface WrapperProps {
-    RootModule: any;
-}
-
-const Wrapper: React.FC<WrapperProps> = ({
-    RootModule,
-}) => {
-    return (
-        <Router>
-            <RouterContainer module={RootModule} />
-        </Router>
-    );
-};
-
 ReactDOM.render(
-    <Wrapper RootModule={AppModule} />,
+    <RouterContainer module={AppModule} RouterComponent={Router} />,
     document.getElementById('root'),
 );
 
