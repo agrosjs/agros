@@ -34,6 +34,7 @@ export class Factory {
         await this.createProviderInstances(rootModuleInstance);
         await this.createViews(rootModuleInstance);
         const nestedRoute = this.createNestedRoute();
+        console.log(nestedRoute);
         return nestedRoute;
     }
 
@@ -267,14 +268,12 @@ export class Factory {
         } = routeView;
 
         const {
-            name,
             elementProps,
             path: pathname,
             parent: ParentViewComponent,
         } = options;
 
         const result: RouteConfigItem = {
-            name,
             ViewClass: Class,
             component: null,
             path: this.normalizePath(pathname, !ParentViewComponent),

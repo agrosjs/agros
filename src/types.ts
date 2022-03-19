@@ -16,7 +16,6 @@ export interface ViewMetadata {
 }
 
 export interface ViewDecoratorOptions<T = any> extends Omit<RouteProps, 'element' | 'children'> {
-    name?: string;
     elementProps?: T;
     parent?: Type<AbstractComponent>;
 }
