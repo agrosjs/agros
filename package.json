@@ -1,6 +1,6 @@
 {
     "name": "khamsa",
-    "version": "0.5.0",
+    "version": "0.6.0",
     "scripts": {
         "example": "node ./scripts/example.js",
         "build": "rimraf ./lib && tsc --build tsconfig.package.json",
