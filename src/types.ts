@@ -12,7 +12,7 @@ export interface ModuleDecoratorOptions {
 
 export interface ViewMetadata {
     options: ViewDecoratorOptions;
-    dependencies: any[];
+    dependencies: Type[];
 }
 
 export interface ViewDecoratorOptions<T = any> extends Omit<RouteProps, 'element' | 'children'> {
@@ -22,7 +22,7 @@ export interface ViewDecoratorOptions<T = any> extends Omit<RouteProps, 'element
 }
 
 export interface ViewItem {
-    clazz: Type<AbstractComponent>;
+    Class: Type<AbstractComponent>;
     instance: AbstractComponent;
     options: ViewDecoratorOptions;
 }
@@ -43,8 +43,16 @@ export interface RouteConfigItem extends Omit<ViewDecoratorOptions, 'parent' | '
 
 export type RouteConfig = RouteConfigItem[];
 
-export type AsyncModule = Promise<any>;
+export type AsyncModule<T> = Promise<T>;
 
 export interface RouterContainerProps<M = any> {
     module: Type<M>;
+}
+
+export interface ModuleInstanceMetadata {
+    Class: Type<any>;
+    imports: Set<Type<any>>;
+    isGlobal: boolean;
+    providers: Set<Type<any>>;
+    views: Set<Type<AbstractComponent>>;
 }

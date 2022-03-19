@@ -21,75 +21,150 @@ import {
 import isPromise from 'is-promise';
 
 export class Factory {
-    private moduleInstances: Map<Type<any>, ModuleInstance> = new Map();
     private routeViews: Set<ViewItem> = new Set();
     private nestedRoute: RouteConfigItem[] = [];
+    private moduleInstanceMap = new Map<Type<any>, ModuleInstance>();
+    private providerInstanceMap = new Map<Type<any>, any>();
+    private providerClassToModuleClassMap = new Map<Type, Type>();
 
-    public async create<T = any>(module: Type<T>): Promise<RouteConfig> {
-        await this.createModule(module, true);
-        return this.createNestedRoute();
+    public async create<T = any>(ModuleClass: Type<T> | AsyncModule<T>): Promise<RouteConfig> {
+        const rootModuleInstance = await this.createModuleInstance(ModuleClass);
+        this.setImportedModuleInstances();
+        this.createProviderClassToModuleClassMap();
+        await this.createProviderInstances(rootModuleInstance);
+        await this.createViews(rootModuleInstance);
+        const nestedRoute = this.createNestedRoute();
+        return nestedRoute;
     }
 
-    private async createModule(moduleOrPromise: Type | AsyncModule, isGlobal = false) {
-        const module = await this.getAsyncExport(moduleOrPromise);
+    private async createModuleInstance<T>(ModuleClassOrPromise: Type<T> | AsyncModule<T>) {
+        const ModuleClass = await this.getAsyncExport((ModuleClassOrPromise as any));
 
-        const imports: Set<Type> = Reflect.getMetadata(DI_IMPORTS_SYMBOL, module);
-        const providers: Set<any> = Reflect.getMetadata(DI_PROVIDERS_SYMBOL, module);
-        const moduleViews: Set<Type<AbstractComponent> | Promise<Type<AbstractComponent>>> = Reflect.getMetadata(
-            DI_VIEWS_SYMBOL,
-            module,
-        );
+        if (!this.moduleInstanceMap.get(ModuleClass)) {
+            const importsArray: Array<Type | Promise<Type>> = Reflect.getMetadata(
+                DI_IMPORTS_SYMBOL,
+                ModuleClass,
+            ) || [];
+            const providersArray: Array<any> = Reflect.getMetadata(DI_PROVIDERS_SYMBOL, ModuleClass) || [];
+            const viewsArray: Array<Type<AbstractComponent> | Promise<Type<AbstractComponent>>> = Reflect.getMetadata(
+                DI_VIEWS_SYMBOL,
+                ModuleClass,
+            ) || [];
+            const isGlobal: boolean = Reflect.getMetadata(DI_GLOBAL_MODULE_SYMBOL, ModuleClass) || false;
 
-        const providersMap = new Map();
+            const imports = new Set<Type>();
+            const views = new Set<Type<AbstractComponent>>();
 
-        const importedModules = [];
-
-        for (const importedModuleOrPromise of imports) {
-            const importedModule = await this.getAsyncExport(importedModuleOrPromise);
-            const isGlobalModule = Reflect.getMetadata(DI_GLOBAL_MODULE_SYMBOL, importedModule) || false;
-
-            let moduleInstance: ModuleInstance = this.moduleInstances.get(importedModule);
-
-            if (!moduleInstance) {
-                moduleInstance = await this.createModule(importedModule, isGlobalModule);
-                this.moduleInstances.set(importedModule, moduleInstance);
+            for (const ImportedModuleClassOrPromise of importsArray) {
+                const ImportedModuleClass = await this.getAsyncExport(ImportedModuleClassOrPromise);
+                imports.add(ImportedModuleClass);
             }
 
-            importedModules.push(moduleInstance);
-        }
+            for (const ViewClassOrPromise of viewsArray) {
+                const ViewClass = await this.getAsyncExport(ViewClassOrPromise);
+                views.add(ViewClass);
+            }
 
-        const moduleInstance = new ModuleInstance(
-            importedModules,
-            providersMap,
-            [],
-            isGlobal,
-        );
-
-        const registeredProviders = Array
-            .from(providers)
-            .map((Provider) => {
-                return {
-                    clazz: Provider,
-                    instance: this.createProvider(Provider, providers, moduleInstance),
-                };
+            const moduleInstance = new ModuleInstance({
+                Class: ModuleClass,
+                imports,
+                providers: new Set(providersArray),
+                isGlobal,
+                views,
             });
 
-        registeredProviders.forEach((data) => {
-            const { clazz, instance } = data;
-            moduleInstance.providers.set(clazz, instance);
-        });
-
-        for (const moduleView of moduleViews) {
-            const View = await this.getAsyncExport<Type<AbstractComponent>>(moduleView);
-
-            const metadataValue: ViewMetadata = Reflect.getMetadata(DI_VIEWS_SYMBOL, View);
-            const { options } = metadataValue;
-            const instance = this.createView(View, moduleInstance);
-
-            this.routeViews.add({ instance, options, clazz: View } as ViewItem);
+            this.moduleInstanceMap.set(ModuleClass, moduleInstance);
         }
 
-        return moduleInstance;
+        const currentModuleInstance = this.moduleInstanceMap.get(ModuleClass);
+
+        for (const ImportedModuleClassOrPromise of currentModuleInstance.metadata.imports) {
+            await this.createModuleInstance(ImportedModuleClassOrPromise);
+        }
+
+        return currentModuleInstance;
+    }
+
+    private setImportedModuleInstances() {
+        for (const [ModuleClass, moduleInstance] of this.moduleInstanceMap.entries()) {
+            for (const ImportedModuleClass of Array.from(moduleInstance.metadata.imports)) {
+                if (ModuleClass === ImportedModuleClass) {
+                    throw new Error(`Module ${ModuleClass.name} cannot import itself`);
+                }
+
+                const importedModuleInstance = this.moduleInstanceMap.get(ImportedModuleClass);
+
+                if (!importedModuleInstance) {
+                    throw new Error(`Module ${ImportedModuleClass.name} is not imported into ${ModuleClass.name}`);
+                }
+
+                moduleInstance.addImportedModuleInstance(importedModuleInstance);
+            }
+
+            if (moduleInstance.metadata.isGlobal) {
+                for (const [TargetModuleClass, targetModuleInstance] of this.moduleInstanceMap.entries()) {
+                    if (TargetModuleClass !== ModuleClass) {
+                        targetModuleInstance.addImportedModuleInstance(moduleInstance);
+                    }
+                }
+            }
+        }
+    }
+
+    private createProviderClassToModuleClassMap() {
+        for (const [, moduleInstance] of this.moduleInstanceMap) {
+            for (const ProviderClass of moduleInstance.metadata.providers) {
+                this.providerClassToModuleClassMap.set(ProviderClass, moduleInstance.metadata.Class);
+            }
+        }
+    }
+
+    private async createProviderInstance(ProviderClass: Type) {
+        if (this.providerInstanceMap.get(ProviderClass)) {
+            return this.providerInstanceMap.get(ProviderClass);
+        }
+
+        const ModuleClass = this.providerClassToModuleClassMap.get(ProviderClass);
+        const moduleInstance = this.moduleInstanceMap.get(ModuleClass);
+
+        const dependedProviderClasses = Reflect.getMetadata(DI_DEPS_SYMBOL, ProviderClass) as Type[];
+
+        if (!Array.isArray(dependedProviderClasses)) {
+            throw new Error(`Provider ${ProviderClass.name} cannot be injected, did you add \`@Injectable()\` into it?`);
+        }
+
+        this.providerInstanceMap.set(
+            ProviderClass,
+            new ProviderClass(
+                ...await Promise.all(dependedProviderClasses.map((DependedProviderClass) => {
+                    if (DependedProviderClass === ProviderClass) {
+                        throw new Error(`Provider ${ProviderClass.name} cannot depend on itself`);
+                    }
+
+                    const DependedModuleClass = this.providerClassToModuleClassMap.get(DependedProviderClass);
+
+                    if (!moduleInstance.hasDependedProviderClass(DependedProviderClass)) {
+                        throw new Error(
+                            `Cannot inject provider ${DependedProviderClass.name} into provider ${ProviderClass.name}, did you import ${DependedModuleClass.name}?`,
+                        );
+                    }
+
+                    return this.createProviderInstance(DependedProviderClass);
+                })),
+            ),
+        );
+
+        return this.providerInstanceMap.get(ProviderClass);
+    }
+
+    private async createProviderInstances(moduleInstance: ModuleInstance) {
+        for (const ProviderClass of Array.from(moduleInstance.metadata.providers)) {
+            await this.createProviderInstance(ProviderClass);
+        }
+
+        for (const importedModuleInstance of Array.from(moduleInstance.getImportedModuleInstances())) {
+            await this.createProviderInstances(importedModuleInstance);
+        }
     }
 
     private async getAsyncExport<T>(objectOrPromise: T | Promise<T>): Promise<T> {
@@ -112,89 +187,47 @@ export class Factory {
         return objectOrPromise;
     }
 
-    private createProvider(Provider: any, providers: Set<any>, moduleInstance: ModuleInstance) {
-        let providerInstance = moduleInstance.providers.get(Provider);
+    private async createViews(moduleInstance: ModuleInstance) {
+        for (const ViewClass of Array.from(moduleInstance.metadata.views)) {
+            const metadataValue: ViewMetadata = Reflect.getMetadata(DI_VIEWS_SYMBOL, ViewClass);
+            const { dependencies: dependedProviderClasses } = metadataValue;
 
-        if (providerInstance) {
-            return providerInstance;
-        }
+            const viewInstance = new ViewClass(...dependedProviderClasses.map((DependedProviderClass) => {
+                const DependedModuleClass = this.providerClassToModuleClassMap.get(DependedProviderClass);
 
-        const deps: Array<any> = Reflect.getMetadata(DI_DEPS_SYMBOL, Provider);
-
-        if (!deps) {
-            throw new Error(`No provider named ${Provider.name}, did you add @Injectable() to this provider?`);
-        }
-
-        const args = deps.map((dep) => {
-            let depInstance = moduleInstance.providers.get(dep);
-
-            if (!depInstance) {
-                if (providers.has(dep)) {
-                    depInstance = this.createProvider(dep, providers, moduleInstance);
-                } else {
-                    const dependedModuleInstances = Array.from(moduleInstance.imports);
-                    this.addGlobalModuleInstances(dependedModuleInstances);
-
-                    dependedModuleInstances.forEach((imp) => {
-                        depInstance = this.createProvider(dep, new Set(), imp);
-                    });
+                if (!moduleInstance.hasDependedProviderClass(DependedProviderClass)) {
+                    throw new Error(
+                        `Cannot inject provider ${DependedProviderClass.name} into view ${ViewClass.name}, did you import ${DependedModuleClass.name}?`,
+                    );
                 }
-            }
 
-            if (!depInstance) {
-                throw new Error(`Cannot found provider ${dep.name}`);
-            }
+                const providerInstance = this.providerInstanceMap.get(DependedProviderClass);
 
-            return depInstance;
-        });
+                if (!providerInstance) {
+                    throw new Error(
+                        `Cannot find provider instance for ${DependedProviderClass.name}`,
+                    );
+                }
 
-        providerInstance = new Provider(...args);
+                return providerInstance;
+            }));
 
-        return providerInstance;
-    }
-
-    private createView(View: Type<AbstractComponent>, moduleInstance: ModuleInstance) {
-        const metadataValue: ViewMetadata = Reflect.getMetadata(DI_VIEWS_SYMBOL, View);
-        const providersMap: Map<any, any> = moduleInstance.providers;
-        const importedModules = moduleInstance.imports;
-        this.addGlobalModuleInstances(importedModules);
-
-        const { dependencies: deps } = metadataValue;
-
-        if (!deps) {
-            throw new Error(`No provider named ${View.name}, did you add @View() to this provider?`);
+            this.routeViews.add({
+                Class: ViewClass,
+                instance: viewInstance,
+                options: metadataValue.options,
+            });
         }
 
-        const args = deps.map((dep: any) => {
-            let depInstance = providersMap.get(dep);
-
-            if (!depInstance) {
-                const moduleIndex = importedModules.findIndex((importedModule) => {
-                    return Boolean(importedModule.providers.get(dep));
-                });
-
-                if (moduleIndex !== -1) {
-                    depInstance = importedModules[moduleIndex].providers.get(dep);
-                }
-            }
-
-            if (!depInstance) {
-                throw new Error(`Dependency ${dep.name} not found, did you add it to 'imports' parameter?`);
-            }
-
-            return depInstance;
-        });
-
-        const viewInstance =  new View(...args);
-        moduleInstance.views.push(viewInstance);
-
-        return viewInstance;
+        for (const importedModuleInstance of Array.from(moduleInstance.getImportedModuleInstances())) {
+            await this.createViews(importedModuleInstance);
+        }
     }
 
     private normalizePath(path: string, topLeveled = false) {
         let newPath: string = path;
 
-        newPath = newPath.replace(/\/+$/g, '');
+        newPath = newPath.replace(/^.+\/+$/g, '');
 
         if (!topLeveled) {
             newPath = newPath.replace(/^\/+/g, '');
@@ -205,37 +238,32 @@ export class Factory {
 
     private createNestedRoute(): RouteConfig {
         const routeViews = Array.from(this.routeViews);
-        const topLeveledRouteViews = routeViews.filter((routeView) => !routeView?.options?.parent);
-        const downLeveledRouteViews = routeViews.filter((routeView) => !!routeView?.options?.parent);
 
-        while (topLeveledRouteViews.length > 0) {
-            const currentRouteView = topLeveledRouteViews.shift();
-            const routeConfigItem = this.createRouteConfigItem(currentRouteView);
-            this.nestedRoute.push(routeConfigItem);
-        }
+        while (routeViews.length > 0) {
+            const currentRouteView = routeViews.shift();
 
-        while (downLeveledRouteViews.length > 0) {
-            const currentRouteView = downLeveledRouteViews.shift();
-            const routeConfigItem = this.createRouteConfigItem(currentRouteView);
+            if (!currentRouteView?.options?.parent) {
+                this.nestedRoute.push(this.createRouteConfigItem(currentRouteView));
+            } else {
+                const result = this.setToParentRouteView(
+                    this.nestedRoute,
+                    this.createRouteConfigItem(currentRouteView),
+                    currentRouteView.options.parent,
+                );
 
-            const succeeded = this.setToParentRouteView(
-                this.nestedRoute,
-                routeConfigItem,
-                currentRouteView.options?.parent,
-            );
-
-            if (!succeeded) {
-                throw new Error(`Cannot find parent view for ${currentRouteView.clazz.name}`);
+                if (!result) {
+                    routeViews.push(currentRouteView);
+                }
             }
         }
 
-        return this.nestedRoute;
+        return Array.from(this.nestedRoute);
     }
 
     private createRouteConfigItem(routeView: ViewItem): RouteConfigItem {
         const {
             options,
-            clazz,
+            Class,
         } = routeView;
 
         const {
@@ -247,7 +275,7 @@ export class Factory {
 
         const result: RouteConfigItem = {
             name,
-            ViewClass: clazz,
+            ViewClass: Class,
             component: null,
             path: this.normalizePath(pathname, !ParentViewComponent),
             ...(
@@ -294,13 +322,5 @@ export class Factory {
         }
 
         return false;
-    }
-
-    private addGlobalModuleInstances(dependedModuleInstances: ModuleInstance[]) {
-        for (const moduleInstance of this.moduleInstances.values()) {
-            if (moduleInstance.isGlobal) {
-                dependedModuleInstances.push(moduleInstance);
-            }
-        }
     }
 }
