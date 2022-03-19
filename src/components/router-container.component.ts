@@ -3,11 +3,19 @@ import {
     RouterContainerProps,
 } from '../types';
 import { useRoutes } from '../hooks';
-import { Routes } from 'react-router-dom';
+import {
+    Routes,
+    BrowserRouter,
+} from 'react-router-dom';
 
 export const RouterContainer: React.FC<RouterContainerProps> = ({
     module: Module,
+    RouterComponent = BrowserRouter,
 }) => {
     const elements = useRoutes(Module);
-    return React.createElement(Routes, {}, elements);
+    return React.createElement(
+        RouterComponent,
+        {},
+        React.createElement(Routes, {}, elements),
+    );
 };

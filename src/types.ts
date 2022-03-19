@@ -47,6 +47,7 @@ export type AsyncModule<T> = Promise<T>;
 
 export interface RouterContainerProps<M = any> {
     module: Type<M>;
+    RouterComponent?: React.FC;
 }
 
 export interface ModuleInstanceMetadata {
