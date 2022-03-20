@@ -261,7 +261,7 @@ export class Factory {
 
     private sequenceNestedRoute(nestedRoutes: RouteConfig) {
         const newNestedRoutes = nestedRoutes.sort((a, b) => {
-            return ((a.priority || 0) + (a.sequence || 0)) - ((b.priority || 0) + (b.sequence || 0));
+            return (b.priority || 0) * (b.sequence || 1) - (a.priority || 0) * (a.sequence || 1);
         });
 
         for (const nestedRouteItem of newNestedRoutes) {
@@ -320,7 +320,7 @@ export class Factory {
                     currentRouteConfigItem.children = [];
                 }
 
-                routeConfigItem.sequence = currentRouteConfigItem.children.length;
+                routeConfigItem.sequence = currentRouteConfigItem.children.length + 1;
 
                 currentRouteConfigItem.children.push(routeConfigItem);
 
