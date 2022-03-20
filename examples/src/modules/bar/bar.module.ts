@@ -7,5 +7,9 @@ import { BarService } from './bar.service';
         BarService,
         BarComponent,
     ],
+    exports: [
+        BarService,
+        BarComponent,
+    ],
 })
 export class BarModule {}

@@ -12,5 +12,8 @@ import { FooService } from './foo.service';
         import('./foo.view'),
         import('./foo-child.view'),
     ],
+    exports: [
+        FooService,
+    ],
 })
 export class FooModule {}

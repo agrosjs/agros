@@ -8,6 +8,9 @@ import { BazService } from './baz.service';
     providers: [
         BazService,
     ],
+    exports: [
+        BazService,
+    ],
 })
 @Global()
 export class BazModule {}
