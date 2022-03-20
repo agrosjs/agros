@@ -5,6 +5,7 @@ import {
 } from './classes';
 import {
     DI_DEPS_SYMBOL,
+    DI_EXPORTS_SYMBOL,
     DI_GLOBAL_MODULE_SYMBOL,
     DI_IMPORTS_SYMBOL,
     DI_PROVIDERS_SYMBOL,
@@ -39,15 +40,16 @@ export class Factory {
     }
 
     private async createModuleInstance<T>(ModuleClassOrPromise: Type<T> | AsyncModule<T>) {
-        const ModuleClass = await this.getAsyncExport((ModuleClassOrPromise as any));
+        const ModuleClass: Type = await this.getAsyncExport((ModuleClassOrPromise as any));
 
         if (!this.moduleInstanceMap.get(ModuleClass)) {
-            const importsArray: Array<Type | Promise<Type>> = Reflect.getMetadata(
+            const importsSet: Set<Type | Promise<Type>> = Reflect.getMetadata(
                 DI_IMPORTS_SYMBOL,
                 ModuleClass,
             ) || [];
-            const providersArray: Array<any> = Reflect.getMetadata(DI_PROVIDERS_SYMBOL, ModuleClass) || [];
-            const viewsArray: Array<Type<AbstractComponent> | Promise<Type<AbstractComponent>>> = Reflect.getMetadata(
+            const providersSet: Set<Type> = Reflect.getMetadata(DI_PROVIDERS_SYMBOL, ModuleClass) || [];
+            const exportsSet: Set<Type> = Reflect.getMetadata(DI_EXPORTS_SYMBOL, ModuleClass) || [];
+            const viewsSet: Set<Type<AbstractComponent> | Promise<Type<AbstractComponent>>> = Reflect.getMetadata(
                 DI_VIEWS_SYMBOL,
                 ModuleClass,
             ) || [];
@@ -56,20 +58,27 @@ export class Factory {
             const imports = new Set<Type>();
             const views = new Set<Type<AbstractComponent>>();
 
-            for (const ImportedModuleClassOrPromise of importsArray) {
+            for (const ImportedModuleClassOrPromise of importsSet) {
                 const ImportedModuleClass = await this.getAsyncExport(ImportedModuleClassOrPromise);
                 imports.add(ImportedModuleClass);
             }
 
-            for (const ViewClassOrPromise of viewsArray) {
+            for (const ViewClassOrPromise of viewsSet) {
                 const ViewClass = await this.getAsyncExport(ViewClassOrPromise);
                 views.add(ViewClass);
+            }
+
+            for (const ExportedProviderClass of exportsSet) {
+                if (!providersSet.has(ExportedProviderClass)) {
+                    throw new Error(`Provider ${ExportedProviderClass.name} cannot be exported by ${ModuleClass.name}`);
+                }
             }
 
             const moduleInstance = new ModuleInstance({
                 Class: ModuleClass,
                 imports,
-                providers: new Set(providersArray),
+                providers: new Set(providersSet),
+                exports: new Set(exportsSet),
                 isGlobal,
                 views,
             });

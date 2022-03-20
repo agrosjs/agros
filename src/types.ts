@@ -8,6 +8,7 @@ export interface ModuleDecoratorOptions {
     imports?: Array<any>;
     providers?: Array<any>;
     views?: Array<any>;
+    exports?: Array<any>;
 }
 
 export interface ViewMetadata {
@@ -56,5 +57,6 @@ export interface ModuleInstanceMetadata {
     imports: Set<Type<any>>;
     isGlobal: boolean;
     providers: Set<Type<any>>;
+    exports: Set<Type<any>>;
     views: Set<Type<AbstractComponent>>;
 }
