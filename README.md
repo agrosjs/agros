@@ -95,6 +95,8 @@ Providers are the most important and fundamental concept in Khamsa. Almost any c
 
 <img src="docs/images/providers.png" width="50%" style="display: block; margin: 0 auto;" />
 
+As you can see in the image above, each provider can depend on another provider by passing parameters with the provider class as a type annotation in the constructor. Thanks to the Khamsa runtime, these type annotation-based provider parameters are instantiated and made available when the web application starts.
+
 ### Components & Views
 
 <img src="docs/images/components.png" width="50%" style="display: block; margin: 0 auto;" />
