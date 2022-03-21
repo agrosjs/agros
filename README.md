@@ -91,11 +91,21 @@ In your `.babelrc` or `.babelrc.json` or other types of configuration file for B
 
 ### Providers
 
+Providers are the most important and fundamental concept in Khamsa. Almost any class can be treated as a provider by Khamsa: services, components, tool libraries, etc. Khamsa makes it possible to establish various relationships between different provider objects by *injecting dependencies*.
+
+<img src="docs/images/providers.png" width="50%" style="display: block; margin: 0 auto;" />
+
 ### Components & Views
+
+<img src="docs/images/components.png" width="50%" style="display: block; margin: 0 auto;" />
+
+<img src="docs/images/views.png" width="50%" style="display: block; margin: 0 auto;" />
 
 ### Modules
 
 A module is a class annotated with a `@Module()` decorator. The `@Module()` decorator provides metadata that Khamsa makes use of to organize the application structure.
+
+<img src="docs/images/modules.png" width="50%" style="display: block; margin: 0 auto;" />
 
 When a Khamsa instance is to be initialized, one and only one module, called the **root module**, must be provided as the entry module for the application built by Khamsa.
 
