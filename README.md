@@ -99,7 +99,11 @@ As you can see in the image above, each provider can depend on another provider 
 
 ### Components & Views
 
+Components are also a type of provider. Unlike normal providers, components need to implement the `AbstractComponent` class and implement the `generateComponent` method, which needs to return a React functional component.
+
 <img src="docs/images/components.png" width="50%" style="display: block; margin: 0 auto;" />
+
+As you can see from the image above, like normal providers, any provider (including components) can be injected into a component as a dependency, and similarly, a component can be injected into any provider as a dependency.
 
 <img src="docs/images/views.png" width="50%" style="display: block; margin: 0 auto;" />
 
@@ -115,13 +119,40 @@ When a Khamsa instance is to be initialized, one and only one module, called the
 
 ### Create a Provider
 
+The following example shows how to create a provider:
+
+```TypeScript
+import { Injectable } from 'khamsa';
+
+@Injectable()
+export class DemoService {}
+```
+
+Is it unimaginably easy? Yes, that's all the things you should do to create a Provider.
+
+If you want to use other providers as dependencies to be injected, you should declare them in as formal parameters:
+
+```TypeScript
+import { Injectable } from 'khamsa';
+import { FooService } from '../foo/foo.service';
+
+@Injectable()
+export class DemoService {
+    public constructor(
+        private readonly fooService: FooService,
+    ) {}
+}
+```
+
+So you can use `FooService`'s instance in `DemoService` by calling `this.fooService` signature.
+
 ### Create a Component
 
 ### Declare a Component as View
 
 ### Create a Module
 
-### Use Providers from External Modules
+### Organize App
 
 ## Participate in Project Development
 
