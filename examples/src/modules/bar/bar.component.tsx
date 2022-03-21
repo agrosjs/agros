@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from 'react';
+import { FunctionComponent } from 'react';
 import {
     AbstractComponent,
     Injectable,
@@ -6,7 +6,7 @@ import {
 
 @Injectable()
 export class BarComponent extends AbstractComponent implements AbstractComponent {
-    protected generateComponent(): FunctionComponent<any> {
+    protected async generateComponent(): Promise<FunctionComponent<any>> {
         return () => <pre>Greet from BarComponent</pre>;
     }
 }

@@ -47,8 +47,9 @@ export type RouteConfig = RouteConfigItem[];
 
 export type AsyncModule<T> = Promise<T>;
 
-export interface RouterContainerProps<M = any> {
-    module: Type<M>;
+export interface RouterContainerProps {
+    module: Type;
+    routerProps?: any;
     RouterComponent?: React.FC;
 }
 

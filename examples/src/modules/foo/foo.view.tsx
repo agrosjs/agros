@@ -25,8 +25,8 @@ export class FooView extends AbstractComponent implements AbstractComponent {
         super();
     }
 
-    protected generateComponent(): FunctionComponent<any> {
-        const BarComponent = this.barComponentService.getComponent();
+    protected async generateComponent(): Promise<FunctionComponent<any>> {
+        const BarComponent = await this.barComponentService.getComponent();
 
         return () => {
             useEffect(() => {

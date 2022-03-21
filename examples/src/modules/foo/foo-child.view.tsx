@@ -12,7 +12,7 @@ import { FooView } from './foo.view';
     parent: FooView,
 })
 export class FooChildView extends AbstractComponent implements AbstractComponent {
-    protected generateComponent(): FunctionComponent<any> {
+    protected async generateComponent(): Promise<FunctionComponent<any>> {
         return () => {
             return (
                 <div style={{ color: 'red' }}>Greet from foo/child page!</div>

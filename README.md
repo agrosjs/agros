@@ -16,17 +16,17 @@ Inspired by [Angular](https://angular.io) and [Nest.js](https://nestjs.com/), Kh
 
 #### Requirements
 
-- Node.js 14.x and later
-- Use TypeScript to write project
+- (Required) Use TypeScript to write project
+- (Recommended) Node.js v10.10.0 and later
 
-#### Create a Standard React.js App With CRA
+#### Create a React.js + TypeScript Project With CRA
 
 You can use the official-recommended CLI tools [CRA (create-react-app)](https://create-react-app.dev/) to generate the standard React.js App with TypeScript:
 
 ```bash
-npm i create-react-app
-mkdir demo
-cd demo && create-react-app --template cra-template-typescript
+npm i create-react-app -g
+mkdir example-project
+cd example-project && create-react-app --template cra-template-typescript
 ```
 
 #### Install Khamsa as a Dependency
@@ -35,8 +35,6 @@ In the root directory of your React.js app, run following command:
 
 ```bash
 npm i khamsa -S
-# or
-yarn add khamsa
 ```
 
 #### Configure TypeScript
@@ -91,13 +89,11 @@ In your `.babelrc` or `.babelrc.json` or other types of configuration file for B
 
 ## Overview
 
-### Basic Concepts
+### Providers
 
-#### Views
+### Components & Views
 
-#### Providers
-
-#### Modules
+### Modules
 
 A module is a class annotated with a `@Module()` decorator. The `@Module()` decorator provides metadata that Khamsa makes use of to organize the application structure.
 
@@ -107,17 +103,19 @@ When a Khamsa instance is to be initialized, one and only one module, called the
 
 ### Create a Provider
 
-### Create a View
+### Create a Component
 
-### Create and Declare a Module
+### Declare a Component as View
+
+### Create a Module
 
 ### Use Providers from External Modules
 
 ## Participate in Project Development
 
-Getting involved in the development of Khamsa is welcomed. But before that, please read the [Code of Conduct](CODE_OF_CONDUCT.md) of Khamsa.
+Getting involved in the development of Khamsa is welcomed. But before that, please read the [Code of Conduct](CODE_OF_CONDUCT.md) of Khamsa. You can also read [this doc](.github/CONTRIBUTING.md) to get more information about contribute your code into this repository.
 
-You can also read [this doc](.github/CONTRIBUTING.md) to get more information about contribute your code into this repository.
+> Before starting working on the project, please upgrade your Node.js version to v14.15.0 or later.
 
 ## Sponsorship
 

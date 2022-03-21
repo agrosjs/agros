@@ -34,7 +34,7 @@ export class Factory {
         this.createProviderClassToModuleClassMap();
         await this.createProviderInstances(rootModuleInstance);
         await this.createViews(rootModuleInstance);
-        this.createNestedRoute();
+        await this.createNestedRoute();
         this.nestedRoute = this.sequenceNestedRoute(Array.from(this.nestedRoute));
         return Array.from(this.nestedRoute);
     }
@@ -246,18 +246,18 @@ export class Factory {
         return newPath;
     }
 
-    private createNestedRoute() {
+    private async createNestedRoute() {
         const routeViews = Array.from(this.routeViews);
 
         while (routeViews.length > 0) {
             const currentRouteView = routeViews.shift();
 
             if (!currentRouteView?.options?.parent) {
-                this.nestedRoute.push(this.createRouteConfigItem(currentRouteView));
+                this.nestedRoute.push(await this.createRouteConfigItem(currentRouteView));
             } else {
                 const result = this.setToParentRouteView(
                     this.nestedRoute,
-                    this.createRouteConfigItem(currentRouteView),
+                    await this.createRouteConfigItem(currentRouteView),
                     currentRouteView.options.parent,
                 );
 
@@ -282,7 +282,7 @@ export class Factory {
         return newNestedRoutes;
     }
 
-    private createRouteConfigItem(routeView: ViewItem): RouteConfigItem {
+    private async createRouteConfigItem(routeView: ViewItem): Promise<RouteConfigItem> {
         const {
             options,
             Class,
@@ -308,7 +308,7 @@ export class Factory {
         };
 
         if (routeView?.instance && typeof routeView.instance.getComponent === 'function') {
-            result.component = routeView.instance.getComponent();
+            result.component = await routeView.instance.getComponent();
         }
 
         return result;

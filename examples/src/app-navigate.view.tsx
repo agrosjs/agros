@@ -11,7 +11,7 @@ import { Navigate } from 'react-router-dom';
     path: '*',
 })
 export class AppNavigateView extends AbstractComponent implements AbstractComponent {
-    protected generateComponent(): FunctionComponent<any> {
+    protected async generateComponent(): Promise<FunctionComponent<any>> {
         return () => {
             return (
                 <Navigate to="/app/foo/child" />

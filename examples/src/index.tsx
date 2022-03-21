@@ -1,4 +1,3 @@
-import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
@@ -7,7 +6,10 @@ import { HashRouter as Router } from 'react-router-dom';
 import { AppModule } from './app.module';
 
 ReactDOM.render(
-    <RouterContainer module={AppModule} RouterComponent={Router} />,
+    <RouterContainer
+        module={AppModule}
+        RouterComponent={Router}
+    />,
     document.getElementById('root'),
 );
 

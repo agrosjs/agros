@@ -10,7 +10,7 @@ import './app.view.css';
     path: '/app',
 })
 export class AppView extends AbstractComponent implements AbstractComponent {
-    protected generateComponent(): ReactComponent<any> {
+    protected async generateComponent(): Promise<ReactComponent<any>> {
         return () => {
             return (
                 <div className="app">

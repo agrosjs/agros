@@ -27,6 +27,14 @@ git clone git@github.com:lenconda/khamsa.git
 cd khamsa && npm i
 ```
 
+And run the example:
+
+```bash
+npm run example
+```
+
+You can access the example project from `http://127.0.0.1:3000`.
+
 ## Flow Management
 
 ### For Core Contributors
