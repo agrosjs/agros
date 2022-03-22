@@ -19,13 +19,10 @@ export interface ViewMetadata {
 export interface ViewDecoratorOptions<T = any> extends Omit<RouteProps, 'element' | 'children'> {
     priority?: number;
     elementProps?: T;
-    parent?: Type<AbstractComponent>;
 }
 
 export interface ViewItem {
-    Class: Type<AbstractComponent>;
     component: ReactComponent;
-    // instance: AbstractComponent;
     options: ViewDecoratorOptions;
     lazyLoad: boolean;
 }
@@ -39,7 +36,7 @@ export interface NavigateOptions {
 
 export interface RouteConfigItem extends Omit<ViewDecoratorOptions, 'parent' | 'pathname'> {
     path: string;
-    ViewClass: Type<AbstractComponent>;
+    lazyLoad?: boolean;
     component: ReactComponent;
     sequence?: number;
     children?: RouteConfigItem[];
