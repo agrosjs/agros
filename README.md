@@ -43,13 +43,10 @@ In your `tsconfig.json` file in the project root directory, add following option
 
 ```json
 {
-    // ...
     "compilerOptions": {
-        // ...
         "emitDecoratorMetadata": true,
         "experimentalDecorators": true,
     },
-    //...
 }
 ```
 
@@ -105,7 +102,11 @@ Components are also a type of provider. Unlike normal providers, components need
 
 As you can see from the image above, like normal providers, any provider (including components) can be injected into a component as a dependency, and similarly, a component can be injected into any provider as a dependency.
 
+A view is a special component that is considered the carrier of a page in Khamsa. It can define routing paths, lazy loading fallbacks, and other options that are not supported by the component.
+
 <img src="docs/images/views.png" width="50%" style="display: block; margin: 0 auto;" />
+
+As depicted in the figure above, each view is linked together by path names and combined by Khamsa parsing into a routing map for the application. Within the view, you can also inject any provider (including components) into it, but you cannot inject other views.
 
 ### Modules
 
@@ -144,11 +145,83 @@ export class DemoService {
 }
 ```
 
-So you can use `FooService`'s instance in `DemoService` by calling `this.fooService` signature.
+Then you can use `FooService`'s instance in `DemoService` by calling `this.fooService` signature.
 
 ### Create a Component
 
-### Declare a Component as View
+To create a component, you should implement `AbstractComponent` class and `AbstractComponent.prototype.generateComponent` method:
+
+```tsx
+import { FunctionComponent } from 'react';
+import {
+    AbstractComponent,
+    Injectable,
+} from 'Khamsa';
+
+@Injectable()
+export class DemoComponent extends AbstractComponent implements AbstractComponent {
+    protected async generateComponent(): Promise<FunctionComponent<any>> {
+        return () => <p>Demo Component is Working!</p>;
+    }
+}
+```
+
+Similar to providers, components can use injected providers:
+
+```tsx
+import {
+    FunctionComponent,
+    useEffect,
+} from 'react';
+import {
+    AbstractComponent,
+    Injectable,
+} from 'Khamsa';
+import { DemoService } from './demo.service';
+
+@Injectable()
+export class DemoComponent extends AbstractComponent implements AbstractComponent {
+    public constructor(
+        private readonly demoService: DemoService,
+    ) {}
+
+    protected async generateComponent(): Promise<FunctionComponent<any>> {
+        return () => {
+            useEffect(() => {
+                this.demoService.sayHello();
+            }, []);
+
+            return <p>Demo Component is Working!</p>;
+        };
+    }
+}
+```
+
+A component can be easily transformed to a view, just replace `@Injectable` to `@View`:
+
+```tsx
+// ...
+import {
+    AbstractComponent,
+    View,
+} from 'Khamsa';
+
+@View({
+    path: '/demo',
+})
+export class DemoView extends AbstractComponent implements AbstractComponent {
+    // ...
+}
+```
+
+The `@View` decorator requires at least one attribute: props, which defines the route that the view matches and is an absolute path. The following is a list of all the configuration items related to it:
+
+- `path: string` - (required) defines the route that the view matches, must be an absolute path
+- `caseSensitive?: boolean` - defines the route matcher should use case-sensitive mode or not
+- `index?: number` - specify if current view is an indexed route
+- `priority?: number` - priority in current level routes, the value is bigger, The higher this value is, the better the chance of being matched with
+- `elementProps?: any` - props for current view's React component
+- `suspenseFallback?: boolean | null | React.ReactChild | React.ReactFragment | React.ReactPortal` - the value of `fallback` property for `React.Suspense`
 
 ### Create a Module
 
