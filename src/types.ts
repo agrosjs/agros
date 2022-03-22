@@ -5,10 +5,10 @@ import { AbstractComponent } from './classes';
 export type Type<T = any> = new (...args: Array<any>) => T;
 
 export interface ModuleDecoratorOptions {
-    imports?: Array<any>;
-    providers?: Array<any>;
-    views?: Array<any>;
-    exports?: Array<any>;
+    imports?: Array<Type>;
+    providers?: Array<Type>;
+    views?: Array<ViewOrConfig>;
+    exports?: Array<Type>;
 }
 
 export interface ViewMetadata {
@@ -48,12 +48,13 @@ export type AsyncModule<T> = Promise<T>;
 
 export interface RouterContainerProps {
     module: Type;
+    suspenseFallback?: boolean | React.ReactChild | React.ReactFragment | React.ReactPortal | null;
     routerProps?: any;
     RouterComponent?: React.FC;
 }
 
 export type ViewConfig = ViewDecoratorOptions & {
-    view: Promise<Type<AbstractComponent>>;
+    view: Promise<any>;
 };
 export type ViewOrConfig = Type<AbstractComponent> | ViewConfig;
 

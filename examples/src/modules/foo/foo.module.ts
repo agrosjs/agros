@@ -1,8 +1,6 @@
 import { Module } from '../../../../lib';
 import { BarModule } from '../bar/bar.module';
-import { FooChildView } from './foo-child.view';
 import { FooService } from './foo.service';
-import { FooView } from './foo.view';
 
 @Module({
     imports: [
@@ -12,10 +10,14 @@ import { FooView } from './foo.view';
         FooService,
     ],
     views: [
-        // import('./foo.view'),
-        // import('./foo-child.view'),
-        FooView,
-        FooChildView,
+        {
+            path: '/app/foo',
+            view: import('./foo.view'),
+        },
+        {
+            path: '/app/foo/child',
+            view: import('./foo-child.view'),
+        },
     ],
     exports: [
         FooService,

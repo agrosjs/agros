@@ -1,4 +1,7 @@
-import React from 'react';
+import React, {
+    Suspense,
+    SuspenseProps,
+} from 'react';
 import {
     RouterContainerProps,
 } from '../types';
@@ -10,13 +13,21 @@ import {
 
 export const RouterContainer: React.FC<RouterContainerProps> = ({
     module: Module,
+    suspenseFallback = null,
     routerProps = {},
     RouterComponent = BrowserRouter,
 }) => {
     const elements = useRoutes(Module);
+
     return React.createElement(
         RouterComponent,
         routerProps,
-        React.createElement(Routes, {}, elements),
+        React.createElement(
+            Suspense,
+            {
+                fallback: suspenseFallback,
+            } as SuspenseProps,
+            React.createElement(Routes, {}, elements),
+        ),
     );
 };

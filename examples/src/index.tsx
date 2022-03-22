@@ -7,6 +7,7 @@ import { AppModule } from './app.module';
 
 ReactDOM.render(
     <RouterContainer
+        suspenseFallback="loading..."
         module={AppModule}
         RouterComponent={Router}
     />,

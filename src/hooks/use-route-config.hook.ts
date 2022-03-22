@@ -17,7 +17,7 @@ const createRoutes = (routeConfig: RouteConfig, level = 0): React.ReactNode[] =>
     return routeConfig.map((routeConfigItem, index) => {
         const {
             elementProps = {},
-            children = [],
+            children,
             component: Component,
             ...routeProps
         } = routeConfigItem;
@@ -36,7 +36,7 @@ const createRoutes = (routeConfig: RouteConfig, level = 0): React.ReactNode[] =>
                 ),
             } as RouteProps,
             ...(
-                children.length > 0
+                (Array.isArray(children) && children.length > 0)
                     ? createRoutes(children, level + 1)
                     : []
             ),
