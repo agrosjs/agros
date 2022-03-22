@@ -19,6 +19,7 @@ export interface ViewMetadata {
 export interface ViewDecoratorOptions<T = any> extends Omit<RouteProps, 'element' | 'children'> {
     priority?: number;
     elementProps?: T;
+    suspenseFallback?: boolean | React.ReactChild | React.ReactFragment | React.ReactPortal | null;
 }
 
 export interface ViewItem {

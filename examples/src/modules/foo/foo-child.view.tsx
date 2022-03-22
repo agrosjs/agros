@@ -6,9 +6,7 @@ import {
     View,
 } from '../../../../lib';
 
-@View({
-    path: '/app/foo/child',
-})
+@View()
 export class FooChildView extends AbstractComponent implements AbstractComponent {
     protected async generateComponent(): Promise<FunctionComponent<any>> {
         return () => {
