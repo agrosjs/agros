@@ -225,7 +225,188 @@ The `@View` decorator requires at least one attribute: props, which defines the 
 
 ### Create a Module
 
+Module is also a normal class with a `@Module` decorator:
+
+```TypeScript
+import { Module } from 'khamsa';
+
+@Module()
+export class DemoModule {}
+```
+
+The `@Module()` decorator takes a single object as parameter whose properties describe the module:
+
+- `imports: Array<Module>` - the list of imported modules that export the providers which are required in this module
+- `providers: Array<Provider>` - the list of providers that the module hosts, which could probably be used by other modules
+- `exports: Array<Provider>` - the subset of `providers` that are provided by this module and should be available in other modules which import this module
+- `views: Array<AbstractComponent>` - the set of views defined in this module which have to be instantiated
+
+#### Export & Import
+
+Here is an example of using imports and exports to share providers between modules:
+
+```
+.
+└── src/
+    └── modules/
+        ├── foo/
+        │   ├── foo.module.ts
+        │   └── foo.service.ts
+        └── bar/
+            ├── bar.module.ts
+            └── bar.service.ts
+```
+
+`foo.service.ts` is a provider for the `FooModule`, which is declared and exported by the `FooModule`:
+
+foo.service.ts
+```ts
+@Injectable()
+export class FooService {
+    public sayFooHello() {
+        console.log('Greets from FooService!');
+    }
+}
+```
+
+foo.module.ts
+```ts
+@Module({
+    providers: [
+        FooService,
+    ],
+    exports: [
+        FooService,
+    ],
+})
+export class FooModule {}
+```
+
+Now, the `BarService` in the `BarModule` wants to have access to the `sayFooHello` method in the `FooService`, so the `FooModule` can be brought in via the imports option in `bar.module.ts`:
+
+bar.module.ts
+```ts
+@Module({
+    imports: [
+        FooModule,
+    ],
+    providers: [
+        BarService,
+    ],
+})
+export class BarModule {}
+```
+
+Next, the `BarService` in `bar.service.ts` can pass the `FooService` as a type annotation with one parameter into the constructor:
+
+bar.service.ts
+```ts
+@Injectable()
+export class BarService {
+    public constructor(
+        private readonly fooService: FooService,
+    ) {}
+
+    public sayBarHello() {
+        console.log('Greets from BarService!');
+        this.fooService.sayFooHello();
+    }
+}
+```
+
+#### Declare Views
+
+Following the previous example, now the project looks like this:
+
+```
+.
+└── src/
+    └── modules/
+        ├── foo/
+        │   ├── foo.module.ts
+        │   └── foo.service.ts
+        │   └── foo.view.ts
+        └── bar/
+            ├── bar.module.ts
+            └── bar.service.ts
+```
+
+the content is `foo.view.ts` looks like:
+
+```tsx
+import { FunctionComponent } from 'react';
+import {
+    AbstractComponent,
+    View,
+} from 'Khamsa';
+
+@View({
+    path: '/foo',
+})
+export class FooView extends AbstractComponent implements AbstractComponent {
+    protected async generateComponent(): Promise<FunctionComponent<any>> {
+        return () => <p>Foo page is working!</p>;
+    }
+}
+```
+
+also a line should be added into `foo.module.ts`:
+
+```ts
+@Module({
+    providers: [
+        FooService,
+    ],
+    exports: [
+        FooService,
+    ],
+    views: [
+        FooView,
+    ],
+})
+export class FooModule {}
+```
+
+If you want to use [React's lazy load features](https://reactjs.org/docs/code-splitting.html#reactlazy), you can change `foo.view.ts`'s content like:
+
+```tsx
+import { FunctionComponent } from 'react';
+import {
+    AbstractComponent,
+    View,
+} from 'Khamsa';
+
+@View()
+export class FooView extends AbstractComponent implements AbstractComponent {
+    protected async generateComponent(): Promise<FunctionComponent<any>> {
+        return () => <p>Foo page is working!</p>;
+    }
+}
+```
+
+yes, just leave `@View()`'s parameter as empty, then in `foo.module.ts`:
+
+```ts
+@Module({
+    providers: [
+        FooService,
+    ],
+    exports: [
+        FooService,
+    ],
+    views: [
+        {
+            path: '/foo',
+            view: import('./foo.view'),
+        },
+    ],
+})
+export class FooModule {}
+```
+
 ### Organize App
+
+See [this code](examples/src/index.tsx) to get detailed information of how to create a React.js App by Khamsa.
 
 ## Participate in Project Development
 
