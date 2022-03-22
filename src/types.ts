@@ -35,7 +35,7 @@ export interface NavigateOptions {
     path?: string;
 }
 
-export interface RouteConfigItem extends Omit<ViewDecoratorOptions, 'parent' | 'pathname'> {
+export interface RouteConfigItem extends ViewDecoratorOptions {
     path: string;
     lazyLoad?: boolean;
     component: ReactComponent;
@@ -49,7 +49,6 @@ export type AsyncModule<T> = Promise<T>;
 
 export interface RouterContainerProps {
     module: Type;
-    suspenseFallback?: boolean | React.ReactChild | React.ReactFragment | React.ReactPortal | null;
     routerProps?: any;
     RouterComponent?: React.FC;
 }

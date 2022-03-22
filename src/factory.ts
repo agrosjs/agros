@@ -350,15 +350,17 @@ export class Factory {
 
         const {
             elementProps,
-            path: pathname,
             priority = 0,
+            path: pathname,
+            ...otherOptions
         } = options;
 
         const result: RouteConfigItem = {
             component,
             priority,
-            path: pathname,
             lazyLoad,
+            path: pathname,
+            ...otherOptions,
             ...(
                 typeof elementProps === 'undefined'
                     ? {}

@@ -13,10 +13,12 @@ import { FooService } from './foo.service';
         {
             path: '/app/foo',
             view: import('./foo.view'),
+            suspenseFallback: '/app/foo is loading...',
         },
         {
             path: '/app/foo/child',
             view: import('./foo-child.view'),
+            suspenseFallback: '/app/foo/child is loading...',
         },
     ],
     exports: [
