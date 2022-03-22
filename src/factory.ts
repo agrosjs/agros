@@ -310,8 +310,18 @@ export class Factory {
                     routeConfigItem,
                 );
 
-                if (!result) {
+                if (
+                    !result &&
+                    Array.from(this.routeViews).some((routeView) => {
+                        return routeView.options?.path === pathname
+                            .split('/')
+                            .slice(0, -1)
+                            .join('/');
+                    })
+                ) {
                     routeViews.push(currentRouteView);
+                } else {
+                    this.nestedRoute.push(routeConfigItem);
                 }
             }
         }
