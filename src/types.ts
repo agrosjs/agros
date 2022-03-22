@@ -5,10 +5,10 @@ import { AbstractComponent } from './classes';
 export type Type<T = any> = new (...args: Array<any>) => T;
 
 export interface ModuleDecoratorOptions {
-    imports?: Array<any>;
-    providers?: Array<any>;
-    views?: Array<any>;
-    exports?: Array<any>;
+    imports?: Array<Type>;
+    providers?: Array<Type>;
+    views?: Array<ViewOrConfig>;
+    exports?: Array<Type>;
 }
 
 export interface ViewMetadata {
@@ -19,13 +19,13 @@ export interface ViewMetadata {
 export interface ViewDecoratorOptions<T = any> extends Omit<RouteProps, 'element' | 'children'> {
     priority?: number;
     elementProps?: T;
-    parent?: Type<AbstractComponent>;
+    suspenseFallback?: boolean | React.ReactChild | React.ReactFragment | React.ReactPortal | null;
 }
 
 export interface ViewItem {
-    Class: Type<AbstractComponent>;
-    instance: AbstractComponent;
+    component: ReactComponent;
     options: ViewDecoratorOptions;
+    lazyLoad: boolean;
 }
 
 export type ReactComponent<Props = any> = React.FC<Props>;
@@ -35,9 +35,9 @@ export interface NavigateOptions {
     path?: string;
 }
 
-export interface RouteConfigItem extends Omit<ViewDecoratorOptions, 'parent' | 'pathname'> {
+export interface RouteConfigItem extends ViewDecoratorOptions {
     path: string;
-    ViewClass: Type<AbstractComponent>;
+    lazyLoad?: boolean;
     component: ReactComponent;
     sequence?: number;
     children?: RouteConfigItem[];
@@ -53,11 +53,23 @@ export interface RouterContainerProps {
     RouterComponent?: React.FC;
 }
 
+export type ViewConfig = ViewDecoratorOptions & {
+    view: Promise<any>;
+};
+export type ViewOrConfig = Type<AbstractComponent> | ViewConfig;
+
 export interface ModuleInstanceMetadata {
     Class: Type<any>;
     imports: Set<Type<any>>;
     isGlobal: boolean;
     providers: Set<Type<any>>;
     exports: Set<Type<any>>;
-    views: Set<Type<AbstractComponent>>;
+    views: Set<ViewOrConfig>;
+}
+
+export interface ModuleMetadata {
+    imports: Set<Type>;
+    providers: Set<Type>;
+    exports: Set<Type>;
+    views: Set<ViewOrConfig>;
 }

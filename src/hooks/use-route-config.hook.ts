@@ -1,4 +1,6 @@
 import React, {
+    Suspense,
+    SuspenseProps,
     useState,
     useEffect,
 } from 'react';
@@ -11,14 +13,14 @@ import {
     Route,
     RouteProps,
 } from 'react-router-dom';
-import omit from 'lodash/omit';
 
-const createRoutes = (routeConfig: RouteConfig, level = 0): React.ReactNode[] => {
+const createRoutes = (routeConfig: RouteConfig, level = 0): React.ReactNode | React.ReactNode[] => {
     return routeConfig.map((routeConfigItem, index) => {
         const {
             elementProps = {},
-            children = [],
+            children,
             component: Component,
+            suspenseFallback = null,
             ...routeProps
         } = routeConfigItem;
 
@@ -26,20 +28,24 @@ const createRoutes = (routeConfig: RouteConfig, level = 0): React.ReactNode[] =>
             Route,
             {
                 key: `level${level}_${index}`,
-                ...omit(routeProps, ['ViewClass']),
+                ...routeProps,
                 ...(
                     Component
                         ? {
-                            element: React.createElement(Component, elementProps),
+                            element: React.createElement(
+                                Suspense,
+                                {
+                                    fallback: suspenseFallback,
+                                } as SuspenseProps,
+                                React.createElement(Component, elementProps),
+                            ),
                         }
                         : {}
                 ),
             } as RouteProps,
-            ...(
-                children.length > 0
-                    ? createRoutes(children, level + 1)
-                    : []
-            ),
+            (Array.isArray(children) && children.length > 0)
+                ? createRoutes(children, level + 1)
+                : [],
         );
     });
 };

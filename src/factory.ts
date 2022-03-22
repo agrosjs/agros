@@ -1,18 +1,18 @@
 import 'reflect-metadata';
+import React from 'react';
 import {
     AbstractComponent,
     ModuleInstance,
 } from './classes';
 import {
     DI_DEPS_SYMBOL,
-    DI_EXPORTS_SYMBOL,
     DI_GLOBAL_MODULE_SYMBOL,
-    DI_IMPORTS_SYMBOL,
-    DI_PROVIDERS_SYMBOL,
-    DI_VIEWS_SYMBOL,
+    DI_METADATA_MODULE_SYMBOL,
+    DI_METADATA_VIEW_SYMBOL,
 } from './constants';
 import {
     AsyncModule,
+    ModuleMetadata,
     RouteConfig,
     RouteConfigItem,
     Type,
@@ -35,6 +35,7 @@ export class Factory {
         await this.createProviderInstances(rootModuleInstance);
         await this.createViews(rootModuleInstance);
         await this.createNestedRoute();
+        this.nestedRoute = this.normalizeNestedRoute(Array.from(this.nestedRoute));
         this.nestedRoute = this.sequenceNestedRoute(Array.from(this.nestedRoute));
         return Array.from(this.nestedRoute);
     }
@@ -43,44 +44,32 @@ export class Factory {
         const ModuleClass: Type = await this.getAsyncExport((ModuleClassOrPromise as any));
 
         if (!this.moduleInstanceMap.get(ModuleClass)) {
-            const importsSet: Set<Type | Promise<Type>> = Reflect.getMetadata(
-                DI_IMPORTS_SYMBOL,
+            const metadataValue: ModuleMetadata = Reflect.getMetadata(
+                DI_METADATA_MODULE_SYMBOL,
                 ModuleClass,
-            ) || [];
-            const providersSet: Set<Type> = Reflect.getMetadata(DI_PROVIDERS_SYMBOL, ModuleClass) || [];
-            const exportsSet: Set<Type> = Reflect.getMetadata(DI_EXPORTS_SYMBOL, ModuleClass) || [];
-            const viewsSet: Set<Type<AbstractComponent> | Promise<Type<AbstractComponent>>> = Reflect.getMetadata(
-                DI_VIEWS_SYMBOL,
-                ModuleClass,
-            ) || [];
+            );
             const isGlobal: boolean = Reflect.getMetadata(DI_GLOBAL_MODULE_SYMBOL, ModuleClass) || false;
 
-            const imports = new Set<Type>();
-            const views = new Set<Type<AbstractComponent>>();
+            const {
+                imports,
+                providers,
+                views: viewOrPromiseSet,
+                exports: exportedProviders,
+            } = metadataValue;
 
-            for (const ImportedModuleClassOrPromise of importsSet) {
-                const ImportedModuleClass = await this.getAsyncExport(ImportedModuleClassOrPromise);
-                imports.add(ImportedModuleClass);
-            }
-
-            for (const ViewClassOrPromise of viewsSet) {
-                const ViewClass = await this.getAsyncExport(ViewClassOrPromise);
-                views.add(ViewClass);
-            }
-
-            for (const ExportedProviderClass of exportsSet) {
-                if (!providersSet.has(ExportedProviderClass)) {
+            for (const ExportedProviderClass of exportedProviders) {
+                if (!exportedProviders.has(ExportedProviderClass)) {
                     throw new Error(`Provider ${ExportedProviderClass.name} cannot be exported by ${ModuleClass.name}`);
                 }
             }
 
             const moduleInstance = new ModuleInstance({
                 Class: ModuleClass,
-                imports,
-                providers: new Set(providersSet),
-                exports: new Set(exportsSet),
                 isGlobal,
-                views,
+                imports: new Set(imports),
+                providers: new Set(providers),
+                exports: new Set(exportedProviders),
+                views: new Set(viewOrPromiseSet),
             });
 
             this.moduleInstanceMap.set(ModuleClass, moduleInstance);
@@ -198,40 +187,85 @@ export class Factory {
     }
 
     private async createViews(moduleInstance: ModuleInstance) {
-        for (const ViewClass of Array.from(moduleInstance.metadata.views)) {
-            const metadataValue: ViewMetadata = Reflect.getMetadata(DI_VIEWS_SYMBOL, ViewClass);
-            const { dependencies: dependedProviderClasses } = metadataValue;
+        for (const ViewClassOrConfig of Array.from(moduleInstance.metadata.views)) {
+            let data = {
+                component: null,
+                options: null,
+                lazyLoad: false,
+            } as ViewItem;
 
-            const viewInstance = new ViewClass(...dependedProviderClasses.map((DependedProviderClass) => {
-                const DependedModuleClass = this.providerClassToModuleClassMap.get(DependedProviderClass);
+            if (typeof ViewClassOrConfig === 'object') {
+                const {
+                    view: viewPromise,
+                    ...options
+                } = ViewClassOrConfig;
 
-                if (!moduleInstance.hasDependedProviderClass(DependedProviderClass)) {
-                    throw new Error(
-                        `Cannot inject provider ${DependedProviderClass.name} into view ${ViewClass.name}, did you import ${DependedModuleClass.name}?`,
-                    );
+                data.lazyLoad = true;
+                data.options = options;
+
+                data.component = React.lazy(() => new Promise((resolve) => {
+                    this.getAsyncExport(viewPromise).then((ViewClass) => {
+                        const instance = this.createViewInstance(ViewClass, moduleInstance);
+                        if (typeof instance.getComponent === 'function') {
+                            instance.getComponent().then((component) => {
+                                resolve({ default: component } as any);
+                            });
+                        }
+                    });
+                }));
+            } else {
+                const ViewClass = ViewClassOrConfig as Type<AbstractComponent>;
+                const instance = this.createViewInstance(ViewClass, moduleInstance);
+
+                const metadataValue: ViewMetadata = Reflect.getMetadata(
+                    DI_METADATA_VIEW_SYMBOL,
+                    ViewClass,
+                );
+
+                data.options = metadataValue.options || {};
+
+                if (typeof instance.getComponent === 'function') {
+                    data.component = await instance.getComponent();
                 }
+            }
 
-                const providerInstance = this.providerInstanceMap.get(DependedProviderClass);
-
-                if (!providerInstance) {
-                    throw new Error(
-                        `Cannot find provider instance for ${DependedProviderClass.name}`,
-                    );
-                }
-
-                return providerInstance;
-            }));
-
-            this.routeViews.add({
-                Class: ViewClass,
-                instance: viewInstance,
-                options: metadataValue.options,
-            });
+            this.routeViews.add(data);
         }
 
         for (const importedModuleInstance of Array.from(moduleInstance.getImportedModuleInstances())) {
             await this.createViews(importedModuleInstance);
         }
+    }
+
+    private createViewInstance(ViewClass: Type<AbstractComponent>, moduleInstance: ModuleInstance) {
+        const metadataValue: ViewMetadata = Reflect.getMetadata(
+            DI_METADATA_VIEW_SYMBOL,
+            ViewClass,
+        );
+
+        const { dependencies: dependedProviderClasses } = metadataValue;
+
+        const viewInstance = new ViewClass(...dependedProviderClasses.map((DependedProviderClass) => {
+            const DependedModuleClass = this.providerClassToModuleClassMap.get(DependedProviderClass);
+
+            if (!moduleInstance.hasDependedProviderClass(DependedProviderClass)) {
+                throw new Error(
+                    `Cannot inject provider ${DependedProviderClass.name} into view ${ViewClass.name}, did you import ${DependedModuleClass.name}?`,
+                );
+            }
+
+            const providerInstance = this.providerInstanceMap.get(DependedProviderClass);
+
+            if (!providerInstance) {
+                throw new Error(
+                    `Cannot find provider instance for ${DependedProviderClass.name}`,
+                );
+            }
+
+            return providerInstance;
+        }));
+
+        return viewInstance;
     }
 
     private normalizePath(path: string, topLeveled = false) {
@@ -252,17 +286,42 @@ export class Factory {
         while (routeViews.length > 0) {
             const currentRouteView = routeViews.shift();
 
-            if (!currentRouteView?.options?.parent) {
-                this.nestedRoute.push(await this.createRouteConfigItem(currentRouteView));
+            const {
+                options = {},
+            } = currentRouteView;
+
+            const { path: pathname } = options;
+
+            if (!pathname) {
+                throw new Error('View should have `path` value');
+            }
+
+            const routeConfigItem = this.createRouteConfigItem(currentRouteView);
+
+            const isTopLeveledRouteView = pathname.startsWith('/')
+                ? pathname.split('/').length === 2
+                : pathname.split('/').length === 1;
+
+            if (isTopLeveledRouteView) {
+                this.nestedRoute.push(routeConfigItem);
             } else {
                 const result = this.setToParentRouteView(
                     this.nestedRoute,
-                    await this.createRouteConfigItem(currentRouteView),
-                    currentRouteView.options.parent,
+                    routeConfigItem,
                 );
 
-                if (!result) {
+                if (
+                    !result &&
+                    Array.from(this.routeViews).some((routeView) => {
+                        return routeView.options?.path === pathname
+                            .split('/')
+                            .slice(0, -1)
+                            .join('/');
+                    })
+                ) {
                     routeViews.push(currentRouteView);
+                } else {
+                    this.nestedRoute.push(routeConfigItem);
                 }
             }
         }
@@ -282,24 +341,26 @@ export class Factory {
         return newNestedRoutes;
     }
 
-    private async createRouteConfigItem(routeView: ViewItem): Promise<RouteConfigItem> {
+    private createRouteConfigItem(routeView: ViewItem): RouteConfigItem {
         const {
             options,
-            Class,
+            component,
+            lazyLoad = false,
         } = routeView;
 
         const {
             elementProps,
-            path: pathname,
             priority = 0,
-            parent: ParentViewComponent,
+            path: pathname,
+            ...otherOptions
         } = options;
 
         const result: RouteConfigItem = {
-            ViewClass: Class,
-            component: null,
+            component,
             priority,
-            path: this.normalizePath(pathname, !ParentViewComponent),
+            lazyLoad,
+            path: pathname,
+            ...otherOptions,
             ...(
                 typeof elementProps === 'undefined'
                     ? {}
@@ -307,44 +368,65 @@ export class Factory {
             ),
         };
 
-        if (routeView?.instance && typeof routeView.instance.getComponent === 'function') {
-            result.component = await routeView.instance.getComponent();
-        }
-
         return result;
     }
 
     private setToParentRouteView(
         routes: RouteConfigItem[],
         routeConfigItem: RouteConfigItem,
-        ParentViewComponent: Type<AbstractComponent>,
     ): boolean {
+        const { path: currentRoutePathname } = routeConfigItem;
+
         for (const currentRouteConfigItem of routes) {
             const {
-                ViewClass,
+                path: parentRoutePathname,
             } = currentRouteConfigItem;
 
-            if (ViewClass === ParentViewComponent) {
-                if (!Array.isArray(currentRouteConfigItem.children)) {
-                    currentRouteConfigItem.children = [];
-                }
+            const parentPathnameSegments = parentRoutePathname.split('/');
+            const currentPathnameSegments = currentRoutePathname.split('/');
 
-                routeConfigItem.sequence = currentRouteConfigItem.children.length + 1;
+            if (parentPathnameSegments.every((segment, index) => segment === currentPathnameSegments[index])) {
+                if (parentPathnameSegments.length + 1 === currentPathnameSegments.length) {
+                    if (!Array.isArray(currentRouteConfigItem.children)) {
+                        currentRouteConfigItem.children = [];
+                    }
 
-                currentRouteConfigItem.children.push(routeConfigItem);
+                    routeConfigItem.sequence = currentRouteConfigItem.children.length + 1;
 
-                return true;
-            } else {
-                if (Array.isArray(currentRouteConfigItem.children)) {
-                    return this.setToParentRouteView(
-                        currentRouteConfigItem.children,
-                        routeConfigItem,
-                        ParentViewComponent,
-                    );
+                    currentRouteConfigItem.children.push(routeConfigItem);
+
+                    return true;
+                } else {
+                    if (Array.isArray(currentRouteConfigItem.children)) {
+                        return this.setToParentRouteView(currentRouteConfigItem.children, routeConfigItem);
+                    }
                 }
             }
         }
 
         return false;
+    }
+
+    private normalizeNestedRoute(nestedRoutes: RouteConfig, parentPathname = '', level = 0) {
+        return nestedRoutes.map((routeConfigItem) => {
+            const {
+                path: pathname,
+            } = routeConfigItem;
+
+            const result = {
+                ...routeConfigItem,
+                path: this.normalizePath(pathname.slice(parentPathname.length), level === 0),
+            } as RouteConfigItem;
+
+            if (Array.isArray(result.children) && result.children.length > 0) {
+                result.children = this.normalizeNestedRoute(
+                    result.children,
+                    pathname,
+                    level + 1,
+                );
+            }
+
+            return result;
+        });
     }
 }

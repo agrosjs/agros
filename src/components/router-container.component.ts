@@ -14,6 +14,7 @@ export const RouterContainer: React.FC<RouterContainerProps> = ({
     RouterComponent = BrowserRouter,
 }) => {
     const elements = useRoutes(Module);
+
     return React.createElement(
         RouterComponent,
         routerProps,
