@@ -1,18 +1,18 @@
 import 'reflect-metadata';
+import React from 'react';
 import {
     AbstractComponent,
     ModuleInstance,
 } from './classes';
 import {
     DI_DEPS_SYMBOL,
-    DI_EXPORTS_SYMBOL,
     DI_GLOBAL_MODULE_SYMBOL,
-    DI_IMPORTS_SYMBOL,
-    DI_PROVIDERS_SYMBOL,
-    DI_VIEWS_SYMBOL,
+    DI_METADATA_MODULE_SYMBOL,
+    DI_METADATA_VIEW_SYMBOL,
 } from './constants';
 import {
     AsyncModule,
+    ModuleMetadata,
     RouteConfig,
     RouteConfigItem,
     Type,
@@ -43,44 +43,32 @@ export class Factory {
         const ModuleClass: Type = await this.getAsyncExport((ModuleClassOrPromise as any));
 
         if (!this.moduleInstanceMap.get(ModuleClass)) {
-            const importsSet: Set<Type | Promise<Type>> = Reflect.getMetadata(
-                DI_IMPORTS_SYMBOL,
+            const metadataValue: ModuleMetadata = Reflect.getMetadata(
+                DI_METADATA_MODULE_SYMBOL,
                 ModuleClass,
-            ) || [];
-            const providersSet: Set<Type> = Reflect.getMetadata(DI_PROVIDERS_SYMBOL, ModuleClass) || [];
-            const exportsSet: Set<Type> = Reflect.getMetadata(DI_EXPORTS_SYMBOL, ModuleClass) || [];
-            const viewsSet: Set<Type<AbstractComponent> | Promise<Type<AbstractComponent>>> = Reflect.getMetadata(
-                DI_VIEWS_SYMBOL,
-                ModuleClass,
-            ) || [];
+            );
             const isGlobal: boolean = Reflect.getMetadata(DI_GLOBAL_MODULE_SYMBOL, ModuleClass) || false;
 
-            const imports = new Set<Type>();
-            const views = new Set<Type<AbstractComponent>>();
+            const {
+                imports,
+                providers,
+                views: viewOrPromiseSet,
+                exports: exportedProviders,
+            } = metadataValue;
 
-            for (const ImportedModuleClassOrPromise of importsSet) {
-                const ImportedModuleClass = await this.getAsyncExport(ImportedModuleClassOrPromise);
-                imports.add(ImportedModuleClass);
-            }
-
-            for (const ViewClassOrPromise of viewsSet) {
-                const ViewClass = await this.getAsyncExport(ViewClassOrPromise);
-                views.add(ViewClass);
-            }
-
-            for (const ExportedProviderClass of exportsSet) {
-                if (!providersSet.has(ExportedProviderClass)) {
+            for (const ExportedProviderClass of exportedProviders) {
+                if (!exportedProviders.has(ExportedProviderClass)) {
                     throw new Error(`Provider ${ExportedProviderClass.name} cannot be exported by ${ModuleClass.name}`);
                 }
             }
 
             const moduleInstance = new ModuleInstance({
                 Class: ModuleClass,
-                imports,
-                providers: new Set(providersSet),
-                exports: new Set(exportsSet),
                 isGlobal,
-                views,
+                imports: new Set(imports),
+                providers: new Set(providers),
+                exports: new Set(exportedProviders),
+                views: new Set(viewOrPromiseSet),
             });
 
             this.moduleInstanceMap.set(ModuleClass, moduleInstance);
@@ -198,40 +186,103 @@ export class Factory {
     }
 
     private async createViews(moduleInstance: ModuleInstance) {
-        for (const ViewClass of Array.from(moduleInstance.metadata.views)) {
-            const metadataValue: ViewMetadata = Reflect.getMetadata(DI_VIEWS_SYMBOL, ViewClass);
-            const { dependencies: dependedProviderClasses } = metadataValue;
+        for (const ViewClassOrConfig of Array.from(moduleInstance.metadata.views)) {
+            let data = {
+                Class: null,
+                component: null,
+                options: null,
+                lazyLoad: false,
+            } as ViewItem;
 
-            const viewInstance = new ViewClass(...dependedProviderClasses.map((DependedProviderClass) => {
-                const DependedModuleClass = this.providerClassToModuleClassMap.get(DependedProviderClass);
+            if (typeof ViewClassOrConfig === 'object') {
+                const {
+                    view: viewPromise,
+                } = ViewClassOrConfig;
 
-                if (!moduleInstance.hasDependedProviderClass(DependedProviderClass)) {
-                    throw new Error(
-                        `Cannot inject provider ${DependedProviderClass.name} into view ${ViewClass.name}, did you import ${DependedModuleClass.name}?`,
-                    );
+                data.lazyLoad = true;
+
+                data.component = React.lazy(() => new Promise((resolve) => {
+                    this.getAsyncExport(viewPromise).then((ViewClass) => {
+                        const instance = this.createViewInstance(ViewClass, moduleInstance);
+                        if (typeof instance.getComponent === 'function') {
+                            instance.getComponent().then((component) => {
+                                resolve({ default: component } as any);
+                            });
+                        }
+                    });
+                }));
+            } else {
+                data.Class = ViewClassOrConfig as Type<AbstractComponent>;
+                const instance = this.createViewInstance(data.Class, moduleInstance);
+
+                if (typeof instance.getComponent === 'function') {
+                    data.component = await instance.getComponent();
                 }
+            }
 
-                const providerInstance = this.providerInstanceMap.get(DependedProviderClass);
+            // const metadataValue: ViewMetadata = Reflect.getMetadata(
+            //     DI_METADATA_VIEW_SYMBOL,
+            //     ViewClass,
+            // );
+            // const { dependencies: dependedProviderClasses } = metadataValue;
 
-                if (!providerInstance) {
-                    throw new Error(
-                        `Cannot find provider instance for ${DependedProviderClass.name}`,
-                    );
-                }
+            // const viewInstance = new ViewClass(...dependedProviderClasses.map((DependedProviderClass) => {
+            //     const DependedModuleClass = this.providerClassToModuleClassMap.get(DependedProviderClass);
 
-                return providerInstance;
-            }));
+            //     if (!moduleInstance.hasDependedProviderClass(DependedProviderClass)) {
+            //         throw new Error(
+            //             `Cannot inject provider ${DependedProviderClass.name} into view ${ViewClass.name}, did you import ${DependedModuleClass.name}?`,
+            //         );
+            //     }
 
-            this.routeViews.add({
-                Class: ViewClass,
-                instance: viewInstance,
-                options: metadataValue.options,
-            });
+            //     const providerInstance = this.providerInstanceMap.get(DependedProviderClass);
+
+            //     if (!providerInstance) {
+            //         throw new Error(
+            //             `Cannot find provider instance for ${DependedProviderClass.name}`,
+            //         );
+            //     }
+
+            //     return providerInstance;
+            // }));
+
+            this.routeViews.add(data);
         }
 
         for (const importedModuleInstance of Array.from(moduleInstance.getImportedModuleInstances())) {
             await this.createViews(importedModuleInstance);
         }
+    }
+
+    private createViewInstance(ViewClass: Type<AbstractComponent>, moduleInstance: ModuleInstance) {
+        const metadataValue: ViewMetadata = Reflect.getMetadata(
+            DI_METADATA_VIEW_SYMBOL,
+            ViewClass,
+        );
+
+        const { dependencies: dependedProviderClasses } = metadataValue;
+
+        const viewInstance = new ViewClass(...dependedProviderClasses.map((DependedProviderClass) => {
+            const DependedModuleClass = this.providerClassToModuleClassMap.get(DependedProviderClass);
+
+            if (!moduleInstance.hasDependedProviderClass(DependedProviderClass)) {
+                throw new Error(
+                    `Cannot inject provider ${DependedProviderClass.name} into view ${ViewClass.name}, did you import ${DependedModuleClass.name}?`,
+                );
+            }
+
+            const providerInstance = this.providerInstanceMap.get(DependedProviderClass);
+
+            if (!providerInstance) {
+                throw new Error(
+                    `Cannot find provider instance for ${DependedProviderClass.name}`,
+                );
+            }
+
+            return providerInstance;
+        }));
+
+        return viewInstance;
     }
 
     private normalizePath(path: string, topLeveled = false) {
@@ -285,6 +336,7 @@ export class Factory {
     private async createRouteConfigItem(routeView: ViewItem): Promise<RouteConfigItem> {
         const {
             options,
+            component,
             Class,
         } = routeView;
 
@@ -297,7 +349,7 @@ export class Factory {
 
         const result: RouteConfigItem = {
             ViewClass: Class,
-            component: null,
+            component,
             priority,
             path: this.normalizePath(pathname, !ParentViewComponent),
             ...(
@@ -306,10 +358,6 @@ export class Factory {
                     : { elementProps }
             ),
         };
-
-        if (routeView?.instance && typeof routeView.instance.getComponent === 'function') {
-            result.component = await routeView.instance.getComponent();
-        }
 
         return result;
     }

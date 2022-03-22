@@ -24,8 +24,10 @@ export interface ViewDecoratorOptions<T = any> extends Omit<RouteProps, 'element
 
 export interface ViewItem {
     Class: Type<AbstractComponent>;
-    instance: AbstractComponent;
+    component: ReactComponent;
+    // instance: AbstractComponent;
     options: ViewDecoratorOptions;
+    lazyLoad: boolean;
 }
 
 export type ReactComponent<Props = any> = React.FC<Props>;
@@ -53,11 +55,23 @@ export interface RouterContainerProps {
     RouterComponent?: React.FC;
 }
 
+export type ViewConfig = ViewDecoratorOptions & {
+    view: Promise<Type<AbstractComponent>>;
+};
+export type ViewOrConfig = Type<AbstractComponent> | ViewConfig;
+
 export interface ModuleInstanceMetadata {
     Class: Type<any>;
     imports: Set<Type<any>>;
     isGlobal: boolean;
     providers: Set<Type<any>>;
     exports: Set<Type<any>>;
-    views: Set<Type<AbstractComponent>>;
+    views: Set<ViewOrConfig>;
+}
+
+export interface ModuleMetadata {
+    imports: Set<Type>;
+    providers: Set<Type>;
+    exports: Set<Type>;
+    views: Set<ViewOrConfig>;
 }

@@ -1,16 +1,27 @@
+import { DI_METADATA_MODULE_SYMBOL } from '../constants';
 import {
-    DI_EXPORTS_SYMBOL,
-    DI_IMPORTS_SYMBOL,
-    DI_PROVIDERS_SYMBOL,
-    DI_VIEWS_SYMBOL,
-} from '../constants';
-import { ModuleDecoratorOptions } from '../types';
+    ModuleDecoratorOptions,
+    ModuleMetadata,
+} from '../types';
 
 export function Module(options: ModuleDecoratorOptions = {}): ClassDecorator {
     return (target) => {
-        Reflect.defineMetadata(DI_IMPORTS_SYMBOL, new Set(options.imports || []), target);
-        Reflect.defineMetadata(DI_PROVIDERS_SYMBOL, new Set(options.providers || []), target);
-        Reflect.defineMetadata(DI_VIEWS_SYMBOL, new Set(options.views || []), target);
-        Reflect.defineMetadata(DI_EXPORTS_SYMBOL, new Set(options.exports || []), target);
+        const {
+            imports = [],
+            providers = [],
+            views = [],
+            exports: exportedProviders = [],
+        } = options;
+
+        Reflect.defineMetadata(
+            DI_METADATA_MODULE_SYMBOL,
+            {
+                imports: new Set(imports),
+                providers: new Set(providers),
+                views: new Set(views),
+                exports: new Set(exportedProviders),
+            } as ModuleMetadata,
+            target,
+        );
     };
 }
