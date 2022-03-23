@@ -4,14 +4,14 @@ import {
 } from 'react';
 import {
     AbstractComponent,
-    View,
+    Injectable,
 } from '../../../../lib';
 import { BarComponent } from '../bar/bar.component';
 import { BarService } from '../bar/bar.service';
 import { FooService } from './foo.service';
 import { Outlet } from 'react-router-dom';
 
-@View()
+@Injectable()
 export class FooView extends AbstractComponent implements AbstractComponent {
     public constructor(
         protected readonly fooService: FooService,

@@ -197,32 +197,6 @@ export class DemoComponent extends AbstractComponent implements AbstractComponen
 }
 ```
 
-A component can be easily transformed to a view, just replace `@Injectable` to `@View`:
-
-```tsx
-// ...
-import {
-    AbstractComponent,
-    View,
-} from 'Khamsa';
-
-@View({
-    path: '/demo',
-})
-export class DemoView extends AbstractComponent implements AbstractComponent {
-    // ...
-}
-```
-
-The `@View` decorator requires at least one attribute: props, which defines the route that the view matches and is an absolute path. The following is a list of all the configuration items related to it:
-
-- `path: string` - (required) defines the route that the view matches, must be an absolute path
-- `caseSensitive?: boolean` - defines the route matcher should use case-sensitive mode or not
-- `index?: number` - specify if current view is an indexed route
-- `priority?: number` - priority in current level routes, the value is bigger, The higher this value is, the better the chance of being matched with
-- `elementProps?: any` - props for current view's React component
-- `suspenseFallback?: boolean | null | React.ReactChild | React.ReactFragment | React.ReactPortal` - the value of `fallback` property for `React.Suspense`
-
 ### Create a Module
 
 Module is also a normal class with a `@Module` decorator:
@@ -337,12 +311,10 @@ the content is `foo.view.ts` looks like:
 import { FunctionComponent } from 'react';
 import {
     AbstractComponent,
-    View,
+    Injectable,
 } from 'Khamsa';
 
-@View({
-    path: '/foo',
-})
+@Injectable()
 export class FooView extends AbstractComponent implements AbstractComponent {
     protected async generateComponent(): Promise<FunctionComponent<any>> {
         return () => <p>Foo page is working!</p>;
@@ -361,30 +333,16 @@ also a line should be added into `foo.module.ts`:
         FooService,
     ],
     views: [
-        FooView,
+        {
+            path: '/foo',
+            provider: FooView,
+        },
     ],
 })
 export class FooModule {}
 ```
 
-If you want to use [React's lazy load features](https://reactjs.org/docs/code-splitting.html#reactlazy), you can change `foo.view.ts`'s content like:
-
-```tsx
-import { FunctionComponent } from 'react';
-import {
-    AbstractComponent,
-    View,
-} from 'Khamsa';
-
-@View()
-export class FooView extends AbstractComponent implements AbstractComponent {
-    protected async generateComponent(): Promise<FunctionComponent<any>> {
-        return () => <p>Foo page is working!</p>;
-    }
-}
-```
-
-yes, just leave `@View()`'s parameter as empty, then in `foo.module.ts`:
+If you want to use [React's lazy load features](https://reactjs.org/docs/code-splitting.html#reactlazy), you can change `foo.module.ts`'s content like:
 
 ```ts
 @Module({
@@ -397,7 +355,7 @@ yes, just leave `@View()`'s parameter as empty, then in `foo.module.ts`:
     views: [
         {
             path: '/foo',
-            view: import('./foo.view'),
+            provider: import('./foo.view'),
         },
     ],
 })

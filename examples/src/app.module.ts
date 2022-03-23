@@ -12,8 +12,14 @@ import { FooModule } from './modules/foo/foo.module';
         BazModule,
     ],
     views: [
-        AppView,
-        AppNavigateView,
+        {
+            path: '/app',
+            provider: AppView,
+        },
+        {
+            path: '*',
+            provider: AppNavigateView,
+        },
     ],
 })
 export class AppModule {}

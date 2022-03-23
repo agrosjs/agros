@@ -3,10 +3,10 @@ import {
 } from 'react';
 import {
     AbstractComponent,
-    View,
+    Injectable,
 } from '../../../../lib';
 
-@View()
+@Injectable()
 export class FooChildView extends AbstractComponent implements AbstractComponent {
     protected async generateComponent(): Promise<FunctionComponent<any>> {
         return () => {

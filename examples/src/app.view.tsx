@@ -1,14 +1,12 @@
 import { Outlet } from 'react-router-dom';
 import {
     AbstractComponent,
+    Injectable,
     ReactComponent,
-    View,
 } from '../../lib';
 import './app.view.css';
 
-@View({
-    path: '/app',
-})
+@Injectable()
 export class AppView extends AbstractComponent implements AbstractComponent {
     protected async generateComponent(): Promise<ReactComponent<any>> {
         return () => {

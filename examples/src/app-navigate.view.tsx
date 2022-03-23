@@ -3,13 +3,11 @@ import {
 } from 'react';
 import {
     AbstractComponent,
-    View,
+    Injectable,
 } from '../../lib';
 import { Navigate } from 'react-router-dom';
 
-@View({
-    path: '*',
-})
+@Injectable()
 export class AppNavigateView extends AbstractComponent implements AbstractComponent {
     protected async generateComponent(): Promise<FunctionComponent<any>> {
         return () => {

@@ -8,16 +8,13 @@ import {
     DI_DEPS_SYMBOL,
     DI_GLOBAL_MODULE_SYMBOL,
     DI_METADATA_MODULE_SYMBOL,
-    DI_METADATA_VIEW_SYMBOL,
 } from './constants';
 import {
-    AsyncModule,
     ModuleMetadata,
     RouteConfig,
     RouteConfigItem,
     Type,
     ViewItem,
-    ViewMetadata,
 } from './types';
 import isPromise from 'is-promise';
 
@@ -28,7 +25,7 @@ export class Factory {
     private providerInstanceMap = new Map<Type<any>, any>();
     private providerClassToModuleClassMap = new Map<Type, Type>();
 
-    public async create<T = any>(ModuleClass: Type<T> | AsyncModule<T>): Promise<RouteConfig> {
+    public async create<T = any>(ModuleClass: Type<T>): Promise<RouteConfig> {
         const rootModuleInstance = await this.createModuleInstance(ModuleClass);
         this.setImportedModuleInstances();
         this.createProviderClassToModuleClassMap();
@@ -40,9 +37,7 @@ export class Factory {
         return Array.from(this.nestedRoute);
     }
 
-    private async createModuleInstance<T>(ModuleClassOrPromise: Type<T> | AsyncModule<T>) {
-        const ModuleClass: Type = await this.getAsyncExport((ModuleClassOrPromise as any));
-
+    private async createModuleInstance<T>(ModuleClass: Type<T>) {
         if (!this.moduleInstanceMap.get(ModuleClass)) {
             const metadataValue: ModuleMetadata = Reflect.getMetadata(
                 DI_METADATA_MODULE_SYMBOL,
@@ -194,35 +189,33 @@ export class Factory {
                 lazyLoad: false,
             } as ViewItem;
 
-            if (typeof ViewClassOrConfig === 'object') {
-                const {
-                    view: viewPromise,
-                    ...options
-                } = ViewClassOrConfig;
+            const {
+                provider: viewClassOrPromise,
+                ...options
+            } = ViewClassOrConfig;
+
+            data.options = options;
+
+            if (isPromise(viewClassOrPromise)) {
+                const viewClassPromise = viewClassOrPromise as Promise<Type<AbstractComponent>>;
 
                 data.lazyLoad = true;
-                data.options = options;
-
                 data.component = React.lazy(() => new Promise((resolve) => {
-                    this.getAsyncExport(viewPromise).then((ViewClass) => {
-                        const instance = this.createViewInstance(ViewClass, moduleInstance);
-                        if (typeof instance.getComponent === 'function') {
-                            instance.getComponent().then((component) => {
-                                resolve({ default: component } as any);
-                            });
-                        }
-                    });
+                    this
+                        .getAsyncExport<Type<AbstractComponent>>(viewClassPromise)
+                        .then((ViewClass) => {
+                            const instance = this.createViewInstance(ViewClass, moduleInstance);
+                            if (typeof instance.getComponent === 'function') {
+                                instance.getComponent().then((component) => {
+                                    resolve({ default: component } as any);
+                                });
+                            }
+                        });
                 }));
             } else {
-                const ViewClass = ViewClassOrConfig as Type<AbstractComponent>;
+                const ViewClass = viewClassOrPromise as Type<AbstractComponent>;
+
                 const instance = this.createViewInstance(ViewClass, moduleInstance);
-
-                const metadataValue: ViewMetadata = Reflect.getMetadata(
-                    DI_METADATA_VIEW_SYMBOL,
-                    ViewClass,
-                );
-
-                data.options = metadataValue.options || {};
 
                 if (typeof instance.getComponent === 'function') {
                     data.component = await instance.getComponent();
@@ -238,12 +231,7 @@ export class Factory {
     }
 
     private createViewInstance(ViewClass: Type<AbstractComponent>, moduleInstance: ModuleInstance) {
-        const metadataValue: ViewMetadata = Reflect.getMetadata(
-            DI_METADATA_VIEW_SYMBOL,
-            ViewClass,
-        );
-
-        const { dependencies: dependedProviderClasses } = metadataValue;
+        const dependedProviderClasses: Type[] = Reflect.getMetadata(DI_DEPS_SYMBOL, ViewClass) || [];
 
         const viewInstance = new ViewClass(...dependedProviderClasses.map((DependedProviderClass) => {
             const DependedModuleClass = this.providerClassToModuleClassMap.get(DependedProviderClass);
