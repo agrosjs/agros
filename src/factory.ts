@@ -197,22 +197,28 @@ export class Factory {
 
             data.options = options;
 
-            if (isPromise(viewClassOrPromise)) {
-                const viewClassPromise = viewClassOrPromise as Promise<Type<AbstractComponent>>;
-                data.lazyLoad = true;
-                data.component = React.lazy(() => this.parseLazyLoadViewClass(viewClassPromise, moduleInstance));
-            } else if (!viewClassOrPromise.hasOwnProperty('arguments') && Boolean(viewClassOrPromise.prototype)) {
+            if (!viewClassOrPromise.hasOwnProperty('arguments') && Boolean(viewClassOrPromise.prototype)) {
                 const ViewClass = viewClassOrPromise as Type<AbstractComponent>;
-
                 const instance = this.createViewInstance(ViewClass, moduleInstance);
 
                 if (typeof instance.getComponent === 'function') {
                     data.component = await instance.getComponent();
                 }
             } else {
-                data.lazyLoad = true;
                 const lazyLoadHandler = viewClassOrPromise as LazyLoadHandler;
-                data.component = React.lazy(lazyLoadHandler(this.parseLazyLoadViewClass.bind(this), moduleInstance));
+
+                Object.defineProperty(this, 'moduleInstance', {
+                    value: moduleInstance,
+                    writable: false,
+                });
+
+                data.lazyLoad = true;
+                data.component = React.lazy(
+                    lazyLoadHandler(
+                        this.parseLazyLoadViewClass.bind(this),
+                        moduleInstance,
+                    ),
+                );
             }
 
             this.routeViews.add(data);
@@ -223,8 +229,10 @@ export class Factory {
         }
     }
 
-    private parseLazyLoadViewClass(lazyLoadPromise: Promise<any>, moduleInstance: ModuleInstance): Promise<any> {
+    private parseLazyLoadViewClass(lazyLoadPromise: Promise<any>): Promise<any> {
         return new Promise((resolve) => {
+            const moduleInstance = (this as any).moduleInstance as ModuleInstance;
+
             this
                 .getAsyncExport<Type<AbstractComponent>>(lazyLoadPromise)
                 .then((ViewClass) => {

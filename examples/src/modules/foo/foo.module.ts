@@ -12,16 +12,12 @@ import { FooService } from './foo.service';
     views: [
         {
             path: '/app/foo',
-            provider: (parser, moduleInstance) => {
-                return () => parser(import('./foo.view'), moduleInstance);
-            },
+            provider: (parse) => () => parse(import('./foo.view')),
             suspenseFallback: '/app/foo is loading...',
         },
         {
             path: '/app/foo/child',
-            provider: (parser, moduleInstance) => {
-                return () => parser(import('./foo-child.view'), moduleInstance);
-            },
+            provider: (parse) => () => parse(import('./foo-child.view')),
             suspenseFallback: '/app/child/foo is loading...',
         },
     ],

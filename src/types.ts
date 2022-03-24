@@ -8,7 +8,7 @@ export type LazyLoadFactory = () => Promise<{
     default: React.ComponentType<any>;
 }>;
 
-export type LazyLoadParser = (lazyPromise: Promise<any>, moduleInstance: ModuleInstance) => Promise<any>;
+export type LazyLoadParser = (lazyPromise: Promise<any>) => Promise<any>;
 export type LazyLoadHandler = (parser: LazyLoadParser, moduleInstance: ModuleInstance) => LazyLoadFactory;
 
 export interface ModuleDecoratorOptions {
@@ -54,7 +54,7 @@ export interface RouterContainerProps {
 }
 
 export interface ViewConfig<T = any> extends Omit<RouteProps, 'element' | 'children'> {
-    provider: Type<AbstractComponent> | Promise<any> | LazyLoadHandler;
+    provider: Type<AbstractComponent> | LazyLoadHandler;
     priority?: number;
     elementProps?: T;
     suspenseFallback?: boolean | React.ReactChild | React.ReactFragment | React.ReactPortal | null;
