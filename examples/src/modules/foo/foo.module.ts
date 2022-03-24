@@ -11,14 +11,18 @@ import { FooService } from './foo.service';
     ],
     views: [
         {
-            path: '/app/foo',
-            provider: (parse) => () => parse(import('./foo.view')),
+            id: 'app.foo',
+            path: '/foo',
+            parent: 'app',
             suspenseFallback: '/app/foo is loading...',
+            provider: (parse) => () => parse(import('./foo.view')),
         },
         {
-            path: '/app/foo/child',
-            provider: (parse) => () => parse(import('./foo-child.view')),
+            id: 'app.foo.child',
+            path: '/child',
+            parent: 'app.foo',
             suspenseFallback: '/app/child/foo is loading...',
+            provider: (parse) => () => parse(import('./foo-child.view')),
         },
     ],
     exports: [

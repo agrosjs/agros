@@ -1,6 +1,6 @@
 import React from 'react';
 import { RouteProps } from 'react-router-dom';
-import { AbstractComponent, ModuleInstance } from './classes';
+import { AbstractComponent } from './classes';
 
 export type Type<T = any> = new (...args: Array<any>) => T;
 
@@ -9,7 +9,7 @@ export type LazyLoadFactory = () => Promise<{
 }>;
 
 export type LazyLoadParser = (lazyPromise: Promise<any>) => Promise<any>;
-export type LazyLoadHandler = (parser: LazyLoadParser) => LazyLoadFactory;
+export type LazyLoadHandler = (parser: LazyLoadParser) => LazyLoadFactory | Promise<LazyLoadFactory>;
 
 export interface ModuleDecoratorOptions {
     imports?: Array<Type>;
@@ -18,11 +18,7 @@ export interface ModuleDecoratorOptions {
     exports?: Array<Type>;
 }
 
-export interface ViewOptions<T = any> extends Omit<RouteProps, 'element' | 'children'> {
-    priority?: number;
-    elementProps?: T;
-    suspenseFallback?: boolean | React.ReactChild | React.ReactFragment | React.ReactPortal | null;
-}
+export type ViewOptions<T = any> = Omit<ViewConfig<T>, 'provider'>;
 
 export interface ViewItem {
     component: ReactComponent;
@@ -55,6 +51,8 @@ export interface RouterContainerProps {
 
 export interface ViewConfig<T = any> extends Omit<RouteProps, 'element' | 'children'> {
     provider: Type<AbstractComponent> | LazyLoadHandler;
+    id: string;
+    parent?: string;
     priority?: number;
     elementProps?: T;
     suspenseFallback?: boolean | React.ReactChild | React.ReactFragment | React.ReactPortal | null;

@@ -93,7 +93,7 @@ In your `.babelrc` or `.babelrc.json` or other types of configuration file for B
 
 Providers are the most important and fundamental concept in Khamsa. Almost any class can be treated as a provider by Khamsa: services, components, tool libraries, etc. Khamsa makes it possible to establish various relationships between different provider objects by **injecting dependencies**.
 
-<img src="docs/images/providers.png" width="50%" style="display: block; margin: 0 auto;" />
+<img src="docs/images/providers.png" width="60%" style="display: block; margin: 0 auto;" />
 
 As you can see in the image above, each provider can depend on another provider by passing parameters with the provider class as a type annotation in the constructor. With the Khamsa runtime, these type annotation-based provider parameters will be instantiated and made available when the web application starts.
 
@@ -101,13 +101,13 @@ As you can see in the image above, each provider can depend on another provider 
 
 **Components are also a type of provider**. Unlike normal providers, components need to implement the `AbstractComponent` class and the `generateComponent` method, which needs to return a React functional component.
 
-<img src="docs/images/components.png" width="50%" style="display: block; margin: 0 auto;" />
+<img src="docs/images/components.png" width="60%" style="display: block; margin: 0 auto;" />
 
 As you can see from the image above, like normal providers, any provider (including components) can be injected into a component as a dependency, and similarly, a component can be injected into any provider as a dependency.
 
 A view is a special component that is considered the carrier of a page in Khamsa. It can define routing paths, lazy loading fallbacks, and other options that are not supported by the component.
 
-<img src="docs/images/views.png" width="50%" style="display: block; margin: 0 auto;" />
+<img src="docs/images/views.png" width="60%" style="display: block; margin: 0 auto;" />
 
 As depicted in the figure above, each view is linked together by path names and combined by Khamsa parsing into a routing map for the application. Within the view, you can also inject any provider (including components) into it, but **it cannot be injected into other views**.
 
@@ -115,7 +115,7 @@ As depicted in the figure above, each view is linked together by path names and 
 
 A module is a class annotated with a `@Module()` decorator. The `@Module()` decorator provides metadata that Khamsa makes use of to organize the application structure.
 
-<img src="docs/images/modules.png" width="50%" style="display: block; margin: 0 auto;" />
+<img src="docs/images/modules.png" width="60%" style="display: block; margin: 0 auto;" />
 
 When a Khamsa instance is to be initialized, one and only one module, called the **root module**, must be provided as the entry module for the application built by Khamsa.
 
@@ -220,8 +220,10 @@ The `@Module()` decorator takes a single object as parameter whose properties de
 
 The definition of `ViewConfig` is like below:
 
+- `id: string` - (required) defines the ID of current route view
 - `path: string` - (required) defines the route that the view matches, must be an absolute path
 - `provider: Type<AbstractComponent> | LazyLoadHandler` - the provider for view class
+- `parent?: string` - defines the parent view of current view, if current view is a top-leveled view, let it be `null`
 - `caseSensitive?: boolean` - defines the route matcher should use case-sensitive mode or not
 - `index?: number` - specify if current view is an indexed route
 - `priority?: number` - priority in current level routes, the value is bigger, The higher this value is, the better the chance of being matched with
