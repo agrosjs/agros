@@ -9,7 +9,7 @@ export type LazyLoadFactory = () => Promise<{
 }>;
 
 export type LazyLoadParser = (lazyPromise: Promise<any>) => Promise<any>;
-export type LazyLoadHandler = (parser: LazyLoadParser, moduleInstance: ModuleInstance) => LazyLoadFactory;
+export type LazyLoadHandler = (parser: LazyLoadParser) => LazyLoadFactory;
 
 export interface ModuleDecoratorOptions {
     imports?: Array<Type>;

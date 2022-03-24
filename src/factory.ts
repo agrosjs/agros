@@ -18,6 +18,7 @@ import {
     ViewItem,
 } from './types';
 import isPromise from 'is-promise';
+import isFunction from 'lodash/isFunction';
 
 export class Factory {
     private routeViews: Set<ViewItem> = new Set();
@@ -201,7 +202,7 @@ export class Factory {
                 const ViewClass = viewClassOrPromise as Type<AbstractComponent>;
                 const instance = this.createViewInstance(ViewClass, moduleInstance);
 
-                if (typeof instance.getComponent === 'function') {
+                if (isFunction(instance.getComponent)) {
                     data.component = await instance.getComponent();
                 }
             } else {
@@ -212,13 +213,14 @@ export class Factory {
                     writable: false,
                 });
 
+                const lazyLoadFactory = lazyLoadHandler(this.parseLazyLoadViewClass.bind(this));
+
+                if (!isFunction(lazyLoadFactory)) {
+                    throw new Error('Lazy load provider must return a React lazy load factory');
+                }
+
                 data.lazyLoad = true;
-                data.component = React.lazy(
-                    lazyLoadHandler(
-                        this.parseLazyLoadViewClass.bind(this),
-                        moduleInstance,
-                    ),
-                );
+                data.component = React.lazy(lazyLoadFactory);
             }
 
             this.routeViews.add(data);
@@ -237,9 +239,9 @@ export class Factory {
                 .getAsyncExport<Type<AbstractComponent>>(lazyLoadPromise)
                 .then((ViewClass) => {
                     const instance = this.createViewInstance(ViewClass, moduleInstance);
-                    if (typeof instance.getComponent === 'function') {
+                    if (isFunction(instance.getComponent)) {
                         instance.getComponent().then((component) => {
-                            resolve({ default: component } as any);
+                            resolve({ default: component });
                         });
                     }
                 });
