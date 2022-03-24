@@ -19,6 +19,7 @@ import {
 } from './types';
 import isPromise from 'is-promise';
 import isFunction from 'lodash/isFunction';
+import isString from 'lodash/isString';
 
 export class Factory {
     private routeViews: Set<ViewItem> = new Set();
@@ -26,6 +27,7 @@ export class Factory {
     private moduleInstanceMap = new Map<Type<any>, ModuleInstance>();
     private providerInstanceMap = new Map<Type<any>, any>();
     private providerClassToModuleClassMap = new Map<Type, Type>();
+    private routeConfigItems: RouteConfigItem[] = [];
 
     public async create<T = any>(ModuleClass: Type<T>): Promise<RouteConfig> {
         const rootModuleInstance = await this.createModuleInstance(ModuleClass);
@@ -33,8 +35,7 @@ export class Factory {
         this.createProviderClassToModuleClassMap();
         await this.createProviderInstances(rootModuleInstance);
         await this.createViews(rootModuleInstance);
-        await this.createNestedRoute();
-        this.nestedRoute = this.normalizeNestedRoute(Array.from(this.nestedRoute));
+        this.nestedRoute = this.createNestedRoute();
         this.nestedRoute = this.sequenceNestedRoute(Array.from(this.nestedRoute));
         return Array.from(this.nestedRoute);
     }
@@ -213,7 +214,7 @@ export class Factory {
                     writable: false,
                 });
 
-                const lazyLoadFactory = lazyLoadHandler(this.parseLazyLoadViewClass.bind(this));
+                const lazyLoadFactory = await lazyLoadHandler(this.parseLazyLoadViewClass.bind(this));
 
                 if (!isFunction(lazyLoadFactory)) {
                     throw new Error('Lazy load provider must return a React lazy load factory');
@@ -286,51 +287,60 @@ export class Factory {
         return newPath;
     }
 
-    private async createNestedRoute() {
+    private createNestedRoute() {
         const routeViews = Array.from(this.routeViews);
 
-        while (routeViews.length > 0) {
-            const currentRouteView = routeViews.shift();
+        for (const routeView of routeViews) {
+            const {
+                options = {
+                    id: null,
+                    path: null,
+                },
+            } = routeView;
 
             const {
-                options = {},
-            } = currentRouteView;
-
-            const { path: pathname } = options;
+                id,
+                path: pathname,
+                parent,
+            } = options;
 
             if (!pathname) {
                 throw new Error('View should have `path` value');
             }
 
-            const routeConfigItem = this.createRouteConfigItem(currentRouteView);
+            if (!id) {
+                throw new Error('View should have `id` value');
+            }
 
-            const isTopLeveledRouteView = pathname.startsWith('/')
-                ? pathname.split('/').length === 2
-                : pathname.split('/').length === 1;
+            if (parent && !isString(parent)) {
+                throw new Error(`'parent' should be a string in ${id}`);
+            }
 
-            if (isTopLeveledRouteView) {
-                this.nestedRoute.push(routeConfigItem);
-            } else {
-                const result = this.setToParentRouteView(
-                    this.nestedRoute,
-                    routeConfigItem,
-                );
+            if (parent && parent === id) {
+                throw new Error(`View '${id}' cannot be a child of itself`);
+            }
 
-                if (
-                    !result &&
-                    Array.from(this.routeViews).some((routeView) => {
-                        return routeView.options?.path === pathname
-                            .split('/')
-                            .slice(0, -1)
-                            .join('/');
-                    })
-                ) {
-                    routeViews.push(currentRouteView);
-                } else {
-                    this.nestedRoute.push(routeConfigItem);
-                }
+            const routeConfigItem = this.createRouteConfigItem(routeView);
+            routeConfigItem.path = this.normalizePath(routeConfigItem.path, !routeConfigItem.parent);
+
+            if (this.routeConfigItems.some((item) => item.id === routeConfigItem.id)) {
+                throw new Error(`View '${id}' has at least one duplicated instance`);
+            }
+
+            this.routeConfigItems.push(routeConfigItem);
+        }
+
+        for (const routeConfigItem of this.routeConfigItems) {
+            if (!this.setToParentRouteConfigItem(this.routeConfigItems, routeConfigItem)) {
+                const {
+                    id,
+                    parent,
+                } = routeConfigItem;
+                throw new Error(`Cannot find view id '${parent}' for view '${id}'`);
             }
         }
+
+        return this.routeConfigItems.filter((item) => !item.parent);
     }
 
     private sequenceNestedRoute(nestedRoutes: RouteConfig) {
@@ -377,62 +387,27 @@ export class Factory {
         return result;
     }
 
-    private setToParentRouteView(
-        routes: RouteConfigItem[],
+    private setToParentRouteConfigItem(
+        routeConfigItems: RouteConfigItem[],
         routeConfigItem: RouteConfigItem,
     ): boolean {
-        const { path: currentRoutePathname } = routeConfigItem;
+        if (!routeConfigItem.parent) {
+            return true;
+        }
 
-        for (const currentRouteConfigItem of routes) {
-            const {
-                path: parentRoutePathname,
-            } = currentRouteConfigItem;
-
-            const parentPathnameSegments = parentRoutePathname.split('/');
-            const currentPathnameSegments = currentRoutePathname.split('/');
-
-            if (parentPathnameSegments.every((segment, index) => segment === currentPathnameSegments[index])) {
-                if (parentPathnameSegments.length + 1 === currentPathnameSegments.length) {
-                    if (!Array.isArray(currentRouteConfigItem.children)) {
-                        currentRouteConfigItem.children = [];
-                    }
-
-                    routeConfigItem.sequence = currentRouteConfigItem.children.length + 1;
-
-                    currentRouteConfigItem.children.push(routeConfigItem);
-
-                    return true;
-                } else {
-                    if (Array.isArray(currentRouteConfigItem.children)) {
-                        return this.setToParentRouteView(currentRouteConfigItem.children, routeConfigItem);
-                    }
+        for (const parentRouteConfigItem of routeConfigItems) {
+            if (routeConfigItem.parent === parentRouteConfigItem.id) {
+                if (!Array.isArray(parentRouteConfigItem.children)) {
+                    parentRouteConfigItem.children = [];
                 }
+
+                routeConfigItem.sequence = parentRouteConfigItem.children.length + 1;
+                parentRouteConfigItem.children.push(routeConfigItem);
+
+                return true;
             }
         }
 
         return false;
-    }
-
-    private normalizeNestedRoute(nestedRoutes: RouteConfig, parentPathname = '', level = 0) {
-        return nestedRoutes.map((routeConfigItem) => {
-            const {
-                path: pathname,
-            } = routeConfigItem;
-
-            const result = {
-                ...routeConfigItem,
-                path: this.normalizePath(pathname.slice(parentPathname.length), level === 0),
-            } as RouteConfigItem;
-
-            if (Array.isArray(result.children) && result.children.length > 0) {
-                result.children = this.normalizeNestedRoute(
-                    result.children,
-                    pathname,
-                    level + 1,
-                );
-            }
-
-            return result;
-        });
     }
 }

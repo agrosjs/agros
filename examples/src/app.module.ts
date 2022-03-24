@@ -13,10 +13,12 @@ import { FooModule } from './modules/foo/foo.module';
     ],
     views: [
         {
+            id: 'app',
             path: '/app',
             provider: AppView,
         },
         {
+            id: 'app.redirect',
             path: '*',
             provider: AppNavigateView,
         },
