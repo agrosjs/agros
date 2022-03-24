@@ -8,16 +8,19 @@ Khamsa is a framework for building robust, clean and scalable React.js applicati
 
 ### Motivation
 
-React.js has greatly helped developers build fast and responsive web applications, while its simplicity has also allowed it to accumulate a large number of users in a short period of time, and some large websites have started to be built entirely using React.js. All of this speaks volumes about the success of React.js. However, there are a number of architectural problems with building large web applications using React.js that add up to additional and increasingly large expenses for maintaining and iterating on the project, and Khamsa was created to solve these problems.
+[React.js](https://reactjs.org) has greatly helped developers build fast and responsive web applications, while its simplicity has also allowed it to accumulate a large number of users in a short period of time, and some large websites have started to be built entirely using React.js. All of this speaks volumes about the success of React.js. However, there are a number of architectural problems with building large web applications using React.js that add up to additional and increasingly large expenses for maintaining and iterating on the project, and Khamsa was created to solve these problems.
 
-Inspired by [Angular](https://angular.io) and [Nest.js](https://nestjs.com/), Khamsa provides an out-of-the-box experience to help developers create highly available, highly maintainable, stable, and low-coupling web applications.
+Inspired by [Angular](https://angular.io) and [Nest.js](https://nestjs.com/) and based on React.js and [React Router](https://reactrouter.com/), Khamsa provides an out-of-the-box experience to help developers create highly available, highly maintainable, stable, and low-coupling React applications.
 
 ### Installation & Setup
 
 #### Requirements
 
 - (Required) Use TypeScript to write project
-- (Recommended) Node.js v10.10.0 and later
+- (Required) React v16.8.0 or later
+- (Required) React Router DOM v6.2.0 or later
+- (Required) Webpack v5 or later
+- (Recommended) Node.js v10.10.0 or later
 
 #### Create a React.js + TypeScript Project With CRA
 
@@ -88,15 +91,15 @@ In your `.babelrc` or `.babelrc.json` or other types of configuration file for B
 
 ### Providers
 
-Providers are the most important and fundamental concept in Khamsa. Almost any class can be treated as a provider by Khamsa: services, components, tool libraries, etc. Khamsa makes it possible to establish various relationships between different provider objects by *injecting dependencies*.
+Providers are the most important and fundamental concept in Khamsa. Almost any class can be treated as a provider by Khamsa: services, components, tool libraries, etc. Khamsa makes it possible to establish various relationships between different provider objects by **injecting dependencies**.
 
 <img src="docs/images/providers.png" width="50%" style="display: block; margin: 0 auto;" />
 
-As you can see in the image above, each provider can depend on another provider by passing parameters with the provider class as a type annotation in the constructor. Thanks to the Khamsa runtime, these type annotation-based provider parameters are instantiated and made available when the web application starts.
+As you can see in the image above, each provider can depend on another provider by passing parameters with the provider class as a type annotation in the constructor. With the Khamsa runtime, these type annotation-based provider parameters will be instantiated and made available when the web application starts.
 
 ### Components & Views
 
-Components are also a type of provider. Unlike normal providers, components need to implement the `AbstractComponent` class and implement the `generateComponent` method, which needs to return a React functional component.
+**Components are also a type of provider**. Unlike normal providers, components need to implement the `AbstractComponent` class and the `generateComponent` method, which needs to return a React functional component.
 
 <img src="docs/images/components.png" width="50%" style="display: block; margin: 0 auto;" />
 
@@ -106,7 +109,7 @@ A view is a special component that is considered the carrier of a page in Khamsa
 
 <img src="docs/images/views.png" width="50%" style="display: block; margin: 0 auto;" />
 
-As depicted in the figure above, each view is linked together by path names and combined by Khamsa parsing into a routing map for the application. Within the view, you can also inject any provider (including components) into it, but you cannot inject other views.
+As depicted in the figure above, each view is linked together by path names and combined by Khamsa parsing into a routing map for the application. Within the view, you can also inject any provider (including components) into it, but **it cannot be injected into other views**.
 
 ### Modules
 
@@ -213,7 +216,17 @@ The `@Module()` decorator takes a single object as parameter whose properties de
 - `imports: Array<Module>` - the list of imported modules that export the providers which are required in this module
 - `providers: Array<Provider>` - the list of providers that the module hosts, which could probably be used by other modules
 - `exports: Array<Provider>` - the subset of `providers` that are provided by this module and should be available in other modules which import this module
-- `views: Array<AbstractComponent>` - the set of views defined in this module which have to be instantiated
+- `views: Array<ViewConfig>` - the set of views defined in this module which have to be instantiated
+
+The definition of `ViewConfig` is like below:
+
+- `path: string` - (required) defines the route that the view matches, must be an absolute path
+- `provider: Type<AbstractComponent> | LazyLoadHandler` - the provider for view class
+- `caseSensitive?: boolean` - defines the route matcher should use case-sensitive mode or not
+- `index?: number` - specify if current view is an indexed route
+- `priority?: number` - priority in current level routes, the value is bigger, The higher this value is, the better the chance of being matched with
+- `elementProps?: any` - props for current view's React component
+- `suspenseFallback?: boolean | null | React.ReactChild | React.ReactFragment | React.ReactPortal` - the value of `fallback` property for `React.Suspense`
 
 #### Export & Import
 
@@ -355,12 +368,14 @@ If you want to use [React's lazy load features](https://reactjs.org/docs/code-sp
     views: [
         {
             path: '/foo',
-            provider: import('./foo.view'),
+            provider: (parse) => () => parse(import('./foo.view')),
         },
     ],
 })
 export class FooModule {}
 ```
+
+you should change `views[].provider` to a function that returns a [lazy load factory](https://github.com/facebook/react/blob/main/packages/react/src/ReactLazy.js#L122), which would be taken by `React.lazy` as its first argument. Khamsa provides a function named `parse` to help you create a dynamic-imported component from an `AbstractComponent` instance.
 
 ### Organize App
 
