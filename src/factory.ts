@@ -22,13 +22,46 @@ import isFunction from 'lodash/isFunction';
 import isString from 'lodash/isString';
 
 export class Factory {
+    /**
+     * @private
+     * temporarily save flattened view items
+     */
     private routeViews: Set<ViewItem> = new Set();
+    /**
+     * @private
+     * the nested route for the whole application
+     */
     private nestedRoute: RouteConfigItem[] = [];
+    /**
+     * @private
+     * the flattened map for all module instances created from module classes
+     */
     private moduleInstanceMap = new Map<Type<any>, ModuleInstance>();
+    /**
+     * @private
+     * the flattened map for all provider instances exported by modules
+     */
     private providerInstanceMap = new Map<Type<any>, any>();
+    /**
+     * @private
+     * a map for storing provider class to module class relationship
+     */
     private providerClassToModuleClassMap = new Map<Type, Type>();
+    /**
+     * @private
+     * flattened route config items
+     */
     private routeConfigItems: RouteConfigItem[] = [];
 
+    /**
+     * @public
+     * @async
+     * @method
+     * @param {Type<T>} ModuleClass
+     * @returns {Promise<RouteConfig>}
+     *
+     * create a route config with the root module
+     */
     public async create<T = any>(ModuleClass: Type<T>): Promise<RouteConfig> {
         const rootModuleInstance = await this.createModuleInstance(ModuleClass);
         this.setImportedModuleInstances();
@@ -40,6 +73,13 @@ export class Factory {
         return Array.from(this.nestedRoute);
     }
 
+    /**
+     * @param {Type<T>} ModuleClass
+     * @returns {Promise<void>}
+     *
+     * create flattened module instances using a root module class
+     * this is a recursive function
+     */
     private async createModuleInstance<T>(ModuleClass: Type<T>) {
         if (!this.moduleInstanceMap.get(ModuleClass)) {
             const metadataValue: ModuleMetadata = Reflect.getMetadata(
@@ -55,12 +95,6 @@ export class Factory {
                 exports: exportedProviders,
             } = metadataValue;
 
-            for (const ExportedProviderClass of exportedProviders) {
-                if (!exportedProviders.has(ExportedProviderClass)) {
-                    throw new Error(`Provider ${ExportedProviderClass.name} cannot be exported by ${ModuleClass.name}`);
-                }
-            }
-
             const moduleInstance = new ModuleInstance({
                 Class: ModuleClass,
                 isGlobal,
@@ -75,6 +109,9 @@ export class Factory {
 
         const currentModuleInstance = this.moduleInstanceMap.get(ModuleClass);
 
+        /**
+         * get all imported module classes and create them recursively
+         */
         for (const ImportedModuleClassOrPromise of currentModuleInstance.metadata.imports) {
             await this.createModuleInstance(ImportedModuleClassOrPromise);
         }
