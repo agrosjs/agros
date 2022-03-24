@@ -10,6 +10,7 @@ import {
     DI_METADATA_MODULE_SYMBOL,
 } from './constants';
 import {
+    LazyLoadHandler,
     ModuleMetadata,
     RouteConfig,
     RouteConfigItem,
@@ -198,21 +199,9 @@ export class Factory {
 
             if (isPromise(viewClassOrPromise)) {
                 const viewClassPromise = viewClassOrPromise as Promise<Type<AbstractComponent>>;
-
                 data.lazyLoad = true;
-                data.component = React.lazy(() => new Promise((resolve) => {
-                    this
-                        .getAsyncExport<Type<AbstractComponent>>(viewClassPromise)
-                        .then((ViewClass) => {
-                            const instance = this.createViewInstance(ViewClass, moduleInstance);
-                            if (typeof instance.getComponent === 'function') {
-                                instance.getComponent().then((component) => {
-                                    resolve({ default: component } as any);
-                                });
-                            }
-                        });
-                }));
-            } else {
+                data.component = React.lazy(() => this.parseLazyLoadViewClass(viewClassPromise, moduleInstance));
+            } else if (!viewClassOrPromise.hasOwnProperty('arguments') && Boolean(viewClassOrPromise.prototype)) {
                 const ViewClass = viewClassOrPromise as Type<AbstractComponent>;
 
                 const instance = this.createViewInstance(ViewClass, moduleInstance);
@@ -220,6 +209,10 @@ export class Factory {
                 if (typeof instance.getComponent === 'function') {
                     data.component = await instance.getComponent();
                 }
+            } else {
+                data.lazyLoad = true;
+                const lazyLoadHandler = viewClassOrPromise as LazyLoadHandler;
+                data.component = React.lazy(lazyLoadHandler(this.parseLazyLoadViewClass.bind(this), moduleInstance));
             }
 
             this.routeViews.add(data);
@@ -228,6 +221,21 @@ export class Factory {
         for (const importedModuleInstance of Array.from(moduleInstance.getImportedModuleInstances())) {
             await this.createViews(importedModuleInstance);
         }
+    }
+
+    private parseLazyLoadViewClass(lazyLoadPromise: Promise<any>, moduleInstance: ModuleInstance): Promise<any> {
+        return new Promise((resolve) => {
+            this
+                .getAsyncExport<Type<AbstractComponent>>(lazyLoadPromise)
+                .then((ViewClass) => {
+                    const instance = this.createViewInstance(ViewClass, moduleInstance);
+                    if (typeof instance.getComponent === 'function') {
+                        instance.getComponent().then((component) => {
+                            resolve({ default: component } as any);
+                        });
+                    }
+                });
+        });
     }
 
     private createViewInstance(ViewClass: Type<AbstractComponent>, moduleInstance: ModuleInstance) {
