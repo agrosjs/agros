@@ -3,17 +3,22 @@ import React from 'react';
 import {
     AbstractComponent,
     ModuleInstance,
+    ComponentInstance,
 } from './classes';
 import {
     DI_DEPS_SYMBOL,
     DI_GLOBAL_MODULE_SYMBOL,
+    DI_METADATA_COMPONENT_SYMBOL,
     DI_METADATA_MODULE_SYMBOL,
 } from './constants';
 import {
+    ComponentMetadata,
     LazyLoadHandler,
     ModuleMetadata,
     RouteConfig,
     RouteConfigItem,
+    RouteOptionItem,
+    RouterItem,
     Type,
     ViewItem,
 } from './types';
@@ -44,14 +49,25 @@ export class Factory {
     private providerInstanceMap = new Map<Type<any>, any>();
     /**
      * @private
+     * the flattened map for all provider instances provided by modules
+     */
+    private componentInstanceMap = new Map<Type<any>, ComponentInstance>();
+    /**
+     * @private
      * a map for storing provider class to module class relationship
      */
     private providerClassToModuleClassMap = new Map<Type, Type>();
     /**
      * @private
+     * a map for storing component class to module class relationship
+     */
+     private componentClassToModuleClassMap = new Map<Type, Type>();
+    /**
+     * @private
      * flattened route config items
      */
-    private routeConfigItems: RouteConfigItem[] = [];
+    // private routeConfigItems: RouteConfigItem[] = [];
+    private routerItems: RouterItem[] = [];
 
     /**
      * @public
@@ -62,15 +78,15 @@ export class Factory {
      *
      * create a route config with the root module
      */
-    public async create<T = any>(ModuleClass: Type<T>): Promise<RouteConfig> {
+    public async create<T = any>(ModuleClass: Type<T>): Promise<RouterItem[]> {
         const rootModuleInstance = await this.createModuleInstance(ModuleClass);
         this.setImportedModuleInstances();
         this.createProviderClassToModuleClassMap();
         await this.createProviderInstances(rootModuleInstance);
-        await this.createViews(rootModuleInstance);
-        this.nestedRoute = this.createNestedRoute();
-        this.nestedRoute = this.sequenceNestedRoute(Array.from(this.nestedRoute));
-        return Array.from(this.nestedRoute);
+        this.createComponentInstances(rootModuleInstance);
+        this.generateReactComponentForInstances();
+        this.routerItems = this.createRoutes(Array.from(rootModuleInstance.metadata.routes));
+        return Array.from(this.routerItems);
     }
 
     /**
@@ -91,7 +107,8 @@ export class Factory {
             const {
                 imports,
                 providers,
-                views: viewOrPromiseSet,
+                routes,
+                components,
                 exports: exportedProviders,
             } = metadataValue;
 
@@ -104,7 +121,8 @@ export class Factory {
                 imports: new Set(imports),
                 providers: new Set(providers),
                 exports: new Set(exportedProviders),
-                views: new Set(viewOrPromiseSet),
+                routes: new Set(routes),
+                components: new Set(components),
             });
 
             this.moduleInstanceMap.set(ModuleClass, moduleInstance);
@@ -270,102 +288,89 @@ export class Factory {
         return objectOrPromise;
     }
 
-    /**
-     * @private
-     * @async
-     * @returns {Promise<void>}
-     *
-     * create views declared by all module instances
-     */
-    private async createViews(moduleInstance: ModuleInstance) {
-        for (const ViewClassOrConfig of Array.from(moduleInstance.metadata.views)) {
-            let data = {
-                component: null,
-                options: null,
-                lazyLoad: false,
-            } as ViewItem;
+    private createComponentInstances(moduleInstance: ModuleInstance) {
+        const ModuleClass = moduleInstance.metadata.Class;
 
-            const {
-                provider: viewClassOrPromise,
-                ...options
-            } = ViewClassOrConfig;
+        for (const ComponentClass of Array.from(moduleInstance.metadata.components)) {
+            this.componentClassToModuleClassMap.set(ComponentClass, ModuleClass);
 
-            data.options = options;
+            const metadataValue: ComponentMetadata = Reflect.getMetadata(
+                DI_METADATA_COMPONENT_SYMBOL,
+                ComponentClass,
+            );
 
-            if (!viewClassOrPromise.hasOwnProperty('arguments') && Boolean(viewClassOrPromise.prototype)) {
-                const ViewClass = viewClassOrPromise as Type<AbstractComponent>;
-                const instance = this.createViewInstance(ViewClass, moduleInstance);
+            const componentInstance = new ComponentInstance({
+                ...metadataValue,
+                Class: ComponentClass,
+            });
 
-                if (isFunction(instance.getComponent)) {
-                    data.component = await instance.getComponent();
-                }
-            } else {
-                const lazyLoadHandler = viewClassOrPromise as LazyLoadHandler;
-
-                Object.defineProperty(this, 'moduleInstance', {
-                    value: moduleInstance,
-                    writable: false,
-                });
-
-                const lazyLoadFactory = await lazyLoadHandler(this.parseLazyLoadViewClass.bind(this));
-
-                if (!isFunction(lazyLoadFactory)) {
-                    throw new Error('Lazy load provider must return a React lazy load factory');
-                }
-
-                data.lazyLoad = true;
-                data.component = React.lazy(lazyLoadFactory);
-            }
-
-            this.routeViews.add(data);
+            this.componentInstanceMap.set(ComponentClass, componentInstance);
         }
 
         for (const importedModuleInstance of Array.from(moduleInstance.getImportedModuleInstances())) {
-            await this.createViews(importedModuleInstance);
+            this.createComponentInstances(importedModuleInstance);
         }
     }
 
-    private parseLazyLoadViewClass(lazyLoadPromise: Promise<any>): Promise<any> {
-        return new Promise((resolve) => {
-            const moduleInstance = (this as any).moduleInstance as ModuleInstance;
+    private generateReactComponent(componentInstance: ComponentInstance) {
+        const component = componentInstance.getComponent();
 
-            this
-                .getAsyncExport<Type<AbstractComponent>>(lazyLoadPromise)
-                .then((ViewClass) => {
-                    const instance = this.createViewInstance(ViewClass, moduleInstance);
-                    if (isFunction(instance.getComponent)) {
-                        instance.getComponent().then((component) => {
-                            resolve({ default: component });
-                        });
+        if (component) {
+            return component;
+        }
+
+        const generateDependencyMap = () => {
+            const ComponentClass = componentInstance.metadata.Class;
+
+            const dependedProviderClasses: Type[] = Reflect.getMetadata(
+                DI_DEPS_SYMBOL,
+                componentInstance.metadata.Class,
+            ) || [];
+
+            const moduleInstance = this.moduleInstanceMap.get(this.componentClassToModuleClassMap.get(ComponentClass));
+            const dependencyMap = new Map<Type, any>();
+
+            for (const ProviderClass of dependedProviderClasses) {
+                if (this.componentInstanceMap.get(ProviderClass)) {
+                    const dependedComponentInstance = this.componentInstanceMap.get(ProviderClass);
+                    let dependedComponent = dependedComponentInstance.getComponent();
+
+                    if (!dependedComponent) {
+                        dependedComponent = this.generateReactComponent(dependedComponentInstance);
                     }
-                });
+
+                    dependencyMap.set(ProviderClass, dependedComponent);
+                } else {
+                    if (moduleInstance.hasDependedProviderClass(ProviderClass)) {
+                        dependencyMap.set(ProviderClass, this.providerInstanceMap.get(ProviderClass));
+
+                        if (!dependencyMap.get(ProviderClass)) {
+                            throw new Error(`Cannot find provider ${ProviderClass.name} that can be injected`);
+                        }
+                    } else {
+                        throw new Error(`Cannot inject provider ${ProviderClass.name} into component ${ComponentClass.name}`);
+                    }
+                }
+            }
+
+            return dependencyMap;
+        };
+
+        componentInstance.setComponent((props: any) => {
+            return React.createElement(
+                componentInstance.metadata.component,
+                {
+                    ...props,
+                    $declarations: generateDependencyMap(),
+                },
+            );
         });
     }
 
-    private createViewInstance(ViewClass: Type<AbstractComponent>, moduleInstance: ModuleInstance) {
-        const dependedProviderClasses: Type[] = Reflect.getMetadata(DI_DEPS_SYMBOL, ViewClass) || [];
-
-        const viewInstance = new ViewClass(...dependedProviderClasses.map((DependedProviderClass) => {
-            const DependedModuleClass = this.providerClassToModuleClassMap.get(DependedProviderClass);
-
-            if (!moduleInstance.hasDependedProviderClass(DependedProviderClass)) {
-                throw new Error(
-                    `Cannot inject provider ${DependedProviderClass.name} into view ${ViewClass.name}, did you import ${DependedModuleClass.name}?`,
-                );
-            }
-
-            const providerInstance = this.providerInstanceMap.get(DependedProviderClass);
-
-            if (!providerInstance) {
-                throw new Error(
-                    `Cannot find provider instance for ${DependedProviderClass.name}`,
-                );
-            }
-
-            return providerInstance;
-        }));
-
-        return viewInstance;
+    private generateReactComponentForInstances() {
+        for (const [, componentInstance] of this.componentInstanceMap.entries()) {
+            this.generateReactComponent(componentInstance);
+        }
     }
 
     private normalizePath(path: string, topLeveled = false) {
@@ -380,127 +385,297 @@ export class Factory {
         return newPath;
     }
 
-    private createNestedRoute() {
-        const routeViews = Array.from(this.routeViews);
-
-        for (const routeView of routeViews) {
+    private createRoutes(routes: RouteOptionItem[], prefixPathname = ''): RouterItem[] {
+        return Array.from(routes).reduce((routes, routeItem) => {
             const {
-                options = {
-                    id: null,
-                    path: null,
-                },
-            } = routeView;
+                useComponentClass,
+                useModuleClass,
+                children,
+                path: pathname = '',
+                ...options
+            } = routeItem;
 
-            const {
-                id,
-                path: pathname,
-                parent,
-            } = options;
+            let currentPathname = '';
 
-            if (!pathname) {
-                throw new Error('View should have `path` value');
+            if (!this.normalizePath(prefixPathname)) {
+                currentPathname = this.normalizePath(pathname);
+            } else if (!this.normalizePath(pathname)) {
+                currentPathname = this.normalizePath(prefixPathname);
+            } else {
+                currentPathname = `${this.normalizePath(prefixPathname)}/${this.normalizePath(pathname)}`;
             }
 
-            if (!id) {
-                throw new Error('View should have `id` value');
+            if (useComponentClass && useModuleClass) {
+                throw new Error('\'useComponentClass\' and \'useModuleClass\' are not permitted to be specified at one time');
             }
 
-            if (parent && !isString(parent)) {
-                throw new Error(`'parent' should be a string in ${id}`);
+            if (!useComponentClass && !useModuleClass) {
+                throw new Error('\'useComponentClass\' or \'useModuleClass\' should be specified');
             }
 
-            if (parent && parent === id) {
-                throw new Error(`View '${id}' cannot be a child of itself`);
-            }
+            if (useComponentClass) {
+                const ComponentClass = useComponentClass;
+                const currentRouterItem = {
+                    ...options,
+                    path: currentPathname,
+                    componentInstance: this.componentInstanceMap.get(ComponentClass),
+                } as RouterItem;
 
-            const routeConfigItem = this.createRouteConfigItem(routeView);
-            routeConfigItem.path = this.normalizePath(routeConfigItem.path, !routeConfigItem.parent);
-
-            if (this.routeConfigItems.some((item) => item.id === routeConfigItem.id)) {
-                throw new Error(`View '${id}' has at least one duplicated instance`);
-            }
-
-            this.routeConfigItems.push(routeConfigItem);
-        }
-
-        for (const routeConfigItem of this.routeConfigItems) {
-            if (!this.setToParentRouteConfigItem(this.routeConfigItems, routeConfigItem)) {
-                const {
-                    id,
-                    parent,
-                } = routeConfigItem;
-                throw new Error(`Cannot find view id '${parent}' for view '${id}'`);
-            }
-        }
-
-        return this.routeConfigItems.filter((item) => !item.parent);
-    }
-
-    private sequenceNestedRoute(nestedRoutes: RouteConfig) {
-        const newNestedRoutes = nestedRoutes.sort((a, b) => {
-            return (b.priority || 0) * (b.sequence || 1) - (a.priority || 0) * (a.sequence || 1);
-        });
-
-        for (const nestedRouteItem of newNestedRoutes) {
-            if (Array.isArray(nestedRouteItem.children) && nestedRouteItem.children.length > 0) {
-                nestedRouteItem.children = this.sequenceNestedRoute(nestedRouteItem.children);
-            }
-        }
-
-        return newNestedRoutes;
-    }
-
-    private createRouteConfigItem(routeView: ViewItem): RouteConfigItem {
-        const {
-            options,
-            component,
-            lazyLoad = false,
-        } = routeView;
-
-        const {
-            elementProps,
-            priority = 0,
-            path: pathname,
-            ...otherOptions
-        } = options;
-
-        const result: RouteConfigItem = {
-            component,
-            priority,
-            lazyLoad,
-            path: pathname,
-            ...otherOptions,
-            ...(
-                typeof elementProps === 'undefined'
-                    ? {}
-                    : { elementProps }
-            ),
-        };
-
-        return result;
-    }
-
-    private setToParentRouteConfigItem(
-        routeConfigItems: RouteConfigItem[],
-        routeConfigItem: RouteConfigItem,
-    ): boolean {
-        if (!routeConfigItem.parent) {
-            return true;
-        }
-
-        for (const parentRouteConfigItem of routeConfigItems) {
-            if (routeConfigItem.parent === parentRouteConfigItem.id) {
-                if (!Array.isArray(parentRouteConfigItem.children)) {
-                    parentRouteConfigItem.children = [];
+                if (Array.isArray(children)) {
+                    currentRouterItem.children = this.createRoutes(routeItem.children);
                 }
 
-                routeConfigItem.sequence = parentRouteConfigItem.children.length + 1;
-                parentRouteConfigItem.children.push(routeConfigItem);
+                return routes.concat(currentRouterItem);
+            } else if (useModuleClass) {
+                const ModuleClass = useModuleClass;
+                const moduleInstance = this.moduleInstanceMap.get(ModuleClass);
+                const currentRoutes = Array.from(moduleInstance.metadata.routes);
+                return routes
+                    .concat(this.createRoutes(currentRoutes, this.normalizePath(prefixPathname) || ''))
+                    .map((routerItem) => {
+                        if (Array.isArray(routeItem.children)) {
+                            routerItem.children = this.createRoutes(routerItem.children);
+                        }
 
-                return true;
+                        return routerItem;
+                    });
+            } else {
+                return routes;
             }
-        }
-
-        return false;
+        }, [] as RouterItem[]);
     }
+
+    // /**
+    //  * @private
+    //  * @async
+    //  * @returns {Promise<void>}
+    //  *
+    //  * create views declared by all module instances
+    //  */
+    // private async createViews(moduleInstance: ModuleInstance) {
+    //     for (const ViewClassOrConfig of Array.from(moduleInstance.metadata.views)) {
+    //         let data = {
+    //             component: null,
+    //             options: null,
+    //             lazyLoad: false,
+    //         } as ViewItem;
+
+    //         const {
+    //             provider: viewClassOrPromise,
+    //             ...options
+    //         } = ViewClassOrConfig;
+
+    //         data.options = options;
+
+    //         if (!viewClassOrPromise.hasOwnProperty('arguments') && Boolean(viewClassOrPromise.prototype)) {
+    //             const ViewClass = viewClassOrPromise as Type<AbstractComponent>;
+    //             const instance = this.createViewInstance(ViewClass, moduleInstance);
+
+    //             if (isFunction(instance.getComponent)) {
+    //                 data.component = await instance.getComponent();
+    //             }
+    //         } else {
+    //             const lazyLoadHandler = viewClassOrPromise as LazyLoadHandler;
+
+    //             Object.defineProperty(this, 'moduleInstance', {
+    //                 value: moduleInstance,
+    //                 writable: false,
+    //             });
+
+    //             const lazyLoadFactory = await lazyLoadHandler(this.parseLazyLoadViewClass.bind(this));
+
+    //             if (!isFunction(lazyLoadFactory)) {
+    //                 throw new Error('Lazy load provider must return a React lazy load factory');
+    //             }
+
+    //             data.lazyLoad = true;
+    //             data.component = React.lazy(lazyLoadFactory);
+    //         }
+
+    //         this.routeViews.add(data);
+    //     }
+
+    //     for (const importedModuleInstance of Array.from(moduleInstance.getImportedModuleInstances())) {
+    //         await this.createViews(importedModuleInstance);
+    //     }
+    // }
+
+    // private parseLazyLoadViewClass(lazyLoadPromise: Promise<any>): Promise<any> {
+    //     return new Promise((resolve) => {
+    //         const moduleInstance = (this as any).moduleInstance as ModuleInstance;
+
+    //         this
+    //             .getAsyncExport<Type<AbstractComponent>>(lazyLoadPromise)
+    //             .then((ViewClass) => {
+    //                 const instance = this.createViewInstance(ViewClass, moduleInstance);
+    //                 if (isFunction(instance.getComponent)) {
+    //                     instance.getComponent().then((component) => {
+    //                         resolve({ default: component });
+    //                     });
+    //                 }
+    //             });
+    //     });
+    // }
+
+    // private createViewInstance(ViewClass: Type<AbstractComponent>, moduleInstance: ModuleInstance) {
+    //     const dependedProviderClasses: Type[] = Reflect.getMetadata(DI_DEPS_SYMBOL, ViewClass) || [];
+
+    //     const viewInstance = new ViewClass(...dependedProviderClasses.map((DependedProviderClass) => {
+    //         const DependedModuleClass = this.providerClassToModuleClassMap.get(DependedProviderClass);
+
+    //         if (!moduleInstance.hasDependedProviderClass(DependedProviderClass)) {
+    //             throw new Error(
+    //                 `Cannot inject provider ${DependedProviderClass.name} into view ${ViewClass.name}, did you import ${DependedModuleClass.name}?`,
+    //             );
+    //         }
+
+    //         const providerInstance = this.providerInstanceMap.get(DependedProviderClass);
+
+    //         if (!providerInstance) {
+    //             throw new Error(
+    //                 `Cannot find provider instance for ${DependedProviderClass.name}`,
+    //             );
+    //         }
+
+    //         return providerInstance;
+    //     }));
+
+    //     return viewInstance;
+    // }
+
+    // private normalizePath(path: string, topLeveled = false) {
+    //     let newPath: string = path;
+
+    //     newPath = newPath.replace(/^.+\/+$/g, '');
+
+    //     if (!topLeveled) {
+    //         newPath = newPath.replace(/^\/+/g, '');
+    //     }
+
+    //     return newPath;
+    // }
+
+    // private createNestedRoute() {
+    //     const routeViews = Array.from(this.routeViews);
+
+    //     for (const routeView of routeViews) {
+    //         const {
+    //             options = {
+    //                 id: null,
+    //                 path: null,
+    //             },
+    //         } = routeView;
+
+    //         const {
+    //             id,
+    //             path: pathname,
+    //             parent,
+    //         } = options;
+
+    //         if (!pathname) {
+    //             throw new Error('View should have `path` value');
+    //         }
+
+    //         if (!id) {
+    //             throw new Error('View should have `id` value');
+    //         }
+
+    //         if (parent && !isString(parent)) {
+    //             throw new Error(`'parent' should be a string in ${id}`);
+    //         }
+
+    //         if (parent && parent === id) {
+    //             throw new Error(`View '${id}' cannot be a child of itself`);
+    //         }
+
+    //         const routeConfigItem = this.createRouteConfigItem(routeView);
+    //         routeConfigItem.path = this.normalizePath(routeConfigItem.path, !routeConfigItem.parent);
+
+    //         if (this.routeConfigItems.some((item) => item.id === routeConfigItem.id)) {
+    //             throw new Error(`View '${id}' has at least one duplicated instance`);
+    //         }
+
+    //         this.routeConfigItems.push(routeConfigItem);
+    //     }
+
+    //     for (const routeConfigItem of this.routeConfigItems) {
+    //         if (!this.setToParentRouteConfigItem(this.routeConfigItems, routeConfigItem)) {
+    //             const {
+    //                 id,
+    //                 parent,
+    //             } = routeConfigItem;
+    //             throw new Error(`Cannot find view id '${parent}' for view '${id}'`);
+    //         }
+    //     }
+
+    //     return this.routeConfigItems.filter((item) => !item.parent);
+    // }
+
+    // private sequenceNestedRoute(nestedRoutes: RouteConfig) {
+    //     const newNestedRoutes = nestedRoutes.sort((a, b) => {
+    //         return (b.priority || 0) * (b.sequence || 1) - (a.priority || 0) * (a.sequence || 1);
+    //     });
+
+    //     for (const nestedRouteItem of newNestedRoutes) {
+    //         if (Array.isArray(nestedRouteItem.children) && nestedRouteItem.children.length > 0) {
+    //             nestedRouteItem.children = this.sequenceNestedRoute(nestedRouteItem.children);
+    //         }
+    //     }
+
+    //     return newNestedRoutes;
+    // }
+
+    // private createRouteConfigItem(routeView: ViewItem): RouteConfigItem {
+    //     const {
+    //         options,
+    //         component,
+    //         lazyLoad = false,
+    //     } = routeView;
+
+    //     const {
+    //         elementProps,
+    //         priority = 0,
+    //         path: pathname,
+    //         ...otherOptions
+    //     } = options;
+
+    //     const result: RouteConfigItem = {
+    //         component,
+    //         priority,
+    //         lazyLoad,
+    //         path: pathname,
+    //         ...otherOptions,
+    //         ...(
+    //             typeof elementProps === 'undefined'
+    //                 ? {}
+    //                 : { elementProps }
+    //         ),
+    //     };
+
+    //     return result;
+    // }
+
+    // private setToParentRouteConfigItem(
+    //     routeConfigItems: RouteConfigItem[],
+    //     routeConfigItem: RouteConfigItem,
+    // ): boolean {
+    //     if (!routeConfigItem.parent) {
+    //         return true;
+    //     }
+
+    //     for (const parentRouteConfigItem of routeConfigItems) {
+    //         if (routeConfigItem.parent === parentRouteConfigItem.id) {
+    //             if (!Array.isArray(parentRouteConfigItem.children)) {
+    //                 parentRouteConfigItem.children = [];
+    //             }
+
+    //             routeConfigItem.sequence = parentRouteConfigItem.children.length + 1;
+    //             parentRouteConfigItem.children.push(routeConfigItem);
+
+    //             return true;
+    //         }
+    //     }
+
+    //     return false;
+    // }
 }

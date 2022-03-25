@@ -1,6 +1,9 @@
 import React from 'react';
 import { RouteProps } from 'react-router-dom';
-import { AbstractComponent } from './classes';
+import {
+    AbstractComponent,
+    ComponentInstance,
+} from './classes';
 
 export type Type<T = any> = new (...args: Array<any>) => T;
 
@@ -14,7 +17,8 @@ export type LazyLoadHandler = (parser: LazyLoadParser) => LazyLoadFactory | Prom
 export interface ModuleDecoratorOptions {
     imports?: Array<Type>;
     providers?: Array<Type>;
-    views?: Array<ViewConfig>;
+    components?: Array<Type>;
+    routes?: Array<RouteOptionItem>;
     exports?: Array<Type>;
 }
 
@@ -58,18 +62,44 @@ export interface ViewConfig<T = any> extends Omit<RouteProps, 'element' | 'child
     suspenseFallback?: boolean | React.ReactChild | React.ReactFragment | React.ReactPortal | null;
 };
 
+export interface RouteOptionItem<T = any> extends Omit<RouteProps, 'element' | 'children'> {
+    useModuleClass?: Type;
+    useComponentClass?: Type;
+    children?: RouteOptionItem<T>[];
+}
+
 export interface ModuleInstanceMetadata {
     Class: Type<any>;
     imports: Set<Type<any>>;
     isGlobal: boolean;
     providers: Set<Type<any>>;
     exports: Set<Type<any>>;
-    views: Set<ViewConfig>;
+    components: Set<Type<any>>;
+    routes: Set<RouteOptionItem>;
 }
 
 export interface ModuleMetadata {
     imports: Set<Type>;
     providers: Set<Type>;
     exports: Set<Type>;
-    views: Set<ViewConfig>;
+    components: Set<Type>;
+    routes: Set<RouteOptionItem>;
+}
+
+export interface ComponentDecoratorOptions<T = any> {
+    component: React.FC;
+    declarations?: Type[];
+    elementProps?: T;
+    suspenseFallback?: boolean | React.ReactChild | React.ReactFragment | React.ReactPortal | null;
+}
+
+export type ComponentMetadata = Omit<ComponentDecoratorOptions, 'declarations'>;
+
+export interface ComponentInstanceMetadata extends ComponentMetadata {
+    Class: Type;
+}
+
+export interface RouterItem extends Omit<RouteOptionItem, 'useModuleClass' | 'useComponentClass' | 'children'> {
+    componentInstance: ComponentInstance;
+    children?: RouterItem[];
 }

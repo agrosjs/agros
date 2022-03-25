@@ -3,6 +3,6 @@ import { Component } from '../../../../lib';
 
 @Component({
     suspenseFallback: 'loading...',
-    component: React.lazy(() => import('./Bar')),
+    component: React.lazy(() => import('./FooChild')),
 })
-export class BarComponent {}
+export class FooChildComponent {}

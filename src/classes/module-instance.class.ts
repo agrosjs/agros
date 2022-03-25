@@ -20,11 +20,16 @@ export class ModuleInstance {
 
     public getProviderClasses() {
         return new Set(
-            Array.from(this.metadata.providers).concat(
-                Array.from(this.importedModuleInstances).reduce((providerClasses, importedModuleInstance) => {
-                    return providerClasses.concat(Array.from(importedModuleInstance.metadata.exports));
-                }, [] as Type[]),
-            ),
+            Array
+                .from(this.metadata.providers)
+                .concat(Array.from(this.metadata.components))
+                .concat(
+                    Array.from(this.importedModuleInstances).reduce(
+                        (providerClasses, importedModuleInstance) => {
+                            return providerClasses.concat(Array.from(importedModuleInstance.metadata.exports));
+                        }, [] as Type[],
+                    ),
+                ),
         );
     }
 

@@ -1,27 +1,38 @@
 import { Module } from '../../lib';
-import { AppNavigateView } from './app-navigate.view';
-import { AppView } from './app.view';
+import { AppNavigateComponent } from './app-navigate.component';
+import { AppComponent } from './app.component';
 import { BarModule } from './modules/bar/bar.module';
 import { BazModule } from './modules/baz/baz.module';
 import { FooModule } from './modules/foo/foo.module';
 
 @Module({
+    components: [
+        AppComponent,
+        AppNavigateComponent,
+    ],
     imports: [
         FooModule,
         BarModule,
         BazModule,
     ],
-    views: [
+    routes: [
         {
-            id: 'app',
-            path: '/app',
-            provider: AppView,
+            path: 'app',
+            useComponentClass: AppComponent,
+            children: [
+                {
+                    useModuleClass: FooModule,
+                },
+            ],
         },
-        {
-            id: 'app.redirect',
-            path: '*',
-            provider: AppNavigateView,
-        },
+        // {
+        //     path: '*',
+        //     useComponentClass: AppNavigateComponent,
+        // },
+    ],
+    exports: [
+        AppComponent,
+        AppNavigateComponent,
     ],
 })
 export class AppModule {}

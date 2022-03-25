@@ -7,6 +7,7 @@ import React, {
 import { Factory } from '../factory';
 import {
     RouteConfig,
+    RouterItem,
     Type,
 } from '../types';
 import {
@@ -14,15 +15,20 @@ import {
     RouteProps,
 } from 'react-router-dom';
 
-const createRoutes = (routeConfig: RouteConfig, level = 0): React.ReactNode | React.ReactNode[] => {
-    return routeConfig.map((routeConfigItem, index) => {
+const createRoutes = (routerItems: RouterItem[], level = 0): React.ReactNode | React.ReactNode[] => {
+    return routerItems.map((routerItem, index) => {
         const {
-            elementProps = {},
+            componentInstance,
             children,
-            component: Component,
-            suspenseFallback = null,
             ...routeProps
-        } = routeConfigItem;
+        } = routerItem;
+
+        const {
+            suspenseFallback = null,
+            elementProps = {},
+        } = componentInstance.metadata;
+
+        const Component = componentInstance.getComponent();
 
         return React.createElement(
             Route,
@@ -51,21 +57,21 @@ const createRoutes = (routeConfig: RouteConfig, level = 0): React.ReactNode | Re
 };
 
 export const useRoutes = <T>(Module: Type): React.ReactNode => {
-    const [routeConfig, setRouteConfig] = useState<RouteConfig>([]);
+    const [routerItems, setRouterItems] = useState<RouterItem[]>([]);
     const [elements, setElements] = useState<React.ReactNode>(null);
 
     useEffect(() => {
         const RootModule = Module;
         const factory = new Factory();
-        factory.create<T>(RootModule).then((config) => {
-            setRouteConfig(config);
+        factory.create<T>(RootModule).then((items) => {
+            setRouterItems(items);
         });
     }, [Module]);
 
     useEffect(() => {
-        const routeElements = createRoutes(routeConfig);
+        const routeElements = createRoutes(routerItems);
         setElements(routeElements);
-    }, [routeConfig]);
+    }, [routerItems]);
 
     return elements;
 };
