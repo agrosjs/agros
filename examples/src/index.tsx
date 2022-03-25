@@ -1,12 +1,12 @@
 import ReactDOM from 'react-dom';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
-import { RouterContainer } from '../../lib';
+import { App } from '../../lib';
 import { HashRouter as Router } from 'react-router-dom';
 import { AppModule } from './app.module';
 
 ReactDOM.render(
-    <RouterContainer
+    <App
         module={AppModule}
         RouterComponent={Router}
     />,

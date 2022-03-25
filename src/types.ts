@@ -43,7 +43,7 @@ export interface RouteConfigItem extends ViewOptions {
 
 export type RouteConfig = RouteConfigItem[];
 
-export interface RouterContainerProps {
+export interface AppProps {
     module: Type;
     routerProps?: any;
     RouterComponent?: React.FC;

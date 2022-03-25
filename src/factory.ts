@@ -95,6 +95,9 @@ export class Factory {
                 exports: exportedProviders,
             } = metadataValue;
 
+            /**
+             * create current module instance by module class
+             */
             const moduleInstance = new ModuleInstance({
                 Class: ModuleClass,
                 isGlobal,
@@ -119,6 +122,13 @@ export class Factory {
         return currentModuleInstance;
     }
 
+    /**
+     * @private
+     * @async
+     * @returns {Promise<void>}
+     *
+     * add imported module instances into every instance
+     */
     private setImportedModuleInstances() {
         for (const [ModuleClass, moduleInstance] of this.moduleInstanceMap.entries()) {
             for (const ImportedModuleClass of Array.from(moduleInstance.metadata.imports)) {
@@ -129,12 +139,16 @@ export class Factory {
                 const importedModuleInstance = this.moduleInstanceMap.get(ImportedModuleClass);
 
                 if (!importedModuleInstance) {
-                    throw new Error(`Module ${ImportedModuleClass.name} is not imported into ${ModuleClass.name}`);
+                    throw new Error(`Module ${ImportedModuleClass.name} cannot be imported into ${ModuleClass.name}`);
                 }
 
                 moduleInstance.addImportedModuleInstance(importedModuleInstance);
             }
 
+            /**
+             * if current module is declared to be global, the module instance will be
+             * added to all listed module instances except itself
+             */
             if (moduleInstance.metadata.isGlobal) {
                 for (const [TargetModuleClass, targetModuleInstance] of this.moduleInstanceMap.entries()) {
                     if (TargetModuleClass !== ModuleClass) {
@@ -145,6 +159,14 @@ export class Factory {
         }
     }
 
+    /**
+     * @private
+     * @returns {void}
+     *
+     * create a map for mapping provider class to module classes
+     * in order to make it easier to find a module class who
+     * provides a provider class
+     */
     private createProviderClassToModuleClassMap() {
         for (const [, moduleInstance] of this.moduleInstanceMap) {
             for (const ProviderClass of moduleInstance.metadata.providers) {
@@ -153,6 +175,13 @@ export class Factory {
         }
     }
 
+    /**
+     * @private
+     * @async
+     * @returns {void}
+     *
+     * create a single provider instance use provider class
+     */
     private async createProviderInstance(ProviderClass: Type) {
         if (this.providerInstanceMap.get(ProviderClass)) {
             return this.providerInstanceMap.get(ProviderClass);
@@ -167,6 +196,11 @@ export class Factory {
             throw new Error(`Provider ${ProviderClass.name} cannot be injected, did you add \`@Injectable()\` into it?`);
         }
 
+        /**
+         * set to provider instance map directly so that other provider
+         * who depends on it can get it during creating provider instances,
+         * even if it does not be fully created.
+         */
         this.providerInstanceMap.set(
             ProviderClass,
             new ProviderClass(
@@ -191,6 +225,13 @@ export class Factory {
         return this.providerInstanceMap.get(ProviderClass);
     }
 
+    /**
+     * @private
+     * @async
+     * @returns {Promise<void}
+     *
+     * create provider instances from root module's providers
+     */
     private async createProviderInstances(moduleInstance: ModuleInstance) {
         for (const ProviderClass of Array.from(moduleInstance.metadata.providers)) {
             await this.createProviderInstance(ProviderClass);
@@ -201,6 +242,14 @@ export class Factory {
         }
     }
 
+    /**
+     * @utility
+     * @private
+     * @async
+     * @returns {Promise<T>}
+     *
+     * get async exports from a promise object
+     */
     private async getAsyncExport<T>(objectOrPromise: T | Promise<T>): Promise<T> {
         if (isPromise(objectOrPromise)) {
             const importedObject: any = await objectOrPromise;
@@ -221,6 +270,13 @@ export class Factory {
         return objectOrPromise;
     }
 
+    /**
+     * @private
+     * @async
+     * @returns {Promise<void>}
+     *
+     * create views declared by all module instances
+     */
     private async createViews(moduleInstance: ModuleInstance) {
         for (const ViewClassOrConfig of Array.from(moduleInstance.metadata.views)) {
             let data = {

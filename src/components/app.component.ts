@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-    RouterContainerProps,
+    AppProps,
 } from '../types';
 import { useRoutes } from '../hooks';
 import {
@@ -8,7 +8,7 @@ import {
     BrowserRouter,
 } from 'react-router-dom';
 
-export const RouterContainer: React.FC<RouterContainerProps> = ({
+export const App: React.FC<AppProps> = ({
     module: Module,
     routerProps = {},
     RouterComponent = BrowserRouter,

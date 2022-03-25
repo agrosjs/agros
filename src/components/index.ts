@@ -1,1 +1,1 @@
-export * from './router-container.component';
+export * from './app.component';
