@@ -339,7 +339,7 @@ export class Factory {
                         dependedComponent = this.generateReactComponent(dependedComponentInstance);
                     }
 
-                    dependencyMap.set(ProviderClass, dependedComponent);
+                    dependencyMap.set(ProviderClass, (props) => () => React.createElement(dependedComponent, props));
                 } else {
                     if (moduleInstance.hasDependedProviderClass(ProviderClass)) {
                         dependencyMap.set(ProviderClass, this.providerInstanceMap.get(ProviderClass));

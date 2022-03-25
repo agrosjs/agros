@@ -26,7 +26,7 @@ const Foo: React.FC = ({ $declarations, ...props }: any) => {
     return (
         <>
             <div>Khamsa is working!</div>
-            {Bar}
+            {Bar && <Bar />}
             <Outlet />
         </>
     );
