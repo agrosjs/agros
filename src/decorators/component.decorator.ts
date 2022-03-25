@@ -5,15 +5,13 @@ import {
 import { ComponentDecoratorOptions } from '../types';
 
 export function Component({
-    component,
     declarations = [],
+    ...metadataValue
 }: ComponentDecoratorOptions): ClassDecorator {
     return (target) => {
         Reflect.defineMetadata(
             DI_METADATA_COMPONENT_SYMBOL,
-            {
-                component,
-            },
+            metadataValue,
             target,
         );
         Reflect.defineMetadata(DI_DEPS_SYMBOL, declarations, target);

@@ -6,7 +6,6 @@ import React, {
 } from 'react';
 import { Factory } from '../factory';
 import {
-    RouteConfig,
     RouterItem,
     Type,
 } from '../types';
