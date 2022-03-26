@@ -1,4 +1,5 @@
 import React, {
+    ReactNode,
     Suspense,
     SuspenseProps,
     useState,
@@ -14,7 +15,13 @@ import {
     RouteProps,
 } from 'react-router-dom';
 
-const createRoutes = (routerItems: RouterItem[], level = 0): React.ReactNode | React.ReactNode[] => {
+/**
+ * create routes from router items
+ * @param {RouterItem[]} routerItems router items
+ * @param {number} level current router level
+ * @returns {ReactNode | ReactNode[]}
+ */
+const createRoutes = (routerItems: RouterItem[], level = 0): ReactNode | ReactNode[] => {
     return routerItems.map((routerItem, index) => {
         const {
             componentInstance,
@@ -55,9 +62,14 @@ const createRoutes = (routerItems: RouterItem[], level = 0): React.ReactNode | R
     });
 };
 
-export const useRoutes = <T>(Module: Type): React.ReactNode => {
+/**
+ * pass a module class and create route elements
+ * @param {Type} Module module class
+ * @returns {ReactNode}
+ */
+export const useRoutes = <T>(Module: Type): ReactNode => {
     const [routerItems, setRouterItems] = useState<RouterItem[]>([]);
-    const [elements, setElements] = useState<React.ReactNode>(null);
+    const [elements, setElements] = useState<ReactNode>(null);
 
     useEffect(() => {
         const RootModule = Module;
@@ -68,8 +80,8 @@ export const useRoutes = <T>(Module: Type): React.ReactNode => {
     }, [Module]);
 
     useEffect(() => {
-        const routeElements = createRoutes(routerItems);
-        setElements(routeElements);
+        const elements = createRoutes(routerItems);
+        setElements(elements);
     }, [routerItems]);
 
     return elements;

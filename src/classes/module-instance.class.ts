@@ -3,9 +3,17 @@ import {
     Type,
 } from '../types';
 
+/**
+ * @class
+ * a class for storing imported module instances and methods
+ */
 export class ModuleInstance {
     private importedModuleInstances = new Set<ModuleInstance>();
 
+    /**
+     * @constructor
+     * @param {ModuleInstanceMetadata} metadata
+     */
     public constructor(
         public readonly metadata: ModuleInstanceMetadata,
     ) {}
@@ -18,6 +26,10 @@ export class ModuleInstance {
         return new Set(this.importedModuleInstances);
     }
 
+    /**
+     * @public
+     * get provider classes recursively from imported modules
+     */
     public getProviderClasses() {
         return new Set(
             Array
