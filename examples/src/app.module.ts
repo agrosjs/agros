@@ -25,10 +25,10 @@ import { FooModule } from './modules/foo/foo.module';
                 },
             ],
         },
-        // {
-        //     path: '*',
-        //     useComponentClass: AppNavigateComponent,
-        // },
+        {
+            path: '*',
+            useComponentClass: AppNavigateComponent,
+        },
     ],
     exports: [
         AppComponent,

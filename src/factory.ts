@@ -46,7 +46,7 @@ export class Factory {
      private componentClassToModuleClassMap = new Map<Type, Type>();
     /**
      * @private
-     * nested router items
+     * nested router items which would export from `create` method
      */
     private routerItems: RouterItem[] = [];
 
@@ -208,8 +208,19 @@ export class Factory {
                         throw new Error(`Provider ${ProviderClass.name} cannot depend on itself`);
                     }
 
+                    /**
+                     * get the module class that the provider depended on
+                     */
                     const DependedModuleClass = this.providerClassToModuleClassMap.get(DependedProviderClass);
 
+                    if (!DependedModuleClass) {
+                        throw new Error(`Cannot find the module that provides ${DependedProviderClass.name}, please make sure it is exported by a module`);
+                    }
+
+                    /**
+                     * check depended provider class be exported from the module,
+                     * if not, it will throw an error
+                     */
                     if (!moduleInstance.hasDependedProviderClass(DependedProviderClass)) {
                         throw new Error(
                             `Cannot inject provider ${DependedProviderClass.name} into provider ${ProviderClass.name}, did you import ${DependedModuleClass.name}?`,
@@ -227,6 +238,7 @@ export class Factory {
     /**
      * @private
      * @async
+     * @param {ModuleInstance} moduleInstance
      * @returns {Promise<void>}
      *
      * create provider instances from root module's providers
@@ -241,6 +253,12 @@ export class Factory {
         }
     }
 
+    /**
+     * create component instances from root module instance
+     *
+     * @private
+     * @param {ModuleInstance} moduleInstance
+     */
     private createComponentInstances(moduleInstance: ModuleInstance) {
         const ModuleClass = moduleInstance.metadata.Class;
 
@@ -252,6 +270,9 @@ export class Factory {
                 ComponentClass,
             );
 
+            /**
+             * create a component instance, but not real React component yet
+             */
             const componentInstance = new ComponentInstance({
                 ...metadataValue,
                 Class: ComponentClass,
@@ -260,6 +281,10 @@ export class Factory {
             this.componentInstanceMap.set(ComponentClass, componentInstance);
         }
 
+        /**
+         * get imported modules from current module instance and create component instances
+         * from them recursively
+         */
         for (const importedModuleInstance of Array.from(moduleInstance.getImportedModuleInstances())) {
             this.createComponentInstances(importedModuleInstance);
         }
@@ -295,15 +320,30 @@ export class Factory {
 
             for (const ProviderClass of dependedProviderClasses) {
                 if (this.componentInstanceMap.get(ProviderClass)) {
+                    /**
+                     * if provider class is a component class, that set the map value
+                     * to a React component
+                     */
                     const dependedComponentInstance = this.componentInstanceMap.get(ProviderClass);
                     let dependedComponent = dependedComponentInstance.getComponent();
 
+                    /**
+                     * if current depended component class is not initialized, then create
+                     * the React component recursively
+                     */
                     if (!dependedComponent) {
                         dependedComponent = this.generateReactComponent(dependedComponentInstance);
                     }
 
+                    /**
+                     * get the React component from depended component class
+                     */
                     dependencyMap.set(ProviderClass, (props) => React.createElement(dependedComponent, props));
                 } else {
+                    /**
+                     * if provider class is a normal provider class, than get the provider
+                     * instance by provider class and set it to the map value
+                     */
                     if (moduleInstance.hasDependedProviderClass(ProviderClass)) {
                         dependencyMap.set(ProviderClass, this.providerInstanceMap.get(ProviderClass));
 
@@ -319,6 +359,9 @@ export class Factory {
             return dependencyMap;
         };
 
+        /**
+         * set component directly so that it can prevent unlimited creating tasks
+         */
         componentInstance.setComponent((props: any) => {
             const dependencyMap = generateDependencyMap();
             return React.createElement(
@@ -357,6 +400,11 @@ export class Factory {
         return newPath;
     }
 
+    /**
+     * @private
+     * @param {RouteOptionItem[]} routes route config items from modules
+     * @param {string} prefixPathname prefix pathname of current level routes
+     */
     private createRoutes(routes: RouteOptionItem[], prefixPathname = ''): RouterItem[] {
         return Array.from(routes).reduce((routes, routeItem) => {
             const {
@@ -399,11 +447,15 @@ export class Factory {
 
                 return routes.concat(currentRouterItem);
             } else if (useModuleClass) {
+                console.log(prefixPathname);
+                /**
+                 * if `useModuleClass` is specified, then flatten it to current level child routes
+                 */
                 const ModuleClass = useModuleClass;
                 const moduleInstance = this.moduleInstanceMap.get(ModuleClass);
                 const currentRoutes = Array.from(moduleInstance.metadata.routes);
                 return routes
-                    .concat(this.createRoutes(currentRoutes, this.normalizePath(prefixPathname) || ''))
+                    .concat(this.createRoutes(currentRoutes, this.normalizePath(pathname) || ''))
                     .map((routerItem) => {
                         if (Array.isArray(routeItem.children)) {
                             routerItem.children = this.createRoutes(routerItem.children);

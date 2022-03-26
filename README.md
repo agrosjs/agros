@@ -97,19 +97,13 @@ Providers are the most important and fundamental concept in Khamsa. Almost any c
 
 As you can see in the image above, each provider can depend on another provider by passing parameters with the provider class as a type annotation in the constructor. With the Khamsa runtime, these type annotation-based provider parameters will be instantiated and made available when the web application starts.
 
-### Components & Views
+### Components
 
-**Components are also a type of provider**. Unlike normal providers, components need to implement the `AbstractComponent` class and the `generateComponent` method, which needs to return a React functional component.
+**Components are also a type of provider**. Like normal providers, any provider (including components) can be injected into a component as a dependency, and similarly, a component can be injected into any provider as a dependency.
 
 <img src="docs/images/components.png" width="60%" style="display: block; margin: 0 auto;" />
 
-As you can see from the image above, like normal providers, any provider (including components) can be injected into a component as a dependency, and similarly, a component can be injected into any provider as a dependency.
-
 A view is a special component that is considered the carrier of a page in Khamsa. It can define routing paths, lazy loading fallbacks, and other options that are not supported by the component.
-
-<img src="docs/images/views.png" width="60%" style="display: block; margin: 0 auto;" />
-
-As depicted in the figure above, each view is linked together by path names and combined by Khamsa parsing into a routing map for the application. Within the view, you can also inject any provider (including components) into it, but **it cannot be injected into other views**.
 
 ### Modules
 
