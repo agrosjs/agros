@@ -46,9 +46,8 @@ export class Factory {
      private componentClassToModuleClassMap = new Map<Type, Type>();
     /**
      * @private
-     * flattened route config items
+     * nested router items
      */
-    // private routeConfigItems: RouteConfigItem[] = [];
     private routerItems: RouterItem[] = [];
 
     /**
@@ -228,7 +227,7 @@ export class Factory {
     /**
      * @private
      * @async
-     * @returns {Promise<void}
+     * @returns {Promise<void>}
      *
      * create provider instances from root module's providers
      */
@@ -273,6 +272,13 @@ export class Factory {
             return component;
         }
 
+        /**
+         * generate dependency map that can be used by `declarations.get` method
+         *
+         * @returns {Map<ClassType, any>} a map for storing relationships between provider class
+         * and provider instance, when the provider class infers to a component class, its value
+         * would be a React component
+         */
         const generateDependencyMap = () => {
             const ComponentClass = componentInstance.metadata.Class;
 
@@ -281,7 +287,10 @@ export class Factory {
                 componentInstance.metadata.Class,
             ) || [];
 
-            const moduleInstance = this.moduleInstanceMap.get(this.componentClassToModuleClassMap.get(ComponentClass));
+            const moduleInstance = this.moduleInstanceMap.get(
+                this.componentClassToModuleClassMap.get(ComponentClass),
+            );
+
             const dependencyMap = new Map<Type, any>();
 
             for (const ProviderClass of dependedProviderClasses) {
@@ -316,6 +325,10 @@ export class Factory {
                 componentInstance.metadata.component,
                 {
                     ...props,
+                    /**
+                     * the `declarations` parameter will always be passed in regardless
+                     * of what parameters are passed in
+                     */
                     declarations: {
                         get: <T>(ProviderClass: Type): T => {
                             return dependencyMap.get(ProviderClass);

@@ -1,1 +1,1 @@
-export default () => <pre>Greet from BarComponent</pre>;
+export default ({ used }) => <pre>Greet from BarComponent, used by {used}</pre>;

@@ -49,8 +49,8 @@ export interface ModuleMetadata {
     routes: Set<RouteOptionItem>;
 }
 
-export interface ComponentDecoratorOptions<T = any> {
-    component: React.FC;
+export interface ComponentDecoratorOptions<T = any, P = any> {
+    component: React.FC<P>;
     declarations?: Type[];
     elementProps?: T;
     suspenseFallback?: boolean | React.ReactChild | React.ReactFragment | React.ReactPortal | null;

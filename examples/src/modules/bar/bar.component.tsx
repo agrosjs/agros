@@ -1,8 +1,9 @@
-import React from 'react';
+import { PropsWithChildren } from 'react';
 import { Component } from '../../../../lib';
+import Bar from './Bar';
 
-@Component({
+@Component<any, PropsWithChildren<{ used: string }>>({
     suspenseFallback: 'loading...',
-    component: React.lazy(() => import('./Bar')),
+    component: Bar,
 })
 export class BarComponent {}
