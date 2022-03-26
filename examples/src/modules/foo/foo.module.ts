@@ -1,32 +1,36 @@
 import { Module } from '../../../../lib';
 import { BarModule } from '../bar/bar.module';
+import { FooChildComponent } from './foo-child.component';
+import { FooComponent } from './foo.component';
 import { FooService } from './foo.service';
 
 @Module({
+    components: [
+        FooComponent,
+        FooChildComponent,
+    ],
     imports: [
         BarModule,
     ],
     providers: [
         FooService,
     ],
-    views: [
+    routes: [
         {
-            id: 'app.foo',
-            path: '/foo',
-            parent: 'app',
-            suspenseFallback: '/app/foo is loading...',
-            provider: (parse) => () => parse(import('./foo.view')),
-        },
-        {
-            id: 'app.foo.child',
-            path: '/child',
-            parent: 'app.foo',
-            suspenseFallback: '/app/child/foo is loading...',
-            provider: (parse) => () => parse(import('./foo-child.view')),
+            path: 'foo',
+            useComponentClass: FooComponent,
+            children: [
+                {
+                    path: 'child',
+                    useComponentClass: FooChildComponent,
+                },
+            ],
         },
     ],
     exports: [
         FooService,
+        FooComponent,
+        FooChildComponent,
     ],
 })
 export class FooModule {}

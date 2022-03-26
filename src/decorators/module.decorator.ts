@@ -9,7 +9,8 @@ export function Module(options: ModuleDecoratorOptions = {}): ClassDecorator {
         const {
             imports = [],
             providers = [],
-            views = [],
+            routes = [],
+            components = [],
             exports: exportedProviders = [],
         } = options;
 
@@ -18,7 +19,8 @@ export function Module(options: ModuleDecoratorOptions = {}): ClassDecorator {
             {
                 imports: new Set(imports),
                 providers: new Set(providers),
-                views: new Set(views),
+                routes: new Set(routes),
+                components: new Set(components),
                 exports: new Set(exportedProviders),
             } as ModuleMetadata,
             target,

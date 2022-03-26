@@ -1,12 +1,9 @@
-import { FunctionComponent } from 'react';
-import {
-    AbstractComponent,
-    Injectable,
-} from '../../../../lib';
+import { PropsWithChildren } from 'react';
+import { Component } from '../../../../lib';
+import Bar from './Bar';
 
-@Injectable()
-export class BarComponent extends AbstractComponent implements AbstractComponent {
-    protected async generateComponent(): Promise<FunctionComponent<any>> {
-        return () => <pre>Greet from BarComponent</pre>;
-    }
-}
+@Component<any, PropsWithChildren<{ used: string }>>({
+    suspenseFallback: 'loading...',
+    component: Bar,
+})
+export class BarComponent {}
