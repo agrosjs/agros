@@ -146,53 +146,36 @@ Then you can use `FooService`'s instance in `DemoService` by calling `this.fooSe
 
 ### Create a Component
 
-To create a component, you should implement `AbstractComponent` class and `AbstractComponent.prototype.generateComponent` method:
+Before creating a component class, a JSX file (TSX for TypeScript) needs to be prepared to describe the structure of the component and the component interaction logic, then decorate a class with the @Component decorator and bring in the previous JSX/TSX file:
 
-```tsx
-import { FunctionComponent } from 'react';
-import {
-    AbstractComponent,
-    Injectable,
-} from 'Khamsa';
+```ts
+import Foo from './Foo';
 
-@Injectable()
-export class DemoComponent extends AbstractComponent implements AbstractComponent {
-    protected async generateComponent(): Promise<FunctionComponent<any>> {
-        return () => <p>Demo Component is Working!</p>;
-    }
-}
+@Component({
+    component: Foo,
+})
+export class FooComponent {}
 ```
 
-Similar to providers, components can use injected providers:
+#### Dependency Injecting
 
-```tsx
-import {
-    FunctionComponent,
-    useEffect,
-} from 'react';
-import {
-    AbstractComponent,
-    Injectable,
-} from 'Khamsa';
-import { DemoService } from './demo.service';
+Injecting dependency could be a little different from providers. You should specify the `declarations` parameter for `@Component` decorator. It is an array that includes the classes which the component class depends on:
 
-@Injectable()
-export class DemoComponent extends AbstractComponent implements AbstractComponent {
-    public constructor(
-        private readonly demoService: DemoService,
-    ) {}
-
-    protected async generateComponent(): Promise<FunctionComponent<any>> {
-        return () => {
-            useEffect(() => {
-                this.demoService.sayHello();
-            }, []);
-
-            return <p>Demo Component is Working!</p>;
-        };
-    }
-}
+```ts
+@Component({
+    component: Foo,
+    declarations: [
+        FooService,
+        BarService,
+        BarComponent,
+    ],
+})
+export class FooComponent {}
 ```
+
+#### Lazy Load Component
+
+Khamsa supports lazy load based on React's `.lazy()` and `Suspense`.
 
 ### Create a Module
 
