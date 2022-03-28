@@ -26,6 +26,7 @@ module.exports = {
         'max-nested-callbacks': 'off',
         'max-params': 'off',
         'prefer-regex-literals': 'off',
+        'no-unused-vars': 'error',
         'no-useless-call': 'off',
         'complexity': 'off',
         'no-new-func': 'off',

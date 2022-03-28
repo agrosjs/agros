@@ -3,10 +3,12 @@
     "version": "0.8.0",
     "scripts": {
         "example": "node ./scripts/example.js",
+        "test": "eslint .",
         "build": "rimraf ./lib && tsc --build tsconfig.package.json",
         "watch": "tsc --watch --project tsconfig.package.json",
         "checksum": "node ./scripts/checksum.js",
-        "publish:main": "node ./scripts/publish.js"
+        "publish:main": "node ./scripts/publish.js",
+        "postinstall": "npm run test"
     },
     "files": [
         "lib",

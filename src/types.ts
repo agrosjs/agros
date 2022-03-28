@@ -4,8 +4,10 @@ import { ComponentInstance } from './classes';
 
 export type Type<T = any> = new (...args: Array<any>) => T;
 
+export type AsyncModuleClass<T = any> = Type<T> | Promise<Type>;
+
 export interface ModuleDecoratorOptions {
-    imports?: Array<Type>;
+    imports?: Array<AsyncModuleClass>;
     providers?: Array<Type>;
     components?: Array<Type>;
     routes?: Array<RouteOptionItem>;
@@ -26,27 +28,22 @@ export interface AppProps {
 }
 
 export interface RouteOptionItem<T = any> extends Omit<RouteProps, 'element' | 'children'> {
-    useModuleClass?: Type;
+    useModuleClass?: AsyncModuleClass;
     useComponentClass?: Type;
     children?: RouteOptionItem<T>[];
 }
 
-export interface ModuleInstanceMetadata {
-    Class: Type<any>;
-    imports: Set<Type<any>>;
-    isGlobal: boolean;
+export interface ModuleMetadata {
+    imports: Set<AsyncModuleClass>;
     providers: Set<Type<any>>;
     exports: Set<Type<any>>;
     components: Set<Type<any>>;
     routes: Set<RouteOptionItem>;
 }
 
-export interface ModuleMetadata {
-    imports: Set<Type>;
-    providers: Set<Type>;
-    exports: Set<Type>;
-    components: Set<Type>;
-    routes: Set<RouteOptionItem>;
+export interface ModuleInstanceMetadata extends ModuleMetadata {
+    Class: Type<any>;
+    isGlobal: boolean;
 }
 
 export interface ComponentDecoratorOptions<T = any, P = any> {
