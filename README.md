@@ -217,6 +217,53 @@ import { lazy } from 'react';
 export class FooComponent {}
 ```
 
+#### Error Boundaries
+
+You can define a custom boundary component for every components in Khamsa:
+
+```tsx
+// FooBoundary.tsx
+
+import {
+    FC,
+    useEffect,
+} from 'react';
+
+const FooBoundary: FC = () => {
+    useEffect(() => {
+        throw new Error('Error thrown');
+    }, []);
+
+    return (<>Boundary test</>);
+};
+
+export default FooBoundary;
+```
+
+```tsx
+// foo-boundary.component.tsx
+
+import { Component } from 'khamsa';
+import {
+    ErrorBoundary,
+    ErrorBoundaryPropsWithFallback,
+} from 'react-error-boundary';
+import FooBoundary from './FooBoundary';
+import { PropsWithChildren } from 'react';
+
+@Component({
+    component: FooBoundary,
+    boundaryComponent: (props: PropsWithChildren<ErrorBoundaryPropsWithFallback>) => {
+        return (
+            <ErrorBoundary fallback={<pre>ERROR CAUGHT</pre>}>
+                {props.children}
+            </ErrorBoundary>
+        );
+    },
+})
+export class FooBoundaryComponent {}
+```
+
 The definition of `@Component`'s parameters are like below:
 
 - `component: React.FC` - the React component declaration

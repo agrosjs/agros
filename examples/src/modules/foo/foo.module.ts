@@ -1,5 +1,6 @@
 import { Module } from '../../../../lib';
 import { BarModule } from '../bar/bar.module';
+import { FooBoundaryComponent } from './foo-boundary.component';
 import { FooChildComponent } from './foo-child.component';
 import { FooComponent } from './foo.component';
 import { FooService } from './foo.service';
@@ -8,6 +9,7 @@ import { FooService } from './foo.service';
     components: [
         FooComponent,
         FooChildComponent,
+        FooBoundaryComponent,
     ],
     imports: [
         BarModule,
@@ -23,6 +25,10 @@ import { FooService } from './foo.service';
                 {
                     path: 'child',
                     useComponentClass: FooChildComponent,
+                },
+                {
+                    path: 'boundary',
+                    useComponentClass: FooBoundaryComponent,
                 },
             ],
         },

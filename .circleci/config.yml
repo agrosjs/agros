@@ -37,6 +37,7 @@ jobs:
       - restore_cache:
           keys:
             - v1-dependencies-{{ checksum "checksum.txt" }}
+      - run: npm test
       - run: npm run build
       - save_cache:
           paths: *output-paths

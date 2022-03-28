@@ -30,11 +30,22 @@ const createRoutes = (routerItems: RouterItem[], level = 0): ReactNode | ReactNo
         } = routerItem;
 
         const {
+            boundaryComponent = null,
             suspenseFallback = null,
             elementProps = {},
         } = componentInstance.metadata;
 
         const Component = componentInstance.getComponent();
+
+        const createElement = (Component: React.FC) => {
+            return React.createElement(
+                Suspense,
+                {
+                    fallback: suspenseFallback,
+                } as SuspenseProps,
+                React.createElement(Component, elementProps),
+            );
+        };
 
         return React.createElement(
             Route,
@@ -44,13 +55,13 @@ const createRoutes = (routerItems: RouterItem[], level = 0): ReactNode | ReactNo
                 ...(
                     Component
                         ? {
-                            element: React.createElement(
-                                Suspense,
-                                {
-                                    fallback: suspenseFallback,
-                                } as SuspenseProps,
-                                React.createElement(Component, elementProps),
-                            ),
+                            element: boundaryComponent
+                                ? React.createElement(
+                                    boundaryComponent,
+                                    {},
+                                    createElement(Component),
+                                )
+                                : createElement(Component),
                         }
                         : {}
                 ),

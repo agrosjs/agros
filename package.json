@@ -3,12 +3,13 @@
     "version": "0.8.0",
     "scripts": {
         "example": "node ./scripts/example.js",
-        "test": "eslint .",
+        "lint": "eslint .",
         "build": "rimraf ./lib && tsc --build tsconfig.package.json",
         "watch": "tsc --watch --project tsconfig.package.json",
         "checksum": "node ./scripts/checksum.js",
         "publish:main": "node ./scripts/publish.js",
-        "postinstall": "npm run test"
+        "pretest": "npm run lint",
+        "test": "exit 0"
     },
     "files": [
         "lib",
@@ -51,6 +52,7 @@
         "react-app-rewired": "^2.2.1",
         "react-dev-utils": "^12.0.0",
         "react-dom": "^16.14.0",
+        "react-error-boundary": "^3.1.4",
         "react-scripts": "^5.0.0",
         "rimraf": "^3.0.2",
         "typescript": "^4.5.5",

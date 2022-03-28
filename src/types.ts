@@ -48,6 +48,7 @@ export interface ModuleInstanceMetadata extends ModuleMetadata {
 
 export interface ComponentDecoratorOptions<T = any, P = any> {
     component: React.FC<P>;
+    boundaryComponent?: React.FC<any>;
     declarations?: Type[];
     elementProps?: T;
     suspenseFallback?: boolean | React.ReactChild | React.ReactFragment | React.ReactPortal | null;
