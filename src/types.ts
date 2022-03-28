@@ -64,9 +64,8 @@ export interface RouterItem extends Omit<RouteOptionItem, 'useModuleClass' | 'us
     children?: RouterItem[];
 }
 
-export interface InjectedComponentProps {
+export type InjectedComponentProps<P = {}> = P & {
     declarations: {
         get: <T>(ProviderClass: Type) => T;
     };
-    children?: React.ReactNode;
-}
+};
