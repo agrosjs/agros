@@ -527,7 +527,6 @@ The `@Module()` decorator takes a single object as parameter whose properties de
 The definition of `RouteOptionItem` is like below:
 
 - `path: string` - (required) defines the route that the view matches, must be an absolute path
-- `provider: Type<AbstractComponent> | LazyLoadHandler` - the provider for view class
 - `useComponentClass?: Type` - the provider who carries the component class
 - `useModuleClass?: Type` - the provider who carries a module class with routes config
 - `caseSensitive?: boolean` - defines the route matcher should use case-sensitive mode or not
