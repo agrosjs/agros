@@ -1,6 +1,6 @@
 {
     "name": "khamsa",
-    "version": "0.9.2",
+    "version": "0.9.3",
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
     "scripts": {
@@ -12,7 +12,6 @@
         "checksum": "node ./scripts/checksum.js",
         "publish:main": "node ./scripts/publish.js",
         "pretest": "npm run lint",
-        "postinstall": "npm run install:example",
         "test": "exit 0"
     },
     "files": [
