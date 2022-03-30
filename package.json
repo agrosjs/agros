@@ -1,6 +1,8 @@
 {
     "name": "khamsa",
-    "version": "0.9.0",
+    "version": "0.9.1",
+    "main": "lib/index.js",
+    "types": "lib/index.d.ts",
     "scripts": {
         "example": "node ./scripts/example.js",
         "lint": "eslint .",
