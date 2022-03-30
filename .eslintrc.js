@@ -11,6 +11,7 @@ module.exports = {
         jest: true,
     },
     rules: {
+        'react/react-in-jsx-scope': 'off',
         semi: ['error', 'always'],
         'comma-dangle': ['error', 'always-multiline'],
         'switch-colon-spacing': ['error', {
