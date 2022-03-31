@@ -5,13 +5,13 @@ import {
 import { useRoutes } from '../hooks';
 import {
     Routes,
-    BrowserRouter,
+    HashRouter,
 } from 'react-router-dom';
 
 export const App: React.FC<AppProps> = ({
     module: Module,
     routerProps = {},
-    RouterComponent = BrowserRouter,
+    RouterComponent = HashRouter,
 }) => {
     const elements = useRoutes(Module);
 

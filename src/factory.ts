@@ -51,6 +51,11 @@ export class Factory {
      * nested router items which would export from `create` method
      */
     private routerItems: RouterItem[] = [];
+    /**
+     * @private
+     * global module instances
+     */
+    private globalModuleInstances = new Set<ModuleInstance>();
 
     /**
      * @public
@@ -100,15 +105,18 @@ export class Factory {
             /**
              * create current module instance by module class
              */
-            const moduleInstance = new ModuleInstance({
-                Class: ModuleClass,
-                isGlobal,
-                imports: new Set(imports),
-                providers: new Set(providers),
-                exports: new Set(exportedProviders),
-                routes: new Set(routes),
-                components: new Set(components),
-            });
+            const moduleInstance = new ModuleInstance(
+                {
+                    Class: ModuleClass,
+                    isGlobal,
+                    imports: new Set(imports),
+                    providers: new Set(providers),
+                    exports: new Set(exportedProviders),
+                    routes: new Set(routes),
+                    components: new Set(components),
+                },
+                this.globalModuleInstances,
+            );
 
             this.moduleInstanceMap.set(ModuleClass, moduleInstance);
         }
@@ -150,16 +158,8 @@ export class Factory {
                 moduleInstance.addImportedModuleInstance(importedModuleInstance);
             }
 
-            /**
-             * if current module is declared to be global, the module instance will be
-             * added to all listed module instances except itself
-             */
             if (moduleInstance.metadata.isGlobal) {
-                for (const [TargetModuleClass, targetModuleInstance] of this.moduleInstanceMap.entries()) {
-                    if (TargetModuleClass !== ModuleClass) {
-                        targetModuleInstance.addImportedModuleInstance(moduleInstance);
-                    }
-                }
+                this.globalModuleInstances.add(moduleInstance);
             }
         }
     }

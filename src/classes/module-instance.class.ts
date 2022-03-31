@@ -16,10 +16,17 @@ export class ModuleInstance {
      */
     public constructor(
         public readonly metadata: ModuleInstanceMetadata,
+        private readonly globalModuleInstances: Set<ModuleInstance>,
     ) {}
 
     public addImportedModuleInstance(moduleInstance: ModuleInstance) {
-        this.importedModuleInstances.add(moduleInstance);
+        if (
+            !Array
+                .from(this.importedModuleInstances)
+                .some((instance) => instance.metadata.Class === moduleInstance.metadata.Class)
+        ) {
+            this.importedModuleInstances.add(moduleInstance);
+        }
     }
 
     public getImportedModuleInstances() {
@@ -39,6 +46,13 @@ export class ModuleInstance {
                     Array.from(this.importedModuleInstances).reduce(
                         (providerClasses, importedModuleInstance) => {
                             return providerClasses.concat(Array.from(importedModuleInstance.metadata.exports));
+                        }, [] as Type[],
+                    ),
+                )
+                .concat(
+                    Array.from(this.globalModuleInstances).reduce(
+                        (providerClasses, globalModuleInstances) => {
+                            return providerClasses.concat(Array.from(globalModuleInstances.metadata.exports));
                         }, [] as Type[],
                     ),
                 ),

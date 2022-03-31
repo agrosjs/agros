@@ -27,7 +27,8 @@
     "peerDependencies": {
         "@types/react": ">=16.8.6",
         "react": ">=16.8.6",
-        "react-dom": ">=16.8.6"
+        "react-dom": ">=16.8.6",
+        "react-router-dom": ">=6.2.2"
     },
     "devDependencies": {
         "@babel/plugin-proposal-class-properties": "^7.16.7",
