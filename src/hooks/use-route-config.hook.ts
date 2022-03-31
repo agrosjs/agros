@@ -78,7 +78,7 @@ const createRoutes = (routerItems: RouterItem[], level = 0): ReactNode | ReactNo
  * @param {Type} Module module class
  * @returns {ReactNode}
  */
-export const useRoutes = <T>(Module: Type): ReactNode => {
+export const useRouteElements = <T>(Module: Type): ReactNode => {
     const [routerItems, setRouterItems] = useState<RouterItem[]>([]);
     const [elements, setElements] = useState<ReactNode>(null);
 

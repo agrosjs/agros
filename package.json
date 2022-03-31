@@ -1,6 +1,6 @@
 {
     "name": "khamsa",
-    "version": "0.9.3",
+    "version": "0.9.4",
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
     "scripts": {
@@ -22,13 +22,13 @@
     "dependencies": {
         "is-promise": "^4.0.0",
         "lodash": "^4.17.21",
+        "react-router-dom": "^6.2.2",
         "reflect-metadata": "^0.1.13"
     },
     "peerDependencies": {
         "@types/react": ">=16.8.6",
         "react": ">=16.8.6",
-        "react-dom": ">=16.8.6",
-        "react-router-dom": ">=6.2.2"
+        "react-dom": ">=16.8.6"
     },
     "devDependencies": {
         "@babel/plugin-proposal-class-properties": "^7.16.7",
@@ -53,7 +53,6 @@
         "react-app-rewired": "^2.2.1",
         "react-dev-utils": "^12.0.0",
         "react-error-boundary": "^3.1.4",
-        "react-router-dom": "^6.2.2",
         "react-scripts": "^5.0.0",
         "rimraf": "^3.0.2",
         "typescript": "^4.5.5",

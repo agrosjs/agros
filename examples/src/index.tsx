@@ -2,14 +2,16 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
-import { App } from '../../lib';
-import { HashRouter as Router } from 'react-router-dom';
+import {
+    App,
+    router,
+} from '../../lib';
 import { AppModule } from './app.module';
 
 ReactDOM.render(
     <App
         module={AppModule}
-        RouterComponent={Router}
+        RouterComponent={router.HashRouter}
     />,
     document.getElementById('root'),
 );

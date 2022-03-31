@@ -2,7 +2,7 @@ import React from 'react';
 import {
     AppProps,
 } from '../types';
-import { useRoutes } from '../hooks';
+import { useRouteElements } from '../hooks';
 import {
     Routes,
     HashRouter,
@@ -13,7 +13,7 @@ export const App: React.FC<AppProps> = ({
     routerProps = {},
     RouterComponent = HashRouter,
 }) => {
-    const elements = useRoutes(Module);
+    const elements = useRouteElements(Module);
 
     return React.createElement(
         RouterComponent,
