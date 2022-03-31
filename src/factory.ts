@@ -155,6 +155,10 @@ export class Factory {
                     throw new Error(`Module ${ImportedModuleClass.name} cannot be imported into ${ModuleClass.name}`);
                 }
 
+                if (importedModuleInstance.getImportedModuleInstances().has(moduleInstance)) {
+                    throw new Error(`Cyclic dependence relation between ${ImportedModuleClass.name} and ${ModuleClass.name}, which is not allowed`);
+                }
+
                 moduleInstance.addImportedModuleInstance(importedModuleInstance);
             }
 
