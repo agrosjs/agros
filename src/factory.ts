@@ -393,7 +393,7 @@ export class Factory {
 
             const forwardRef: FactoryForwardRef = (promise) => {
                 return promise.then((result) => {
-                    if (!Object.getOwnPropertyDescriptor(result.default, DEPS_PROPERTY_NAME)) {
+                    if (Object.getOwnPropertyDescriptor(result.default, DEPS_PROPERTY_NAME)) {
                         return result;
                     }
 
