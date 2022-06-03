@@ -266,7 +266,8 @@ export class FooBoundaryComponent {}
 
 The definition of `@Component`'s parameters are like below:
 
-- `component: React.FC` - the React component declaration
+- `component?: React.FC` - the React component declaration
+- `factory?: (forwardRef: FactoryForwardRef) => React.FC<P> | React.ExoticComponent<P>` - the component factory, it passes a `forwardRef` method to inject dependencies into component witch would be returned by the `factory` function. When `component` and `factory` are all set, `factory` will take the higher priority
 - `declarations?: Array<Type>` - the provider classes depended by current component
 - `elementProps?: any` - props for current view's React component
 - `suspenseFallback?: boolean | null | React.ReactChild | React.ReactFragment | React.ReactPortal` - the value of `fallback` property for `React.Suspense`
