@@ -401,11 +401,7 @@ export class Factory {
             if (typeof componentInstance.metadata.factory === 'function') {
                 component = componentInstance.metadata.factory(forwardRef);
             } else {
-                Object.defineProperty(
-                    componentInstance.metadata.component,
-                    DEPS_PROPERTY_NAME,
-                    definePropertyData,
-                );
+                // TODO remove
                 component = componentInstance.metadata.component;
             }
 
@@ -414,9 +410,11 @@ export class Factory {
                 {
                     ...props,
                     /**
+                     * @deprecated
                      * the `declarations` parameter will always be passed in regardless
                      * of what parameters are passed in
                      */
+                    // TODO remove
                     declarations: {
                         get: <T>(ProviderClass: Type): T => {
                             return dependencyMap.get(ProviderClass);

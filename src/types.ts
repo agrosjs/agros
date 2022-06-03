@@ -71,6 +71,9 @@ export interface RouterItem extends Omit<RouteOptionItem, 'useModuleClass' | 'us
     children?: RouterItem[];
 }
 
+/**
+ * @deprecated
+ */
 export type InjectedComponentProps<P = {}> = P & {
     /**
      * @deprecated
