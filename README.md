@@ -202,6 +202,26 @@ export default Foo: FC<PropsWithChildren<InjectedComponentProps>> = ({ declarati
 }
 ```
 
+Or use can use top-leveled API `getContainer` to get the providers:
+
+```tsx
+// Foo.tsx
+
+import { FC } from 'react';
+import { getContainer } from 'khamsa';
+import { BarComponent } from '../bar/bar.component';
+import { FooService } from '../foo/foo.service';
+import { BarService } from '../bar/bar.service';
+
+export default Foo: FC = () => {
+    // pass the functional component to `getContainer` method
+    const container = getContainer(Foo);
+    const Bar = container.get<FC<PropsWithChildren>>(BarComponent);
+    const fooService = container.get<FooService>(FooService);
+    const barService = container.get<BarService>(BarService);
+}
+```
+
 #### Lazy Load
 
 Khamsa supports lazy load based on React's [`.lazy`](https://zh-hans.reactjs.org/docs/code-splitting.html#reactlazy) and [`Suspense`](https://reactjs.org/docs/react-api.html#reactsuspense):
