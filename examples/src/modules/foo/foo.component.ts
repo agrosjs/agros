@@ -6,7 +6,9 @@ import { FooService } from './foo.service';
 
 @Component({
     suspenseFallback: 'loading...',
-    component: React.lazy(() => import('./Foo')),
+    factory: (forwardRef) => {
+        return React.lazy(() => forwardRef(import('./Foo')));
+    },
     declarations: [
         BarComponent,
         FooService,

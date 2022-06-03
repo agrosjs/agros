@@ -46,8 +46,11 @@ export interface ModuleInstanceMetadata extends ModuleMetadata {
     isGlobal: boolean;
 }
 
+export type FactoryForwardRef = <T = any>(promise: Promise<{ default: T }>) => Promise<{ default: T }>;
+
 export interface ComponentDecoratorOptions<T = any, P = any> {
-    component: React.FC<P>;
+    component?: React.FC<P>;
+    factory?: (forwardRef: FactoryForwardRef) => React.FC<P> | React.ExoticComponent<P>;
     boundaryComponent?: React.FC<any>;
     declarations?: Type[];
     elementProps?: T;
