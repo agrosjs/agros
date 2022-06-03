@@ -383,15 +383,17 @@ export class Factory {
          */
         componentInstance.setComponent((props: any) => {
             const dependencyMap = generateDependencyMap();
+            const definePropertyData = {
+                value: dependencyMap,
+                configurable: false,
+                writable: false,
+                enumerable: false,
+            };
             let component: React.FC<any> | React.ExoticComponent<any>;
+
             const forwardRef: FactoryForwardRef = (promise) => {
                 return promise.then((result) => {
-                    Object.defineProperty(result.default, DEPS_PROPERTY_NAME, {
-                        value: dependencyMap,
-                        configurable: false,
-                        writable: false,
-                        enumerable: false,
-                    });
+                    Object.defineProperty(result.default, DEPS_PROPERTY_NAME, definePropertyData);
                     return result;
                 });
             };
@@ -399,6 +401,11 @@ export class Factory {
             if (typeof componentInstance.metadata.factory === 'function') {
                 component = componentInstance.metadata.factory(forwardRef);
             } else {
+                Object.defineProperty(
+                    componentInstance.metadata.component,
+                    DEPS_PROPERTY_NAME,
+                    definePropertyData,
+                );
                 component = componentInstance.metadata.component;
             }
 

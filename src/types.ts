@@ -49,6 +49,9 @@ export interface ModuleInstanceMetadata extends ModuleMetadata {
 export type FactoryForwardRef = <T = any>(promise: Promise<{ default: T }>) => Promise<{ default: T }>;
 
 export interface ComponentDecoratorOptions<T = any, P = any> {
+    /**
+     * @deprecated
+     */
     component?: React.FC<P>;
     factory?: (forwardRef: FactoryForwardRef) => React.FC<P> | React.ExoticComponent<P>;
     boundaryComponent?: React.FC<any>;
@@ -69,6 +72,9 @@ export interface RouterItem extends Omit<RouteOptionItem, 'useModuleClass' | 'us
 }
 
 export type InjectedComponentProps<P = {}> = P & {
+    /**
+     * @deprecated
+     */
     declarations: {
         get: <T>(ProviderClass: Type) => T;
     };
