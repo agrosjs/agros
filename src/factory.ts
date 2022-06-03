@@ -21,6 +21,7 @@ import {
     Type,
 } from './types';
 import isPromise from 'is-promise';
+import { Map as ImmutableMap } from 'immutable';
 
 export class Factory {
     /**
@@ -328,7 +329,7 @@ export class Factory {
                 this.componentClassToModuleClassMap.get(ComponentClass),
             );
 
-            const dependencyMap = new Map<Type, any>();
+            let dependencyMap = ImmutableMap<Type, any>();
 
             for (const ProviderClass of dependedProviderClasses) {
                 if (this.componentInstanceMap.get(ProviderClass)) {
@@ -350,14 +351,20 @@ export class Factory {
                     /**
                      * get the React component from depended component class
                      */
-                    dependencyMap.set(ProviderClass, (props) => React.createElement(dependedComponent, props));
+                    dependencyMap = dependencyMap.set(
+                        ProviderClass,
+                        (props) => React.createElement(dependedComponent, props),
+                    );
                 } else {
                     /**
                      * if provider class is a normal provider class, than get the provider
                      * instance by provider class and set it to the map value
                      */
                     if (moduleInstance.hasDependedProviderClass(ProviderClass)) {
-                        dependencyMap.set(ProviderClass, this.providerInstanceMap.get(ProviderClass));
+                        dependencyMap = dependencyMap.set(
+                            ProviderClass,
+                            this.providerInstanceMap.get(ProviderClass),
+                        );
 
                         if (!dependencyMap.get(ProviderClass)) {
                             throw new Error(`Cannot find provider ${ProviderClass.name} that can be injected`);

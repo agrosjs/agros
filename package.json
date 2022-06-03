@@ -20,6 +20,7 @@
         "LICENSE"
     ],
     "dependencies": {
+        "immutable": "^4.1.0",
         "is-promise": "^4.0.0",
         "lodash": "^4.17.21",
         "react-router-dom": "^6.2.2",
