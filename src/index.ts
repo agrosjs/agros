@@ -4,3 +4,4 @@ export * from './types';
 export * from './components';
 export * from './hooks';
 export * as router from 'react-router-dom';
+export * from './get-container';

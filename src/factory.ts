@@ -5,6 +5,7 @@ import {
     ComponentInstance,
 } from './classes';
 import {
+    DEPS_PROPERTY_NAME,
     DI_DEPS_SYMBOL,
     DI_GLOBAL_MODULE_SYMBOL,
     DI_METADATA_COMPONENT_SYMBOL,
@@ -13,6 +14,7 @@ import {
 import {
     AsyncModuleClass,
     ComponentMetadata,
+    FactoryForwardRef,
     ModuleMetadata,
     RouteOptionItem,
     RouterItem,
@@ -374,8 +376,27 @@ export class Factory {
          */
         componentInstance.setComponent((props: any) => {
             const dependencyMap = generateDependencyMap();
+            let component: React.FC<any> | React.ExoticComponent<any>;
+            const forwardRef: FactoryForwardRef = (promise) => {
+                return promise.then((result) => {
+                    Object.defineProperty(result.default, DEPS_PROPERTY_NAME, {
+                        value: dependencyMap,
+                        configurable: false,
+                        writable: false,
+                        enumerable: false,
+                    });
+                    return result;
+                });
+            };
+
+            if (typeof componentInstance.metadata.factory === 'function') {
+                component = componentInstance.metadata.factory(forwardRef);
+            } else {
+                component = componentInstance.metadata.component;
+            }
+
             return React.createElement(
-                componentInstance.metadata.component,
+                component,
                 {
                     ...props,
                     /**
