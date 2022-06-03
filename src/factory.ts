@@ -414,6 +414,14 @@ export class Factory {
                 component = componentInstance.metadata.component;
             }
 
+            if (!Object.getOwnPropertyDescriptor(component, DEPS_PROPERTY_NAME)) {
+                Object.defineProperty(
+                    component,
+                    DEPS_PROPERTY_NAME,
+                    definePropertyData,
+                );
+            }
+
             return React.createElement(
                 component,
                 {
