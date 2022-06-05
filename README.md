@@ -226,7 +226,7 @@ export default Foo: FC = () => {
 
 #### `forwardContainer`
 
-Khamsa provides a top-level API called `forwardContainer` to help you obtain references to containers when using React HOC:
+Khamsa provides a top-level API called `forwardContainer` to help you obtain references to containers when using [React HOC](https://reactjs.org/docs/higher-order-components.html):
 
 ```tsx
 // Foo.tsx

@@ -3,8 +3,9 @@ import { AppNavigateComponent } from './app-navigate.component';
 import { AppComponent } from './app.component';
 import { BarModule } from './modules/bar/bar.module';
 import { BazModule } from './modules/baz/baz.module';
+import { LoremModule } from './modules/lorem/lorem.module';
 
-const AsyncFooModule = import('./modules/foo/foo.module').then((({ FooModule }) => FooModule));
+const FooModule = import('./modules/foo/foo.module').then((({ FooModule }) => FooModule));
 
 @Module({
     components: [
@@ -12,9 +13,10 @@ const AsyncFooModule = import('./modules/foo/foo.module').then((({ FooModule }) 
         AppNavigateComponent,
     ],
     imports: [
-        AsyncFooModule,
+        FooModule,
         BarModule,
         BazModule,
+        LoremModule,
     ],
     routes: [
         {
@@ -22,7 +24,10 @@ const AsyncFooModule = import('./modules/foo/foo.module').then((({ FooModule }) 
             useComponentClass: AppComponent,
             children: [
                 {
-                    useModuleClass: AsyncFooModule,
+                    useModuleClass: FooModule,
+                },
+                {
+                    useModuleClass: LoremModule,
                 },
             ],
         },
