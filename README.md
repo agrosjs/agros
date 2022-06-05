@@ -202,7 +202,7 @@ export default Foo: FC<PropsWithChildren<InjectedComponentProps>> = ({ declarati
 }
 ```
 
-Or use can use top-leveled API `getContainer` to get the providers:
+Or use can use top-level API `getContainer` to get the providers:
 
 ```tsx
 // Foo.tsx
@@ -220,6 +220,33 @@ export default Foo: FC = () => {
     const fooService = container.get<FooService>(FooService);
     const barService = container.get<BarService>(BarService);
 }
+```
+
+> In the next major distribution, getting dependencies from `props.declarations` will not be supported any more.
+
+#### `forwardContainer`
+
+Khamsa provides a top-level API called `forwardContainer` to help you obtain references to containers when using React HOC:
+
+```tsx
+// Foo.tsx
+
+import {
+    FC,
+    memo,
+} from 'react';
+import { forwardContainer } from 'khamsa';
+import { BarComponent } from '../bar/bar.component';
+import { FooService } from '../foo/foo.service';
+import { BarService } from '../bar/bar.service';
+
+const Foo: FC = forwardContainer(({ props, container }) => {
+    const Bar = container.get<FC<PropsWithChildren>>(BarComponent);
+    const fooService = container.get<FooService>(FooService);
+    const barService = container.get<BarService>(BarService);
+});
+
+export default memo(Foo);
 ```
 
 #### Lazy Load

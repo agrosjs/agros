@@ -437,6 +437,11 @@ export class Factory {
                             return dependencyMap.get(ProviderClass);
                         },
                     },
+                    $container: {
+                        get: <T>(ProviderClass: Type): T => {
+                            return dependencyMap.get(ProviderClass);
+                        },
+                    },
                 },
             );
         });

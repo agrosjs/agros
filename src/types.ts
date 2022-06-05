@@ -82,3 +82,12 @@ export type InjectedComponentProps<P = {}> = P & {
         get: <T>(ProviderClass: Type) => T;
     };
 };
+
+export interface Container {
+    get: <T>(ProviderClass: Type) => T;
+}
+
+export interface ContainerForwardedComponentProps<Props> {
+    props: Props;
+    container: Container;
+}
