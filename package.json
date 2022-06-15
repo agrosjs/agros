@@ -1,0 +1,9 @@
+{
+    "private": true,
+    "devDependencies": {
+        "@typescript-eslint/eslint-plugin": "^5.28.0",
+        "@typescript-eslint/parser": "^5.28.0",
+        "eslint": "^7.28.0",
+        "eslint-config-alloy": "^4.5.1"
+    }
+}
