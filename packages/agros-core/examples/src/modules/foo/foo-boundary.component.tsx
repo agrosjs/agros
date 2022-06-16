@@ -1,5 +1,4 @@
-import React, { PropsWithChildren } from 'react';
-import { Component } from '../../../../lib';
+import Agros, { Component } from '../../../../lib';
 import {
     ErrorBoundary,
     ErrorBoundaryPropsWithFallback,
@@ -7,8 +6,8 @@ import {
 import FooBoundary from './FooBoundary';
 
 @Component({
-    component: FooBoundary,
-    boundaryComponent: (props: PropsWithChildren<ErrorBoundaryPropsWithFallback>) => {
+    factory: () => FooBoundary,
+    boundaryComponent: (props: Agros.PropsWithChildren<ErrorBoundaryPropsWithFallback>) => {
         return (
             <ErrorBoundary fallback={<pre>ERROR CAUGHT</pre>}>
                 {props.children}

@@ -2,6 +2,6 @@ import { Component } from '../../lib';
 import AppNavigate from './AppNavigate';
 
 @Component({
-    component: AppNavigate,
+    factory: () => AppNavigate,
 })
 export class AppNavigateComponent {}

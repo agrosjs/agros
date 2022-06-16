@@ -1,5 +1,4 @@
-import React from 'react';
-import { Outlet } from 'react-router-dom';
+import { router } from '../../lib';
 import './app.component.css';
 
 export default () => {
@@ -7,7 +6,7 @@ export default () => {
         <div className="app">
             <nav>Khamsa</nav>
             <div className="container">
-                <Outlet />
+                <router.Outlet />
             </div>
         </div>
     );

@@ -1,17 +1,16 @@
-import React, {
-    FC,
-    PropsWithChildren,
-    useEffect,
-} from 'react';
-import { Outlet } from 'react-router-dom';
-import { getContainer } from '../../../../lib';
+import Agros, {
+    getContainer,
+    router,
+} from '../../../../lib';
 import { BarComponent } from '../bar/bar.component';
 import { BarService } from '../bar/bar.service';
 import { FooService } from './foo.service';
 
-const Foo: FC = () => {
+const { useEffect } = Agros;
+
+const Foo: Agros.FC = () => {
     const container = getContainer(Foo);
-    const Bar = container.get<FC<PropsWithChildren<{ used: string }>>>(BarComponent);
+    const Bar = container.get<Agros.FC<Agros.PropsWithChildren<{ used: string }>>>(BarComponent);
     const fooService = container.get<FooService>(FooService);
     const barService = container.get<BarService>(BarService);
 
@@ -24,7 +23,7 @@ const Foo: FC = () => {
         <>
             <div>Khamsa is working!</div>
             {Bar && <Bar used="foo.module.ts" />}
-            <Outlet />
+            <router.Outlet />
         </>
     );
 };
