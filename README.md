@@ -1,16 +1,16 @@
-# Khamsa
+# Agros
 
 Build your React.js apps by modules and dependency injecting.
 
 ## Introduction
 
-Khamsa is a framework for building robust, clean and scalable React.js applications. It based on TypeScript and combines elements of OOP (Object Oriented Programming), FP (Functional Programming).
+Agros is a framework for building robust, clean and scalable React.js applications. It based on TypeScript and combines elements of OOP (Object Oriented Programming), FP (Functional Programming).
 
 ### Motivation
 
-[React.js](https://reactjs.org) has greatly helped developers build fast and responsive web applications, while its simplicity has also allowed it to accumulate a large number of users in a short period of time, and some large websites have started to be built entirely using React.js. All of this speaks volumes about the success of React.js. However, there are a number of architectural problems with building large web applications using React.js that add up to additional and increasingly large expenses for maintaining and iterating on the project, and Khamsa was created to solve these problems.
+[React.js](https://reactjs.org) has greatly helped developers build fast and responsive web applications, while its simplicity has also allowed it to accumulate a large number of users in a short period of time, and some large websites have started to be built entirely using React.js. All of this speaks volumes about the success of React.js. However, there are a number of architectural problems with building large web applications using React.js that add up to additional and increasingly large expenses for maintaining and iterating on the project, and Agros was created to solve these problems.
 
-Inspired by [Angular](https://angular.io) and [Nest.js](https://nestjs.com/) and based on React.js and [React Router](https://reactrouter.com/), Khamsa provides an out-of-the-box experience to help developers create highly available, highly maintainable, stable, and low-coupling React applications.
+Inspired by [Angular](https://angular.io) and [Nest.js](https://nestjs.com/) and based on React.js and [React Router](https://reactrouter.com/), Agros provides an out-of-the-box experience to help developers create highly available, highly maintainable, stable, and low-coupling React applications.
 
 ### Installation & Setup
 
@@ -32,12 +32,12 @@ mkdir example-project
 cd example-project && create-react-app --template cra-template-typescript
 ```
 
-#### Install Khamsa as a Dependency
+#### Install Agros as a Dependency
 
 In the root directory of your React.js app, run following command:
 
 ```bash
-npm i khamsa -S
+npm i @agros/core -S
 ```
 
 #### Configure TypeScript
@@ -91,11 +91,11 @@ In your `.babelrc` or `.babelrc.json` or other types of configuration file for B
 
 ### Providers
 
-Providers are the most important and fundamental concept in Khamsa. Almost any class can be treated as a provider by Khamsa: services, components, tool libraries, etc. Khamsa makes it possible to establish various relationships between different provider objects by **injecting dependencies**.
+Providers are the most important and fundamental concept in Agros. Almost any class can be treated as a provider by Agros: services, components, tool libraries, etc. Agros makes it possible to establish various relationships between different provider objects by **injecting dependencies**.
 
 <img src="docs/images/providers.png" width="60%" style="display: block; margin: 0 auto;" />
 
-As you can see in the image above, each provider can depend on another provider by passing parameters with the provider class as a type annotation in the constructor. With the Khamsa runtime, these type annotation-based provider parameters will be instantiated and made available when the web application starts.
+As you can see in the image above, each provider can depend on another provider by passing parameters with the provider class as a type annotation in the constructor. With the Agros runtime, these type annotation-based provider parameters will be instantiated and made available when the web application starts.
 
 ### Components
 
@@ -103,15 +103,15 @@ As you can see in the image above, each provider can depend on another provider 
 
 <img src="docs/images/components.png" width="60%" style="display: block; margin: 0 auto;" />
 
-A view is a special component that is considered the carrier of a page in Khamsa. It can define routing paths, lazy loading fallbacks, and other options that are not supported by the component.
+A view is a special component that is considered the carrier of a page in Agros. It can define routing paths, lazy loading fallbacks, and other options that are not supported by the component.
 
 ### Modules
 
-A module is a class annotated with a `@Module()` decorator. The `@Module()` decorator provides metadata that Khamsa makes use of to organize the application structure.
+A module is a class annotated with a `@Module()` decorator. The `@Module()` decorator provides metadata that Agros makes use of to organize the application structure.
 
 <img src="docs/images/modules.png" width="60%" style="display: block; margin: 0 auto;" />
 
-When a Khamsa instance is to be initialized, one and only one module, called the **root module**, must be provided as the entry module for the application built by Khamsa.
+When a Agros instance is to be initialized, one and only one module, called the **root module**, must be provided as the entry module for the application built by Agros.
 
 ## Usages
 
@@ -122,7 +122,7 @@ The following example shows how to create a provider:
 ```TypeScript
 // demo.service.ts
 
-import { Injectable } from 'khamsa';
+import { Injectable } from '@agros/core';
 
 @Injectable()
 export class DemoService {}
@@ -135,7 +135,7 @@ If you want to use other providers as dependencies to be injected, you should de
 ```TypeScript
 // demo.service.ts
 
-import { Injectable } from 'khamsa';
+import { Injectable } from '@agros/core';
 import { FooService } from '../foo/foo.service';
 
 @Injectable()
@@ -158,7 +158,7 @@ Before creating a component class, a JSX file (TSX for TypeScript) needs to be p
 import Foo from './Foo';
 
 @Component({
-    component: Foo,
+    factory: () => Foo,
 })
 export class FooComponent {}
 ```
@@ -171,7 +171,7 @@ Injecting dependency could be a little different from providers. You should spec
 // foo.component.ts
 
 @Component({
-    component: Foo,
+    factory: () => Foo,
     declarations: [
         FooService,
         BarService,
@@ -190,7 +190,7 @@ import {
     FC,
     PropsWithChildren,
 } from 'react';
-import { InjectedComponentProps } from 'khamsa';
+import { InjectedComponentProps } from '@agros/core';
 import { BarComponent } from '../bar/bar.component';
 import { FooService } from '../foo/foo.service';
 import { BarService } from '../bar/bar.service';
@@ -208,7 +208,7 @@ Or use can use top-level API `getContainer` to get the providers:
 // Foo.tsx
 
 import { FC } from 'react';
-import { getContainer } from 'khamsa';
+import { getContainer } from '@agros/core';
 import { BarComponent } from '../bar/bar.component';
 import { FooService } from '../foo/foo.service';
 import { BarService } from '../bar/bar.service';
@@ -226,7 +226,7 @@ export default Foo: FC = () => {
 
 #### `forwardContainer`
 
-Khamsa provides a top-level API called `forwardContainer` to help you obtain references to containers when using [React HOC](https://reactjs.org/docs/higher-order-components.html):
+Agros provides a top-level API called `forwardContainer` to help you obtain references to containers when using [React HOC](https://reactjs.org/docs/higher-order-components.html):
 
 ```tsx
 // Foo.tsx
@@ -235,7 +235,7 @@ import {
     FC,
     memo,
 } from 'react';
-import { forwardContainer } from 'khamsa';
+import { forwardContainer } from '@agros/core';
 import { BarComponent } from '../bar/bar.component';
 import { FooService } from '../foo/foo.service';
 import { BarService } from '../bar/bar.service';
@@ -251,7 +251,7 @@ export default memo(Foo);
 
 #### Lazy Load
 
-Khamsa supports lazy load based on React's [`.lazy`](https://zh-hans.reactjs.org/docs/code-splitting.html#reactlazy) and [`Suspense`](https://reactjs.org/docs/react-api.html#reactsuspense):
+Agros supports lazy load based on React's [`.lazy`](https://zh-hans.reactjs.org/docs/code-splitting.html#reactlazy) and [`Suspense`](https://reactjs.org/docs/react-api.html#reactsuspense):
 
 ```ts
 // foo.component.ts
@@ -266,7 +266,7 @@ export class FooComponent {}
 
 #### Error Boundaries
 
-You can define a custom boundary component for every components in Khamsa:
+You can define a custom boundary component for every components in Agros:
 
 ```tsx
 // FooBoundary.tsx
@@ -290,7 +290,7 @@ export default FooBoundary;
 ```tsx
 // foo-boundary.component.tsx
 
-import { Component } from 'khamsa';
+import { Component } from '@agros/core';
 import {
     ErrorBoundary,
     ErrorBoundaryPropsWithFallback,
@@ -326,7 +326,7 @@ Module is also a normal class with a `@Module` decorator:
 ```TypeScript
 // demo.module.ts
 
-import { Module } from 'khamsa';
+import { Module } from '@agros/core';
 
 @Module()
 export class DemoModule {}
@@ -411,7 +411,7 @@ export class BarService {
 
 #### Code Splitting When Importing Modules
 
-With Webpack 5's [code splitting](https://webpack.js.org/guides/code-splitting/) feature, Khamsa will also split your code when you use dynamic imports to import modules:
+With Webpack 5's [code splitting](https://webpack.js.org/guides/code-splitting/) feature, Agros will also split your code when you use dynamic imports to import modules:
 
 ```ts
 // bar.module.ts
@@ -470,7 +470,7 @@ You should add `routes` option to `@Module`:
 export class FooModule {}
 ```
 
-Khamsa will parse the route config and get a path of `/foo` who renders `Foo.tsx`.
+Agros will parse the route config and get a path of `/foo` who renders `Foo.tsx`.
 
 You can also use a module class to configure the routes by passing `useModuleClass` option. Now the project looks like this:
 
@@ -562,7 +562,7 @@ and the `foo.module.ts`'s content:
 export class FooModule {}
 ```
 
-Khamsa will parse it into `/foo`, `/foo/baz` and `/foo/baz/child` routes.
+Agros will parse it into `/foo`, `/foo/baz` and `/foo/baz/child` routes.
 
 The `@Module()` decorator takes a single object as parameter whose properties describe the module:
 
@@ -582,18 +582,18 @@ The definition of `RouteOptionItem` is like below:
 
 ### Use Root Module to Create an App
 
-See [this code](examples/src/index.tsx) to get detailed information of how to create a React.js App by Khamsa.
+See [this code](examples/src/index.tsx) to get detailed information of how to create a React.js App by Agros.
 
 ## Participate in Project Development
 
-Getting involved in the development of Khamsa is welcomed. But before that, please read the [Code of Conduct](CODE_OF_CONDUCT.md) of Khamsa. You can also read [this doc](.github/CONTRIBUTING.md) to get more information about contribute your code into this repository.
+Getting involved in the development of Agros is welcomed. But before that, please read the [Code of Conduct](CODE_OF_CONDUCT.md) of Agros. You can also read [this doc](.github/CONTRIBUTING.md) to get more information about contribute your code into this repository.
 
 > Before starting working on the project, please upgrade your Node.js version to v14.15.0 or later.
 
 ## Sponsorship
 
-We accept sponsorship and are committed to spending 100% of all sponsorship money on maintaining Khamsa, including but not limited to purchasing and maintaining the Khamsa documentation domain, servers, and paying stipends to some of our core contributors.
+We accept sponsorship and are committed to spending 100% of all sponsorship money on maintaining Agros, including but not limited to purchasing and maintaining the Agros documentation domain, servers, and paying stipends to some of our core contributors.
 
-Before initiating a sponsorship, please send an email to [i@lenconda.top](i@lenconda.top) or [prexustech@gmail.com](prexustech@gmail.com) with your name, nationality, credit card (VISA or MasterCard) number, what problem Khamsa has helped you solve (optional), and a thank-you message (optional), etc. After review and approval, we will reply with an email with a payment method that you can complete the sponsorship via this email.
+Before initiating a sponsorship, please send an email to [i@lenconda.top](i@lenconda.top) or [prexustech@gmail.com](prexustech@gmail.com) with your name, nationality, credit card (VISA or MasterCard) number, what problem Agros has helped you solve (optional), and a thank-you message (optional), etc. After review and approval, we will reply with an email with a payment method that you can complete the sponsorship via this email.
 
-Thank you so much for your support of the Khamsa project and its developers!
+Thank you so much for your support of the Agros project and its developers!
