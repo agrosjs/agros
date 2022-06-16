@@ -1,8 +1,7 @@
-import React from 'react';
-import { Navigate } from 'react-router-dom';
+import { router } from '../../lib';
 
 export default () => {
     return (
-        <Navigate to="/app/foo/child" />
+        <router.Navigate to="/app/foo/child" />
     );
 };

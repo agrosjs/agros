@@ -1,5 +1,4 @@
-import React from 'react';
-import { Component } from '../../../../lib';
+import Agros, { Component } from '../../../../lib';
 import { BarComponent } from '../bar/bar.component';
 import { BarService } from '../bar/bar.service';
 import { FooService } from './foo.service';
@@ -7,7 +6,7 @@ import { FooService } from './foo.service';
 @Component({
     suspenseFallback: 'loading...',
     factory: (forwardRef) => {
-        return React.lazy(() => forwardRef(import('./Foo')));
+        return Agros.lazy(() => forwardRef(import('./Foo')));
     },
     declarations: [
         BarComponent,

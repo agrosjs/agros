@@ -21,7 +21,7 @@ export interface NavigateOptions {
     path?: string;
 }
 
-export interface AppProps {
+export interface RootContainerProps {
     module: Type;
     routerProps?: any;
     RouterComponent?: React.FC;
@@ -90,4 +90,8 @@ export interface Container {
 export interface ContainerForwardedComponentProps<Props> {
     props: Props;
     container: Container;
+}
+
+export interface BootstrapConfigItem extends RootContainerProps {
+    container?: HTMLElement;
 }

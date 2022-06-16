@@ -1,8 +1,7 @@
-import React from 'react';
-import { Component } from '../../../../lib';
+import Agros, { Component } from '../../../../lib';
 
 @Component({
     suspenseFallback: 'loading...',
-    component: React.lazy(() => import('./FooChild')),
+    factory: (forwardRef) => Agros.lazy(() => forwardRef(import('./FooChild'))),
 })
 export class FooChildComponent {}

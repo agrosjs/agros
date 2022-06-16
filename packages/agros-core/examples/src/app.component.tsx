@@ -2,6 +2,6 @@ import { Component } from '../../lib';
 import App from './App';
 
 @Component({
-    component: App,
+    factory: () => App,
 })
 export class AppComponent {}

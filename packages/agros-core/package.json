@@ -29,6 +29,8 @@
         "immutable": "^4.1.0",
         "is-promise": "^4.0.0",
         "lodash": "^4.17.21",
+        "react": "^17.0.0",
+        "react-dom": "^17.0.0",
         "react-router-dom": "^6.3.0",
         "reflect-metadata": "^0.1.13"
     },
@@ -40,22 +42,16 @@
         "@types/jest": "^28.1.1",
         "@types/lodash": "^4.14.182",
         "@types/node": "^15.12.2",
-        "@types/react": "^16.14.24",
-        "@types/react-dom": "^16.9.14",
+        "@types/react": "^17.0.0",
+        "@types/react-dom": "^17.0.0",
         "babel-plugin-transform-typescript-metadata": "^0.3.2",
         "customize-cra": "^1.0.0",
-        "react": "16.8.6",
         "react-app-rewired": "^2.2.1",
         "react-dev-utils": "^12.0.1",
-        "react-dom": "16.8.6",
         "react-error-boundary": "^3.1.4",
         "react-scripts": "^5.0.0",
         "rimraf": "^3.0.2",
         "typescript": "^4.5.5",
         "web-vitals": "^2.1.4"
-    },
-    "peerDependencies": {
-        "react": ">=16.8.6",
-        "react-dom": ">=16.8.6"
     }
 }
