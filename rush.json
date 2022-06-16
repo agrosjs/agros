@@ -475,8 +475,7 @@
         // },
         {
             "packageName": "@agros/core",
-            "projectFolder": "packages/agros-core",
-            "shouldPublish": true
+            "projectFolder": "packages/agros-core"
         }
     ]
 }
