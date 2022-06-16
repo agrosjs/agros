@@ -1,0 +1,10 @@
+{
+  "changes": [
+    {
+      "packageName": "@agros/core",
+      "comment": "Provide a new way to make entry of an app",
+      "type": "minor"
+    }
+  ],
+  "packageName": "@agros/core"
+}
