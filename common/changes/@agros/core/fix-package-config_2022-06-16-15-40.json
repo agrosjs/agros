@@ -1,0 +1,10 @@
+{
+  "changes": [
+    {
+      "packageName": "@agros/core",
+      "comment": "Fix package config",
+      "type": "patch"
+    }
+  ],
+  "packageName": "@agros/core"
+}
