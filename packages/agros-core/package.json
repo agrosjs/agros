@@ -13,7 +13,8 @@
         "checksum": "node ./scripts/checksum.js",
         "publish:main": "node ./scripts/publish.js",
         "pretest": "npm run lint",
-        "test": "exit 0"
+        "test": "exit 0",
+        "prepublish": "npm run build"
     },
     "repository": {
         "type": "git",
@@ -24,6 +25,14 @@
     "bugs": {
         "url": "https://github.com/lenconda/agros/issues"
     },
+    "files": [
+        "lib",
+        "bin",
+        "LICENSE",
+        "README.md",
+        "package.json",
+        "package-lock.json"
+    ],
     "homepage": "https://github.com/lenconda/agros#readme",
     "dependencies": {
         "immutable": "^4.1.0",
