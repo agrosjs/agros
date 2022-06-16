@@ -2,6 +2,18 @@
   "name": "@agros/core",
   "entries": [
     {
+      "version": "0.2.1",
+      "tag": "@agros/core_v0.2.1",
+      "date": "Thu, 16 Jun 2022 15:42:31 GMT",
+      "comments": {
+        "patch": [
+          {
+            "comment": "Fix package config"
+          }
+        ]
+      }
+    },
+    {
       "version": "0.2.0",
       "tag": "@agros/core_v0.2.0",
       "date": "Thu, 16 Jun 2022 15:06:42 GMT",
