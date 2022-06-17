@@ -2,6 +2,18 @@
   "name": "@agros/core",
   "entries": [
     {
+      "version": "0.3.0",
+      "tag": "@agros/core_v0.3.0",
+      "date": "Fri, 17 Jun 2022 09:44:40 GMT",
+      "comments": {
+        "minor": [
+          {
+            "comment": "Add router exports to 'lib/router'"
+          }
+        ]
+      }
+    },
+    {
       "version": "0.2.1",
       "tag": "@agros/core_v0.2.1",
       "date": "Thu, 16 Jun 2022 15:42:31 GMT",

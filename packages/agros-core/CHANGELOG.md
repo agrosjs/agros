@@ -1,6 +1,13 @@
 # Change Log - @agros/core
 
-This log was last generated on Thu, 16 Jun 2022 15:42:31 GMT and should not be manually modified.
+This log was last generated on Fri, 17 Jun 2022 09:44:40 GMT and should not be manually modified.
+
+## 0.3.0
+Fri, 17 Jun 2022 09:44:40 GMT
+
+### Minor changes
+
+- Add router exports to 'lib/router'
 
 ## 0.2.1
 Thu, 16 Jun 2022 15:42:31 GMT
