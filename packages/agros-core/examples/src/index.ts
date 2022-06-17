@@ -1,12 +1,14 @@
 import './index.css';
 import reportWebVitals from './reportWebVitals';
 import { bootstrap } from '../../lib';
+import { HashRouter } from '../../lib/router';
 import { AppModule } from './app.module';
 
 bootstrap([
     {
         module: AppModule,
         container: document.getElementById('root'),
+        RouterComponent: HashRouter,
     },
 ]);
 

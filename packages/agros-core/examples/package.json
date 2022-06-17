@@ -13,5 +13,11 @@
             "last 1 firefox version",
             "last 1 safari version"
         ]
+    },
+    "dependencies": {
+        "react": "^17.0.2"
+    },
+    "devDependencies": {
+        "@types/react": "^17.0.47"
     }
 }

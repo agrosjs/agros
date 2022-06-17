@@ -1,7 +1,10 @@
-import Agros, { Component } from '../../../../lib';
+import {
+    lazy,
+    Component,
+} from '../../../../lib';
 
 @Component({
     suspenseFallback: 'loading...',
-    factory: (forwardRef) => Agros.lazy(() => forwardRef(import('./FooChild'))),
+    factory: (forwardRef) => lazy(() => forwardRef(import('./FooChild'))),
 })
 export class FooChildComponent {}

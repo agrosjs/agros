@@ -1,11 +1,10 @@
-import Agros from '../../../../lib';
-
-const {
+import { FC } from 'react';
+import {
     useEffect,
     useState,
-} = Agros;
+} from '../../../../lib';
 
-const FooBoundary: Agros.FC = () => {
+const FooBoundary: FC = () => {
     const [remainedTime, setRemainedTime] = useState<number>(5000);
 
     useEffect(() => {

@@ -1,10 +1,15 @@
-import Agros, { forwardContainer } from '../../../../lib';
+import { FC } from 'react';
+import {
+    forwardContainer,
+    useEffect,
+    memo,
+} from '../../../../lib';
 import { LoremService } from './lorem.service';
 
-const Lorem: Agros.FC = forwardContainer(({ container }) => {
+const Lorem: FC = forwardContainer(({ container }) => {
     const loremService = container.get<LoremService>(LoremService);
 
-    Agros.useEffect(() => {
+    useEffect(() => {
         loremService.sayHello();
     }, []);
 
@@ -13,4 +18,4 @@ const Lorem: Agros.FC = forwardContainer(({ container }) => {
     );
 });
 
-export default Agros.memo(Lorem);
+export default memo(Lorem);

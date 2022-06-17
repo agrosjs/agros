@@ -1,6 +1,6 @@
-import Agros from '../../../../lib';
+import { FC } from 'react';
 
-const FooChild: Agros.FC = () => {
+const FooChild: FC = () => {
     return (
         <div style={{ color: 'red' }}>Greet from foo/child page!</div>
     );
