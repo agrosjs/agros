@@ -1,0 +1,10 @@
+{
+  "changes": [
+    {
+      "packageName": "@agros/core",
+      "comment": "Add router exports to 'lib/router'",
+      "type": "minor"
+    }
+  ],
+  "packageName": "@agros/core"
+}

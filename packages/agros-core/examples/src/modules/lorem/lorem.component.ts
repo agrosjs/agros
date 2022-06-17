@@ -1,8 +1,11 @@
-import Agros, { Component } from '../../../../lib';
+import {
+    Component,
+    lazy,
+} from '../../../../lib';
 import { LoremService } from './lorem.service';
 
 @Component({
-    factory: () => Agros.lazy(() => import('./Lorem')),
+    factory: () => lazy(() => import('./Lorem')),
     declarations: [
         LoremService,
     ],

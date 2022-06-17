@@ -1,7 +1,7 @@
-import { router } from '../../lib';
+import { Navigate } from '../../lib/router';
 
 export default () => {
     return (
-        <router.Navigate to="/app/foo/child" />
+        <Navigate to="/app/foo/child" />
     );
 };

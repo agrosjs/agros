@@ -1,4 +1,4 @@
-import { router } from '../../lib';
+import { Outlet } from '../../lib/router';
 import './app.component.css';
 
 export default () => {
@@ -6,7 +6,7 @@ export default () => {
         <div className="app">
             <nav>Khamsa</nav>
             <div className="container">
-                <router.Outlet />
+                <Outlet />
             </div>
         </div>
     );

@@ -1,7 +1,8 @@
-import Agros, { Component } from '../../../../lib';
+import { PropsWithChildren } from 'react';
+import { Component } from '../../../../lib';
 import Bar from './Bar';
 
-@Component<any, Agros.PropsWithChildren<{ used: string }>>({
+@Component<any, PropsWithChildren<{ used: string }>>({
     suspenseFallback: 'loading...',
     factory: () => Bar,
 })
