@@ -1,0 +1,10 @@
+{
+  "changes": [
+    {
+      "packageName": "@agros/config",
+      "comment": "Add config parsers",
+      "type": "patch"
+    }
+  ],
+  "packageName": "@agros/config"
+}

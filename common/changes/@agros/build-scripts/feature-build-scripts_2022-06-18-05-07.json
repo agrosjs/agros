@@ -1,0 +1,10 @@
+{
+  "changes": [
+    {
+      "packageName": "@agros/build-scripts",
+      "comment": "Add build-scripts",
+      "type": "patch"
+    }
+  ],
+  "packageName": "@agros/build-scripts"
+}
