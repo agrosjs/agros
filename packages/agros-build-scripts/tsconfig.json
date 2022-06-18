@@ -1,0 +1,37 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "removeComments": false,
+        "emitDecoratorMetadata": true,
+        "typeRoots": [
+            "node_modules/@types/**/*",
+            "typings/**/*.d.ts"
+        ],
+        "types": ["node"],
+        "allowJs": false,
+        "esModuleInterop": true,
+        "experimentalDecorators": true,
+        "skipLibCheck": true,
+        "allowSyntheticDefaultImports": true,
+        "declaration": true,
+        "resolveJsonModule": true,
+        "target": "es2017",
+        "incremental": true,
+        "lib": [
+            "es5",
+            "dom",
+            "esnext",
+            "es2017",
+            "es2015",
+            "es2016"
+        ]
+    },
+    "include": [
+        "src/**/*.ts",
+        "examples/**/*.ts"
+    ],
+    "exclude": [
+        "node_modules/**/*",
+        "scripts/**/*"
+    ]
+}

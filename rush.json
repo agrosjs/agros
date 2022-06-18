@@ -477,6 +477,16 @@
             "packageName": "@agros/core",
             "projectFolder": "packages/agros-core",
             "shouldPublish": true
+        },
+        {
+            "packageName": "@agros/config",
+            "projectFolder": "packages/agros-config",
+            "shouldPublish": true
+        },
+        {
+            "packageName": "@agros/build-scripts",
+            "projectFolder": "packages/agros-build-scripts",
+            "shouldPublish": true
         }
     ]
 }
