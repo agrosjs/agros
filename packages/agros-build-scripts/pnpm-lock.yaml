@@ -1,0 +1,7 @@
+lockfileVersion: 5.4
+
+specifiers:
+  '@agros/config': workspace:^0.1.0
+
+dependencies:
+  '@agros/config': link:../agros-config
