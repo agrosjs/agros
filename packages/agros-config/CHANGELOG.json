@@ -1,0 +1,17 @@
+{
+  "name": "@agros/config",
+  "entries": [
+    {
+      "version": "0.0.1",
+      "tag": "@agros/config_v0.0.1",
+      "date": "Sat, 18 Jun 2022 05:08:35 GMT",
+      "comments": {
+        "patch": [
+          {
+            "comment": "Add config parsers"
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "name": "@agros/build-scripts",
+  "entries": [
+    {
+      "version": "0.0.1",
+      "tag": "@agros/build-scripts_v0.0.1",
+      "date": "Sat, 18 Jun 2022 05:08:35 GMT",
+      "comments": {
+        "patch": [
+          {
+            "comment": "Add build-scripts"
+          }
+        ],
+        "dependency": [
+          {
+            "comment": "Updating dependency \"@agros/config\" from `^0.1.0` to `^0.0.1`"
+          }
+        ]
+      }
+    }
+  ]
+}
