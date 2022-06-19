@@ -1,6 +1,6 @@
 import _ from 'lodash';
-import * as fs from 'fs-extra';
 import * as path from 'path';
+import { permanentlyReadJson } from '@agros/utils';
 
 export type ScopeMap = Record<string, string>;
 
@@ -25,10 +25,10 @@ export class ProjectConfigParser {
 
     public constructor(private readonly projectConfigRelativePath = 'agros.json') {
         try {
-            const userProjectConfig = fs.readJsonSync(path.resolve(
+            const userProjectConfig = permanentlyReadJson(path.resolve(
                 this.PROCESS_CWD,
                 this.projectConfigRelativePath,
-            )) || {};
+            ));
             this.projectConfig = _.merge(this.projectConfig, userProjectConfig);
         } catch (e) {}
     }

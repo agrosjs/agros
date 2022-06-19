@@ -1,7 +1,9 @@
 lockfileVersion: 5.4
 
 specifiers:
-  '@agros/config': workspace:^0.1.0
+  '@agros/config': workspace:^0.0.1
+  '@agros/utils': workspace:^0.0.0
 
 dependencies:
   '@agros/config': link:../agros-config
+  '@agros/utils': link:../agros-utils

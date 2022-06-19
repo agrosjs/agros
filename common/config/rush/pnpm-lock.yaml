@@ -7,26 +7,62 @@ importers:
 
   ../../packages/agros-build-scripts:
     specifiers:
+      '@agros/config': workspace:^0.0.1
+      '@babel/core': ^7.18.5
+      '@babel/plugin-proposal-class-properties': ^7.17.12
+      '@babel/plugin-proposal-decorators': ^7.18.2
+      '@types/is-promise': ^2.2.0
       '@types/jest': ^28.1.1
       '@types/lodash': ^4.14.182
       '@types/node': ^15.12.2
+      '@types/react': ^17.0.0
+      '@types/react-dom': ^17.0.0
+      babel-plugin-transform-typescript-metadata: ^0.3.2
+      customize-cra: ^1.0.0
+      react-app-rewired: ^2.2.1
+      react-dev-utils: ^12.0.1
+      react-error-boundary: ^3.1.4
+      react-scripts: ^5.0.0
       rimraf: ^3.0.2
       typescript: ^4.5.5
+      web-vitals: ^2.1.4
+    dependencies:
+      '@agros/config': link:../agros-config
     devDependencies:
+      '@babel/core': 7.18.5
+      '@babel/plugin-proposal-class-properties': 7.17.12_@babel+core@7.18.5
+      '@babel/plugin-proposal-decorators': 7.18.2_@babel+core@7.18.5
+      '@types/is-promise': 2.2.0
       '@types/jest': 28.1.1
       '@types/lodash': 4.14.182
       '@types/node': 15.14.9
+      '@types/react': 17.0.46
+      '@types/react-dom': 17.0.17
+      babel-plugin-transform-typescript-metadata: 0.3.2
+      customize-cra: 1.0.0
+      react-app-rewired: 2.2.1_react-scripts@5.0.1
+      react-dev-utils: 12.0.1_typescript@4.7.3
+      react-error-boundary: 3.1.4
+      react-scripts: 5.0.1_typescript@4.7.3
       rimraf: 3.0.2
       typescript: 4.7.3
+      web-vitals: 2.1.4
 
   ../../packages/agros-config:
     specifiers:
+      '@types/fs-extra': ^9.0.13
       '@types/jest': ^28.1.1
       '@types/lodash': ^4.14.182
       '@types/node': ^15.12.2
+      fs-extra: ^10.1.0
+      lodash: ^4.17.21
       rimraf: ^3.0.2
       typescript: ^4.5.5
+    dependencies:
+      fs-extra: 10.1.0
+      lodash: 4.17.21
     devDependencies:
+      '@types/fs-extra': 9.0.13
       '@types/jest': 28.1.1
       '@types/lodash': 4.14.182
       '@types/node': 15.14.9
@@ -2296,6 +2332,12 @@ packages:
       '@types/express-serve-static-core': 4.17.29
       '@types/qs': 6.9.7
       '@types/serve-static': 1.13.10
+    dev: true
+
+  /@types/fs-extra/9.0.13:
+    resolution: {integrity: sha512-nEnwB++1u5lVDM2UI4c1+5R+FYaKfaAzS4OococimjVm3nQw3TuzH5UNsocrcTBbhnerblyHj4A49qXbIiZdpA==}
+    dependencies:
+      '@types/node': 15.14.9
     dev: true
 
   /@types/graceful-fs/4.1.5:
@@ -4983,7 +5025,6 @@ packages:
       graceful-fs: 4.2.10
       jsonfile: 6.1.0
       universalify: 2.0.0
-    dev: true
 
   /fs-extra/9.1.0:
     resolution: {integrity: sha512-hcg3ZmepS30/7BSFqRvoo3DOMQu7IjqxO5nCDt+zM9XWjb33Wg7ziNT+Qvqbuc3+gWpzO02JubVyk2G4Zvo1OQ==}
@@ -5144,7 +5185,6 @@ packages:
 
   /graceful-fs/4.2.10:
     resolution: {integrity: sha512-9ByhssR2fPVsNZj478qUUbKfmL0+t5BDVyjShtyZZLiK7ZDAArFFfopyOTj0M05wE2tJPisA4iTnnXl2YoPvOA==}
-    dev: true
 
   /gzip-size/6.0.0:
     resolution: {integrity: sha512-ax7ZYomf6jqPTQ4+XCpUGyXKHk5WweS+e05MBO4/y3WJ5RkmPXNKvX+bx1behVILVwr6JSQvZAku021CHPXG3Q==}
@@ -6350,7 +6390,6 @@ packages:
       universalify: 2.0.0
     optionalDependencies:
       graceful-fs: 4.2.10
-    dev: true
 
   /jsonpointer/5.0.0:
     resolution: {integrity: sha512-PNYZIdMjVIvVgDSYKTT63Y+KZ6IZvGRNNWcxwD+GNnUz1MKPfv30J8ueCjdwcN0nDx2SlshgyB7Oy0epAzVRRg==}
@@ -8066,6 +8105,15 @@ packages:
       scheduler: 0.20.2
     dev: false
 
+  /react-error-boundary/3.1.4:
+    resolution: {integrity: sha512-uM9uPzZJTF6wRQORmSrvOIgt4lJ9MC1sNgEOj2XGsDTRE4kmpWxg7ENK9EWNKJRMAOY9z0MuF4yIfl6gp4sotA==}
+    engines: {node: '>=10', npm: '>=6'}
+    peerDependencies:
+      react: '>=16.13.1'
+    dependencies:
+      '@babel/runtime': 7.18.3
+    dev: true
+
   /react-error-boundary/3.1.4_react@17.0.2:
     resolution: {integrity: sha512-uM9uPzZJTF6wRQORmSrvOIgt4lJ9MC1sNgEOj2XGsDTRE4kmpWxg7ENK9EWNKJRMAOY9z0MuF4yIfl6gp4sotA==}
     engines: {node: '>=10', npm: '>=6'}
@@ -8162,6 +8210,101 @@ packages:
       postcss-preset-env: 7.7.1_postcss@8.4.14
       prompts: 2.4.2
       react: 17.0.2
+      react-app-polyfill: 3.0.0
+      react-dev-utils: 12.0.1_dmqzdqodl3jvdfg6rxpjz74jxy
+      react-refresh: 0.11.0
+      resolve: 1.22.0
+      resolve-url-loader: 4.0.0
+      sass-loader: 12.6.0_webpack@5.73.0
+      semver: 7.3.7
+      source-map-loader: 3.0.1_webpack@5.73.0
+      style-loader: 3.3.1_webpack@5.73.0
+      tailwindcss: 3.1.3
+      terser-webpack-plugin: 5.3.3_webpack@5.73.0
+      typescript: 4.7.3
+      webpack: 5.73.0
+      webpack-dev-server: 4.9.2_webpack@5.73.0
+      webpack-manifest-plugin: 4.1.1_webpack@5.73.0
+      workbox-webpack-plugin: 6.5.3_webpack@5.73.0
+    optionalDependencies:
+      fsevents: 2.3.2
+    transitivePeerDependencies:
+      - '@babel/plugin-syntax-flow'
+      - '@babel/plugin-transform-react-jsx'
+      - '@parcel/css'
+      - '@swc/core'
+      - '@types/babel__core'
+      - '@types/webpack'
+      - bufferutil
+      - canvas
+      - clean-css
+      - csso
+      - debug
+      - esbuild
+      - eslint-import-resolver-typescript
+      - eslint-import-resolver-webpack
+      - fibers
+      - node-notifier
+      - node-sass
+      - rework
+      - rework-visit
+      - sass
+      - sass-embedded
+      - sockjs-client
+      - supports-color
+      - ts-node
+      - type-fest
+      - uglify-js
+      - utf-8-validate
+      - vue-template-compiler
+      - webpack-cli
+      - webpack-hot-middleware
+      - webpack-plugin-serve
+    dev: true
+
+  /react-scripts/5.0.1_typescript@4.7.3:
+    resolution: {integrity: sha512-8VAmEm/ZAwQzJ+GOMLbBsTdDKOpuZh7RPs0UymvBR2vRk4iZWCskjbFnxqjrzoIvlNNRZ3QJFx6/qDSi6zSnaQ==}
+    engines: {node: '>=14.0.0'}
+    hasBin: true
+    peerDependencies:
+      react: '>= 16'
+      typescript: ^3.2.1 || ^4
+    peerDependenciesMeta:
+      typescript:
+        optional: true
+    dependencies:
+      '@babel/core': 7.18.5
+      '@pmmmwh/react-refresh-webpack-plugin': 0.5.7_4jvxdnb7sc745pzzmlwaxpqw2m
+      '@svgr/webpack': 5.5.0
+      babel-jest: 27.5.1_@babel+core@7.18.5
+      babel-loader: 8.2.5_te6ollfzjcco6mbxjl755ucqke
+      babel-plugin-named-asset-import: 0.3.8_@babel+core@7.18.5
+      babel-preset-react-app: 10.0.1
+      bfj: 7.0.2
+      browserslist: 4.20.4
+      camelcase: 6.3.0
+      case-sensitive-paths-webpack-plugin: 2.4.0
+      css-loader: 6.7.1_webpack@5.73.0
+      css-minimizer-webpack-plugin: 3.4.1_webpack@5.73.0
+      dotenv: 10.0.0
+      dotenv-expand: 5.1.0
+      eslint: 8.17.0
+      eslint-config-react-app: 7.0.1_p4fj2xb54q4qruejjckxuhalmq
+      eslint-webpack-plugin: 3.1.1_343ofyucgikfuivzmoigeg5v2u
+      file-loader: 6.2.0_webpack@5.73.0
+      fs-extra: 10.1.0
+      html-webpack-plugin: 5.5.0_webpack@5.73.0
+      identity-obj-proxy: 3.0.0
+      jest: 27.5.1
+      jest-resolve: 27.5.1
+      jest-watch-typeahead: 1.1.0_jest@27.5.1
+      mini-css-extract-plugin: 2.6.0_webpack@5.73.0
+      postcss: 8.4.14
+      postcss-flexbugs-fixes: 5.0.2_postcss@8.4.14
+      postcss-loader: 6.2.1_mepnsno3xmng6eyses4tepu7bu
+      postcss-normalize: 10.0.1_zwqzj7qi6womkziap5jygzp36i
+      postcss-preset-env: 7.7.1_postcss@8.4.14
+      prompts: 2.4.2
       react-app-polyfill: 3.0.0
       react-dev-utils: 12.0.1_dmqzdqodl3jvdfg6rxpjz74jxy
       react-refresh: 0.11.0
@@ -9317,7 +9460,6 @@ packages:
   /universalify/2.0.0:
     resolution: {integrity: sha512-hAZsKq7Yy11Zu1DE0OzWjw7nnLZmJZYTDZZyEFHZdUhV8FkH5MCfoU1XMaxXovpyW5nq5scPqq0ZDP9Zyl04oQ==}
     engines: {node: '>= 10.0.0'}
-    dev: true
 
   /unpipe/1.0.0:
     resolution: {integrity: sha512-pjy2bYhSsufwWlKwPc+l3cN7+wuJlK6uz0YdJEOlQDbl6jo/YlPi4mb8agUkVC8BF7V8NuzeyPNqRksA3hztKQ==}

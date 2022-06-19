@@ -41,6 +41,8 @@
     "version": "0.0.1",
     "description": "Config parser for Agros.js",
     "dependencies": {
+        "@agros/build-scripts": "workspace:^0.0.1",
+        "@agros/utils": "workspace:^0.0.0",
         "fs-extra": "^10.1.0",
         "lodash": "^4.17.21"
     }
