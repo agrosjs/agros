@@ -1,0 +1,10 @@
+{
+  "changes": [
+    {
+      "packageName": "@agros/build-scripts",
+      "comment": "Fix react-app-rewired not found issue",
+      "type": "patch"
+    }
+  ],
+  "packageName": "@agros/build-scripts"
+}
