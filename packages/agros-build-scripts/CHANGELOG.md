@@ -1,6 +1,13 @@
 # Change Log - @agros/build-scripts
 
-This log was last generated on Mon, 20 Jun 2022 11:53:20 GMT and should not be manually modified.
+This log was last generated on Mon, 20 Jun 2022 12:33:12 GMT and should not be manually modified.
+
+## 0.0.3
+Mon, 20 Jun 2022 12:33:12 GMT
+
+### Patches
+
+- Fix react-app-rewired not found issue
 
 ## 0.0.2
 Mon, 20 Jun 2022 11:53:20 GMT

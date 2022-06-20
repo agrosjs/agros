@@ -2,6 +2,18 @@
   "name": "@agros/build-scripts",
   "entries": [
     {
+      "version": "0.0.3",
+      "tag": "@agros/build-scripts_v0.0.3",
+      "date": "Mon, 20 Jun 2022 12:33:12 GMT",
+      "comments": {
+        "patch": [
+          {
+            "comment": "Fix react-app-rewired not found issue"
+          }
+        ]
+      }
+    },
+    {
       "version": "0.0.2",
       "tag": "@agros/build-scripts_v0.0.2",
       "date": "Mon, 20 Jun 2022 11:53:20 GMT",
