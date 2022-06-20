@@ -8,7 +8,7 @@ export const runCommand = (command: string, args: string[] = [], options: SpawnO
         return new Promise((resolve) => {
             const subProcess = spawn(command, args, options);
             subProcess.on('error', resolve);
-            subProcess.stdout.on('error', resolve);
+            subProcess?.stdout?.on('error', resolve);
             subProcess.on('exit', (code) => resolve(
                 code !== 0
                     ? new Error('Process exited with code ' + code)
