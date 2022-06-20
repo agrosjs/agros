@@ -1,11 +1,15 @@
 lockfileVersion: 5.4
 
 specifiers:
+  '@agros/build-scripts': workspace:^0.0.1
+  '@agros/utils': workspace:^0.0.0
   '@types/fs-extra': ^9.0.13
   fs-extra: ^10.1.0
   lodash: ^4.17.21
 
 dependencies:
+  '@agros/build-scripts': link:../agros-build-scripts
+  '@agros/utils': link:../agros-utils
   fs-extra: 10.1.0
   lodash: 4.17.21
 

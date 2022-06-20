@@ -487,6 +487,16 @@
             "packageName": "@agros/build-scripts",
             "projectFolder": "packages/agros-build-scripts",
             "shouldPublish": true
+        },
+        {
+            "packageName": "@agros/utils",
+            "projectFolder": "packages/agros-utils",
+            "shouldPublish": true
+        },
+        {
+            "packageName": "@agros/logger",
+            "projectFolder": "packages/agros-logger",
+            "shouldPublish": true
         }
     ]
 }

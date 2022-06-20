@@ -37,12 +37,10 @@
         "rimraf": "^3.0.2",
         "typescript": "^4.5.5"
     },
-    "name": "@agros/config",
-    "version": "0.0.1",
-    "description": "Config parser for Agros.js",
+    "name": "@agros/utils",
+    "version": "0.0.0",
+    "description": "Agros.js utilities functions",
     "dependencies": {
-        "@agros/utils": "workspace:^0.0.0",
-        "fs-extra": "^10.1.0",
-        "lodash": "^4.17.21"
+        "fs-extra": "^10.1.0"
     }
 }

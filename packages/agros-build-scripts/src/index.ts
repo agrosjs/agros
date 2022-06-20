@@ -1,1 +1,1 @@
-export * from '@agros/config';
+export * as commands from './commands';

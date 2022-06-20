@@ -1,6 +1,6 @@
-import * as fs from 'fs-extra';
 import * as path from 'path';
 import _ from 'lodash';
+import { permanentlyReadJson } from '@agros/utils';
 
 export interface PackageConfig {
     configPath?: string;
@@ -15,8 +15,12 @@ export class PackageConfigParser {
 
     public constructor() {
         try {
-            const packageConfig = fs.readJsonSync(path.resolve(this.PROCESS_CWD, 'package.json')) || {};
-            this.packageConfig = _.merge(_.clone(this.packageConfig), packageConfig);
+            const packageConfig = permanentlyReadJson(path.resolve(this.PROCESS_CWD, 'package.json'));
+            this.packageConfig = _.merge(
+                {},
+                _.clone(this.packageConfig),
+                _.get(packageConfig, 'agros'),
+            );
         } catch (e) {}
     }
 

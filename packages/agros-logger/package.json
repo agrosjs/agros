@@ -30,19 +30,18 @@
     },
     "homepage": "https://github.com/lenconda/agros#readme",
     "devDependencies": {
-        "@types/fs-extra": "^9.0.13",
+        "@types/cli-spinners": "^1.3.0",
         "@types/jest": "^28.1.1",
         "@types/lodash": "^4.14.182",
         "@types/node": "^15.12.2",
         "rimraf": "^3.0.2",
         "typescript": "^4.5.5"
     },
-    "name": "@agros/config",
-    "version": "0.0.1",
-    "description": "Config parser for Agros.js",
+    "name": "@agros/logger",
+    "version": "0.0.0",
+    "description": "Agros logger",
     "dependencies": {
-        "@agros/utils": "workspace:^0.0.0",
-        "fs-extra": "^10.1.0",
+        "cli-spinners": "^2.6.1",
         "lodash": "^4.17.21"
     }
 }
