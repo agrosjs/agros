@@ -12,13 +12,13 @@ export class Logger {
     }
 
     public warning(message: string) {
-        process.stdout.write('\x1b[33m' + 'Warning: ' + message);
+        process.stdout.write('\x1b[33m' + 'Warning: ' + message + '\x1b[0m');
     }
 
     public error(message: string, error?: Error) {
-        process.stdout.write('\x1b[31m' + 'Error: ' + message);
-        process.stdout.write('\x1b[31m' + error?.message);
-        process.stdout.write('\x1b[31m' + error?.stack);
+        process.stdout.write('\x1b[31m' + 'Error: ' + message + '\x1b[0m');
+        process.stdout.write('\x1b[31m' + error?.message + '\x1b[0m');
+        process.stdout.write('\x1b[31m' + error?.stack + '\x1b[0m');
     }
 
     public loadingLog(message: string) {
