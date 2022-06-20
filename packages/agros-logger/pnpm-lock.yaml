@@ -1,0 +1,28 @@
+lockfileVersion: 5.4
+
+specifiers:
+  '@types/cli-spinners': ^1.3.0
+  cli-spinners: ^2.6.1
+  lodash: ^4.17.21
+
+dependencies:
+  cli-spinners: 2.6.1
+  lodash: 4.17.21
+
+devDependencies:
+  '@types/cli-spinners': 1.3.0
+
+packages:
+
+  /@types/cli-spinners/1.3.0:
+    resolution: {integrity: sha512-hs+1QSCZC5/yZPNqTOC6Q/ic8DmRna65H2GpvC8zlXjgWZrQyYBD5T5dJafo70bfDTXrBO9c/j5cw3/nY/qMiA==}
+    dev: true
+
+  /cli-spinners/2.6.1:
+    resolution: {integrity: sha512-x/5fWmGMnbKQAaNwN+UZlV79qBLM9JFnJuJ03gIi5whrob0xV0ofNVHy9DhwGdsMJQc2OKv0oGmLzvaqvAVv+g==}
+    engines: {node: '>=6'}
+    dev: false
+
+  /lodash/4.17.21:
+    resolution: {integrity: sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==}
+    dev: false

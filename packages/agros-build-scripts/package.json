@@ -9,6 +9,9 @@
         "package.json",
         "package-lock.json"
     ],
+    "bin": {
+        "agros-build-scripts": "bin/cli.js"
+    },
     "publishConfig": {
         "access": "public"
     },
@@ -30,17 +33,27 @@
     },
     "homepage": "https://github.com/lenconda/agros#readme",
     "devDependencies": {
-        "@babel/core": "^7.18.5",
-        "@babel/plugin-proposal-class-properties": "^7.17.12",
-        "@babel/plugin-proposal-decorators": "^7.18.2",
+        "@types/customize-cra": "^1.0.2",
         "@types/is-promise": "^2.2.0",
         "@types/jest": "^28.1.1",
         "@types/lodash": "^4.14.182",
         "@types/node": "^15.12.2",
         "@types/react": "^17.0.0",
-        "@types/react-dom": "^17.0.0",
+        "@types/react-dom": "^17.0.0"
+    },
+    "name": "@agros/build-scripts",
+    "version": "0.0.1",
+    "description": "Build scripts for Agros.js",
+    "dependencies": {
+        "@agros/config": "workspace:^0.0.1",
+        "@agros/logger": "workspace:^0.0.0",
+        "@agros/utils": "workspace:^0.0.0",
+        "@babel/core": "^7.18.5",
+        "@babel/plugin-proposal-class-properties": "^7.17.12",
+        "@babel/plugin-proposal-decorators": "^7.18.2",
         "babel-plugin-transform-typescript-metadata": "^0.3.2",
         "customize-cra": "^1.0.0",
+        "lodash": "^4.17.21",
         "react-app-rewired": "^2.2.1",
         "react-dev-utils": "^12.0.1",
         "react-error-boundary": "^3.1.4",
@@ -48,12 +61,5 @@
         "rimraf": "^3.0.2",
         "typescript": "^4.5.5",
         "web-vitals": "^2.1.4"
-    },
-    "name": "@agros/build-scripts",
-    "version": "0.0.1",
-    "description": "Build scripts for Agros.js",
-    "dependencies": {
-        "@agros/config": "workspace:^0.0.1",
-        "@agros/utils": "workspace:^0.0.0"
     }
 }

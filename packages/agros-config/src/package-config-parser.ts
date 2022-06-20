@@ -17,6 +17,7 @@ export class PackageConfigParser {
         try {
             const packageConfig = permanentlyReadJson(path.resolve(this.PROCESS_CWD, 'package.json'));
             this.packageConfig = _.merge(
+                {},
                 _.clone(this.packageConfig),
                 _.get(packageConfig, 'agros'),
             );

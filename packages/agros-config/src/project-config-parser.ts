@@ -1,14 +1,19 @@
 import _ from 'lodash';
 import * as path from 'path';
 import { permanentlyReadJson } from '@agros/utils';
+import { PackageConfigParser } from './package-config-parser';
 
 export type ScopeMap = Record<string, string>;
+export type AliasMap = Record<string, string>;
+export type RootPointMap = Record<string, string>;
 
 export interface ProjectConfig {
     npmClient?: string;
     indentSize?: number;
+    alias?: AliasMap;
     scopes?: ScopeMap;
     defaultScope?: string;
+    rootPoint?: RootPointMap;
 }
 
 export class ProjectConfigParser {
@@ -19,15 +24,20 @@ export class ProjectConfigParser {
             'main': 'src/modules/**/*',
         },
         defaultScope: 'main',
+        alias: {},
+        rootPoint: {
+            app: 'app.module',
+        },
     };
     private projectConfig: ProjectConfig = _.clone(this.defaultProjectConfig);
     private PROCESS_CWD = process.cwd();
+    private packageConfigParser = new PackageConfigParser();
 
-    public constructor(private readonly projectConfigRelativePath = 'agros.json') {
+    public constructor() {
         try {
             const userProjectConfig = permanentlyReadJson(path.resolve(
                 this.PROCESS_CWD,
-                this.projectConfigRelativePath,
+                this.packageConfigParser.getConfig('configPath') || 'agros.json',
             ));
             this.projectConfig = _.merge(this.projectConfig, userProjectConfig);
         } catch (e) {}

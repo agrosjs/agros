@@ -7,6 +7,8 @@ export const permanentlyReadJson = (pathname?: string) => {
     }
 
     try {
-        fs.readJsonSync(path.resolve(process.cwd(), pathname));
-    } catch (e) {}
+        return fs.readJsonSync(path.resolve(process.cwd(), pathname));
+    } catch (e) {
+        return {};
+    }
 };

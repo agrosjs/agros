@@ -15,7 +15,6 @@
     "scripts": {
         "lint": "eslint .",
         "build": "rimraf ./lib && tsc --build tsconfig.package.json",
-        "prepublish": "npm run build",
         "watch": "tsc --watch --project tsconfig.package.json",
         "pretest": "npm run lint",
         "test": "exit 0"
