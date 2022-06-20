@@ -5,17 +5,21 @@ specifiers:
   '@agros/logger': workspace:^0.0.0
   '@agros/utils': workspace:^0.0.0
   '@types/customize-cra': ^1.0.2
+  '@types/figlet': ^1.5.4
   '@types/lodash': ^4.14.182
+  figlet: ^1.5.2
   lodash: ^4.17.21
 
 dependencies:
   '@agros/config': link:../agros-config
   '@agros/logger': link:../agros-logger
   '@agros/utils': link:../agros-utils
+  figlet: 1.5.2
   lodash: 4.17.21
 
 devDependencies:
   '@types/customize-cra': 1.0.2
+  '@types/figlet': 1.5.4
   '@types/lodash': 4.14.182
 
 packages:
@@ -137,6 +141,10 @@ packages:
 
   /@types/estree/0.0.51:
     resolution: {integrity: sha512-CuPgU6f3eT/XgKKPqKd/gLZV1Xmvf1a2R5POBOGQa6uv82xpls89HU5zKeVoyR8XzHd1RGNOlQlvUe3CFkjWNQ==}
+    dev: true
+
+  /@types/figlet/1.5.4:
+    resolution: {integrity: sha512-cskPTju7glYgzvkJy/hftqw7Fen3fsd0yrPOqcbBLJu+YdDQuA438akS1g+2XVKGzsQOnXGV2I9ePv6xUBnKMQ==}
     dev: true
 
   /@types/json-schema/7.0.11:
@@ -441,6 +449,11 @@ packages:
   /fast-json-stable-stringify/2.1.0:
     resolution: {integrity: sha512-lhd/wF+Lk98HZoTCtlVraHtfh5XYijIjalXck7saUtuanSDyLMxnHhSXEDJqHxD7msR8D0uCmqlkwjCV8xvwHw==}
     dev: true
+
+  /figlet/1.5.2:
+    resolution: {integrity: sha512-WOn21V8AhyE1QqVfPIVxe3tupJacq1xGkPTB4iagT6o+P2cAgEOOwIxMftr4+ZCTI6d551ij9j61DFr0nsP2uQ==}
+    engines: {node: '>= 0.4.0'}
+    dev: false
 
   /glob-to-regexp/0.4.1:
     resolution: {integrity: sha512-lkX1HJXwyMcprw/5YUZc2s7DrpAiHB21/V+E1rHUrVNokkvB6bqMzT0VfV6/86ZNabt1k14YOIaT7nDvOX3Iiw==}

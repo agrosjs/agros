@@ -18,7 +18,7 @@ export const ejectedDevDependencies = [
 ];
 
 export const eject = async () => {
-    const stopCopyFileLoadingLog = logger.loadingLog('Copying config-overrides.js');
+    const stopCopyFileLoadingLog = logger.loadingLog('Copying config-overrides.js\n');
     try {
         const configOverridesConfigContent = fs.readFileSync(path.resolve(__dirname, '../../config-overrides.js')).toString();
         fs.writeFileSync(
