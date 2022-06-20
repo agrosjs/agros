@@ -1,4 +1,5 @@
 import * as path from 'path';
+import * as fs from 'fs';
 import { runCommand } from '@agros/utils';
 import { overridesFileExists } from '../utils';
 import { Logger } from '@agros/logger';
@@ -22,13 +23,27 @@ export const run = (command) => {
         process.exit(1);
     }
 
+    let reactAppRewiredBinaryPath = path.resolve(
+        __dirname,
+        `../../node_modules/react-app-rewired/bin/${command === 'test' ? 'jest.js' : 'index.js'}`,
+    );
+
+    if (!fs.existsSync(reactAppRewiredBinaryPath)) {
+        reactAppRewiredBinaryPath = path.resolve(
+            process.cwd(),
+            `node_modules/react-app-rewired/bin/${command === 'test' ? 'jest.js' : 'index.js'}`,
+        );
+    }
+
+    if (!fs.existsSync(reactAppRewiredBinaryPath)) {
+        logger.error('Fatal: lost engine files');
+        process.exit(1);
+    }
+
     runCommand(
         'node',
         [
-            path.resolve(
-                __dirname,
-                `../../node_modules/react-app-rewired/bin/${command === 'test' ? 'jest.js' : 'index.js'}`,
-            ),
+            reactAppRewiredBinaryPath,
             command,
             ...(
                 overridesFileExists()
