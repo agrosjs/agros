@@ -1,6 +1,13 @@
 # Change Log - @agros/core
 
-This log was last generated on Fri, 17 Jun 2022 09:44:40 GMT and should not be manually modified.
+This log was last generated on Mon, 20 Jun 2022 11:53:20 GMT and should not be manually modified.
+
+## 0.3.1
+Mon, 20 Jun 2022 11:53:20 GMT
+
+### Patches
+
+- Optimize user experience
 
 ## 0.3.0
 Fri, 17 Jun 2022 09:44:40 GMT

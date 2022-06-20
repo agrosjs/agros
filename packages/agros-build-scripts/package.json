@@ -43,12 +43,12 @@
         "@types/react-dom": "^17.0.0"
     },
     "name": "@agros/build-scripts",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "description": "Build scripts for Agros.js",
     "dependencies": {
-        "@agros/config": "workspace:^0.0.1",
-        "@agros/logger": "workspace:^0.0.0",
-        "@agros/utils": "workspace:^0.0.0",
+        "@agros/config": "workspace:^0.0.2",
+        "@agros/logger": "workspace:^0.0.1",
+        "@agros/utils": "workspace:^0.0.1",
         "@babel/core": "^7.18.5",
         "@babel/plugin-proposal-class-properties": "^7.17.12",
         "@babel/plugin-proposal-decorators": "^7.18.2",

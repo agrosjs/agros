@@ -1,0 +1,17 @@
+{
+  "name": "@agros/logger",
+  "entries": [
+    {
+      "version": "0.0.1",
+      "tag": "@agros/logger_v0.0.1",
+      "date": "Mon, 20 Jun 2022 11:53:20 GMT",
+      "comments": {
+        "patch": [
+          {
+            "comment": "Initialize loggers"
+          }
+        ]
+      }
+    }
+  ]
+}
