@@ -14,8 +14,8 @@
     },
     "scripts": {
         "lint": "eslint .",
-        "build": "rimraf ./lib && tsc --build tsconfig.package.json",
-        "watch": "tsc --watch --project tsconfig.package.json",
+        "build": "rimraf ./lib && tsc --build tsconfig.json",
+        "watch": "tsc --watch --project tsconfig.json",
         "pretest": "npm run lint",
         "test": "exit 0"
     },
