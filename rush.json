@@ -497,6 +497,11 @@
             "packageName": "@agros/logger",
             "projectFolder": "packages/agros-logger",
             "shouldPublish": true
+        },
+        {
+            "packageName": "@agros/cli",
+            "projectFolder": "packages/agros-cli",
+            "shouldPublish": true
         }
     ]
 }

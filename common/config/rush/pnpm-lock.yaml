@@ -7,12 +7,14 @@ importers:
 
   ../../packages/agros-build-scripts:
     specifiers:
-      '@agros/config': workspace:^0.0.1
-      '@agros/utils': workspace:^0.0.0
+      '@agros/config': workspace:^0.0.2
+      '@agros/logger': workspace:^0.0.1
+      '@agros/utils': workspace:^0.0.1
       '@babel/core': ^7.18.5
       '@babel/plugin-proposal-class-properties': ^7.17.12
       '@babel/plugin-proposal-decorators': ^7.18.2
       '@types/customize-cra': ^1.0.2
+      '@types/figlet': ^1.5.4
       '@types/is-promise': ^2.2.0
       '@types/jest': ^28.1.1
       '@types/lodash': ^4.14.182
@@ -21,6 +23,7 @@ importers:
       '@types/react-dom': ^17.0.0
       babel-plugin-transform-typescript-metadata: ^0.3.2
       customize-cra: ^1.0.0
+      figlet: ^1.5.2
       lodash: ^4.17.21
       react-app-rewired: ^2.2.1
       react-dev-utils: ^12.0.1
@@ -31,12 +34,14 @@ importers:
       web-vitals: ^2.1.4
     dependencies:
       '@agros/config': link:../agros-config
+      '@agros/logger': link:../agros-logger
       '@agros/utils': link:../agros-utils
       '@babel/core': 7.18.5
       '@babel/plugin-proposal-class-properties': 7.17.12_@babel+core@7.18.5
       '@babel/plugin-proposal-decorators': 7.18.2_@babel+core@7.18.5
       babel-plugin-transform-typescript-metadata: 0.3.2
       customize-cra: 1.0.0
+      figlet: 1.5.2
       lodash: 4.17.21
       react-app-rewired: 2.2.1_react-scripts@5.0.1
       react-dev-utils: 12.0.1_typescript@4.7.3
@@ -47,6 +52,7 @@ importers:
       web-vitals: 2.1.4
     devDependencies:
       '@types/customize-cra': 1.0.2
+      '@types/figlet': 1.5.4
       '@types/is-promise': 2.2.0
       '@types/jest': 28.1.1
       '@types/lodash': 4.14.182
@@ -54,9 +60,23 @@ importers:
       '@types/react': 17.0.46
       '@types/react-dom': 17.0.17
 
+  ../../packages/agros-cli:
+    specifiers:
+      '@types/jest': ^28.1.1
+      '@types/lodash': ^4.14.182
+      '@types/node': ^15.12.2
+      rimraf: ^3.0.2
+      typescript: ^4.5.5
+    devDependencies:
+      '@types/jest': 28.1.1
+      '@types/lodash': 4.14.182
+      '@types/node': 15.14.9
+      rimraf: 3.0.2
+      typescript: 4.7.3
+
   ../../packages/agros-config:
     specifiers:
-      '@agros/utils': workspace:^0.0.0
+      '@agros/utils': workspace:^0.0.1
       '@types/fs-extra': ^9.0.13
       '@types/jest': ^28.1.1
       '@types/lodash': ^4.14.182
@@ -134,12 +154,19 @@ importers:
 
   ../../packages/agros-logger:
     specifiers:
+      '@types/cli-spinners': ^1.3.0
       '@types/jest': ^28.1.1
       '@types/lodash': ^4.14.182
       '@types/node': ^15.12.2
+      cli-spinners: ^2.6.1
+      lodash: ^4.17.21
       rimraf: ^3.0.2
       typescript: ^4.5.5
+    dependencies:
+      cli-spinners: 2.6.1
+      lodash: 4.17.21
     devDependencies:
+      '@types/cli-spinners': 1.3.0
       '@types/jest': 28.1.1
       '@types/lodash': 4.14.182
       '@types/node': 15.14.9
@@ -2118,6 +2145,10 @@ packages:
     dependencies:
       '@types/node': 15.14.9
 
+  /@types/cli-spinners/1.3.0:
+    resolution: {integrity: sha512-hs+1QSCZC5/yZPNqTOC6Q/ic8DmRna65H2GpvC8zlXjgWZrQyYBD5T5dJafo70bfDTXrBO9c/j5cw3/nY/qMiA==}
+    dev: true
+
   /@types/connect-history-api-fallback/1.3.5:
     resolution: {integrity: sha512-h8QJa8xSb1WD4fpKBDcATDNGXghFj6/3GRWG6dhmRcu0RX1Ubasur2Uvx5aeEwlf0MwblEC2bMzzMQntxnw/Cw==}
     dependencies:
@@ -2181,6 +2212,10 @@ packages:
       '@types/express-serve-static-core': 4.17.29
       '@types/qs': 6.9.7
       '@types/serve-static': 1.13.10
+
+  /@types/figlet/1.5.4:
+    resolution: {integrity: sha512-cskPTju7glYgzvkJy/hftqw7Fen3fsd0yrPOqcbBLJu+YdDQuA438akS1g+2XVKGzsQOnXGV2I9ePv6xUBnKMQ==}
+    dev: true
 
   /@types/fs-extra/9.0.13:
     resolution: {integrity: sha512-nEnwB++1u5lVDM2UI4c1+5R+FYaKfaAzS4OococimjVm3nQw3TuzH5UNsocrcTBbhnerblyHj4A49qXbIiZdpA==}
@@ -3235,6 +3270,11 @@ packages:
     engines: {node: '>= 10.0'}
     dependencies:
       source-map: 0.6.1
+
+  /cli-spinners/2.6.1:
+    resolution: {integrity: sha512-x/5fWmGMnbKQAaNwN+UZlV79qBLM9JFnJuJ03gIi5whrob0xV0ofNVHy9DhwGdsMJQc2OKv0oGmLzvaqvAVv+g==}
+    engines: {node: '>=6'}
+    dev: false
 
   /cliui/7.0.4:
     resolution: {integrity: sha512-OcRE68cOsVMXp1Yvonl/fzkQOyjLSu/8bhPDfQt0e0/Eb283TKP20Fs2MqoPsr9SwA595rRCA+QMzYc9nBP+JQ==}
@@ -4405,6 +4445,11 @@ packages:
     resolution: {integrity: sha512-DkPJKQeY6kKwmuMretBhr7G6Vodr7bFwDYTXIkfG1gjvNpaxBTQV3PbXg6bR1c1UP4jPOX0jHUbbHANL9vRjVg==}
     dependencies:
       bser: 2.1.1
+
+  /figlet/1.5.2:
+    resolution: {integrity: sha512-WOn21V8AhyE1QqVfPIVxe3tupJacq1xGkPTB4iagT6o+P2cAgEOOwIxMftr4+ZCTI6d551ij9j61DFr0nsP2uQ==}
+    engines: {node: '>= 0.4.0'}
+    dev: false
 
   /file-entry-cache/6.0.1:
     resolution: {integrity: sha512-7Gps/XWymbLk2QLYK4NzpMOrYjMhdIxXuIvy2QBsLE6ljuodKvdkWs/cpyJJ3CVIVpH0Oi1Hvg1ovbMzLdFBBg==}

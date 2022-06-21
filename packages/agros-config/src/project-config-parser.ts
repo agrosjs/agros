@@ -13,7 +13,8 @@ export interface ProjectConfig {
     alias?: AliasMap;
     scopes?: ScopeMap;
     defaultScope?: string;
-    rootPoint?: RootPointMap;
+    rootPoints?: RootPointMap;
+    entry?: string;
 }
 
 export class ProjectConfigParser {
@@ -21,13 +22,14 @@ export class ProjectConfigParser {
         npmClient: 'npm',
         indentSize: 4,
         scopes: {
-            'main': 'src/modules/**/*',
+            'main': 'modules/**/*',
         },
         defaultScope: 'main',
         alias: {},
-        rootPoint: {
+        rootPoints: {
             app: 'app.module',
         },
+        entry: 'index.ts',
     };
     private projectConfig: ProjectConfig = _.clone(this.defaultProjectConfig);
     private PROCESS_CWD = process.cwd();

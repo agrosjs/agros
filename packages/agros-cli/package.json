@@ -1,0 +1,51 @@
+{
+    "main": "lib/index.js",
+    "types": "lib/index.d.ts",
+    "files": [
+        "lib",
+        "bin",
+        "LICENSE",
+        "README.md",
+        "package.json",
+        "package-lock.json"
+    ],
+    "publishConfig": {
+        "access": "public"
+    },
+    "scripts": {
+        "lint": "eslint .",
+        "build": "rimraf ./lib && tsc --build tsconfig.json",
+        "watch": "tsc --watch --project tsconfig.json",
+        "pretest": "npm run lint",
+        "test": "exit 0"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/lenconda/agros.git"
+    },
+    "author": "Lenconda <i@lenconda.top>",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/lenconda/agros/issues"
+    },
+    "homepage": "https://github.com/lenconda/agros#readme",
+    "devDependencies": {
+        "@types/fs-extra": "^9.0.13",
+        "@types/jest": "^28.1.1",
+        "@types/lodash": "^4.14.182",
+        "@types/node": "^15.12.2",
+        "rimraf": "^3.0.2",
+        "typescript": "^4.5.5"
+    },
+    "name": "@agros/cli",
+    "version": "0.0.0",
+    "description": "Agros CLI",
+    "dependencies": {
+        "@agros/config": "workspace:^0.0.2",
+        "@agros/logger": "workspace:^0.0.1",
+        "@agros/utils": "workspace:^0.0.1",
+        "@babel/parser": "^7.18.5",
+        "@babel/types": "^7.18.4",
+        "fs-extra": "^10.1.0"
+    }
+}
