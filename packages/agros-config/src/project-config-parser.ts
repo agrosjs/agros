@@ -15,6 +15,7 @@ export interface ProjectConfig {
     defaultScope?: string;
     rootPoints?: RootPointMap;
     entry?: string;
+    baseDir?: string;
 }
 
 export class ProjectConfigParser {
@@ -30,6 +31,7 @@ export class ProjectConfigParser {
             app: 'app.module',
         },
         entry: 'index.ts',
+        baseDir: 'src',
     };
     private projectConfig: ProjectConfig = _.clone(this.defaultProjectConfig);
     private PROCESS_CWD = process.cwd();

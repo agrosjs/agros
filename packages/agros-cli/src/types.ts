@@ -1,9 +1,8 @@
-export interface EntityDescriptor {
+import { PathDescriptor } from '@agros/config';
+
+export interface EntityDescriptor extends PathDescriptor {
     localName: string;
-    exportName: string;
-    relativePath: string;
-    filename: string;
-    aliasPath?: string;
+    exportName: string | 'default';
 }
 
 export interface RootPointDescriptor extends EntityDescriptor {
