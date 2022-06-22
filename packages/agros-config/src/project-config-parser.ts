@@ -6,6 +6,8 @@ import { PackageConfigParser } from './package-config-parser';
 export type ScopeMap = Record<string, string>;
 export type AliasMap = Record<string, string>;
 export type RootPointMap = Record<string, string>;
+export type CollectionMap = Record<string, string[]>;
+export type CollectionType = 'module' | 'service' | 'component';
 
 export interface ProjectConfig {
     npmClient?: string;
@@ -16,6 +18,7 @@ export interface ProjectConfig {
     rootPoints?: RootPointMap;
     entry?: string;
     baseDir?: string;
+    collection?: CollectionMap;
 }
 
 export class ProjectConfigParser {
@@ -32,6 +35,11 @@ export class ProjectConfigParser {
         },
         entry: 'index.ts',
         baseDir: 'src',
+        collection: {
+            module: ['*.module.ts'],
+            service: ['*.service.ts'],
+            component: ['*.component.ts'],
+        },
     };
     private projectConfig: ProjectConfig = _.clone(this.defaultProjectConfig);
     private PROCESS_CWD = process.cwd();

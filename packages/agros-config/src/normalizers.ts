@@ -20,6 +20,10 @@ export const normalizeSrcPath = () => {
     return path.resolve(process.cwd(), projectConfigParser.getConfig('baseDir'));
 };
 
+export const normalizeAbsolutePath = (pathname: string) => {
+    return path.resolve(normalizeSrcPath(), pathname);
+};
+
 export const getPathDescriptorWithAlias = (pathname: string): PathDescriptor => {
     /**
      * relative pathname without `baseDir`
@@ -51,7 +55,7 @@ export const getPathDescriptorWithAlias = (pathname: string): PathDescriptor => 
     }
 
     const parsedRelativePath = relativePath || path.relative(normalizeSrcPath(), pathname);
-    const absolutePath = path.resolve(normalizeSrcPath(), parsedRelativePath);
+    const absolutePath = normalizeAbsolutePath(parsedRelativePath);
     const {
         isBlockDevice,
         isCharacterDevice,
