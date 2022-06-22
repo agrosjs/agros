@@ -1,7 +1,7 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as parser from '@babel/parser';
-import { ImportDeclaration } from '@babel/types';
+import { ExpressionStatement, ImportDeclaration, ObjectProperty } from '@babel/types';
 
 export const parseRootPoints = (entryPathname = 'index.ts') => {
     const content = fs.readFileSync(path.resolve(entryPathname)).toString();
@@ -43,4 +43,17 @@ export const parseRootPoints = (entryPathname = 'index.ts') => {
     if (!bootstrapFnLocalName) {
         return [];
     }
+
+    const callerDeclaration: ExpressionStatement = body.find((statement) => {
+        if (
+            statement.type === 'ExpressionStatement' &&
+            statement.expression.type === 'CallExpression' &&
+            (statement.expression.callee as any).name === bootstrapFnLocalName
+        ) {
+            return true;
+        }
+        return false;
+    }) as ExpressionStatement;
+
+    const bootstrapArrayDeclaration: ObjectProperty[] = (callerDeclaration.expression as any)?.arguments[0]?.elements as ObjectProperty[] || [];
 };
