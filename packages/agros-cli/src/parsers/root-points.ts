@@ -12,7 +12,7 @@ import {
     getPathDescriptorWithAlias,
     getCollectionType,
     normalizeSrcPath,
-} from '@agros/config';
+} from '@agros/common';
 
 export interface ImportedItem {
     localName: string;

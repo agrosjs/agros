@@ -4,8 +4,7 @@ import {
     statSync,
     existsSync,
 } from 'fs';
-import { ProjectConfigParser } from './project-config-parser';
-import { normalizeAlias } from '@agros/utils';
+import { ProjectConfigParser } from '@agros/config';
 import parseGlob from 'parse-glob';
 
 const projectConfigParser = new ProjectConfigParser();
@@ -32,6 +31,20 @@ export const normalizeAbsolutePath = (pathname: string, dirname: string = normal
 
 export const normalizeModulesPath = () => {
     return path.resolve(normalizeSrcPath(), projectConfigParser.getConfig('modulesDir'));
+};
+
+export const normalizeAlias = (aliasKey: string) => {
+    if (!aliasKey) {
+        return '';
+    }
+
+    let result = aliasKey.replace(/\*\*(\/?)/gi, '');
+
+    if (!result.endsWith('/*')) {
+        result += '/*';
+    }
+
+    return result.replace(/\*/gi, '(.*)');
 };
 
 export const getPathDescriptorWithAlias = (pathname: string, dirname = normalizeSrcPath()): PathDescriptor => {

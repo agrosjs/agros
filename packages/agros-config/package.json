@@ -45,8 +45,6 @@
     "dependencies": {
         "@agros/utils": "workspace:^0.0.1",
         "fs-extra": "^10.1.0",
-        "lodash": "^4.17.21",
-        "minimatch": "^5.1.0",
-        "parse-glob": "^3.0.4"
+        "lodash": "^4.17.21"
     }
 }

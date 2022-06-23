@@ -1,7 +1,5 @@
-import {
-    PathDescriptor,
-    CollectionType,
-} from '@agros/config';
+import { PathDescriptor } from '@agros/common';
+import { CollectionType } from '@agros/config';
 
 export interface EntityDescriptor extends PathDescriptor {
     localName: string;

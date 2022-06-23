@@ -1,7 +1,7 @@
 import {
     CollectionType,
     ProjectConfigParser,
-} from './project-config-parser';
+} from '@agros/config';
 
 const projectConfigParser = new ProjectConfigParser();
 

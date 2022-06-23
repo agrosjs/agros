@@ -38,5 +38,9 @@
     },
     "name": "@agros/common",
     "version": "0.0.0",
-    "description": "Common functions for Agros.js"
+    "description": "Common functions for Agros.js",
+    "dependencies": {
+        "@agros/config": "workspace:^0.0.2",
+        "parse-glob": "^3.0.4"
+    }
 }
