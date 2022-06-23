@@ -17,12 +17,21 @@ export interface PathDescriptor extends Omit<Dirent, 'name'> {
     filename: string;
 }
 
+/**
+ * normalize a relative pathname with project src path
+ * example: ./modules/foo/foo.module.ts => src/modules/foo/foo.module.ts
+ * @returns {string} pathname
+ */
 export const normalizeSrcPath = () => {
     return path.resolve(process.cwd(), projectConfigParser.getConfig('baseDir'));
 };
 
 export const normalizeAbsolutePath = (pathname: string, dirname: string = normalizeSrcPath()) => {
     return path.resolve(dirname, pathname);
+};
+
+export const normalizeModulesPath = () => {
+    return path.resolve(normalizeSrcPath(), projectConfigParser.getConfig('modulesDir'));
 };
 
 export const getPathDescriptorWithAlias = (pathname: string, dirname = normalizeSrcPath()): PathDescriptor => {

@@ -7,13 +7,20 @@ import {
     ObjectExpression,
     ObjectProperty,
 } from '@babel/types';
+import { RootPointDescriptor } from '../types';
+import {
+    getPathDescriptorWithAlias,
+    getCollectionType,
+    normalizeSrcPath,
+} from '@agros/config';
 
 export interface ImportedItem {
     localName: string;
+    exportName: string;
     source: string;
 }
 
-export const parseRootPoints = (entryPathname = 'index.ts') => {
+export const parseRootPoints = (entryPathname = 'index.ts'): RootPointDescriptor[] => {
     const content = fs.readFileSync(path.resolve(entryPathname)).toString();
     const { program } = parser.parse(content, {
         sourceType: 'module',
@@ -86,11 +93,45 @@ export const parseRootPoints = (entryPathname = 'index.ts') => {
             return {
                 localName: specifier.local.name,
                 source: currentStatement.source.value,
+                exportName: (specifier as any).imported.name,
             };
         }));
     }, [] as ImportedItem[]).filter((importedItem) => {
         return moduleNames.indexOf(importedItem.localName) !== -1;
     });
 
-    return importedItems;
+    return importedItems.map((importedItem) => {
+        const {
+            source,
+            localName,
+            exportName,
+        } = importedItem;
+
+        const pathDescriptor = getPathDescriptorWithAlias(source);
+
+        if (!pathDescriptor) {
+            return null;
+        }
+
+        const collectionType = getCollectionType(pathDescriptor.absolutePath);
+
+        if (!collectionType) {
+            return null;
+        }
+
+        const baseFilename = path.basename(pathDescriptor.absolutePath);
+        const absoluteDirname = path.dirname(pathDescriptor.absolutePath);
+        const relativeDirname = path.relative(normalizeSrcPath(), absoluteDirname);
+
+        return {
+            ...pathDescriptor,
+            localName,
+            collectionType,
+            exportName,
+            name: relativeDirname
+                .split(path.sep)
+                .concat(baseFilename.split('.')[0])
+                .join('/'),
+        };
+    });
 };

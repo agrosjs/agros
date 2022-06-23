@@ -13,22 +13,17 @@ export interface ProjectConfig {
     npmClient?: string;
     indentSize?: number;
     alias?: AliasMap;
-    scopes?: ScopeMap;
-    defaultScope?: string;
     rootPoints?: RootPointMap;
     entry?: string;
     baseDir?: string;
     collection?: CollectionMap;
+    modulesDir?: string;
 }
 
 export class ProjectConfigParser {
     private defaultProjectConfig: ProjectConfig = {
         npmClient: 'npm',
         indentSize: 4,
-        scopes: {
-            'main': 'modules/**/*',
-        },
-        defaultScope: 'main',
         alias: {
             '@/*': '*',
             '@modules/*': 'modules/*',
@@ -38,6 +33,7 @@ export class ProjectConfigParser {
         },
         entry: 'index.ts',
         baseDir: 'src',
+        modulesDir: 'modules',
         collection: {
             module: ['*.module.ts'],
             service: ['*.service.ts'],
