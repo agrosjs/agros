@@ -502,6 +502,11 @@
             "packageName": "@agros/cli",
             "projectFolder": "packages/agros-cli",
             "shouldPublish": true
+        },
+        {
+            "packageName": "@agros/common",
+            "projectFolder": "packages/agros-common",
+            "shouldPublish": true
         }
     ]
 }
