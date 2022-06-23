@@ -29,7 +29,10 @@ export class ProjectConfigParser {
             'main': 'modules/**/*',
         },
         defaultScope: 'main',
-        alias: {},
+        alias: {
+            '@/*': '*',
+            '@modules/*': 'modules/*',
+        },
         rootPoints: {
             app: 'app.module',
         },

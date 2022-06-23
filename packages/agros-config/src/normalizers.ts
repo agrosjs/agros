@@ -2,6 +2,7 @@ import * as path from 'path';
 import {
     Dirent,
     statSync,
+    existsSync,
 } from 'fs';
 import { ProjectConfigParser } from './project-config-parser';
 import { normalizeAlias } from '@agros/utils';
@@ -20,11 +21,11 @@ export const normalizeSrcPath = () => {
     return path.resolve(process.cwd(), projectConfigParser.getConfig('baseDir'));
 };
 
-export const normalizeAbsolutePath = (pathname: string) => {
-    return path.resolve(normalizeSrcPath(), pathname);
+export const normalizeAbsolutePath = (pathname: string, dirname: string = normalizeSrcPath()) => {
+    return path.resolve(dirname, pathname);
 };
 
-export const getPathDescriptorWithAlias = (pathname: string): PathDescriptor => {
+export const getPathDescriptorWithAlias = (pathname: string, dirname = normalizeSrcPath()): PathDescriptor => {
     /**
      * relative pathname without `baseDir`
      */
@@ -34,28 +35,37 @@ export const getPathDescriptorWithAlias = (pathname: string): PathDescriptor => 
     for (const aliasKey of Object.keys(alias)) {
         const normalizedAliasPath = normalizeAlias(aliasKey);
         const aliasPathRegExp = new RegExp(normalizedAliasPath, 'gi');
+        const execResult = aliasPathRegExp.exec(pathname);
 
         if (
             !aliasKey ||
             !alias[aliasKey] ||
-            !aliasPathRegExp.exec(pathname) ||
-            aliasPathRegExp.exec(pathname).length < 2
+            !execResult ||
+            execResult.length < 2
         ) {
             continue;
         }
 
-        const tailPath = path.join(...aliasPathRegExp.exec(pathname).slice(1));
+        const tailPath = path.join(...execResult.slice(1, execResult.length));
         const aliasValueGlobPattern = parseGlob(alias[aliasKey]);
 
         relativePath = aliasValueGlobPattern.is.glob
-            ? path.join(aliasValueGlobPattern.path.basename, tailPath)
+            ? path.join(aliasValueGlobPattern.path.dirname, tailPath)
             : path.join(alias[aliasKey], tailPath);
 
         break;
     }
 
-    const parsedRelativePath = relativePath || path.relative(normalizeSrcPath(), pathname);
+    const parsedRelativePath = relativePath || path.relative(
+        normalizeSrcPath(),
+        normalizeAbsolutePath(pathname, dirname),
+    );
     const absolutePath = normalizeAbsolutePath(parsedRelativePath);
+
+    if (!existsSync(absolutePath)) {
+        return null;
+    }
+
     const {
         isBlockDevice,
         isCharacterDevice,
