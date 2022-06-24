@@ -1,6 +1,9 @@
 {
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
+    "bin": {
+        "agros": "bin/agros.js"
+    },
     "files": [
         "lib",
         "bin",

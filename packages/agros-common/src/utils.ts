@@ -58,28 +58,20 @@ export const getPathDescriptorWithAlias = (pathname: string, dirname = normalize
         return null;
     }
 
-    const {
-        isBlockDevice,
-        isCharacterDevice,
-        isDirectory,
-        isFIFO,
-        isFile,
-        isSocket,
-        isSymbolicLink,
-    } = statSync(absolutePath);
+    const statResult = statSync(absolutePath);
 
     return {
         relativePath: parsedRelativePath,
         aliasPath: relativePath ? pathname : null,
         absolutePath,
         filename: path.basename(absolutePath),
-        isBlockDevice,
-        isCharacterDevice,
-        isDirectory,
-        isFIFO,
-        isFile,
-        isSocket,
-        isSymbolicLink,
+        isBlockDevice: statResult.isBlockDevice.bind(statResult),
+        isCharacterDevice: statResult.isCharacterDevice.bind(statResult),
+        isDirectory: statResult.isDirectory.bind(statResult),
+        isFIFO: statResult.isFIFO.bind(statResult),
+        isFile: statResult.isFile.bind(statResult),
+        isSocket: statResult.isSocket.bind(statResult),
+        isSymbolicLink: statResult.isSymbolicLink.bind(statResult),
     };
 };
 
@@ -87,7 +79,8 @@ export const getCollectionType = (pathname: string): CollectionType => {
     const collectionMap = projectConfigParser.getConfig('collection');
     for (const collectionType of Object.keys(collectionMap)) {
         for (const filenamePattern of collectionMap[collectionType]) {
-            if (new RegExp(`${filenamePattern.replace('*', '(.*)')}$`).exec(pathname).length > 1) {
+            const matchResult = new RegExp(`${filenamePattern.replace('*', '(.*)')}$`).exec(pathname);
+            if (matchResult && matchResult.length > 1) {
                 return collectionType as CollectionType;
             }
         }

@@ -30,7 +30,7 @@ export const scanProjectEntities = (startPath = normalizeModulesPath()): EntityD
         }
     }
 
-    if (!moduleName) {
+    if (!moduleName && path.relative(normalizeModulesPath(), startPath)) {
         return currentResult;
     }
 
@@ -40,11 +40,7 @@ export const scanProjectEntities = (startPath = normalizeModulesPath()): EntityD
         const pathDescriptor = getPathDescriptorWithAlias(absolutePath);
 
         if (pathDescriptor.isDirectory()) {
-            currentResult = currentResult.concat(
-                scanProjectEntities(
-                    path.resolve(startPath, rawDirEntityName),
-                ),
-            );
+            currentResult = currentResult.concat(scanProjectEntities(path.resolve(startPath, rawDirEntityName)));
             continue;
         }
 
