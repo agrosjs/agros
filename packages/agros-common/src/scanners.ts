@@ -38,6 +38,10 @@ export const scanProjectEntities = (startPath = normalizeModulesPath()): EntityD
         const absolutePath = path.resolve(startPath, rawDirEntityName);
         const collectionType = getCollectionType(absolutePath);
         const pathDescriptor = getPathDescriptorWithAlias(absolutePath);
+        const modulePrefixName = path.relative(normalizeModulesPath(), path.dirname(absolutePath))
+            .split(path.sep)
+            .slice(0, -1)
+            .join('.') || '';
 
         if (pathDescriptor.isDirectory()) {
             currentResult = currentResult.concat(scanProjectEntities(path.resolve(startPath, rawDirEntityName)));
@@ -54,7 +58,7 @@ export const scanProjectEntities = (startPath = normalizeModulesPath()): EntityD
             ...pathDescriptor,
             entityName,
             collectionType,
-            moduleName,
+            moduleName: `${modulePrefixName ? modulePrefixName + '.' : ''}${moduleName}`,
         });
     }
 
