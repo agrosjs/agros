@@ -45,8 +45,6 @@
         "@agros/config": "workspace:^0.0.2",
         "@agros/logger": "workspace:^0.0.1",
         "@agros/utils": "workspace:^0.0.1",
-        "@babel/parser": "^7.18.5",
-        "@babel/types": "^7.18.4",
         "fs-extra": "^10.1.0"
     }
 }

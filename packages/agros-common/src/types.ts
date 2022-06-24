@@ -1,5 +1,12 @@
-import { PathDescriptor } from '@agros/common';
 import { CollectionType } from '@agros/config';
+import { Dirent } from 'fs';
+
+export interface PathDescriptor extends Omit<Dirent, 'name'> {
+    relativePath: string;
+    absolutePath: string;
+    aliasPath: string | null;
+    filename: string;
+}
 
 export interface EntityDescriptor extends PathDescriptor {
     localName: string;

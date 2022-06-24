@@ -66,8 +66,6 @@ importers:
       '@agros/config': workspace:^0.0.2
       '@agros/logger': workspace:^0.0.1
       '@agros/utils': workspace:^0.0.1
-      '@babel/parser': ^7.18.5
-      '@babel/types': ^7.18.4
       '@types/fs-extra': ^9.0.13
       '@types/jest': ^28.1.1
       '@types/lodash': ^4.14.182
@@ -80,8 +78,6 @@ importers:
       '@agros/config': link:../agros-config
       '@agros/logger': link:../agros-logger
       '@agros/utils': link:../agros-utils
-      '@babel/parser': 7.18.5
-      '@babel/types': 7.18.4
       fs-extra: 10.1.0
     devDependencies:
       '@types/fs-extra': 9.0.13
@@ -94,16 +90,24 @@ importers:
   ../../packages/agros-common:
     specifiers:
       '@agros/config': workspace:^0.0.2
+      '@babel/parser': ^7.18.5
+      '@babel/types': ^7.18.4
+      '@types/fs-extra': ^9.0.13
       '@types/jest': ^28.1.1
       '@types/lodash': ^4.14.182
       '@types/node': ^15.12.2
+      fs-extra: ^10.1.0
       parse-glob: ^3.0.4
       rimraf: ^3.0.2
       typescript: ^4.5.5
     dependencies:
       '@agros/config': link:../agros-config
+      '@babel/parser': 7.18.5
+      '@babel/types': 7.18.4
+      fs-extra: 10.1.0
       parse-glob: 3.0.4
     devDependencies:
+      '@types/fs-extra': 9.0.13
       '@types/jest': 28.1.1
       '@types/lodash': 4.14.182
       '@types/node': 15.14.9

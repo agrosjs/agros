@@ -7,12 +7,14 @@ import {
     ObjectExpression,
     ObjectProperty,
 } from '@babel/types';
-import { RootPointDescriptor } from '../types';
 import {
-    getPathDescriptorWithAlias,
-    getCollectionType,
     normalizeSrcPath,
-} from '@agros/common';
+} from './normalizers';
+import { RootPointDescriptor } from './types';
+import {
+    getCollectionType,
+    getPathDescriptorWithAlias,
+} from './utils';
 
 export interface ImportedItem {
     localName: string;

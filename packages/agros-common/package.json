@@ -30,6 +30,7 @@
     },
     "homepage": "https://github.com/lenconda/agros#readme",
     "devDependencies": {
+        "@types/fs-extra": "^9.0.13",
         "@types/jest": "^28.1.1",
         "@types/lodash": "^4.14.182",
         "@types/node": "^15.12.2",
@@ -41,6 +42,9 @@
     "description": "Common functions for Agros.js",
     "dependencies": {
         "@agros/config": "workspace:^0.0.2",
+        "@babel/parser": "^7.18.5",
+        "@babel/types": "^7.18.4",
+        "fs-extra": "^10.1.0",
         "parse-glob": "^3.0.4"
     }
 }
