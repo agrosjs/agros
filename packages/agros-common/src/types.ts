@@ -8,12 +8,17 @@ export interface PathDescriptor extends Omit<Dirent, 'name'> {
     filename: string;
 }
 
-export interface EntityDescriptor extends PathDescriptor {
-    localName: string;
-    exportName: string | 'default';
+export interface CollectionDescriptor extends PathDescriptor {
     collectionType: CollectionType;
 }
 
-export interface RootPointDescriptor extends EntityDescriptor {
+export interface EntityDescriptor extends CollectionDescriptor {
+    entityName: string;
+    moduleName: string;
+}
+
+export interface RootPointDescriptor extends CollectionDescriptor {
+    localName: string;
+    exportName: string | 'default';
     name: string;
 }

@@ -45,6 +45,7 @@
         "@babel/parser": "^7.18.5",
         "@babel/types": "^7.18.4",
         "fs-extra": "^10.1.0",
+        "immutable": "^4.1.0",
         "parse-glob": "^3.0.4"
     }
 }
