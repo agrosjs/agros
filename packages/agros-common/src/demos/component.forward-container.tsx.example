@@ -1,0 +1,21 @@
+import { FC } from 'react';
+import {
+    forwardContainer,
+    useEffect,
+    useRef,
+    useState,
+} from '@agros/core';
+import { TabProps } from '@modules/tab/tab.interface';
+import { LoadingComponent } from '@modules/brand/loading.component';
+import { LocaleService } from '@modules/locale/locale.service';
+import { BrandService } from '@modules/brand/brand.service';
+
+const Tab: FC<TabProps> = forwardContainer(({ container, props }) => {
+    const localeService = container.get<LocaleService>(LocaleService);
+    const Loading = container.get<FC<BoxProps>>(LoadingComponent);
+    const brandService = container.get<BrandService>(BrandService);
+
+    return (<></>);
+});
+
+export default Tab;
