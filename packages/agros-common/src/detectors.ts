@@ -1,10 +1,13 @@
 import { parse } from '@babel/parser';
 import {
+    CallExpression,
+    FunctionExpression,
     Identifier,
     ImportDeclaration,
     ImportSpecifier,
     Statement,
     VariableDeclaration,
+    VariableDeclarator,
 } from '@babel/types';
 import _ from 'lodash';
 
@@ -19,15 +22,16 @@ export interface UpdateLocation {
     column: number;
 }
 
-export interface AgrosImportType {
+export interface GetContainerTypeMap {
+    getContainer: string;
+    forwardContainer: string;
+}
+export interface DeclarationContainer {
     exportName: string;
     localName: string;
 };
 
-export interface GetContainerTypeMap {
-    'getContainer': string;
-    'forwardContainer': string;
-}
+export type GetContainerLocation = UpdateLocation;
 
 const getStatements = (content: string): Statement[] => {
     if (!content) {
@@ -51,27 +55,51 @@ const getStatements = (content: string): Statement[] => {
     return ast.program.body || [];
 };
 
+/**
+ * detect the location of container declaration
+ * @param content the content of file
+ * @param getContainerTypeMap locale name map for `getContainer` and `forwardContainer`
+ * @returns {GetContainerLocation} the location of `getContainer` or `forwardContainer`
+ */
 export const detectGetContainerLocation = (
     content: string,
     getContainerTypeMap: GetContainerTypeMap,
-): UpdateLocation | null => {
+): GetContainerLocation | null => {
     const statements = getStatements(content);
+    let functionBody: Statement[] = [];
 
     for (const statement of statements) {
         if (statement.type === 'FunctionDeclaration') {
-            const functionBody = statement.body.body || [];
-            for (const functionStatement of functionBody) {
-                if (
-                    _.isNumber(functionStatement.loc?.start?.column) &&
-                    _.isNumber(functionStatement.loc?.end?.line) &&
-                    functionStatement.type === 'VariableDeclaration' &&
-                    (functionStatement as any)?.init?.callee?.name === getContainerTypeMap['getContainer']
-                ) {
-                    return {
-                        line: functionStatement.loc.end.line,
-                        column: functionStatement.loc.start.column + 1,
-                    };
-                }
+            functionBody = statement.body.body || [];
+            break;
+        } else if (statement.type === 'VariableDeclaration') {
+            const functionDeclarator = (statement.declarations || []).find((declarator) => {
+                return declarator?.init?.type === 'ArrowFunctionExpression' || declarator?.init?.type === 'FunctionExpression';
+            });
+            functionBody = (functionDeclarator.init as FunctionExpression)?.body?.body || [];
+            break;
+        }
+    }
+
+    for (const functionStatement of functionBody) {
+        if (
+            functionStatement.type !== 'VariableDeclaration' &&
+            _.isNumber(functionStatement.loc?.start?.column) &&
+            _.isNumber(functionStatement.loc?.end?.line)
+        ) {
+            continue;
+        }
+
+        const declarations: VariableDeclarator[] = ((functionStatement as VariableDeclaration).declarations || []).filter((declaration) => {
+            return declaration?.init?.type === 'CallExpression';
+        });
+
+        for (const declaration of declarations) {
+            if (((declaration?.init as CallExpression)?.callee as Identifier)?.name === getContainerTypeMap['getContainer']) {
+                return {
+                    line: functionStatement.loc.end.line,
+                    column: functionStatement.loc.start.column,
+                };
             }
         }
     }
@@ -79,7 +107,7 @@ export const detectGetContainerLocation = (
     return null;
 };
 
-export const detectAgrosImportType = (content: string): AgrosImportType | null => {
+export const detectDeclarationContainer = (content: string): DeclarationContainer | null => {
     const statements = getStatements(content);
     const importedAgrosStatement: ImportDeclaration = statements.find((statement) => {
         return statement.type === 'ImportDeclaration' && statement.source.value === '@agros/core';
@@ -121,7 +149,7 @@ export const getComponentGetDeclarationsUpdateLocation = (content: string) => {
     }
 
     const body = getStatements(content);
-    let containerLocalName: string;
+    // let containerLocalName: string;
 
     console.log(JSON.stringify(body));
 
