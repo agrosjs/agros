@@ -31,7 +31,15 @@ export interface DeclarationContainer {
     localName: string;
 };
 
-export type GetContainerLocation = UpdateLocation;
+export type GetContainerType = keyof GetContainerTypeMap;
+
+export interface GetContainerInfo {
+    imported: boolean;
+    type: GetContainerType;
+    importLocation: UpdateLocation;
+    importDeclarationLocation: UpdateLocation;
+    callLocation: UpdateLocation;
+}
 
 const getStatements = (content: string): Statement[] => {
     if (!content) {
@@ -59,13 +67,68 @@ const getStatements = (content: string): Statement[] => {
  * detect the location of container declaration
  * @param content the content of file
  * @param getContainerTypeMap locale name map for `getContainer` and `forwardContainer`
- * @returns {GetContainerLocation} the location of `getContainer` or `forwardContainer`
+ * @returns {GetContainerInfo} the location of `getContainer` or `forwardContainer`
  */
-export const detectGetContainerLocation = (
-    content: string,
-    getContainerTypeMap: GetContainerTypeMap,
-): GetContainerLocation | null => {
+export const detectGetContainerInfo = (content: string): GetContainerInfo | null => {
     const statements = getStatements(content);
+    const getContainerTypeMap: GetContainerTypeMap = {
+        getContainer: 'getContainer',
+        forwardContainer: 'forwardContainer',
+    };
+    const importLocationMap: Record<GetContainerType, UpdateLocation> = {
+        getContainer: null,
+        forwardContainer: null,
+    };
+    const importDeclarationMap: Record<GetContainerType, UpdateLocation> = {
+        getContainer: null,
+        forwardContainer: null,
+    };
+
+    const importedAgrosStatement: ImportDeclaration = statements.find((statement) => {
+        return statement.type === 'ImportDeclaration' && statement.source.value === '@agros/core';
+    }) as ImportDeclaration;
+
+    if (!importedAgrosStatement) {
+        return null;
+    }
+
+    const importedSpecifiers = (importedAgrosStatement.specifiers || []) as ImportSpecifier[];
+    const containerImportSpecifiers = importedSpecifiers.filter((importedSpecifier) => {
+        const importedName = (importedSpecifier.imported as Identifier).name;
+        return importedName === 'getContainer' || importedName === 'forwardContainer';
+    });
+
+    if (containerImportSpecifiers.length === 0) {
+        return null;
+    }
+
+    containerImportSpecifiers.forEach((specifier) => {
+        const {
+            loc,
+            local,
+            imported,
+        } = specifier;
+        const exportName = (imported as Identifier).name as keyof GetContainerTypeMap;
+
+        if (getContainerTypeMap[exportName]) {
+            getContainerTypeMap[exportName] = local.name;
+        }
+
+        if (importedAgrosStatement?.loc?.start) {
+            importLocationMap[exportName] = {
+                line: importedAgrosStatement?.loc?.start?.line,
+                column: importedAgrosStatement?.loc?.start?.column,
+            };
+        }
+
+        if (loc?.start) {
+            importDeclarationMap[exportName] = {
+                line: loc?.start?.line,
+                column: loc?.start?.column,
+            };
+        }
+    });
+
     let functionBody: Statement[] = [];
 
     for (const statement of statements) {
@@ -105,40 +168,6 @@ export const detectGetContainerLocation = (
     }
 
     return null;
-};
-
-export const detectDeclarationContainer = (content: string): DeclarationContainer | null => {
-    const statements = getStatements(content);
-    const importedAgrosStatement: ImportDeclaration = statements.find((statement) => {
-        return statement.type === 'ImportDeclaration' && statement.source.value === '@agros/core';
-    }) as ImportDeclaration;
-
-    if (!importedAgrosStatement) {
-        return null;
-    }
-
-    const importedSpecifiers = (importedAgrosStatement.specifiers || []) as ImportSpecifier[];
-    const containerImportSpecifiers = importedSpecifiers.filter((importedSpecifier) => {
-        const importedName = (importedSpecifier.imported as Identifier).name;
-        return importedName === 'getContainer' || importedName === 'forwardContainer';
-    });
-
-    if (containerImportSpecifiers.length === 0) {
-        return null;
-    }
-
-    if (containerImportSpecifiers.length === 1) {
-        const {
-            local,
-            imported,
-        } = containerImportSpecifiers[0];
-        return {
-            localName: local.name,
-            exportName: (imported as Identifier).name,
-        };
-    }
-
-    // const getContainerCaller = statements.find();
 };
 
 export const getImportStatementUpdateLocation = () => {};
