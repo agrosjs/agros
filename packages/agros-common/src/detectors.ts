@@ -1,15 +1,18 @@
 import { parse } from '@babel/parser';
 import {
+    ArrowFunctionExpression,
     CallExpression,
+    ExportDefaultDeclaration,
+    Expression,
+    FunctionDeclaration,
     FunctionExpression,
     Identifier,
     ImportDeclaration,
     ImportSpecifier,
+    SourceLocation,
     Statement,
-    VariableDeclaration,
     VariableDeclarator,
 } from '@babel/types';
-import _ from 'lodash';
 
 export interface UpdateLocation {
     /**
@@ -33,12 +36,20 @@ export interface DeclarationContainer {
 
 export type GetContainerType = keyof GetContainerTypeMap;
 
-export interface GetContainerInfo {
+export interface ComponentInfo {
     imported: boolean;
-    type: GetContainerType;
-    importLocation: UpdateLocation;
-    importDeclarationLocation: UpdateLocation;
-    callLocation: UpdateLocation;
+    /**
+     * component declaration name
+     */
+    name: string;
+    singleLine: boolean;
+    type: GetContainerType | null;
+    localNameMap: GetContainerTypeMap;
+    functionLocation: SourceLocation | null;
+    importLocation: SourceLocation | null;
+    importDeclarationLocation: SourceLocation | null;
+    callLocation: SourceLocation | null;
+    noBlock: boolean;
 }
 
 const getStatements = (content: string): Statement[] => {
@@ -66,22 +77,32 @@ const getStatements = (content: string): Statement[] => {
 /**
  * detect the location of container declaration
  * @param content the content of file
- * @param getContainerTypeMap locale name map for `getContainer` and `forwardContainer`
- * @returns {GetContainerInfo} the location of `getContainer` or `forwardContainer`
+ * @returns {ComponentInfo} the location of `getContainer` or `forwardContainer`
  */
-export const detectGetContainerInfo = (content: string): GetContainerInfo | null => {
+export const detectContainerInfo = (content: string, exportName: string | 'default'): ComponentInfo | null => {
     const statements = getStatements(content);
-    const getContainerTypeMap: GetContainerTypeMap = {
-        getContainer: 'getContainer',
-        forwardContainer: 'forwardContainer',
-    };
-    const importLocationMap: Record<GetContainerType, UpdateLocation> = {
+    const importLocationMap: Record<GetContainerType, SourceLocation> = {
         getContainer: null,
         forwardContainer: null,
     };
-    const importDeclarationMap: Record<GetContainerType, UpdateLocation> = {
+    const importDeclarationMap: Record<GetContainerType, SourceLocation> = {
         getContainer: null,
         forwardContainer: null,
+    };
+    const result: ComponentInfo = {
+        imported: false,
+        name: null,
+        type: null,
+        importLocation: null,
+        importDeclarationLocation: null,
+        functionLocation: null,
+        callLocation: null,
+        localNameMap: {
+            getContainer: 'getContainer',
+            forwardContainer: 'forwardContainer',
+        },
+        singleLine: false,
+        noBlock: false,
     };
 
     const importedAgrosStatement: ImportDeclaration = statements.find((statement) => {
@@ -89,7 +110,7 @@ export const detectGetContainerInfo = (content: string): GetContainerInfo | null
     }) as ImportDeclaration;
 
     if (!importedAgrosStatement) {
-        return null;
+        return result;
     }
 
     const importedSpecifiers = (importedAgrosStatement.specifiers || []) as ImportSpecifier[];
@@ -99,9 +120,14 @@ export const detectGetContainerInfo = (content: string): GetContainerInfo | null
     });
 
     if (containerImportSpecifiers.length === 0) {
-        return null;
+        return result;
     }
 
+    result.imported = true;
+
+    /**
+     * parse import declaration locations
+     */
     containerImportSpecifiers.forEach((specifier) => {
         const {
             loc,
@@ -110,64 +136,63 @@ export const detectGetContainerInfo = (content: string): GetContainerInfo | null
         } = specifier;
         const exportName = (imported as Identifier).name as keyof GetContainerTypeMap;
 
-        if (getContainerTypeMap[exportName]) {
-            getContainerTypeMap[exportName] = local.name;
+        if (result.localNameMap[exportName]) {
+            result.localNameMap[exportName] = local.name;
         }
 
-        if (importedAgrosStatement?.loc?.start) {
-            importLocationMap[exportName] = {
-                line: importedAgrosStatement?.loc?.start?.line,
-                column: importedAgrosStatement?.loc?.start?.column,
-            };
+        if (importedAgrosStatement?.loc) {
+            importLocationMap[exportName] = importedAgrosStatement.loc;
         }
 
         if (loc?.start) {
-            importDeclarationMap[exportName] = {
-                line: loc?.start?.line,
-                column: loc?.start?.column,
-            };
+            importDeclarationMap[exportName] = loc;
         }
     });
 
-    let functionBody: Statement[] = [];
+    /**
+     * get the component function position and info
+     */
+    let componentDeclaration: Identifier | ArrowFunctionExpression | FunctionDeclaration;
+    let componentDeclaratorInitExpression: Expression;
 
-    for (const statement of statements) {
-        if (statement.type === 'FunctionDeclaration') {
-            functionBody = statement.body.body || [];
-            break;
-        } else if (statement.type === 'VariableDeclaration') {
-            const functionDeclarator = (statement.declarations || []).find((declarator) => {
-                return declarator?.init?.type === 'ArrowFunctionExpression' || declarator?.init?.type === 'FunctionExpression';
+    if (exportName === 'default') {
+        const exportDefaultDeclaration = statements.find((statement) => {
+            return statement.type === 'ExportDefaultDeclaration';
+        }) as ExportDefaultDeclaration;
+
+        if (!exportDefaultDeclaration) {
+            return result;
+        }
+
+        componentDeclaration = exportDefaultDeclaration.declaration as Identifier | ArrowFunctionExpression | FunctionDeclaration;
+    }
+
+    switch (componentDeclaration.type) {
+        case 'Identifier': {
+            const currentDeclaration = statements.reduce((result, statement) => {
+                if (statement.type === 'VariableDeclaration') {
+                    return result.concat((statement.declarations || []));
+                }
+                return result;
+            }, [] as VariableDeclarator[]).find((declarator) => {
+                return (declarator.id as Identifier).name === (componentDeclaration as Identifier).name;
             });
-            functionBody = (functionDeclarator.init as FunctionExpression)?.body?.body || [];
+
+            if (!currentDeclaration) {
+                return result;
+            }
+
+            componentDeclaratorInitExpression = currentDeclaration?.init;
             break;
         }
-    }
-
-    for (const functionStatement of functionBody) {
-        if (
-            functionStatement.type !== 'VariableDeclaration' &&
-            _.isNumber(functionStatement.loc?.start?.column) &&
-            _.isNumber(functionStatement.loc?.end?.line)
-        ) {
-            continue;
+        case 'ArrowFunctionExpression':
+        case 'FunctionDeclaration': {
+            componentDeclaratorInitExpression = componentDeclaration.body;
+            break;
         }
-
-        const declarations: VariableDeclarator[] = ((functionStatement as VariableDeclaration).declarations || []).filter((declaration) => {
-            return declaration?.init?.type === 'CallExpression';
-        });
-
-        for (const declaration of declarations) {
-            if (((declaration?.init as CallExpression)?.callee as Identifier)?.name === getContainerTypeMap['getContainer']) {
-                return {
-                    line: functionStatement.loc.end.line,
-                    column: functionStatement.loc.start.column,
-                };
-            }
-        }
+        default:
+            return result;
     }
-
-    return null;
 };
 
 export const getImportStatementUpdateLocation = () => {};
