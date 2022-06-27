@@ -56,6 +56,10 @@ export const run = (command) => {
         ],
         {
             stdio: 'inherit',
+            env: {
+                ...process.env,
+                BROWSER: 'none',
+            },
         },
     );
 };

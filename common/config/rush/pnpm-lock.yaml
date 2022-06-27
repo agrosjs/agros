@@ -155,6 +155,12 @@ importers:
 
   ../../packages/agros-loader:
     specifiers:
+      '@agros/config': workspace:^0.0.2
+      '@agros/utils': workspace:^0.0.1
+      '@babel/generator': ^7.18.2
+      '@babel/parser': ^7.18.5
+      '@babel/template': ^7.16.7
+      '@babel/types': ^7.18.4
       '@types/jest': ^28.1.1
       '@types/loader-utils': ^2.0.3
       '@types/lodash': ^4.14.182
@@ -163,6 +169,12 @@ importers:
       rimraf: ^3.0.2
       typescript: ^4.5.5
     dependencies:
+      '@agros/config': link:../agros-config
+      '@agros/utils': link:../agros-utils
+      '@babel/generator': 7.18.2
+      '@babel/parser': 7.18.5
+      '@babel/template': 7.16.7
+      '@babel/types': 7.18.4
       loader-utils: 3.2.0
     devDependencies:
       '@types/jest': 28.1.1
@@ -195,6 +207,8 @@ importers:
 
   ../../packages/agros-utils:
     specifiers:
+      '@babel/parser': ^7.18.5
+      '@babel/types': ^7.18.4
       '@types/fs-extra': ^9.0.13
       '@types/jest': ^28.1.1
       '@types/lodash': ^4.14.182
@@ -203,6 +217,8 @@ importers:
       rimraf: ^3.0.2
       typescript: ^4.5.5
     dependencies:
+      '@babel/parser': 7.18.5
+      '@babel/types': 7.18.4
       fs-extra: 10.1.0
     devDependencies:
       '@types/fs-extra': 9.0.13

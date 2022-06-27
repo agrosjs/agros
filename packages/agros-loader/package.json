@@ -30,6 +30,7 @@
     },
     "homepage": "https://github.com/lenconda/agros#readme",
     "devDependencies": {
+        "@types/babel__template": "^7.4.1",
         "@types/jest": "^28.1.1",
         "@types/loader-utils": "^2.0.3",
         "@types/lodash": "^4.14.182",
@@ -41,6 +42,12 @@
     "version": "0.0.0",
     "description": "Agros loader for Webpack",
     "dependencies": {
+        "@agros/config": "workspace:^0.0.2",
+        "@agros/utils": "workspace:^0.0.1",
+        "@babel/generator": "^7.18.2",
+        "@babel/parser": "^7.18.5",
+        "@babel/template": "^7.16.7",
+        "@babel/types": "^7.18.4",
         "loader-utils": "^3.2.0"
     }
 }

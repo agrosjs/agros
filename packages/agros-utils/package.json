@@ -41,6 +41,8 @@
     "version": "0.0.1",
     "description": "Agros.js utilities functions",
     "dependencies": {
+        "@babel/parser": "^7.18.5",
+        "@babel/types": "^7.18.4",
         "fs-extra": "^10.1.0"
     }
 }
