@@ -507,6 +507,11 @@
             "packageName": "@agros/app",
             "projectFolder": "packages/agros-app",
             "shouldPublish": true
+        },
+        {
+            "packageName": "@agros/example",
+            "projectFolder": "packages/agros-example",
+            "shouldPublish": false
         }
     ]
 }

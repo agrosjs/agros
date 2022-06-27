@@ -1,11 +1,9 @@
 import { parse } from '@babel/parser';
 import {
     ArrowFunctionExpression,
-    CallExpression,
     ExportDefaultDeclaration,
-    Expression,
+    // Expression,
     FunctionDeclaration,
-    FunctionExpression,
     Identifier,
     ImportDeclaration,
     ImportSpecifier,
@@ -153,7 +151,7 @@ export const detectContainerInfo = (content: string, exportName: string | 'defau
      * get the component function position and info
      */
     let componentDeclaration: Identifier | ArrowFunctionExpression | FunctionDeclaration;
-    let componentDeclaratorInitExpression: Expression;
+    // let componentDeclaratorInitExpression: Expression;
 
     if (exportName === 'default') {
         const exportDefaultDeclaration = statements.find((statement) => {
@@ -182,7 +180,7 @@ export const detectContainerInfo = (content: string, exportName: string | 'defau
                 return result;
             }
 
-            componentDeclaratorInitExpression = currentDeclaration?.init;
+            // componentDeclaratorInitExpression = currentDeclaration?.init;
             break;
         }
         case 'ArrowFunctionExpression':

@@ -1,0 +1,101 @@
+const createRoutes = (routerItems, level = 0) => {
+    return routerItems.map((routerItem, index) => {
+        const {
+            componentInstance,
+            children,
+            ...routeProps
+        } = routerItem;
+
+        const {
+            boundaryComponent: BoundaryComponent = null,
+            suspenseFallback = null,
+            elementProps = {},
+        } = componentInstance.metadata;
+
+        const Component = componentInstance.getComponent();
+
+        const createElement = (Component) => {
+            return (
+                <<%= map.Suspense %> fallback={suspenseFallback}>
+                    <Component {...elementProps} />
+                </<%= map.Suspense %>>
+            );
+        };
+
+        return (
+            <<%= map.Route %>
+                key={`level${level}_${index}`}
+                {...routeProps}
+                {...(
+                    Component
+                        ? {
+                            element: boundaryComponent
+                                ? <BoundaryComponent>{createElement(Component)}</BoundaryComponent>
+                                : createElement(Component),
+                        }
+                        : {}
+                )}
+            >
+                {
+                    (Array.isArray(children) && children.length > 0)
+                        ? createRoutes(children, level + 1)
+                        : []
+                }
+            </<%= map.Route %>>
+        );
+    });
+};
+
+const useRouteElements = (Module) => {
+    const [routerItems, setRouterItems] = useState([]);
+    const [elements, setElements] = useState(null);
+
+    <%= map.useEffect %>(() => {
+        const RootModule = Module;
+        const factory = new <%= map.Factory %>();
+        factory.create<T>(RootModule).then((items) => {
+            setRouterItems(items);
+        });
+    }, [Module]);
+
+    <%= map.useEffect %>(() => {
+        const elements = createRoutes(routerItems);
+        setElements(elements);
+    }, [routerItems]);
+
+    return elements;
+};
+
+const RootContainer = ({
+    module: Module,
+    routerProps = {},
+    RouterComponent = <%= map.BrowserRouter %>,
+}: any) => {
+    const elements = useRouteElements(Module);
+
+    return (
+        <RouterComponent>
+            <<%= map.Routes %>>{elements}</<%= map.Routes %>>
+        </RouterComponent>
+    );
+};
+
+const bootstrap = (configList) => {
+    if (!Array.isArray(configList)) {
+        return;
+    }
+
+    for (const configItem of configList) {
+        const {
+            module: Module,
+            RouterComponent,
+            routerProps,
+            container = document.getElementById('root'),
+        } = configItem;
+
+        ReactDOM.render(
+            <RootContainer module={Module} RouterComponent={RouterComponent} routerProps={routerProps} />,
+            container,
+        );
+    }
+};

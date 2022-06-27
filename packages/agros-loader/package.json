@@ -30,7 +30,9 @@
     },
     "homepage": "https://github.com/lenconda/agros#readme",
     "devDependencies": {
+        "@types/babel__generator": "^7.6.4",
         "@types/babel__template": "^7.4.1",
+        "@types/ejs": "^3.1.1",
         "@types/jest": "^28.1.1",
         "@types/loader-utils": "^2.0.3",
         "@types/lodash": "^4.14.182",
@@ -48,6 +50,7 @@
         "@babel/parser": "^7.18.5",
         "@babel/template": "^7.16.7",
         "@babel/types": "^7.18.4",
+        "ejs": "^3.1.8",
         "loader-utils": "^3.2.0"
     }
 }
