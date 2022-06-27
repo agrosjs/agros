@@ -474,18 +474,8 @@
         //   "tags": ["tools"]
         // },
         {
-            "packageName": "@agros/core",
-            "projectFolder": "packages/agros-core",
-            "shouldPublish": true
-        },
-        {
             "packageName": "@agros/config",
             "projectFolder": "packages/agros-config",
-            "shouldPublish": true
-        },
-        {
-            "packageName": "@agros/build-scripts",
-            "projectFolder": "packages/agros-build-scripts",
             "shouldPublish": true
         },
         {
@@ -506,6 +496,16 @@
         {
             "packageName": "@agros/common",
             "projectFolder": "packages/agros-common",
+            "shouldPublish": true
+        },
+        {
+            "packageName": "@agros/loader",
+            "projectFolder": "packages/agros-loader",
+            "shouldPublish": true
+        },
+        {
+            "packageName": "@agros/app",
+            "projectFolder": "packages/agros-app",
             "shouldPublish": true
         }
     ]

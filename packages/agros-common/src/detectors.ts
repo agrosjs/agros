@@ -187,7 +187,7 @@ export const detectContainerInfo = (content: string, exportName: string | 'defau
         }
         case 'ArrowFunctionExpression':
         case 'FunctionDeclaration': {
-            componentDeclaratorInitExpression = componentDeclaration.body;
+            // componentDeclaratorInitExpression = componentDeclaration.body;
             break;
         }
         default:
