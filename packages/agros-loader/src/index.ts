@@ -14,21 +14,17 @@ import generate from '@babel/generator';
 const configParser = new ProjectConfigParser();
 
 const transformEntry = (ast: ReturnType<typeof parseAST>): string => {
-    let programBody = ast?.program?.body || [];
     let exportDefaultDeclaration: ExportDefaultDeclaration;
+    let exportDefaultDeclarationIndex: number;
     let lastImportDeclarationIndex: number;
     const ensureIdentifierNameMap = {};
 
-    for (const statement of programBody) {
+    for (const statement of ast.program.body) {
         if (
             statement.type === 'ExportDefaultDeclaration' &&
                 statement.declaration.type === 'ArrayExpression'
         ) {
             exportDefaultDeclaration = statement as ExportDefaultDeclaration;
-        }
-
-        if (statement.type === 'ImportDeclaration') {
-            lastImportDeclarationIndex = statement.loc?.end?.line;
         }
     }
 
@@ -36,61 +32,88 @@ const transformEntry = (ast: ReturnType<typeof parseAST>): string => {
         throw new Error('The entry of an Agros project should export an array of config as default');
     }
 
-    ([
+    const imports = [
         {
-            statements: programBody,
             libName: '@agros/app/lib/router',
             identifierName: 'Routes',
         },
         {
-            statements: programBody,
             libName: '@agros/app/lib/router',
             identifierName: 'Route',
         },
         {
-            statements: programBody,
             libName: '@agros/app/lib/router',
             identifierName: 'BrowserRouter',
         },
         {
-            statements: programBody,
-            libName: '@agros/app',
+            libName: '@agros/app/lib/factory',
             identifierName: 'Factory',
         },
         {
-            statements: programBody,
             libName: '@agros/app',
             identifierName: 'useEffect',
         },
         {
-            statements: programBody,
             libName: '@agros/app',
             identifierName: 'useState',
         },
         {
-            statements: programBody,
+            libName: '@agros/app',
+            identifierName: 'createElement',
+        },
+        {
+            libName: '@agros/app',
+            identifierName: 'render',
+        },
+        {
             libName: '@agros/app',
             identifierName: 'Suspense',
         },
-    ] as EnsureImportOptions[]).forEach((options) => {
+    ] as Omit<EnsureImportOptions, 'statements'>[];
+
+    for (const importItem of imports) {
         const {
             statements,
             identifierName: ensuredIdentifierName,
-        } = ensureImport(options);
+        } = ensureImport({
+            statements: ast.program.body,
+            ...importItem,
+        });
 
-        programBody = statements;
-        ensureIdentifierNameMap[options.identifierName] = ensuredIdentifierName;
-    });
+        ast.program.body = statements;
+        ensureIdentifierNameMap[importItem.identifierName] = ensuredIdentifierName;
+    }
 
     const bootstrapDeclarationTemplate = fs.readFileSync(path.resolve(__dirname, '../templates/bootstrap.js.template')).toString();
     const bootstrapDeclarationStr = ejs.render(bootstrapDeclarationTemplate, {
         map: ensureIdentifierNameMap,
     });
 
+    for (const [index, statement] of ast.program.body.entries()) {
+        if (statement.type === 'ImportDeclaration') {
+            lastImportDeclarationIndex = index;
+        }
+        if (statement.type === 'ExportDefaultDeclaration') {
+            exportDefaultDeclarationIndex = index;
+        }
+    }
+
+    const bootstrapDeclarations = parseAST(bootstrapDeclarationStr).program.body;
+
     ast.program.body.splice(
-        lastImportDeclarationIndex,
+        lastImportDeclarationIndex + 1,
         0,
-        ...(parseAST(bootstrapDeclarationStr).program.body),
+        ...bootstrapDeclarations,
+    );
+
+    ast.program.body.splice(exportDefaultDeclarationIndex + bootstrapDeclarations.length, 1);
+
+    ast.program.body.push(
+        ...parseAST(
+            'bootstrap(' +
+            generate(exportDefaultDeclaration.declaration).code +
+            ');',
+        ).program.body,
     );
 
     return generate(ast).code;
@@ -111,14 +134,10 @@ export default function(source) {
     if (path.dirname(resourceAbsolutePath) === srcAbsolutePath && path.basename(resourceAbsolutePath) === 'index.ts') {
         try {
             const newSource = transformEntry(parseAST(source));
-            console.log(newSource);
-            return source;
-            // TODO
-            // if (newSource) {
-            //     return newSource;
-            // }
+            if (newSource) {
+                return newSource;
+            }
         } catch (e) {
-            console.log(e);
             this.emitError(e);
         }
     }

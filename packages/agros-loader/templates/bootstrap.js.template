@@ -14,46 +14,48 @@ const createRoutes = (routerItems, level = 0) => {
 
         const Component = componentInstance.getComponent();
 
-        const createElement = (Component) => {
-            return (
-                <<%= map.Suspense %> fallback={suspenseFallback}>
-                    <Component {...elementProps} />
-                </<%= map.Suspense %>>
+        const createAppRouterElement = (Component) => {
+            return <%= map.createElement %>(
+                <%= map.Suspense %>,
+                {
+                    fallback: suspenseFallback,
+                },
+                <%= map.createElement %>(Component, elementProps),
             );
         };
 
-        return (
-            <<%= map.Route %>
-                key={`level${level}_${index}`}
-                {...routeProps}
-                {...(
+        return <%= map.createElement %>(
+            <%= map.Route %>,
+            {
+                key: `level${level}_${index}`,
+                ...routeProps,
+                ...(
                     Component
                         ? {
-                            element: boundaryComponent
-                                ? <BoundaryComponent>{createElement(Component)}</BoundaryComponent>
-                                : createElement(Component),
+                            element: BoundaryComponent
+                                ? <%= map.createElement %>(
+                                    BoundaryComponent,
+                                    {},
+                                    createAppRouterElement(Component),
+                                )
+                                : createAppRouterElement(Component),
                         }
                         : {}
-                )}
-            >
-                {
-                    (Array.isArray(children) && children.length > 0)
-                        ? createRoutes(children, level + 1)
-                        : []
-                }
-            </<%= map.Route %>>
+                ),
+            },
+            (Array.isArray(children) && children.length > 0) ? createRoutes(children, level + 1) : [],
         );
     });
 };
 
 const useRouteElements = (Module) => {
-    const [routerItems, setRouterItems] = useState([]);
-    const [elements, setElements] = useState(null);
+    const [routerItems, setRouterItems] = <%= map.useState %>([]);
+    const [elements, setElements] = <%= map.useState %>(null);
 
     <%= map.useEffect %>(() => {
         const RootModule = Module;
         const factory = new <%= map.Factory %>();
-        factory.create<T>(RootModule).then((items) => {
+        factory.create(RootModule).then((items) => {
             setRouterItems(items);
         });
     }, [Module]);
@@ -73,10 +75,10 @@ const RootContainer = ({
 }: any) => {
     const elements = useRouteElements(Module);
 
-    return (
-        <RouterComponent>
-            <<%= map.Routes %>>{elements}</<%= map.Routes %>>
-        </RouterComponent>
+    return <%= map.createElement %>(
+        RouterComponent,
+        routerProps,
+        <%= map.createElement %>(<%= map.Routes %>, {}, elements),
     );
 };
 
@@ -93,8 +95,12 @@ const bootstrap = (configList) => {
             container = document.getElementById('root'),
         } = configItem;
 
-        ReactDOM.render(
-            <RootContainer module={Module} RouterComponent={RouterComponent} routerProps={routerProps} />,
+        <%= map.render %>(
+            <%= map.createElement %>(RootContainer, {
+                module: Module,
+                RouterComponent,
+                routerProps,
+            }),
             container,
         );
     }

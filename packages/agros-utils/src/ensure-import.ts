@@ -17,6 +17,7 @@ export interface EnsureImportResult {
 }
 
 export const ensureImport = (options: EnsureImportOptions): EnsureImportResult => {
+    const prefix = 'Agros$$';
     const body = Array.from(options.statements || []);
     let importDeclaration: ImportDeclaration;
     let identifierName: string;
@@ -26,9 +27,9 @@ export const ensureImport = (options: EnsureImportOptions): EnsureImportResult =
     }) as ImportDeclaration;
 
     if (!importDeclaration) {
-        identifierName = 'Agros___' + options.identifierName;
-        importDeclaration = template.ast(`import { Routes as ${identifierName} } from '@agros/app/lib/router';`) as ImportDeclaration;
-        body.unshift(importDeclaration);
+        identifierName = prefix + options.identifierName;
+        importDeclaration = template.ast(`import { ${options.identifierName} as ${identifierName} } from '${options.libName}';`) as ImportDeclaration;
+        body.splice(0, 0, importDeclaration);
     } else {
         for (const specifier of importDeclaration.specifiers) {
             if (specifier.type === 'ImportDefaultSpecifier' || specifier.type === 'ImportNamespaceSpecifier') {
@@ -39,7 +40,7 @@ export const ensureImport = (options: EnsureImportOptions): EnsureImportResult =
         }
 
         if (!identifierName) {
-            identifierName = 'Agros___' + options.identifierName;
+            identifierName = prefix + options.identifierName;
             importDeclaration.specifiers.push({
                 type: 'ImportSpecifier',
                 imported: {

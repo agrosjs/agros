@@ -1,8 +1,7 @@
-import { PropsWithChildren } from 'react';
 import { Component } from '@agros/app';
 import Bar from './Bar';
 
-@Component<any, PropsWithChildren<{ used: string }>>({
+@Component({
     suspenseFallback: 'loading...',
     factory: () => Bar,
 })
