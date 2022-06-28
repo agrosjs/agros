@@ -1,7 +1,7 @@
 import { Component } from '@agros/app';
-import App from './App';
 
 @Component({
-    factory: () => App,
+    // factory: () => App,
+    file: './App',
 })
 export class AppComponent {}

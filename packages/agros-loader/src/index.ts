@@ -13,10 +13,15 @@ import {
     ExportDefaultDeclaration,
     ObjectExpression,
     ObjectProperty,
+    Statement,
 } from '@babel/types';
+import * as t from '@babel/types';
 import ejs from 'ejs';
 import generate from '@babel/generator';
 import _ from 'lodash';
+import qs from 'qs';
+import template from '@babel/template';
+import { getCollectionType } from '@agros/common';
 
 const configParser = new ProjectConfigParser();
 
@@ -124,12 +129,13 @@ const transformEntry = (ast: ReturnType<typeof parseAST>): string => {
         ).program.body,
     );
 
-    return generate(ast).code;
+    return generate(tree).code;
 };
 
 const transformComponentDecorator = (absolutePath: string, ast: ReturnType<typeof parseAST>) => {
     const tree = _.clone(ast);
     let componentClassDeclaration: ClassDeclaration;
+    const ensureIdentifierNameMap = {};
 
     for (const statement of tree.program.body) {
         if (statement.type === 'ExportNamedDeclaration' && statement?.declaration?.type === 'ClassDeclaration') {
@@ -160,16 +166,17 @@ const transformComponentDecorator = (absolutePath: string, ast: ReturnType<typeo
             return property.key.type === 'Identifier' && property.key.name === key;
         }) as ObjectProperty)?.value;
 
-        if (key === 'file' && rawValue.type === 'StringLiteral') {
-            result['file'] = rawValue.value;
-        } else if (key === 'lazy' && rawValue.type === 'BooleanLiteral') {
-            result['lazy'] = rawValue.value;
-        } else if (key === 'styles' && rawValue.type === 'ArrayExpression') {
-            result['styles'] = [];
-
-            for (const item of rawValue.elements) {
-                if (item.type === 'StringLiteral') {
-                    result['styles'].push(item.value);
+        if (rawValue) {
+            if (key === 'file' && rawValue.type === 'StringLiteral') {
+                result['file'] = rawValue.value;
+            } else if (key === 'lazy' && rawValue.type === 'BooleanLiteral') {
+                result['lazy'] = rawValue.value;
+            } else if (key === 'styles' && rawValue.type === 'ArrayExpression') {
+                result['styles'] = [];
+                for (const item of rawValue.elements) {
+                    if (item.type === 'StringLiteral') {
+                        result['styles'].push(item.value);
+                    }
                 }
             }
         }
@@ -181,15 +188,113 @@ const transformComponentDecorator = (absolutePath: string, ast: ReturnType<typeo
         styles?: string[];
     }>);
 
-    const dirname = path.dirname(absolutePath);
     const basename = path.basename(absolutePath);
 
     if (!componentMetadataConfig.file) {
-        componentMetadataConfig.file = path.resolve(
-            dirname,
-            _.startCase(basename).split(/\s+/).join(''),
-        );
+        componentMetadataConfig.file = './' + _.startCase(basename).split(/\s+/).join('');
     }
+
+    componentMetadataConfig.file = componentMetadataConfig.file + '?' + qs.stringify({
+        component: true,
+        styles: (componentMetadataConfig.styles || []).join(','),
+    });
+
+    const imports = [
+        {
+            libName: '@agros/app/lib/constants',
+            identifierName: 'DI_METADATA_COMPONENT_SYMBOL',
+        },
+        {
+            libName: '@agros/app',
+            identifierName: 'lazy',
+        },
+    ] as Omit<EnsureImportOptions, 'statements'>[];
+
+    for (const importItem of imports) {
+        const {
+            statements,
+            identifierName: ensuredIdentifierName,
+        } = ensureImport({
+            statements: tree.program.body,
+            ...importItem,
+        });
+
+        tree.program.body = statements;
+        ensureIdentifierNameMap[importItem.identifierName] = ensuredIdentifierName;
+    }
+
+    const componentFactoryStr = fs.readFileSync(
+        path.resolve(
+            __dirname,
+            '../templates/component.decorator.ts.template',
+        ),
+    ).toString();
+
+    const componentIdentifierName = 'Agros$$CurrentComponent';
+    const forwardRefIdentifierName = 'Agros$$forwardRef';
+
+    const componentFileImportDeclaration = template.ast(
+        componentMetadataConfig.lazy
+            ? `const ${componentIdentifierName} = ${ensureIdentifierNameMap['lazy']}(() => import('${componentMetadataConfig.file}'));`
+            : `import ${componentIdentifierName} from '${componentMetadataConfig.file}';`,
+    ) as Statement;
+
+    const componentFactoryDeclarations = parseAST(ejs.render(componentFactoryStr, {
+        map: ensureIdentifierNameMap,
+    })).program.body;
+
+    componentClassDeclaration?.decorators?.push(
+        t.decorator(
+            t.callExpression(
+                t.identifier('Agros$$Component$$Factory'),
+                [
+                    t.objectExpression([
+                        t.objectProperty(
+                            t.stringLiteral('factory'),
+                            t.arrowFunctionExpression(
+                                [t.identifier(forwardRefIdentifierName)],
+                                componentMetadataConfig.lazy
+                                    ? t.callExpression(
+                                        t.identifier(forwardRefIdentifierName),
+                                        [
+                                            t.identifier(componentIdentifierName),
+                                        ],
+                                    )
+                                    : t.identifier(componentIdentifierName),
+                            ),
+                        ),
+                    ]),
+                ],
+            ),
+        ),
+    );
+
+    let lastImportDeclarationIndex: number;
+    let exportClassDeclarationIndex: number;
+
+    for (const [index, statement] of tree.program.body.entries()) {
+        if (statement.type === 'ImportDeclaration') {
+            lastImportDeclarationIndex = index;
+        }
+        if (statement.type === 'ExportNamedDeclaration' && statement?.declaration?.type === 'ClassDeclaration') {
+            exportClassDeclarationIndex = index;
+        }
+    }
+
+    if (exportClassDeclarationIndex) {
+        tree.program.body.splice(exportClassDeclarationIndex, 1, componentClassDeclaration);
+    }
+
+    if (lastImportDeclarationIndex) {
+        tree.program.body.splice(lastImportDeclarationIndex + 1, 0, ...[
+            componentFileImportDeclaration,
+            ...componentFactoryDeclarations,
+        ]);
+    }
+
+    tree.program.body.push(template.ast(`export { ${componentClassDeclaration.id.name} }`) as Statement);
+
+    return generate(tree).code;
 };
 
 export default function(source) {
@@ -211,6 +316,19 @@ export default function(source) {
                 return newSource;
             }
         } catch (e) {
+            this.emitError(e);
+        }
+    }
+
+    if (getCollectionType(resourceAbsolutePath) === 'component') {
+        try {
+            const newResource = transformComponentDecorator(resourceAbsolutePath, parseAST(source));
+            if (newResource) {
+                console.log(newResource);
+                return newResource;
+            }
+        } catch (e) {
+            console.log(e);
             this.emitError(e);
         }
     }

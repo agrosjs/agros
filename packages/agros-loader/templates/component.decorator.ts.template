@@ -1,4 +1,4 @@
-function Component({
+function Agros$$Component$$Factory({
     factory,
 }: any): ClassDecorator {
     return (target) => {

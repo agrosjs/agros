@@ -1,10 +1,10 @@
 import {
-    lazy,
     Component,
 } from '@agros/app';
 
 @Component({
     suspenseFallback: 'loading...',
-    factory: (forwardRef) => lazy(() => forwardRef(import('./FooChild'))),
+    file: './FooChild',
+    lazy: true,
 })
 export class FooChildComponent {}

@@ -4,10 +4,9 @@ import {
     ErrorBoundary,
     ErrorBoundaryPropsWithFallback,
 } from 'react-error-boundary';
-import FooBoundary from './FooBoundary';
 
 @Component({
-    factory: () => FooBoundary,
+    file: './FooBoundary',
     boundaryComponent: (props: PropsWithChildren<ErrorBoundaryPropsWithFallback>) => {
         return (
             <ErrorBoundary fallback={<pre>ERROR CAUGHT</pre>}>

@@ -1,7 +1,10 @@
 import { Component } from '@agros/app';
-import AppNavigate from './AppNavigate';
+// import AppNavigate from './AppNavigate';
 
+// @Component({
+//     // factory: () => AppNavigate,
+// })
 @Component({
-    factory: () => AppNavigate,
+    file: './AppNavigate',
 })
 export class AppNavigateComponent {}

@@ -49,7 +49,7 @@ export interface ModuleInstanceMetadata extends ModuleMetadata {
 export type FactoryForwardRef = <T = any>(promise: Promise<{ default: T }>) => Promise<{ default: T }>;
 
 export interface ComponentDecoratorOptions<T = any> {
-    file: string;
+    file?: string;
     lazy?: boolean;
     styles?: string[];
     boundaryComponent?: React.FC<any>;

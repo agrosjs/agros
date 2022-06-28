@@ -1,11 +1,11 @@
 import {
     Component,
-    lazy,
 } from '@agros/app';
 import { LoremService } from './lorem.service';
 
 @Component({
-    factory: () => lazy(() => import('./Lorem')),
+    file: './Lorem',
+    lazy: true,
     declarations: [
         LoremService,
     ],

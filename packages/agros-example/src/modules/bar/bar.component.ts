@@ -1,8 +1,7 @@
 import { Component } from '@agros/app';
-import Bar from './Bar';
 
 @Component({
     suspenseFallback: 'loading...',
-    factory: () => Bar,
+    file: './Bar',
 })
 export class BarComponent {}

@@ -1,5 +1,4 @@
 import {
-    lazy,
     Component,
 } from '@agros/app';
 import { BarComponent } from '../bar/bar.component';
@@ -8,9 +7,8 @@ import { FooService } from './foo.service';
 
 @Component({
     suspenseFallback: 'loading...',
-    factory: (forwardRef) => {
-        return lazy(() => forwardRef(import('./Foo')));
-    },
+    file: './Foo',
+    lazy: true,
     declarations: [
         BarComponent,
         FooService,

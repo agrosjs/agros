@@ -182,6 +182,7 @@ importers:
 
   ../../packages/agros-loader:
     specifiers:
+      '@agros/common': workspace:^0.0.0
       '@agros/config': workspace:^0.0.2
       '@agros/utils': workspace:^0.0.1
       '@babel/generator': ^7.18.2
@@ -195,11 +196,15 @@ importers:
       '@types/loader-utils': ^2.0.3
       '@types/lodash': ^4.14.182
       '@types/node': ^15.12.2
+      '@types/qs': ^6.9.7
       ejs: ^3.1.8
       loader-utils: ^3.2.0
+      lodash: ^4.17.21
+      qs: ^6.11.0
       rimraf: ^3.0.2
       typescript: ^4.5.5
     dependencies:
+      '@agros/common': link:../agros-common
       '@agros/config': link:../agros-config
       '@agros/utils': link:../agros-utils
       '@babel/generator': 7.18.2
@@ -208,6 +213,8 @@ importers:
       '@babel/types': 7.18.4
       ejs: 3.1.8
       loader-utils: 3.2.0
+      lodash: 4.17.21
+      qs: 6.11.0
     devDependencies:
       '@types/babel__generator': 7.6.4
       '@types/babel__template': 7.4.1
@@ -216,6 +223,7 @@ importers:
       '@types/loader-utils': 2.0.3
       '@types/lodash': 4.14.182
       '@types/node': 15.14.9
+      '@types/qs': 6.9.7
       rimraf: 3.0.2
       typescript: 4.7.3
 
@@ -2572,7 +2580,6 @@ packages:
 
   /@types/qs/6.9.7:
     resolution: {integrity: sha512-FGa1F62FT09qcrueBA6qYTrJPVDzah9a+493+o2PCXsesWHIn27G98TsSMs3WPNbZIEj4+VJf6saSFpvD+3Zsw==}
-    dev: false
 
   /@types/range-parser/1.2.4:
     resolution: {integrity: sha512-EEhsLsD6UsDM1yFhAvy0Cjr6VwmpMWqFBCb9w07wVugF7w9nfajxLuVmngTIpgS6svCnm6Vaw+MZhoDCKnOfsw==}
@@ -8126,6 +8133,13 @@ packages:
 
   /qs/6.10.3:
     resolution: {integrity: sha512-wr7M2E0OFRfIfJZjKGieI8lBKb7fRCH4Fv5KNPEs7gJ8jadvotdsS08PzOKR7opXhZ/Xkjtt3WF9g38drmyRqQ==}
+    engines: {node: '>=0.6'}
+    dependencies:
+      side-channel: 1.0.4
+    dev: false
+
+  /qs/6.11.0:
+    resolution: {integrity: sha512-MvjoMCJwEarSbUYk5O+nmoSzSutSsTwF85zcHPQ9OrlFoZOYIjaqBAJIqIXjptyD5vThxGq52Xu/MaJzRkIk4Q==}
     engines: {node: '>=0.6'}
     dependencies:
       side-channel: 1.0.4
