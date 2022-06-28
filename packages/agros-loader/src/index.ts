@@ -7,19 +7,27 @@ import {
     EnsureImportOptions,
     parseAST,
 } from '@agros/utils';
-import { ExportDefaultDeclaration } from '@babel/types';
+import {
+    CallExpression,
+    ClassDeclaration,
+    ExportDefaultDeclaration,
+    ObjectExpression,
+    ObjectProperty,
+} from '@babel/types';
 import ejs from 'ejs';
 import generate from '@babel/generator';
+import _ from 'lodash';
 
 const configParser = new ProjectConfigParser();
 
 const transformEntry = (ast: ReturnType<typeof parseAST>): string => {
+    const tree = _.clone(ast);
     let exportDefaultDeclaration: ExportDefaultDeclaration;
     let exportDefaultDeclarationIndex: number;
     let lastImportDeclarationIndex: number;
     const ensureIdentifierNameMap = {};
 
-    for (const statement of ast.program.body) {
+    for (const statement of tree.program.body) {
         if (
             statement.type === 'ExportDefaultDeclaration' &&
                 statement.declaration.type === 'ArrayExpression'
@@ -76,11 +84,11 @@ const transformEntry = (ast: ReturnType<typeof parseAST>): string => {
             statements,
             identifierName: ensuredIdentifierName,
         } = ensureImport({
-            statements: ast.program.body,
+            statements: tree.program.body,
             ...importItem,
         });
 
-        ast.program.body = statements;
+        tree.program.body = statements;
         ensureIdentifierNameMap[importItem.identifierName] = ensuredIdentifierName;
     }
 
@@ -89,7 +97,7 @@ const transformEntry = (ast: ReturnType<typeof parseAST>): string => {
         map: ensureIdentifierNameMap,
     });
 
-    for (const [index, statement] of ast.program.body.entries()) {
+    for (const [index, statement] of tree.program.body.entries()) {
         if (statement.type === 'ImportDeclaration') {
             lastImportDeclarationIndex = index;
         }
@@ -100,15 +108,15 @@ const transformEntry = (ast: ReturnType<typeof parseAST>): string => {
 
     const bootstrapDeclarations = parseAST(bootstrapDeclarationStr).program.body;
 
-    ast.program.body.splice(
+    tree.program.body.splice(
         lastImportDeclarationIndex + 1,
         0,
         ...bootstrapDeclarations,
     );
 
-    ast.program.body.splice(exportDefaultDeclarationIndex + bootstrapDeclarations.length, 1);
+    tree.program.body.splice(exportDefaultDeclarationIndex + bootstrapDeclarations.length, 1);
 
-    ast.program.body.push(
+    tree.program.body.push(
         ...parseAST(
             'bootstrap(' +
             generate(exportDefaultDeclaration.declaration).code +
@@ -117,6 +125,71 @@ const transformEntry = (ast: ReturnType<typeof parseAST>): string => {
     );
 
     return generate(ast).code;
+};
+
+const transformComponentDecorator = (absolutePath: string, ast: ReturnType<typeof parseAST>) => {
+    const tree = _.clone(ast);
+    let componentClassDeclaration: ClassDeclaration;
+
+    for (const statement of tree.program.body) {
+        if (statement.type === 'ExportNamedDeclaration' && statement?.declaration?.type === 'ClassDeclaration') {
+            if (componentClassDeclaration) {
+                throw new Error('Component files should have only one named class export');
+            }
+            componentClassDeclaration = statement.declaration;
+        } else if (statement.type === 'ExportDefaultDeclaration' || statement.type === 'ExportAllDeclaration') {
+            throw new Error('A component file should not have default export');
+        }
+    }
+
+    if (!componentClassDeclaration) {
+        throw new Error('A component file should have one named class export');
+    }
+
+    const decorators = componentClassDeclaration.decorators?.filter((decorator) => {
+        return decorator.expression.type === 'CallExpression' && decorator.expression.arguments[0]?.type === 'ObjectExpression';
+    });
+
+    if (componentClassDeclaration.decorators?.length !== 1) {
+        throw new Error('A component declaration should have one decorator');
+    }
+
+    const decoratorArgument: ObjectExpression = (decorators[0].expression as CallExpression).arguments[0] as ObjectExpression;
+    const componentMetadataConfig = ['file', 'lazy', 'styles'].reduce((result, key) => {
+        const rawValue = (decoratorArgument.properties.find((property: ObjectProperty) => {
+            return property.key.type === 'Identifier' && property.key.name === key;
+        }) as ObjectProperty)?.value;
+
+        if (key === 'file' && rawValue.type === 'StringLiteral') {
+            result['file'] = rawValue.value;
+        } else if (key === 'lazy' && rawValue.type === 'BooleanLiteral') {
+            result['lazy'] = rawValue.value;
+        } else if (key === 'styles' && rawValue.type === 'ArrayExpression') {
+            result['styles'] = [];
+
+            for (const item of rawValue.elements) {
+                if (item.type === 'StringLiteral') {
+                    result['styles'].push(item.value);
+                }
+            }
+        }
+
+        return result;
+    }, {} as Partial<{
+        file?: string;
+        lazy?: boolean;
+        styles?: string[];
+    }>);
+
+    const dirname = path.dirname(absolutePath);
+    const basename = path.basename(absolutePath);
+
+    if (!componentMetadataConfig.file) {
+        componentMetadataConfig.file = path.resolve(
+            dirname,
+            _.startCase(basename).split(/\s+/).join(''),
+        );
+    }
 };
 
 export default function(source) {

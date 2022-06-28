@@ -1,0 +1,15 @@
+function Component({
+    factory,
+}: any): ClassDecorator {
+    return (target) => {
+        const metadataValue = Reflect.getMetadata(<%= map.DI_METADATA_COMPONENT_SYMBOL %>, target);
+        Reflect.defineMetadata(
+            <%= map.DI_METADATA_COMPONENT_SYMBOL %>,
+            {
+                ...metadataValue,
+                factory,
+            },
+            target,
+        );
+    };
+}

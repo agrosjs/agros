@@ -13,6 +13,7 @@ specifiers:
   '@types/loader-utils': ^2.0.3
   ejs: ^3.1.8
   loader-utils: ^3.2.0
+  lodash: ^4.17.21
 
 dependencies:
   '@agros/config': link:../agros-config
@@ -23,6 +24,7 @@ dependencies:
   '@babel/types': 7.18.4
   ejs: 3.1.8
   loader-utils: 3.2.0
+  lodash: 4.17.21
 
 devDependencies:
   '@types/babel__generator': 7.6.4
@@ -313,6 +315,10 @@ packages:
   /loader-utils/3.2.0:
     resolution: {integrity: sha512-HVl9ZqccQihZ7JM85dco1MvO9G+ONvxoGa9rkhzFsneGLKSUg1gJf9bWzhRhcvm2qChhWpebQhP44qxjKIUCaQ==}
     engines: {node: '>= 12.13.0'}
+    dev: false
+
+  /lodash/4.17.21:
+    resolution: {integrity: sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==}
     dev: false
 
   /minimatch/3.1.2:

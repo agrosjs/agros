@@ -6,7 +6,6 @@ import { ComponentDecoratorOptions } from '../types';
 
 export function Component({
     declarations = [],
-    component,
     ...metadataValue
 }: ComponentDecoratorOptions): ClassDecorator {
     return (target) => {

@@ -48,19 +48,19 @@ export interface ModuleInstanceMetadata extends ModuleMetadata {
 
 export type FactoryForwardRef = <T = any>(promise: Promise<{ default: T }>) => Promise<{ default: T }>;
 
-export interface ComponentDecoratorOptions<T = any, P = any> {
-    /**
-     * @deprecated
-     */
-    component?: React.FC<P>;
-    factory?: (forwardRef: FactoryForwardRef) => React.FC<P> | React.ExoticComponent<P>;
+export interface ComponentDecoratorOptions<T = any> {
+    file: string;
+    lazy?: boolean;
+    styles?: string[];
     boundaryComponent?: React.FC<any>;
     declarations?: Type[];
     elementProps?: T;
     suspenseFallback?: boolean | React.ReactChild | React.ReactFragment | React.ReactPortal | null;
 }
 
-export type ComponentMetadata = Omit<ComponentDecoratorOptions, 'declarations'>;
+export type ComponentMetadata = Omit<ComponentDecoratorOptions, 'declarations' | 'file' | 'lazy'> & {
+    factory?: (forwardRef: FactoryForwardRef) => React.FC | React.ExoticComponent;
+};
 
 export interface ComponentInstanceMetadata extends ComponentMetadata {
     Class: Type;
@@ -70,18 +70,6 @@ export interface RouterItem extends Omit<RouteOptionItem, 'useModuleClass' | 'us
     componentInstance: ComponentInstance;
     children?: RouterItem[];
 }
-
-/**
- * @deprecated
- */
-export type InjectedComponentProps<P = {}> = P & {
-    /**
-     * @deprecated
-     */
-    declarations: {
-        get: <T>(ProviderClass: Type) => T;
-    };
-};
 
 export interface Container {
     get: <T>(ProviderClass: Type) => T;
