@@ -14,6 +14,7 @@ import {
     ObjectExpression,
     ObjectProperty,
     Statement,
+    Decorator,
 } from '@babel/types';
 import * as t from '@babel/types';
 import ejs from 'ejs';
@@ -205,6 +206,10 @@ const transformComponentDecorator = (absolutePath: string, ast: ReturnType<typeo
             identifierName: 'DI_METADATA_COMPONENT_SYMBOL',
         },
         {
+            libName: '@agros/app/lib/constants',
+            identifierName: 'DI_DEPS_SYMBOL',
+        },
+        {
             libName: '@agros/app',
             identifierName: 'lazy',
         },
@@ -233,20 +238,21 @@ const transformComponentDecorator = (absolutePath: string, ast: ReturnType<typeo
     const componentIdentifierName = 'Agros$$CurrentComponent';
     const forwardRefIdentifierName = 'Agros$$forwardRef';
 
-    const componentFileImportDeclaration = template.ast(
-        componentMetadataConfig.lazy
-            ? `const ${componentIdentifierName} = ${ensureIdentifierNameMap['lazy']}(() => import('${componentMetadataConfig.file}'));`
-            : `import ${componentIdentifierName} from '${componentMetadataConfig.file}';`,
-    ) as Statement;
+    const componentFileImportDeclaration = componentMetadataConfig.lazy
+        ? null
+        : template.ast(`import ${componentIdentifierName} from '${componentMetadataConfig.file}';`) as Statement;
 
     const componentFactoryDeclarations = parseAST(ejs.render(componentFactoryStr, {
         map: ensureIdentifierNameMap,
     })).program.body;
 
-    componentClassDeclaration?.decorators?.push(
+    const legacyDecorator: Decorator = _.clone(componentClassDeclaration?.decorators[0]);
+    componentClassDeclaration?.decorators?.splice(
+        0,
+        1,
         t.decorator(
             t.callExpression(
-                t.identifier('Agros$$Component$$Factory'),
+                t.identifier('Agros$$ComponentWithFactory'),
                 [
                     t.objectExpression([
                         t.objectProperty(
@@ -257,12 +263,18 @@ const transformComponentDecorator = (absolutePath: string, ast: ReturnType<typeo
                                     ? t.callExpression(
                                         t.identifier(forwardRefIdentifierName),
                                         [
-                                            t.identifier(componentIdentifierName),
+                                            t.callExpression(
+                                                t.identifier('import'),
+                                                [
+                                                    t.stringLiteral(componentMetadataConfig.file),
+                                                ],
+                                            ),
                                         ],
                                     )
                                     : t.identifier(componentIdentifierName),
                             ),
                         ),
+                        ...(((legacyDecorator.expression as CallExpression)?.arguments[0] as ObjectExpression).properties || []),
                     ]),
                 ],
             ),
@@ -287,7 +299,7 @@ const transformComponentDecorator = (absolutePath: string, ast: ReturnType<typeo
 
     if (lastImportDeclarationIndex) {
         tree.program.body.splice(lastImportDeclarationIndex + 1, 0, ...[
-            componentFileImportDeclaration,
+            ...(componentFileImportDeclaration ? [componentFileImportDeclaration] : []),
             ...componentFactoryDeclarations,
         ]);
     }

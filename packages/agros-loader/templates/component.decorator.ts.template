@@ -1,15 +1,14 @@
-function Agros$$Component$$Factory({
-    factory,
-}: any): ClassDecorator {
+function Agros$$ComponentWithFactory(options): ClassDecorator {
+    const {
+        declarations = [],
+        ...metadataValue
+    } = options;
     return (target) => {
-        const metadataValue = Reflect.getMetadata(<%= map.DI_METADATA_COMPONENT_SYMBOL %>, target);
         Reflect.defineMetadata(
             <%= map.DI_METADATA_COMPONENT_SYMBOL %>,
-            {
-                ...metadataValue,
-                factory,
-            },
+            metadataValue,
             target,
         );
+        Reflect.defineMetadata(<%= map.DI_DEPS_SYMBOL %>, declarations, target);
     };
 }

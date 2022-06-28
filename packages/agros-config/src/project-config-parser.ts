@@ -35,9 +35,9 @@ export class ProjectConfigParser {
         baseDir: 'src',
         modulesDir: 'modules',
         collection: {
-            module: ['*.module.ts'],
+            module: ['*.module.ts', '*.module.tsx'],
             service: ['*.service.ts'],
-            component: ['*.component.ts'],
+            component: ['*.component.ts', '*.component.tsx'],
         },
     };
     private projectConfig: ProjectConfig = _.clone(this.defaultProjectConfig);
