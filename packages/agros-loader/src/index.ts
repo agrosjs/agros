@@ -261,13 +261,21 @@ const transformComponentDecorator = (absolutePath: string, ast: ReturnType<typeo
                                 [t.identifier(forwardRefIdentifierName)],
                                 componentMetadataConfig.lazy
                                     ? t.callExpression(
-                                        t.identifier(forwardRefIdentifierName),
+                                        t.identifier(ensureIdentifierNameMap['lazy']),
                                         [
-                                            t.callExpression(
-                                                t.identifier('import'),
-                                                [
-                                                    t.stringLiteral(componentMetadataConfig.file),
-                                                ],
+                                            t.arrowFunctionExpression(
+                                                [],
+                                                t.callExpression(
+                                                    t.identifier(forwardRefIdentifierName),
+                                                    [
+                                                        t.callExpression(
+                                                            t.identifier('import'),
+                                                            [
+                                                                t.stringLiteral(componentMetadataConfig.file),
+                                                            ],
+                                                        ),
+                                                    ],
+                                                ),
                                             ),
                                         ],
                                     )
@@ -336,11 +344,9 @@ export default function(source) {
         try {
             const newResource = transformComponentDecorator(resourceAbsolutePath, parseAST(source));
             if (newResource) {
-                console.log(newResource);
                 return newResource;
             }
         } catch (e) {
-            console.log(e);
             this.emitError(e);
         }
     }
