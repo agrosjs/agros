@@ -1,213 +1,10 @@
-import { parse } from '@babel/parser';
+import { ParseResult } from '@babel/parser';
 import {
-    ArrowFunctionExpression,
-    ExportDefaultDeclaration,
-    // Expression,
-    FunctionDeclaration,
+    ClassDeclaration,
+    ExportSpecifier,
+    File,
     Identifier,
-    ImportDeclaration,
-    ImportSpecifier,
-    SourceLocation,
-    Statement,
-    VariableDeclarator,
 } from '@babel/types';
-
-export interface UpdateLocation {
-    /**
-     * start line number, starts from 1
-     */
-    line: number;
-    /**
-     * start column number, starts from 1
-     */
-    column: number;
-}
-
-export interface GetContainerTypeMap {
-    getContainer: string;
-    forwardContainer: string;
-}
-export interface DeclarationContainer {
-    exportName: string;
-    localName: string;
-};
-
-export type GetContainerType = keyof GetContainerTypeMap;
-
-export interface ComponentInfo {
-    imported: boolean;
-    /**
-     * component declaration name
-     */
-    name: string;
-    singleLine: boolean;
-    type: GetContainerType | null;
-    localNameMap: GetContainerTypeMap;
-    functionLocation: SourceLocation | null;
-    importLocation: SourceLocation | null;
-    importDeclarationLocation: SourceLocation | null;
-    callLocation: SourceLocation | null;
-    noBlock: boolean;
-}
-
-const getStatements = (content: string): Statement[] => {
-    if (!content) {
-        return [];
-    }
-
-    const ast = parse(content, {
-        sourceType: 'module',
-        plugins: [
-            'jsx',
-            'typescript',
-            'throwExpressions',
-            'decorators-legacy',
-            'dynamicImport',
-            'exportDefaultFrom',
-            'objectRestSpread',
-            'optionalChaining',
-        ],
-    });
-
-    return ast.program.body || [];
-};
-
-/**
- * detect the location of container declaration
- * @param content the content of file
- * @returns {ComponentInfo} the location of `getContainer` or `forwardContainer`
- */
-export const detectContainerInfo = (content: string, exportName: string | 'default'): ComponentInfo | null => {
-    const statements = getStatements(content);
-    const importLocationMap: Record<GetContainerType, SourceLocation> = {
-        getContainer: null,
-        forwardContainer: null,
-    };
-    const importDeclarationMap: Record<GetContainerType, SourceLocation> = {
-        getContainer: null,
-        forwardContainer: null,
-    };
-    const result: ComponentInfo = {
-        imported: false,
-        name: null,
-        type: null,
-        importLocation: null,
-        importDeclarationLocation: null,
-        functionLocation: null,
-        callLocation: null,
-        localNameMap: {
-            getContainer: 'getContainer',
-            forwardContainer: 'forwardContainer',
-        },
-        singleLine: false,
-        noBlock: false,
-    };
-
-    const importedAgrosStatement: ImportDeclaration = statements.find((statement) => {
-        return statement.type === 'ImportDeclaration' && statement.source.value === '@agros/core';
-    }) as ImportDeclaration;
-
-    if (!importedAgrosStatement) {
-        return result;
-    }
-
-    const importedSpecifiers = (importedAgrosStatement.specifiers || []) as ImportSpecifier[];
-    const containerImportSpecifiers = importedSpecifiers.filter((importedSpecifier) => {
-        const importedName = (importedSpecifier.imported as Identifier).name;
-        return importedName === 'getContainer' || importedName === 'forwardContainer';
-    });
-
-    if (containerImportSpecifiers.length === 0) {
-        return result;
-    }
-
-    result.imported = true;
-
-    /**
-     * parse import declaration locations
-     */
-    containerImportSpecifiers.forEach((specifier) => {
-        const {
-            loc,
-            local,
-            imported,
-        } = specifier;
-        const exportName = (imported as Identifier).name as keyof GetContainerTypeMap;
-
-        if (result.localNameMap[exportName]) {
-            result.localNameMap[exportName] = local.name;
-        }
-
-        if (importedAgrosStatement?.loc) {
-            importLocationMap[exportName] = importedAgrosStatement.loc;
-        }
-
-        if (loc?.start) {
-            importDeclarationMap[exportName] = loc;
-        }
-    });
-
-    /**
-     * get the component function position and info
-     */
-    let componentDeclaration: Identifier | ArrowFunctionExpression | FunctionDeclaration;
-    // let componentDeclaratorInitExpression: Expression;
-
-    if (exportName === 'default') {
-        const exportDefaultDeclaration = statements.find((statement) => {
-            return statement.type === 'ExportDefaultDeclaration';
-        }) as ExportDefaultDeclaration;
-
-        if (!exportDefaultDeclaration) {
-            return result;
-        }
-
-        componentDeclaration = exportDefaultDeclaration.declaration as Identifier | ArrowFunctionExpression | FunctionDeclaration;
-    }
-
-    switch (componentDeclaration.type) {
-        case 'Identifier': {
-            const currentDeclaration = statements.reduce((result, statement) => {
-                if (statement.type === 'VariableDeclaration') {
-                    return result.concat((statement.declarations || []));
-                }
-                return result;
-            }, [] as VariableDeclarator[]).find((declarator) => {
-                return (declarator.id as Identifier).name === (componentDeclaration as Identifier).name;
-            });
-
-            if (!currentDeclaration) {
-                return result;
-            }
-
-            // componentDeclaratorInitExpression = currentDeclaration?.init;
-            break;
-        }
-        case 'ArrowFunctionExpression':
-        case 'FunctionDeclaration': {
-            // componentDeclaratorInitExpression = componentDeclaration.body;
-            break;
-        }
-        default:
-            return result;
-    }
-};
-
-export const getImportStatementUpdateLocation = () => {};
-
-export const getComponentGetDeclarationsUpdateLocation = (content: string) => {
-    if (!content) {
-        return null;
-    }
-
-    const body = getStatements(content);
-    // let containerLocalName: string;
-
-    console.log(JSON.stringify(body));
-
-    // for (const statement of body) {
-    // }
-};
 
 export const getModuleProvidersUpdateLocation = () => {};
 
@@ -218,3 +15,88 @@ export const getModuleExportsUpdateLocation = () => {};
 export const getModuleImportsUpdateLocation = () => {};
 
 export const getComponentDeclarationsUpdateLocation = () => {};
+
+export type ExportMode = 'default' | 'named' | 'namedIdentifier' | 'defaultIdentifier';
+export interface ClassExportItem {
+    declaration: ClassDeclaration;
+    exportMode: ExportMode;
+    exportIndex: number;
+    declarationIndex: number;
+    localName?: string;
+    exportedName?: string;
+}
+
+export const detectClassExports = (ast: ParseResult<File>): ClassExportItem[] => {
+    const result = [] as ClassExportItem[];
+    const exportedIdentifiers = [] as Array<[Identifier, Identifier, number]>;
+
+    for (const [index, statement] of ast.program.body.entries()) {
+        if (statement.type === 'ExportDefaultDeclaration') {
+            if (statement.declaration.type === 'ClassDeclaration') {
+                result.push({
+                    declaration: statement.declaration,
+                    exportMode: 'default',
+                    exportIndex: index,
+                    declarationIndex: index,
+                });
+            } else if (statement.declaration.type === 'Identifier') {
+                const exportedDefaultClassDeclarationIndex = ast.program.body.findIndex((currentStatement) => {
+                    return currentStatement.type === 'ClassDeclaration' &&
+                        currentStatement?.id.name === (statement.declaration as Identifier).name;
+                });
+
+                if (exportedDefaultClassDeclarationIndex !== -1) {
+                    result.push({
+                        declaration: ast.program.body[exportedDefaultClassDeclarationIndex] as ClassDeclaration,
+                        exportMode: 'defaultIdentifier',
+                        localName: statement.declaration.name,
+                        exportIndex: index,
+                        declarationIndex: exportedDefaultClassDeclarationIndex,
+                    });
+                }
+            }
+        } else if (statement.type === 'ExportNamedDeclaration') {
+            if (statement?.declaration?.type === 'ClassDeclaration') {
+                result.push({
+                    declaration: statement.declaration,
+                    exportMode: 'named',
+                    localName: statement.declaration.id.name,
+                    exportedName: statement.declaration.id.name,
+                    exportIndex: index,
+                    declarationIndex: index,
+                });
+            }
+
+            if (statement?.specifiers.length > 0) {
+                for (const specifier of statement.specifiers) {
+                    if (specifier.exported.type === 'Identifier') {
+                        exportedIdentifiers.push([
+                            (specifier as ExportSpecifier).local,
+                            (specifier as ExportSpecifier).exported as Identifier,
+                            index,
+                        ]);
+                    }
+                }
+            }
+        }
+    }
+
+    for (const [localIdentifier, exportedIdentifier, exportIndex] of exportedIdentifiers) {
+        const identifiedClassDeclarationIndex = ast.program.body.findIndex((statement) => {
+            return statement.type === 'ClassDeclaration' && statement?.id.name === exportedIdentifier.name;
+        });
+
+        if (identifiedClassDeclarationIndex !== -1) {
+            result.push({
+                declaration: ast.program.body[identifiedClassDeclarationIndex] as ClassDeclaration,
+                exportMode: 'namedIdentifier',
+                localName: localIdentifier.name,
+                exportedName: exportedIdentifier.name,
+                exportIndex,
+                declarationIndex: identifiedClassDeclarationIndex,
+            });
+        }
+    }
+
+    return result;
+};

@@ -9,7 +9,6 @@ import {
 } from '@agros/utils';
 import {
     CallExpression,
-    ClassDeclaration,
     ExportDefaultDeclaration,
     ObjectExpression,
     ObjectProperty,
@@ -22,7 +21,10 @@ import generate from '@babel/generator';
 import _ from 'lodash';
 import qs from 'qs';
 import template from '@babel/template';
-import { getCollectionType } from '@agros/common';
+import {
+    getCollectionType,
+    detectClassExports,
+} from '@agros/common';
 
 const configParser = new ProjectConfigParser();
 
@@ -135,24 +137,17 @@ const transformEntry = (ast: ReturnType<typeof parseAST>): string => {
 
 const transformComponentDecorator = (absolutePath: string, ast: ReturnType<typeof parseAST>) => {
     const tree = _.clone(ast);
-    let componentClassDeclaration: ClassDeclaration;
     const ensureIdentifierNameMap = {};
+    const declaredClasses = detectClassExports(tree);
 
-    for (const statement of tree.program.body) {
-        if (statement.type === 'ExportNamedDeclaration' && statement?.declaration?.type === 'ClassDeclaration') {
-            if (componentClassDeclaration) {
-                throw new Error('Component files should have only one named class export');
-            }
-            componentClassDeclaration = statement.declaration;
-        } else if (statement.type === 'ExportDefaultDeclaration' || statement.type === 'ExportAllDeclaration') {
-            throw new Error('A component file should not have default export');
-        }
-    }
-
-    if (!componentClassDeclaration) {
+    if (declaredClasses.length > 1) {
+        throw new Error('Component files should have only one named class export');
+    } else if (declaredClasses.length === 0) {
         throw new Error('A component file should have one named class export');
     }
 
+    const [exportedClassInfo] = declaredClasses;
+    const componentClassDeclaration = exportedClassInfo.declaration;
     const decorators = componentClassDeclaration.decorators?.filter((decorator) => {
         return decorator.expression.type === 'CallExpression' && decorator.expression.arguments[0]?.type === 'ObjectExpression';
     });
@@ -302,29 +297,40 @@ const transformComponentDecorator = (absolutePath: string, ast: ReturnType<typeo
     );
 
     let lastImportDeclarationIndex: number;
-    let exportClassDeclarationIndex: number;
 
     for (const [index, statement] of tree.program.body.entries()) {
         if (statement.type === 'ImportDeclaration') {
             lastImportDeclarationIndex = index;
         }
-        if (statement.type === 'ExportNamedDeclaration' && statement?.declaration?.type === 'ClassDeclaration') {
-            exportClassDeclarationIndex = index;
-        }
     }
 
-    if (exportClassDeclarationIndex) {
-        tree.program.body.splice(exportClassDeclarationIndex, 1, componentClassDeclaration);
-    }
+    const {
+        exportMode,
+        exportIndex,
+    } = exportedClassInfo;
 
+    const addedDeclarations = [
+        ...(componentFileImportDeclaration ? [componentFileImportDeclaration] : []),
+        ...componentFactoryDeclarations,
+    ];
     if (lastImportDeclarationIndex) {
-        tree.program.body.splice(lastImportDeclarationIndex + 1, 0, ...[
-            ...(componentFileImportDeclaration ? [componentFileImportDeclaration] : []),
-            ...componentFactoryDeclarations,
-        ]);
+        tree.program.body.splice(lastImportDeclarationIndex + 1, 0, ...addedDeclarations);
     }
 
-    tree.program.body.push(template.ast(`export { ${componentClassDeclaration.id.name} }`) as Statement);
+    if (exportMode === 'default' || exportMode === 'named') {
+        if (!componentClassDeclaration.id) {
+            componentClassDeclaration.id = t.identifier('Agros$TemporaryComponentClass');
+        }
+        tree.program.body.splice(exportIndex + addedDeclarations.length + 1, 1, componentClassDeclaration);
+    }
+
+    if (exportMode === 'named') {
+        tree.program.body.push(template.ast(`export { ${componentClassDeclaration.id.name} }`) as Statement);
+    }
+
+    if (exportMode === 'default') {
+        tree.program.body.push(template.ast(`export default ${componentClassDeclaration.id.name}`) as Statement);
+    }
 
     return generate(tree).code;
 };
@@ -354,9 +360,9 @@ export default function(source) {
 
     if (getCollectionType(resourceAbsolutePath) === 'component') {
         try {
-            const newResource = transformComponentDecorator(resourceAbsolutePath, parseAST(source));
-            if (newResource) {
-                return newResource;
+            const newSource = transformComponentDecorator(resourceAbsolutePath, parseAST(source));
+            if (newSource) {
+                return newSource;
             }
         } catch (e) {
             this.emitError(e);
