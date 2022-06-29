@@ -335,6 +335,10 @@ const transformComponentDecorator = (absolutePath: string, ast: ReturnType<typeo
     return generate(tree).code;
 };
 
+// TODO
+// const transformComponentFile = (resourcePath: string, resourceQuery: string, ast: ReturnType<typeof parseAST>): string => {
+// };
+
 export default function(source) {
     const resourceAbsolutePath = this.resourcePath;
 
