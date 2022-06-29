@@ -197,7 +197,13 @@ const transformComponentDecorator = (absolutePath: string, ast: ReturnType<typeo
 
     componentMetadataConfig.file = componentMetadataConfig.file + '?' + qs.stringify({
         component: true,
-        styles: (componentMetadataConfig.styles || []).join(','),
+        ...(
+            (componentMetadataConfig.styles || []).length > 0
+                ? {
+                    styles: (componentMetadataConfig.styles || []).join(','),
+                }
+                : {}
+        ),
     });
 
     const imports = [
@@ -282,7 +288,13 @@ const transformComponentDecorator = (absolutePath: string, ast: ReturnType<typeo
                                     : t.identifier(componentIdentifierName),
                             ),
                         ),
-                        ...(((legacyDecorator.expression as CallExpression)?.arguments[0] as ObjectExpression).properties || []),
+                        ...(((legacyDecorator.expression as CallExpression)?.arguments[0] as ObjectExpression).properties || []).filter((property: ObjectProperty) => {
+                            return property.key.type === 'Identifier' && [
+                                'file',
+                                'lazy',
+                                'styles',
+                            ].indexOf(property.key.name) === -1;
+                        }),
                     ]),
                 ],
             ),
