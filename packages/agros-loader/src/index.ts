@@ -25,6 +25,7 @@ import {
     getCollectionType,
     detectClassExports,
 } from '@agros/common';
+import { matchAlias } from '@agros/common';
 
 const configParser = new ProjectConfigParser();
 
@@ -190,12 +191,22 @@ const transformComponentDecorator = (absolutePath: string, ast: ReturnType<typeo
         componentMetadataConfig.file = './' + _.startCase(basename).split(/\s+/).join('');
     }
 
+    const styles = (componentMetadataConfig.styles || [])
+        .filter((styleUrl) => typeof styleUrl === 'string')
+        .map((styleUrl) => {
+            if (matchAlias(styleUrl)) {
+                return styleUrl;
+            } else {
+                return path.resolve(path.dirname(absolutePath), styleUrl);
+            }
+        });
+
     componentMetadataConfig.file = componentMetadataConfig.file + '?' + qs.stringify({
         component: true,
         ...(
             (componentMetadataConfig.styles || []).length > 0
                 ? {
-                    styles: (componentMetadataConfig.styles || []).join(','),
+                    styles: styles.map((styleUrl) => encodeURI(styleUrl)).join(','),
                 }
                 : {}
         ),
@@ -342,7 +353,10 @@ const transformComponentFile = (ast: ReturnType<typeof parseAST>, parsedQuery: R
         return generate(tree).code;
     }
 
-    const styleUrls = (parsedQuery.styles as string || '').split(',').filter((item) => !!item);
+    const styleUrls = (parsedQuery.styles as string || '')
+        .split(',')
+        .filter((styleUrl) => !!styleUrl)
+        .map((styleUrl) => decodeURI(styleUrl));
 
     for (const styleUrl of styleUrls) {
         tree.program.body.unshift(t.importDeclaration([], t.stringLiteral(styleUrl)));

@@ -17,7 +17,7 @@ import * as path from 'path';
 
 const projectConfigParser = new ProjectConfigParser();
 
-export const getPathDescriptorWithAlias = (pathname: string, dirname = normalizeSrcPath()): PathDescriptor => {
+export const getPathDescriptorWithAlias = (pathname: string): PathDescriptor => {
     /**
      * relative pathname without `baseDir`
      */
@@ -50,7 +50,7 @@ export const getPathDescriptorWithAlias = (pathname: string, dirname = normalize
 
     const parsedRelativePath = relativePath || path.relative(
         normalizeSrcPath(),
-        normalizeAbsolutePath(pathname, dirname),
+        normalizeAbsolutePath(pathname, normalizeSrcPath()),
     );
     const absolutePath = normalizeAbsolutePath(parsedRelativePath);
 
@@ -86,4 +86,25 @@ export const getCollectionType = (pathname: string): CollectionType => {
         }
     }
     return null;
+};
+
+export const matchAlias = (pathname: string): boolean => {
+    const alias = projectConfigParser.getConfig('alias') || {};
+    for (const aliasKey of Object.keys(alias)) {
+        const normalizedAliasPath = normalizeAlias(aliasKey);
+        const aliasPathRegExp = new RegExp(normalizedAliasPath, 'gi');
+        const execResult = aliasPathRegExp.exec(pathname);
+
+        if (
+            !aliasKey ||
+            !alias[aliasKey] ||
+            !execResult ||
+            execResult.length < 2
+        ) {
+            continue;
+        } else {
+            return true;
+        }
+    }
+    return false;
 };
