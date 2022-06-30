@@ -335,9 +335,21 @@ const transformComponentDecorator = (absolutePath: string, ast: ReturnType<typeo
     return generate(tree).code;
 };
 
-// TODO
-// const transformComponentFile = (resourcePath: string, resourceQuery: string, ast: ReturnType<typeof parseAST>): string => {
-// };
+const transformComponentFile = (ast: ReturnType<typeof parseAST>, parsedQuery: Record<string, any> = {}): string => {
+    const tree = _.clone(ast);
+
+    if (!parsedQuery.component || parsedQuery.component !== 'true') {
+        return generate(tree).code;
+    }
+
+    const styleUrls = (parsedQuery.styles as string || '').split(',').filter((item) => !!item);
+
+    for (const styleUrl of styleUrls) {
+        tree.program.body.unshift(t.importDeclaration([], t.stringLiteral(styleUrl)));
+    }
+
+    return generate(tree).code;
+};
 
 export default function(source) {
     const resourceAbsolutePath = this.resourcePath;
@@ -365,6 +377,19 @@ export default function(source) {
     if (getCollectionType(resourceAbsolutePath) === 'component') {
         try {
             const newSource = transformComponentDecorator(resourceAbsolutePath, parseAST(source));
+            if (newSource) {
+                return newSource;
+            }
+        } catch (e) {
+            this.emitError(e);
+        }
+    }
+
+    const parsedQuery = qs.parse((this.resourceQuery || '').replace(/^\?/, '')) || {};
+
+    if (parsedQuery.component && parsedQuery.component === 'true') {
+        try {
+            const newSource = transformComponentFile(parseAST(source), parsedQuery);
             if (newSource) {
                 return newSource;
             }
