@@ -51,7 +51,7 @@ export class ProjectConfigParser {
                 this.packageConfigParser.getConfig('configPath'),
             );
             const userProjectConfig = requireModule(userProjectConfigPath) || {};
-            this.projectConfig = _.merge(this.projectConfig, userProjectConfig);
+            this.projectConfig = _.merge({}, this.projectConfig, userProjectConfig);
         } catch (e) {}
 
         /**

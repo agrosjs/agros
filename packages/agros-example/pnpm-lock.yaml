@@ -3,7 +3,8 @@ lockfileVersion: 5.4
 specifiers:
   '@agros/app': workspace:^0.3.2
   '@types/react': ^17.0.0
-  babel-plugin-transform-typescript-metadata: ^0.3.2
+  customize-cra-less-loader: ^2.0.0
+  less-loader: ^11.0.0
   react: ^17.0.0
   react-error-boundary: ^3.1.4
   web-vitals: ^2.1.4
@@ -15,15 +16,11 @@ dependencies:
 
 devDependencies:
   '@types/react': 17.0.47
-  babel-plugin-transform-typescript-metadata: 0.3.2
+  customize-cra-less-loader: 2.0.0
+  less-loader: 11.0.0
   web-vitals: 2.1.4
 
 packages:
-
-  /@babel/helper-plugin-utils/7.17.12:
-    resolution: {integrity: sha512-JDkf04mqtN3y4iAbO1hv9U2ARpPyPL1zqyWs/2WG1pgSq9llHFjStX5jdxb84himgJm+8Ng+x0oiWF/nw/XQKA==}
-    engines: {node: '>=6.9.0'}
-    dev: true
 
   /@babel/runtime/7.18.3:
     resolution: {integrity: sha512-38Y8f7YUhce/K7RMwTp7m0uCumpv9hZkitCbBClqQIow1qSbCvGkcegKOXpEWCQLfWmevgRiWokZ1GkpfhbZug==}
@@ -48,19 +45,35 @@ packages:
     resolution: {integrity: sha512-hppQEBDmlwhFAXKJX2KnWLYu5yMfi91yazPb2l+lbJiwW+wdo1gNeRA+3RgNSO39WYX2euey41KEwnqesU2Jew==}
     dev: true
 
-  /babel-plugin-transform-typescript-metadata/0.3.2:
-    resolution: {integrity: sha512-mWEvCQTgXQf48yDqgN7CH50waTyYBeP2Lpqx4nNWab9sxEpdXVeKgfj1qYI2/TgUPQtNFZ85i3PemRtnXVYYJg==}
-    dependencies:
-      '@babel/helper-plugin-utils': 7.17.12
-    dev: true
-
   /csstype/3.1.0:
     resolution: {integrity: sha512-uX1KG+x9h5hIJsaKR9xHUeUraxf8IODOwq9JLNPq6BwB04a/xgpq3rcx47l5BZu5zBPlgD342tdke3Hom/nJRA==}
+    dev: true
+
+  /customize-cra-less-loader/2.0.0:
+    resolution: {integrity: sha512-b+ofZYNNyZgav09t+HJA4Fm7IKhmF6F/QOCrLpZvo0cod5uT+53EuelvYJV9t12vGgd/xJuvfw+AbaQhJR2Tgg==}
+    peerDependencies:
+      customize-cra: '>=0.9'
+      react-scripts: '>=5.0.0'
     dev: true
 
   /js-tokens/4.0.0:
     resolution: {integrity: sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==}
     dev: false
+
+  /klona/2.0.5:
+    resolution: {integrity: sha512-pJiBpiXMbt7dkzXe8Ghj/u4FfXOOa98fPW+bihOJ4SjnoijweJrNThJfd3ifXpXhREjpoF2mZVH1GfS9LV3kHQ==}
+    engines: {node: '>= 8'}
+    dev: true
+
+  /less-loader/11.0.0:
+    resolution: {integrity: sha512-9+LOWWjuoectIEx3zrfN83NAGxSUB5pWEabbbidVQVgZhN+wN68pOvuyirVlH1IK4VT1f3TmlyvAnCXh8O5KEw==}
+    engines: {node: '>= 14.15.0'}
+    peerDependencies:
+      less: ^3.5.0 || ^4.0.0
+      webpack: ^5.0.0
+    dependencies:
+      klona: 2.0.5
+    dev: true
 
   /loose-envify/1.4.0:
     resolution: {integrity: sha512-lyuxPGr/Wfhrlem2CL/UcnUc1zcqKAImBDzukY7Y5F/yQiNdko6+fRLevlw1HgMySw7f611UIY408EtxRSoK3Q==}
