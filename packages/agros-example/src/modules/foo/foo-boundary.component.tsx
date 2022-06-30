@@ -7,6 +7,10 @@ import {
 
 @Component({
     file: './FooBoundary',
+    styles: [
+        './foo-boundary.component.less',
+        '@modules/foo/foo.test.less',
+    ],
     boundaryComponent: (props: PropsWithChildren<ErrorBoundaryPropsWithFallback>) => {
         return (
             <ErrorBoundary fallback={<pre>ERROR CAUGHT</pre>}>

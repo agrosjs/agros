@@ -24,6 +24,7 @@ import template from '@babel/template';
 import {
     getCollectionType,
     detectClassExports,
+    getPathDescriptorWithAlias,
     matchAlias,
 } from '@agros/common';
 
@@ -195,11 +196,15 @@ const transformComponentDecorator = (absolutePath: string, ast: ReturnType<typeo
         .filter((styleUrl) => typeof styleUrl === 'string')
         .map((styleUrl) => {
             if (matchAlias(styleUrl)) {
-                return styleUrl;
+                return getPathDescriptorWithAlias(styleUrl)?.absolutePath;
             } else {
-                return path.resolve(path.dirname(absolutePath), styleUrl);
+                return getPathDescriptorWithAlias(path.resolve(
+                    path.dirname(absolutePath),
+                    styleUrl,
+                ))?.absolutePath;
             }
-        });
+        })
+        .filter((styleUrl) => !!styleUrl);
 
     componentMetadataConfig.file = componentMetadataConfig.file + '?' + qs.stringify({
         component: true,

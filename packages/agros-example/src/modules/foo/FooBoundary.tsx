@@ -25,7 +25,7 @@ const FooBoundary: FC = () => {
         }
     }, [remainedTime]);
 
-    return (<>Boundary test, throwing error, remains: {remainedTime}</>);
+    return (<p className="foo-boundary test">Boundary test, throwing error, remains: {remainedTime}</p>);
 };
 
 export default FooBoundary;
