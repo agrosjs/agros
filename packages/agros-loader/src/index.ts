@@ -24,8 +24,8 @@ import template from '@babel/template';
 import {
     getCollectionType,
     detectClassExports,
+    matchAlias,
 } from '@agros/common';
-import { matchAlias } from '@agros/common';
 
 const configParser = new ProjectConfigParser();
 
