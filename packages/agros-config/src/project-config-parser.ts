@@ -60,11 +60,19 @@ export class ProjectConfigParser {
         const alias = _.get(this.projectConfig, 'alias') || {};
 
         for (const aliasKey of Object.keys(alias)) {
-            if (typeof aliasKey !== 'string' || aliasKey.match(/(\*)/).length > 1 || !aliasKey.endsWith('/*')) {
-                throw new Error(`Alias key '${aliasKey}' is in wrong type`);
+            if (
+                typeof aliasKey !== 'string' ||
+                    aliasKey.indexOf('*') !== aliasKey.length - 1 ||
+                    !aliasKey.endsWith('/*')
+            ) {
+                throw new Error(`Alias key '${aliasKey}' is in a wrong type`);
             }
             const aliasValue = alias[aliasKey];
-            if (typeof aliasValue !== 'string' || aliasValue.match(/(\*)/).length > 1 || !aliasValue.endsWith('*')) {
+            if (
+                typeof aliasValue !== 'string' ||
+                    aliasValue.indexOf('*') !== aliasValue.length - 1 ||
+                    !aliasValue.endsWith('*')
+            ) {
                 throw new Error(`Alias value '${aliasValue}' is in wrong type`);
             }
         }
@@ -93,7 +101,7 @@ export class ProjectConfigParser {
     public getEntry(): string {
         const baseDir = this.getConfig<string>('baseDir');
         const entry = this.getConfig<string>('entry');
-        return `${baseDir}/${entry.split('.').slice(0, -1).join('.')}`;
+        return `./${baseDir}/${entry.split('.').slice(0, -1).join('.')}`;
     }
 
     public getAlias(): Record<string, string> {

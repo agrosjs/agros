@@ -2,10 +2,11 @@ const {
     override,
     removeModuleScopePlugin,
     addBabelPlugins,
+    // addWebpackAlias,
 } = require('./lib/scripts/customize');
-const { ProjectConfigParser } = require('@agros/config');
+// const { ProjectConfigParser } = require('@agros/config');
 
-const projectConfigParser = new ProjectConfigParser();
+// const projectConfigParser = new ProjectConfigParser();
 
 module.exports = {
     webpack: override(
@@ -25,6 +26,7 @@ module.exports = {
                 },
             ],
         ),
+        // addWebpackAlias(projectConfigParser.getAlias()),
         (config) => {
             config?.module?.rules?.push({
                 test: /(\.ts|\.tsx)$/,
@@ -32,7 +34,11 @@ module.exports = {
             });
             return config;
         },
-        ...projectConfigParser.getConfig('builder'),
+        // (config) => {
+        //     config.entry = projectConfigParser.getEntry();
+        //     return config;
+        // },
+        // ...projectConfigParser.getConfig('builder'),
     ),
-    devServer: projectConfigParser.getConfig('devServer'),
+    // devServer: projectConfigParser.getConfig('devServer'),
 };
