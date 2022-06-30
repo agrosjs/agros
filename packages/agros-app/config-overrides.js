@@ -3,6 +3,9 @@ const {
     removeModuleScopePlugin,
     addBabelPlugins,
 } = require('./lib/scripts/customize');
+const { ProjectConfigParser } = require('@agros/config');
+
+const projectConfigParser = new ProjectConfigParser();
 
 module.exports = {
     webpack: override(
@@ -29,5 +32,7 @@ module.exports = {
             });
             return config;
         },
+        ...projectConfigParser.getConfig('builder'),
     ),
+    devServer: projectConfigParser.getConfig('devServer'),
 };

@@ -1,11 +1,11 @@
 import _ from 'lodash';
 import * as path from 'path';
-import { permanentlyReadJson } from '@agros/utils';
+import { requireModule } from '@agros/utils';
 import { PackageConfigParser } from './package-config-parser';
+import { Configuration } from 'webpack';
 
 export type ScopeMap = Record<string, string>;
 export type AliasMap = Record<string, string>;
-export type RootPointMap = Record<string, string>;
 export type CollectionMap = Record<string, string[]>;
 export type CollectionType = 'module' | 'service' | 'component';
 
@@ -13,11 +13,12 @@ export interface ProjectConfig {
     npmClient?: string;
     indentSize?: number;
     alias?: AliasMap;
-    rootPoints?: RootPointMap;
     entry?: string;
     baseDir?: string;
     collection?: CollectionMap;
     modulesDir?: string;
+    builder?: Function[];
+    devServer?: (config: Configuration) => Configuration;
 }
 
 export class ProjectConfigParser {
@@ -28,9 +29,6 @@ export class ProjectConfigParser {
             '@/*': '*',
             '@modules/*': 'modules/*',
         },
-        rootPoints: {
-            app: 'app.module',
-        },
         entry: 'index.ts',
         baseDir: 'src',
         modulesDir: 'modules',
@@ -39,6 +37,8 @@ export class ProjectConfigParser {
             service: ['*.service.ts'],
             component: ['*.component.ts', '*.component.tsx'],
         },
+        builder: [],
+        devServer: (config) => config,
     };
     private projectConfig: ProjectConfig = _.clone(this.defaultProjectConfig);
     private PROCESS_CWD = process.cwd();
@@ -46,12 +46,40 @@ export class ProjectConfigParser {
 
     public constructor() {
         try {
-            const userProjectConfig = permanentlyReadJson(path.resolve(
+            const userProjectConfigPath = path.resolve(
                 this.PROCESS_CWD,
-                this.packageConfigParser.getConfig('configPath') || 'agros.json',
-            ));
+                this.packageConfigParser.getConfig('configPath'),
+            );
+            const userProjectConfig = requireModule(userProjectConfigPath) || {};
             this.projectConfig = _.merge(this.projectConfig, userProjectConfig);
         } catch (e) {}
+
+        /**
+         * validate `alias`
+         */
+        const alias = _.get(this.projectConfig, 'alias') || {};
+
+        for (const aliasKey of Object.keys(alias)) {
+            if (typeof aliasKey !== 'string' || aliasKey.match(/(\*)/).length > 1 || !aliasKey.endsWith('/*')) {
+                throw new Error(`Alias key '${aliasKey}' is in wrong type`);
+            }
+            const aliasValue = alias[aliasKey];
+            if (typeof aliasValue !== 'string' || aliasValue.match(/(\*)/).length > 1 || !aliasValue.endsWith('*')) {
+                throw new Error(`Alias value '${aliasValue}' is in wrong type`);
+            }
+        }
+
+        /**
+         * validate webpack and dev-server config
+         */
+        const builderConfigArray = this.getConfig<Function[]>('builder') || [];
+        if (!Array.isArray(builderConfigArray) || builderConfigArray.some((item) => typeof item !== 'function')) {
+            throw new Error('`builder` must be a array of functions');
+        }
+
+        if (typeof this.getConfig<Function>('devServer') !== 'function') {
+            throw new Error('`devServer` must be a function');
+        }
     }
 
     public getConfig<T>(pathname?: string): T {
@@ -60,5 +88,22 @@ export class ProjectConfigParser {
         }
 
         return _.get(_.clone(this.projectConfig), pathname) as T;
-    };
+    }
+
+    public getEntry(): string {
+        const baseDir = this.getConfig<string>('baseDir');
+        const entry = this.getConfig<string>('entry');
+        return `${baseDir}/${entry.split('.').slice(0, -1).join('.')}`;
+    }
+
+    public getAlias(): Record<string, string> {
+        const baseDir = this.getConfig<string>('baseDir');
+        const alias = this.getConfig<Record<string, string>>('alias') || {};
+        return Object.keys(alias).reduce((result, key) => {
+            const aliasKey = key.replace(/(\/?)\*$/, '');
+            const aliasValue = key.replace(/(\/?)\*$/, '');
+            result[aliasKey] = [baseDir, aliasValue].filter((value) => !!value).join('/');
+            return result;
+        }, {});
+    }
 }

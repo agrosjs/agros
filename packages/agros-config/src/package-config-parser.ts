@@ -9,7 +9,7 @@ export interface PackageConfig {
 export class PackageConfigParser {
     private readonly PROCESS_CWD = process.cwd();
     private defaultPackageConfig: PackageConfig = {
-        configPath: 'agros.json',
+        configPath: 'agros.config.js',
     };
     private packageConfig = _.clone(this.defaultPackageConfig);
 
@@ -19,7 +19,7 @@ export class PackageConfigParser {
             this.packageConfig = _.merge(
                 {},
                 _.clone(this.packageConfig),
-                _.get(packageConfig, 'agros'),
+                _.get(packageConfig, 'agros') || {},
             );
         } catch (e) {}
     }
