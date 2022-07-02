@@ -31,7 +31,7 @@ import {
 const configParser = new ProjectConfigParser();
 
 const transformEntry = (ast: ReturnType<typeof parseAST>): string => {
-    const tree = _.clone(ast);
+    const tree = _.cloneDeep(ast);
     let exportDefaultDeclaration: ExportDefaultDeclaration;
     let exportDefaultDeclarationIndex: number;
     let lastImportDeclarationIndex: number;
@@ -138,7 +138,7 @@ const transformEntry = (ast: ReturnType<typeof parseAST>): string => {
 };
 
 const transformComponentDecorator = (absolutePath: string, ast: ReturnType<typeof parseAST>) => {
-    const tree = _.clone(ast);
+    const tree = _.cloneDeep(ast);
     const ensureIdentifierNameMap = {};
     const declaredClasses = detectClassExports(tree);
 
@@ -352,7 +352,7 @@ const transformComponentDecorator = (absolutePath: string, ast: ReturnType<typeo
 };
 
 const transformComponentFile = (ast: ReturnType<typeof parseAST>, parsedQuery: Record<string, any> = {}): string => {
-    const tree = _.clone(ast);
+    const tree = _.cloneDeep(ast);
 
     if (!parsedQuery.component || parsedQuery.component !== 'true') {
         return generate(tree).code;
