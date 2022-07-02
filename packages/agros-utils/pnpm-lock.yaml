@@ -10,6 +10,7 @@ specifiers:
   '@types/lodash': ^4.14.182
   '@types/node': ^15.12.2
   fs-extra: ^10.1.0
+  lodash: ^4.17.21
   rimraf: ^3.0.2
   typescript: ^4.5.5
 
@@ -18,6 +19,7 @@ dependencies:
   '@babel/template': 7.16.7
   '@babel/types': 7.18.4
   fs-extra: 10.1.0
+  lodash: 4.17.21
 
 devDependencies:
   '@types/babel__template': 7.4.1
@@ -283,6 +285,10 @@ packages:
       universalify: 2.0.0
     optionalDependencies:
       graceful-fs: 4.2.10
+    dev: false
+
+  /lodash/4.17.21:
+    resolution: {integrity: sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==}
     dev: false
 
   /minimatch/3.1.2:

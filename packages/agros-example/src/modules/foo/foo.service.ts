@@ -10,7 +10,7 @@ export class FooService {
     ) {}
 
     public logHello() {
-        console.log('Hello, Khamsa is working');
+        console.log('Hello, Agros is working');
         this.barService.sayHello();
         this.bazService.sayHello();
     }

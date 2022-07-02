@@ -4,7 +4,7 @@ import './app.component.css';
 export default () => {
     return (
         <div className="app">
-            <nav>Khamsa</nav>
+            <nav>Agros</nav>
             <div className="container">
                 <Outlet />
             </div>

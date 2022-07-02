@@ -14,6 +14,7 @@ import {
     ObjectProperty,
     Statement,
     Decorator,
+    Identifier,
 } from '@babel/types';
 import * as t from '@babel/types';
 import ejs from 'ejs';
@@ -26,6 +27,7 @@ import {
     detectClassExports,
     getPathDescriptorWithAlias,
     matchAlias,
+    detectNamedImports,
 } from '@agros/common';
 
 const configParser = new ProjectConfigParser();
@@ -141,6 +143,9 @@ const transformComponentDecorator = (absolutePath: string, ast: ReturnType<typeo
     const tree = _.cloneDeep(ast);
     const ensureIdentifierNameMap = {};
     const declaredClasses = detectClassExports(tree);
+    const componentDecoratorSpecifiers = detectNamedImports(tree, 'Component', (source) => {
+        return source.indexOf('@agros/app') !== -1;
+    });
 
     if (declaredClasses.length > 1) {
         throw new Error('Component files should have only one named class export');
@@ -151,11 +156,15 @@ const transformComponentDecorator = (absolutePath: string, ast: ReturnType<typeo
     const [exportedClassInfo] = declaredClasses;
     const componentClassDeclaration = exportedClassInfo.declaration;
     const decorators = componentClassDeclaration.decorators?.filter((decorator) => {
-        return decorator.expression.type === 'CallExpression' && decorator.expression.arguments[0]?.type === 'ObjectExpression';
+        return decorator.expression.type === 'CallExpression' &&
+            decorator.expression.callee.type === 'Identifier' &&
+            componentDecoratorSpecifiers.some((specifier) => {
+                return specifier.local.name === ((decorator.expression as CallExpression).callee as Identifier).name;
+            });
     });
 
     if (componentClassDeclaration.decorators?.length !== 1) {
-        throw new Error('A component declaration should have one decorator');
+        throw new Error('A component declaration should have only one decorator');
     }
 
     const decoratorArgument: ObjectExpression = (decorators[0].expression as CallExpression).arguments[0] as ObjectExpression;

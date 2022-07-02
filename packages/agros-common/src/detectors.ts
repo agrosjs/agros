@@ -4,6 +4,8 @@ import {
     ExportSpecifier,
     File,
     Identifier,
+    ImportDeclaration,
+    ImportSpecifier,
 } from '@babel/types';
 
 export const getModuleProvidersUpdateLocation = () => {};
@@ -99,4 +101,21 @@ export const detectClassExports = (ast: ParseResult<File>): ClassExportItem[] =>
     }
 
     return result;
+};
+
+export const detectNamedImports = (
+    ast: ParseResult<File>,
+    name: string,
+    sourceNameFilter: (sourceName: string) => boolean = () => true,
+): ImportSpecifier[] => {
+    return ast.program.body.filter((statement) => {
+        return statement.type === 'ImportDeclaration' && sourceNameFilter(statement.source.value);
+    }).reduce((result, declaration: ImportDeclaration) => {
+        const specifiers: ImportSpecifier[] = (declaration.specifiers || []).filter((specifier) => {
+            return specifier.type === 'ImportSpecifier' &&
+                specifier.imported.type === 'Identifier' &&
+                specifier.imported.name === name;
+        }) as ImportSpecifier[];
+        return result.concat(specifiers);
+    }, [] as ImportSpecifier[]);
 };

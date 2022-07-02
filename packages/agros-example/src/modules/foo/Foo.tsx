@@ -24,7 +24,7 @@ const Foo: FC = () => {
 
     return (
         <>
-            <div>Khamsa is working!</div>
+            <div>Agros is working!</div>
             {Bar && <Bar used="foo.module.ts" />}
             <Outlet />
         </>
