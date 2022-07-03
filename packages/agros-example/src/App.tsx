@@ -1,5 +1,4 @@
 import { Outlet } from '@agros/app/lib/router';
-import './app.component.css';
 
 export default () => {
     return (
