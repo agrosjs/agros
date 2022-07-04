@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 /* eslint-disable @typescript-eslint/no-invalid-this */
 import * as path from 'path';
 import { ProjectConfigParser } from '@agros/config';
@@ -9,29 +8,42 @@ import {
     transformComponentFile,
     transformEntry,
 } from './transformers';
-import { LoaderTransformer } from './types';
+import {
+    LoaderTransformerConfig,
+    LoaderTransformerGuardData,
+} from './types';
 import generate from '@babel/generator';
 import _ from 'lodash';
-import { getCollectionType } from '@agros/common';
+import { LoaderContext } from 'webpack';
 
-// const transform = (source: string, context: any, ...transformers: LoaderTransformer[]) => {
-//     const configParser = new ProjectConfigParser();
-//     let tree = parseAST(source);
-//     const parsedQuery = qs.parse((context.resourceQuery || '').replace(/^\?/, '')) || {};
+const transform = (source: string, context: LoaderContext<{}>, ...transformers: LoaderTransformerConfig[]) => {
+    const configParser = new ProjectConfigParser();
+    const srcPath = path.resolve(process.cwd(), configParser.getConfig('baseDir'));
+    const parsedQuery = qs.parse((context.resourceQuery || '').replace(/^\?/, '')) || {};
+    const guardData: LoaderTransformerGuardData = {
+        context,
+        parsedQuery,
+        srcPath,
+    };
+    const matchedTransformerConfigs = (transformers || []).filter((transformerConfig) => {
+        return transformerConfig.guard(guardData);
+    });
 
-//     for (const transformer of transformers) {
-//         const srcPath = path.resolve(process.cwd(), configParser.getConfig('baseDir'));
-//         tree = transformer({
-//             tree: _.cloneDeep(tree),
-//             absolutePath: context.resourcePath,
-//             srcPath,
-//             parsedQuery,
-//         });
-//     }
+    if (matchedTransformerConfigs.length === 0) {
+        return;
+    }
 
-//     return tree;
-// };
-const configParser = new ProjectConfigParser();
+    let tree = parseAST(source);
+
+    for (const transformerConfig of matchedTransformerConfigs) {
+        tree = transformerConfig.transformer({
+            tree: _.cloneDeep(tree),
+            ...guardData,
+        });
+    }
+
+    return tree;
+};
 
 export default function(source) {
     const resourceAbsolutePath = this.resourcePath;
@@ -40,42 +52,17 @@ export default function(source) {
         return source;
     }
 
-    const srcAbsolutePath = path.resolve(
-        process.cwd(),
-        configParser.getConfig('baseDir'),
+    const newAST = transform(
+        source,
+        this,
+        transformEntry,
+        transformComponentDecorator,
+        transformComponentFile,
     );
-    const parsedQuery = qs.parse((this.resourceQuery || '').replace(/^\?/, '')) || {};
-    let ast = parseAST(source);
 
-    if (path.dirname(resourceAbsolutePath) === srcAbsolutePath && path.basename(resourceAbsolutePath) === 'index.ts') {
-        ast = transformEntry({
-            tree: _.cloneDeep(ast),
-            absolutePath: this.resourcePath,
-            srcPath: srcAbsolutePath,
-            parsedQuery,
-        });
-        return generate(ast).code;
+    if (!newAST) {
+        return source;
     }
 
-    if (getCollectionType(resourceAbsolutePath) === 'component') {
-        ast = transformComponentDecorator({
-            tree: _.cloneDeep(ast),
-            absolutePath: this.resourcePath,
-            srcPath: srcAbsolutePath,
-            parsedQuery,
-        });
-        return generate(ast).code;
-    }
-
-    if (parsedQuery.component && parsedQuery.component === 'true') {
-        ast = transformComponentFile({
-            tree: _.cloneDeep(ast),
-            absolutePath: this.resourcePath,
-            srcPath: srcAbsolutePath,
-            parsedQuery,
-        });
-        return generate(ast).code;
-    }
-
-    return source;
+    return generate(newAST).code;
 }
