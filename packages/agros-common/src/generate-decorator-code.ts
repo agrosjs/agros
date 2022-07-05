@@ -9,8 +9,8 @@ export const generateDecoratorCode = async (ast: t.Node): Promise<string> => {
     const code = await prettier.format(
         generate(ast as any).code + '\nclass AgrosPlaceholder {}',
         {
+            ...(projectConfigParser.getConfig('prettier') || {}),
             parser: 'babel-ts',
-            tabWidth: projectConfigParser.getConfig('indentSize'),
             plugins: [path.resolve(__dirname, '../node_modules/prettier-plugin-multiline-arrays')],
             filepath: '',
         },

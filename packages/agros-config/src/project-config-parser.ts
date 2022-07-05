@@ -3,6 +3,7 @@ import * as path from 'path';
 import { requireModule } from '@agros/utils';
 import { PackageConfigParser } from './package-config-parser';
 import { Configuration } from 'webpack';
+import { Options as PrettierOptions } from 'prettier';
 
 export type ScopeMap = Record<string, string>;
 export type AliasMap = Record<string, string>;
@@ -11,7 +12,7 @@ export type CollectionType = 'module' | 'service' | 'component';
 
 export interface ProjectConfig {
     npmClient?: string;
-    indentSize?: number;
+    prettier?: PrettierOptions;
     alias?: AliasMap;
     entry?: string;
     baseDir?: string;
@@ -24,7 +25,10 @@ export interface ProjectConfig {
 export class ProjectConfigParser {
     private defaultProjectConfig: ProjectConfig = {
         npmClient: 'npm',
-        indentSize: 4,
+        prettier: {
+            tabWidth: 4,
+            singleQuote: true,
+        },
         alias: {
             '@/*': '*',
             '@modules/*': 'modules/*',

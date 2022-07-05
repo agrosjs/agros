@@ -5,19 +5,23 @@ specifiers:
   '@types/fs-extra': ^9.0.13
   '@types/minimatch': ^3.0.5
   '@types/parse-glob': ^3.0.29
+  '@types/prettier': ^2.6.3
   '@types/webpack': ^5.28.0
   fs-extra: ^10.1.0
   lodash: ^4.17.21
+  prettier: ^2.7.1
 
 dependencies:
   '@agros/utils': link:../agros-utils
   fs-extra: 10.1.0
   lodash: 4.17.21
+  prettier: 2.7.1
 
 devDependencies:
   '@types/fs-extra': 9.0.13
   '@types/minimatch': 3.0.5
   '@types/parse-glob': 3.0.29
+  '@types/prettier': 2.6.3
   '@types/webpack': 5.28.0
 
 packages:
@@ -97,6 +101,10 @@ packages:
 
   /@types/parse-glob/3.0.29:
     resolution: {integrity: sha512-OFwMPH5eJOhtwR92GMjTNWukaKTdWQC12cBgRvrTQl5CwhruSq6734wi1CTSh5Qjm/pMJWaKOOPKZOp6FpIkXQ==}
+    dev: true
+
+  /@types/prettier/2.6.3:
+    resolution: {integrity: sha512-ymZk3LEC/fsut+/Q5qejp6R9O1rMxz3XaRHDV6kX8MrGAhOSPqVARbDi+EZvInBpw+BnCX3TD240byVkOfQsHg==}
     dev: true
 
   /@types/webpack/5.28.0:
@@ -426,6 +434,12 @@ packages:
   /picocolors/1.0.0:
     resolution: {integrity: sha512-1fygroTLlHu66zi26VoTDv8yRgm0Fccecssto+MhsZ0D/DGW2sm8E8AjW7NU5VVTRt5GxbeZ5qBuJr+HyLYkjQ==}
     dev: true
+
+  /prettier/2.7.1:
+    resolution: {integrity: sha512-ujppO+MkdPqoVINuDFDRLClm7D78qbDt0/NR+wp5FqEZOoTNAjPHWj17QRhu7geIHJfcNhRk1XVQmF8Bp3ye+g==}
+    engines: {node: '>=10.13.0'}
+    hasBin: true
+    dev: false
 
   /punycode/2.1.1:
     resolution: {integrity: sha512-XRsRjdf+j5ml+y/6GKHPZbrF/8p2Yga0JPtdqTIY2Xe5ohJPD9saDJJLPvp9+NSBprVvevdXZybnj2cv8OEd0A==}
