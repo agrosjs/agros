@@ -102,29 +102,39 @@ importers:
   ../../packages/agros-common:
     specifiers:
       '@agros/config': workspace:^0.0.2
+      '@babel/generator': ^7.18.2
       '@babel/parser': ^7.18.5
       '@babel/types': ^7.18.4
+      '@types/babel__generator': ^7.6.4
       '@types/fs-extra': ^9.0.13
       '@types/jest': ^28.1.1
       '@types/lodash': ^4.14.182
       '@types/node': ^15.12.2
+      '@types/prettier': ^2.6.3
       fs-extra: ^10.1.0
       lodash: ^4.17.21
       parse-glob: ^3.0.4
+      prettier: ^2.7.1
+      prettier-plugin-multiline-arrays: ^1.1.0
       rimraf: ^3.0.2
       typescript: ^4.5.5
     dependencies:
       '@agros/config': link:../agros-config
+      '@babel/generator': 7.18.7
       '@babel/parser': 7.18.5
       '@babel/types': 7.18.4
       fs-extra: 10.1.0
       lodash: 4.17.21
       parse-glob: 3.0.4
+      prettier: 2.7.1
+      prettier-plugin-multiline-arrays: 1.1.0
     devDependencies:
+      '@types/babel__generator': 7.6.4
       '@types/fs-extra': 9.0.13
       '@types/jest': 28.1.1
       '@types/lodash': 4.14.182
       '@types/node': 15.14.9
+      '@types/prettier': 2.6.3
       rimraf: 3.0.2
       typescript: 4.7.3
 
@@ -3207,6 +3217,12 @@ packages:
   /at-least-node/1.0.0:
     resolution: {integrity: sha512-+q/t7Ekv1EDY2l6Gda6LLiX14rU9TV20Wa3ofeQmwPFZbOMo9DXrLbOjFaaclkXKWidIaopwAObQDqwWtGUjqg==}
     engines: {node: '>= 4.0.0'}
+
+  /augment-vir/2.0.2:
+    resolution: {integrity: sha512-DAU4/MEuL2Kk5CbF3jZlzR0YVfU9Fhrg8zKp9p/GenTAlaE6/bYpcTphoic0sSaknBtkjWYfQxk+7fRqlm6bhA==}
+    dependencies:
+      fs-extra: 10.1.0
+    dev: false
 
   /autoprefixer/10.4.7_postcss@8.4.14:
     resolution: {integrity: sha512-ypHju4Y2Oav95SipEcCcI5J7CGPuvz8oat7sUtYj3ClK44bldfvtvcxK6IEK++7rqB7YchDGzweZIBG+SD0ZAA==}
@@ -7647,6 +7663,18 @@ packages:
   /prelude-ls/1.2.1:
     resolution: {integrity: sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==}
     engines: {node: '>= 0.8.0'}
+
+  /prettier-plugin-multiline-arrays/1.1.0:
+    resolution: {integrity: sha512-Pp5JCJGXj2pBxR9o0bLNSxbHd0qOjgzTCXn9oD8Wkevgz/KnXJA6JVzt28OgXznzOgPhCCXlUqEqmEkGVCPBUw==}
+    dependencies:
+      augment-vir: 2.0.2
+    dev: false
+
+  /prettier/2.7.1:
+    resolution: {integrity: sha512-ujppO+MkdPqoVINuDFDRLClm7D78qbDt0/NR+wp5FqEZOoTNAjPHWj17QRhu7geIHJfcNhRk1XVQmF8Bp3ye+g==}
+    engines: {node: '>=10.13.0'}
+    hasBin: true
+    dev: false
 
   /pretty-bytes/5.6.0:
     resolution: {integrity: sha512-FFw039TmrBqFK8ma/7OL3sDz/VytdtJr044/QUJtH0wK9lb9jLq9tJyIxUwtQJHwar2BqtiA4iCWSwo9JLkzFg==}
