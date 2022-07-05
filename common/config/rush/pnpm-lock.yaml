@@ -141,6 +141,7 @@ importers:
   ../../packages/agros-config:
     specifiers:
       '@agros/utils': workspace:^0.0.1
+      '@types/deepmerge': ^2.2.0
       '@types/fs-extra': ^9.0.13
       '@types/jest': ^28.1.1
       '@types/lodash': ^4.14.182
@@ -149,6 +150,8 @@ importers:
       '@types/parse-glob': ^3.0.29
       '@types/prettier': ^2.6.3
       '@types/webpack': ^5.28.0
+      cosmiconfig: ^7.0.1
+      deepmerge: ^4.2.2
       fs-extra: ^10.1.0
       lodash: ^4.17.21
       prettier: ^2.7.1
@@ -156,10 +159,13 @@ importers:
       typescript: ^4.5.5
     dependencies:
       '@agros/utils': link:../agros-utils
+      cosmiconfig: 7.0.1
+      deepmerge: 4.2.2
       fs-extra: 10.1.0
       lodash: 4.17.21
       prettier: 2.7.1
     devDependencies:
+      '@types/deepmerge': 2.2.0
       '@types/fs-extra': 9.0.13
       '@types/jest': 28.1.1
       '@types/lodash': 4.14.182
@@ -2495,6 +2501,13 @@ packages:
       - esbuild
       - uglify-js
       - webpack-cli
+    dev: true
+
+  /@types/deepmerge/2.2.0:
+    resolution: {integrity: sha512-FEQYDHh6+Q+QXKSrIY46m+/lAmAj/bk4KpLaam+hArmzaVpMBHLcfwOH2Q2UOkWM7XsdY9PmZpGyPAjh/JRGhQ==}
+    deprecated: This is a stub types definition. deepmerge provides its own type definitions, so you do not need this installed.
+    dependencies:
+      deepmerge: 4.2.2
     dev: true
 
   /@types/ejs/3.1.1:

@@ -4,6 +4,8 @@ import { requireModule } from '@agros/utils';
 import { PackageConfigParser } from './package-config-parser';
 import { Configuration } from 'webpack';
 import { Options as PrettierOptions } from 'prettier';
+import { getCosmiConfig } from './utils';
+import deepmerge from 'deepmerge';
 
 export type ScopeMap = Record<string, string>;
 export type AliasMap = Record<string, string>;
@@ -80,6 +82,11 @@ export class ProjectConfigParser {
                 throw new Error(`Alias value '${aliasValue}' is in wrong type`);
             }
         }
+
+        try {
+            const prettierConfig = getCosmiConfig('prettier');
+            this.projectConfig.prettier = deepmerge(this.projectConfig.prettier, prettierConfig);
+        } catch (e) {}
 
         /**
          * validate webpack and dev-server config
