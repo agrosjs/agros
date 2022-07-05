@@ -1,15 +1,15 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
 
-export type EOLType = 'CRLF' | 'CR' | 'LF' | 'NONE';
+export type EOLType = 'CRLF' | 'CR' | 'LF';
 
-export const getFileEOLType = (pathname: string): EOLType => {
+export const getFileEOLType = (pathname: string): EOLType | null => {
     if (!fs.existsSync(path.resolve(pathname))) {
-        return 'NONE';
+        return null;
     }
 
     if (!fs.statSync(path.resolve(pathname)).isFile()) {
-        return 'NONE';
+        return null;
     }
 
     try {
@@ -19,7 +19,7 @@ export const getFileEOLType = (pathname: string): EOLType => {
         const crlfCount = content.split('\r\n').length;
 
         if (crCount + lfCount === 0) {
-            return 'NONE';
+            return 'LF';
         }
 
         if (crlfCount === crCount && crlfCount === lfCount) {
@@ -32,6 +32,6 @@ export const getFileEOLType = (pathname: string): EOLType => {
             return 'LF';
         }
     } catch (e) {
-        return 'NONE';
+        return 'LF';
     }
 };

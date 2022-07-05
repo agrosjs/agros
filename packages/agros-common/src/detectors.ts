@@ -8,16 +8,6 @@ import {
     ImportSpecifier,
 } from '@babel/types';
 
-export const getModuleProvidersUpdateLocation = () => {};
-
-export const getModuleComponentsUpdateLocation = () => {};
-
-export const getModuleExportsUpdateLocation = () => {};
-
-export const getModuleImportsUpdateLocation = () => {};
-
-export const getComponentDeclarationsUpdateLocation = () => {};
-
 export type ExportMode = 'default' | 'named' | 'namedIdentifier' | 'defaultIdentifier';
 export interface ClassExportItem {
     declaration: ClassDeclaration;

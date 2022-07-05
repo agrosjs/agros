@@ -14,8 +14,25 @@ import {
     ProjectConfigParser,
 } from '@agros/config';
 import * as path from 'path';
+import {
+    ObjectExpression,
+    ObjectProperty,
+} from '@babel/types';
 
 const projectConfigParser = new ProjectConfigParser();
+
+export type UpdateItem = {
+    line: number;
+    content: string;
+    deleteLines: number;
+    standalone?: boolean;
+} | {
+    line: number;
+    content: string;
+    deleteLines: number;
+    standalone: true;
+    column: number;
+};
 
 export const getPathDescriptorWithAlias = (pathname: string): PathDescriptor => {
     /**
@@ -108,3 +125,66 @@ export const matchAlias = (pathname: string): boolean => {
     }
     return false;
 };
+
+export interface AddItemToObjectCodeOptions {
+    expression: ObjectExpression;
+    value: string;
+    key: string;
+    tabSize?: number;
+    startColumn?: number;
+    overwrite?: boolean;
+}
+
+export const addItemToObjectCode = ({
+    expression,
+    key,
+    value,
+    tabSize = 4,
+    startColumn = 0,
+    overwrite = true,
+}: AddItemToObjectCodeOptions): UpdateItem[] => {
+    if (!value || !key || !expression || expression.type !== 'ObjectExpression') {
+        return [];
+    }
+
+    const result: UpdateItem[] = [];
+    const keyPathSegments = key.split('.').slice(0, -1);
+    const lines = value.split(/\r|\n|\r\n/);
+    const leveledExpressionList: ObjectExpression[] = [expression];
+
+    for (const [index, keyPathSegment] of keyPathSegments.entries()) {
+        const currentLevelExpression = leveledExpressionList[index];
+        if (!currentLevelExpression) {
+            break;
+        }
+        for (const property of currentLevelExpression.properties || []) {
+            if (
+                property.type === 'ObjectProperty' &&
+                    property.key.type === 'Identifier' &&
+                    property.key.name === keyPathSegment &&
+                    property.value.type === 'ObjectExpression'
+            ) {
+                leveledExpressionList.push(property.value);
+                break;
+            }
+        }
+    }
+
+    const parentObjectExpression = leveledExpressionList[keyPathSegments.length];
+    const keyName = key.split('.').pop();
+
+    const existedProperty: ObjectProperty = parentObjectExpression.properties.find((property) => {
+        return property.type === 'ObjectProperty' && property.key.type === 'Identifier' && property.key.name === keyName;
+    }) as ObjectProperty;
+
+    if (existedProperty) {
+        if (!overwrite) {
+            return result;
+        }
+
+        const valueExpression = existedProperty.value;
+        
+    }
+};
+
+export const pushMemberToArrayCode = () => {};
