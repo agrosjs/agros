@@ -9,8 +9,8 @@ import _ from 'lodash';
 export const generateDecoratorCode = async (ast: t.Node): Promise<string> => {
     const CLASS_PLACEHOLDER = 'class AgrosPlaceholder {}';
     const eslintConfigPaths = [
-        path.resolve(process.cwd(), 'node_modules/@agros/config/eslint.project.config.js'),
-        path.resolve(__dirname, '../node_modules/@agros/config/eslint.project.config.js'),
+        path.resolve(process.cwd(), 'node_modules/@agros/config/.eslintrc.js'),
+        path.resolve(__dirname, '../node_modules/@agros/config/.eslintrc.js'),
     ];
     const currentProjectESLintConfig = cosmiconfigSync('eslint').search();
     const rawCode = generate(ast as any).code + '\n' + CLASS_PLACEHOLDER;

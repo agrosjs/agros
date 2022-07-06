@@ -8,7 +8,7 @@
         "README.md",
         "package.json",
         "package-lock.json",
-        "eslint.project.config.js"
+        ".eslintrc.js"
     ],
     "publishConfig": {
         "access": "public"
