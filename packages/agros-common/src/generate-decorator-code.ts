@@ -36,22 +36,3 @@ export const generateDecoratorCode = async (ast: t.Node): Promise<string> => {
     const codeLines = _.get(lintResultList, '[0].output').split(/\r|\n|\r\n/);
     return codeLines.slice(0, codeLines.indexOf(CLASS_PLACEHOLDER)).join('\n');
 };
-
-generateDecoratorCode(
-    t.decorator(
-        t.callExpression(
-            t.identifier('Module'),
-            [
-                t.objectExpression([
-                    t.objectProperty(
-                        t.identifier('imports'),
-                        t.arrayExpression([
-                            t.identifier('FooModule'),
-                            t.identifier('BarModule'),
-                        ]),
-                    ),
-                ]),
-            ],
-        ),
-    ),
-).then((res) => console.log(res));
