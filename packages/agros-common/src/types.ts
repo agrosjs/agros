@@ -4,7 +4,7 @@ import { Dirent } from 'fs';
 export interface PathDescriptor extends Omit<Dirent, 'name'> {
     relativePath: string;
     absolutePath: string;
-    aliasPath: string | null;
+    aliasPath: string;
     filename: string;
 }
 
