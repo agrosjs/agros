@@ -12,12 +12,12 @@ export const scanProjectEntities = (startPath = normalizeModulesPath()): EntityD
         return [];
     }
 
+    let moduleName: string;
     let currentResult: EntityDescriptor[] = [];
     const rawDirEntityNames: string[] = fs.readdirSync(startPath) || [];
     const moduleEntityNames = rawDirEntityNames.filter((rawDirEntityName) => {
         return getCollectionType(rawDirEntityName) === 'module';
     });
-    let moduleName: string;
 
     if (moduleEntityNames.length === 1) {
         moduleName = moduleEntityNames[0].split('.')[0];

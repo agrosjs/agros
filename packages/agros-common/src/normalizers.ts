@@ -27,9 +27,11 @@ export const normalizeAlias = (aliasKey: string) => {
 
     let result = aliasKey.replace(/\*\*(\/?)/gi, '');
 
-    if (!result.endsWith('/*')) {
+    if (result !== '*' && !result.endsWith('/*')) {
         result += '/*';
     }
 
     return result.replace(/\*/gi, '(.*)');
 };
+
+export const normalizeNoExtensionPath = (pathname: string) => pathname.split('.').slice(0, -1).join('.');

@@ -14,22 +14,8 @@ import {
     ProjectConfigParser,
 } from '@agros/config';
 import * as path from 'path';
-import { ObjectExpression } from '@babel/types';
 
 const projectConfigParser = new ProjectConfigParser();
-
-export type UpdateItem = {
-    line: number;
-    content: string;
-    deleteLines: number;
-    standalone?: boolean;
-} | {
-    line: number;
-    content: string;
-    deleteLines: number;
-    standalone: true;
-    column: number;
-};
 
 export const getPathDescriptorWithAlias = (pathname: string): PathDescriptor => {
     /**
@@ -76,7 +62,7 @@ export const getPathDescriptorWithAlias = (pathname: string): PathDescriptor => 
 
     return {
         relativePath: parsedRelativePath,
-        aliasPath: relativePath ? pathname : null,
+        aliasPath: getAliasedPath(absolutePath),
         absolutePath,
         filename: path.basename(absolutePath),
         isBlockDevice: statResult.isBlockDevice.bind(statResult),
@@ -123,11 +109,45 @@ export const matchAlias = (pathname: string): boolean => {
     return false;
 };
 
-export interface AddItemToObjectCodeOptions {
-    expression: ObjectExpression;
-    value: string;
-    key: string;
-    tabSize?: number;
-    startColumn?: number;
-    overwrite?: boolean;
-}
+export const getAliasedPath = (absolutePath: string): string => {
+    const alias = projectConfigParser.getConfig('alias') || {};
+    const srcAbsolutePath = normalizeSrcPath();
+
+    const aliasResultList = Object.keys(alias)
+        .map((aliasKey) => {
+            const normalizedAliasPath = normalizeAlias(alias[aliasKey]);
+            const aliasPathRegExp = new RegExp(normalizedAliasPath, 'gi');
+            const relativePath = path.relative(srcAbsolutePath, absolutePath);
+            const execResult = aliasPathRegExp.exec(relativePath);
+
+            if (
+                !aliasKey ||
+                !alias[aliasKey] ||
+                !execResult ||
+                execResult.length < 2
+            ) {
+                return null;
+            }
+
+            return {
+                relativePath,
+                aliasKey,
+                aliasValue: normalizeAlias(alias[aliasKey]),
+                matchedPart: execResult[1],
+            };
+        })
+        .filter((resultItem) => !!resultItem)
+        .sort((prev, next) => prev.matchedPart.length - next.matchedPart.length);
+
+    const aliasResult = aliasResultList.shift();
+
+    if (!aliasResult) {
+        return absolutePath;
+    }
+
+    const aliasKeyGlobPattern = parseGlob(aliasResult.aliasKey);
+
+    return aliasKeyGlobPattern.is.glob
+        ? path.join(aliasKeyGlobPattern.path.dirname, aliasResult.matchedPart)
+        : path.join(aliasResult.aliasKey, aliasResult.matchedPart);
+};
