@@ -7,7 +7,7 @@ import {
 import * as path from 'path';
 import parseGlob from 'parse-glob';
 
-export const transformPathToAliasedPath = (absolutePath: string): string => {
+export const transformPathToAliasedPath = (absolutePath: string, dirname = ''): string => {
     const projectConfigParser = new ProjectConfigParser();
     const alias = projectConfigParser.getConfig('alias') || {};
     const srcAbsolutePath = normalizeSrcPath();
@@ -41,7 +41,9 @@ export const transformPathToAliasedPath = (absolutePath: string): string => {
     const aliasResult = aliasResultList.shift();
 
     if (!aliasResult) {
-        return absolutePath;
+        return dirname
+            ? path.relative(dirname, absolutePath)
+            : absolutePath;
     }
 
     const aliasKeyGlobPattern = parseGlob(aliasResult.aliasKey);
