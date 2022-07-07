@@ -1,3 +1,4 @@
+import { parseAST } from '@agros/utils';
 import { ParseResult } from '@babel/parser';
 import {
     CallExpression as BabelCallExpression,
@@ -9,6 +10,10 @@ import {
     ImportSpecifier,
     Decorator as BabelDecorator,
 } from '@babel/types';
+import * as fs from 'fs-extra';
+import { transformAliasedPathToPath } from './transformers';
+import { matchAlias } from './utils';
+import * as path from 'path';
 
 export type ExportMode = 'default' | 'named' | 'namedIdentifier' | 'defaultIdentifier';
 export interface ClassExportItem {
@@ -136,4 +141,85 @@ export const detectDecorators = (tree: ParseResult<File>, name: string) => {
     });
 
     return decorators as Decorator[];
+};
+
+export interface ClassImportItem {
+    exportItem: ClassExportItem;
+    identifierName?: string;
+}
+
+export const detectImportedClass = (sourcePath: string, targetPath: string): ClassImportItem => {
+    const result: ClassImportItem = {
+        exportItem: null,
+        identifierName: null,
+    };
+
+    if (!fs.existsSync(sourcePath) || !fs.existsSync(targetPath)) {
+        return result;
+    }
+
+    const sourceAST = parseAST(fs.readFileSync(sourcePath).toString());
+    const targetAST = parseAST(fs.readFileSync(targetPath).toString());
+
+    const [exportedClassItem] = detectClassExports(sourceAST);
+    const {
+        exportMode,
+        exportedName,
+    } = exportedClassItem;
+    result.exportItem = exportedClassItem;
+
+    if (!exportedClassItem) {
+        return result;
+    }
+
+    for (const statement of targetAST.program.body) {
+        if (statement.type !== 'ImportDeclaration') {
+            continue;
+        }
+
+        const statementSource = statement.source.value;
+        const statementSourcePath = matchAlias(statementSource)
+            ? transformAliasedPathToPath(statementSource)
+            : path.resolve(path.dirname(targetPath), statementSource);
+
+        if (sourcePath !== statementSourcePath) {
+            continue;
+        }
+
+        const specifiers = statement.specifiers;
+
+        for (const specifier of specifiers) {
+            switch (specifier.type) {
+                case 'ImportDefaultSpecifier': {
+                    if (exportMode === 'named' || exportMode === 'namedIdentifier') {
+                        continue;
+                    }
+                    result.identifierName = specifier.local.name;
+                    return result;
+                }
+                case 'ImportNamespaceSpecifier': {
+                    const namespaceIdentifierName = specifier.local.name;
+                    if (exportMode === 'default' || exportMode === 'defaultIdentifier') {
+                        result.identifierName = namespaceIdentifierName;
+                        return result;
+                    } else if (exportedName) {
+                        result.identifierName = `${namespaceIdentifierName}.${exportedName}`;
+                        return result;
+                    }
+                    break;
+                }
+                case 'ImportSpecifier': {
+                    if (specifier.imported.type === 'Identifier' && specifier.imported.name === exportedName) {
+                        result.identifierName = specifier.local.name;
+                        return result;
+                    }
+                    break;
+                }
+                default:
+                    break;
+            }
+        }
+    }
+
+    return result;
 };
