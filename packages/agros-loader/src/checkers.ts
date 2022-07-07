@@ -1,12 +1,8 @@
 import {
     detectClassExports,
-    detectNamedImports,
+    detectDecorators,
     getCollectionType,
 } from '@agros/common';
-import {
-    CallExpression,
-    Identifier,
-} from '@babel/types';
 import {
     LoaderChecker,
     LoaderCheckerConfig,
@@ -31,19 +27,7 @@ export const checkModule = createChecker(
             throw new Error('A module file should have one named class export');
         }
 
-        const [moduleClass] = declaredClasses;
-        const decoratorImports = detectNamedImports(
-            tree,
-            'Module',
-            (source) => source.indexOf('@agros/app') !== -1,
-        );
-        const decorators = (moduleClass.declaration?.decorators || []).filter((decorator) => {
-            return decorator.expression.type === 'CallExpression' &&
-                decorator.expression.callee.type === 'Identifier' &&
-                decoratorImports.some((specifier) => {
-                    return specifier.local.name === ((decorator.expression as CallExpression).callee as Identifier).name;
-                });
-        });
+        const decorators = detectDecorators(tree, 'Module');
 
         if (decorators.length === 0) {
             throw new Error('A module class should call `Module` function as decorator');
@@ -64,19 +48,7 @@ export const checkService = createChecker(
             throw new Error('A service file should have one named class export');
         }
 
-        const [serviceClass] = declaredClasses;
-        const decoratorImports = detectNamedImports(
-            tree,
-            'Injectable',
-            (source) => source.indexOf('@agros/app') !== -1,
-        );
-        const decorators = (serviceClass.declaration?.decorators || []).filter((decorator) => {
-            return decorator.expression.type === 'CallExpression' &&
-                decorator.expression.callee.type === 'Identifier' &&
-                decoratorImports.some((specifier) => {
-                    return specifier.local.name === ((decorator.expression as CallExpression).callee as Identifier).name;
-                });
-        });
+        const decorators = detectDecorators(tree, 'Injectable');
 
         if (decorators.length === 0) {
             throw new Error('A service class should call `Injectable` function as decorator');

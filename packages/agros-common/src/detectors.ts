@@ -1,11 +1,13 @@
 import { ParseResult } from '@babel/parser';
 import {
+    CallExpression as BabelCallExpression,
     ClassDeclaration,
     ExportSpecifier,
     File,
     Identifier,
     ImportDeclaration,
     ImportSpecifier,
+    Decorator as BabelDecorator,
 } from '@babel/types';
 
 export type ExportMode = 'default' | 'named' | 'namedIdentifier' | 'defaultIdentifier';
@@ -16,6 +18,13 @@ export interface ClassExportItem {
     declarationIndex: number;
     localName?: string;
     exportedName?: string;
+}
+
+interface CallExpression extends BabelCallExpression {
+    callee: Identifier;
+}
+export interface Decorator extends BabelDecorator {
+    expression: CallExpression;
 }
 
 export const detectClassExports = (ast: ParseResult<File>): ClassExportItem[] => {
@@ -108,4 +117,23 @@ export const detectNamedImports = (
         }) as ImportSpecifier[];
         return result.concat(specifiers);
     }, [] as ImportSpecifier[]);
+};
+
+export const detectDecorators = (tree: ParseResult<File>, name: string) => {
+    const [exportedClass] = detectClassExports(tree);
+    const decoratorImports = detectNamedImports(
+        tree,
+        name,
+        (source) => source.indexOf('@agros/app') !== -1,
+    );
+
+    const decorators = (exportedClass.declaration?.decorators || []).filter((decorator) => {
+        return decorator.expression.type === 'CallExpression' &&
+            decorator.expression.callee.type === 'Identifier' &&
+            decoratorImports.some((specifier) => {
+                return specifier.local.name === ((decorator.expression as BabelCallExpression).callee as Identifier).name;
+            });
+    });
+
+    return decorators as Decorator[];
 };
