@@ -9,6 +9,7 @@ specifiers:
   '@typescript-eslint/eslint-plugin': ^5.30.5
   '@typescript-eslint/parser': ^5.30.5
   cosmiconfig: ^7.0.1
+  eslint-config-alloy: ^4.6.2
   fs-extra: ^10.1.0
   lodash: ^4.17.21
 
@@ -17,6 +18,7 @@ dependencies:
   '@typescript-eslint/eslint-plugin': 5.30.5_3y7hhuz2p6r2mwzpmdgmedpbby
   '@typescript-eslint/parser': 5.30.5
   cosmiconfig: 7.0.1
+  eslint-config-alloy: 4.6.2
   fs-extra: 10.1.0
   lodash: 4.17.21
 
@@ -556,6 +558,37 @@ packages:
   /escape-string-regexp/1.0.5:
     resolution: {integrity: sha512-vbRorB5FUQWvla16U8R/qgaFIya2qGzwDrNmCZuYKrbdSUMG6I1ZCGQRefkRVhuOkIGVne7BQ35DSfo1qvJqFg==}
     engines: {node: '>=0.8.0'}
+    dev: false
+
+  /eslint-config-alloy/4.6.2:
+    resolution: {integrity: sha512-mntO/1jazNIJJCb3mwtaH4D9uLnEIzI0EM2aYnllYVBmET0t490yBSLdPz+5cWtJsHU2DkW7aPI/kFtal9Vopg==}
+    peerDependencies:
+      '@babel/eslint-parser': 7.x
+      '@babel/preset-react': 7.x
+      '@typescript-eslint/eslint-plugin': '>=5.29.0'
+      '@typescript-eslint/parser': 5.x
+      eslint: '>=8.18.0'
+      eslint-plugin-react: '>=7.30.1'
+      eslint-plugin-vue: '>=9.1.1'
+      typescript: 4.x
+      vue-eslint-parser: 9.x
+    peerDependenciesMeta:
+      '@babel/eslint-parser':
+        optional: true
+      '@babel/preset-react':
+        optional: true
+      '@typescript-eslint/eslint-plugin':
+        optional: true
+      '@typescript-eslint/parser':
+        optional: true
+      eslint-plugin-react:
+        optional: true
+      eslint-plugin-vue:
+        optional: true
+      typescript:
+        optional: true
+      vue-eslint-parser:
+        optional: true
     dev: false
 
   /eslint-scope/5.1.1:

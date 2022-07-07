@@ -16,6 +16,10 @@ export const normalizeAbsolutePath = (pathname: string, dirname: string = normal
     return path.resolve(dirname, pathname);
 };
 
+export const normalizeRelativePath = (pathname: string, dirname: string = normalizeSrcPath()) => {
+    return path.relative(dirname, pathname);
+};
+
 export const normalizeModulesPath = () => {
     return path.resolve(normalizeSrcPath(), projectConfigParser.getConfig('modulesDir'));
 };

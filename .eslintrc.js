@@ -52,6 +52,9 @@ module.exports = {
             'max': 1,
             'maxEOF': 1,
         }],
+        'object-property-newline': ['error', {
+            'allowAllPropertiesOnSameLine': false,
+        }],
         '@typescript-eslint/semi': ['error', 'always'],
         '@typescript-eslint/space-infix-ops': ['error', {
             'int32Hint': true,

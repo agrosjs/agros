@@ -18,6 +18,8 @@
         "build": "rimraf ./lib && tsc --build tsconfig.json",
         "watch": "tsc --watch --project tsconfig.json",
         "pretest": "npm run lint",
+        "lint-file": "node ./scripts/lint-file.js",
+        "prepublish": "npm run lint-file",
         "test": "exit 0"
     },
     "repository": {
@@ -49,6 +51,7 @@
         "@typescript-eslint/eslint-plugin": "^5.30.5",
         "@typescript-eslint/parser": "^5.30.5",
         "cosmiconfig": "^7.0.1",
+        "eslint-config-alloy": "^4.6.2",
         "fs-extra": "^10.1.0",
         "lodash": "^4.17.21"
     }
