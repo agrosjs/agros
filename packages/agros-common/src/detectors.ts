@@ -182,7 +182,7 @@ export const detectImportedClass = (sourcePath: string, targetPath: string): Cla
             ? transformAliasedPathToPath(statementSource)
             : path.resolve(path.dirname(targetPath), statementSource);
 
-        if (sourcePath !== statementSourcePath) {
+        if (sourcePath.split('.').slice(0, -1).join('.') !== statementSourcePath) {
             continue;
         }
 
@@ -191,20 +191,17 @@ export const detectImportedClass = (sourcePath: string, targetPath: string): Cla
         for (const specifier of specifiers) {
             switch (specifier.type) {
                 case 'ImportDefaultSpecifier': {
-                    if (exportMode === 'named' || exportMode === 'namedIdentifier') {
-                        continue;
+                    if (exportMode === 'default' || exportMode === 'defaultIdentifier') {
+                        result.identifierName = specifier.local.name;
                     }
-                    result.identifierName = specifier.local.name;
-                    return result;
+                    break;
                 }
                 case 'ImportNamespaceSpecifier': {
                     const namespaceIdentifierName = specifier.local.name;
                     if (exportMode === 'default' || exportMode === 'defaultIdentifier') {
                         result.identifierName = namespaceIdentifierName;
-                        return result;
                     } else if (exportedName) {
                         result.identifierName = `${namespaceIdentifierName}.${exportedName}`;
-                        return result;
                     }
                     break;
                 }
