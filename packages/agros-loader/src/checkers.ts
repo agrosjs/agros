@@ -52,3 +52,36 @@ export const checkModule = createChecker(
         }
     },
 );
+
+export const checkService = createChecker(
+    ({ context }) => getCollectionType(context.resourcePath) === 'service',
+    ({ tree }) => {
+        const declaredClasses = detectClassExports(tree);
+
+        if (declaredClasses.length > 1) {
+            throw new Error('Service files should have only one named class export');
+        } else if (declaredClasses.length === 0) {
+            throw new Error('A service file should have one named class export');
+        }
+
+        const [serviceClass] = declaredClasses;
+        const decoratorImports = detectNamedImports(
+            tree,
+            'Injectable',
+            (source) => source.indexOf('@agros/app') !== -1,
+        );
+        const decorators = (serviceClass.declaration?.decorators || []).filter((decorator) => {
+            return decorator.expression.type === 'CallExpression' &&
+                decorator.expression.callee.type === 'Identifier' &&
+                decoratorImports.some((specifier) => {
+                    return specifier.local.name === ((decorator.expression as CallExpression).callee as Identifier).name;
+                });
+        });
+
+        if (decorators.length === 0) {
+            throw new Error('A service class should call `Injectable` function as decorator');
+        } else if (decorators.length > 1) {
+            throw new Error('A service should only call `Injectable` function once');
+        }
+    },
+);

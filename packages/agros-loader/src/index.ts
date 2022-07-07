@@ -16,7 +16,10 @@ import {
 import generate from '@babel/generator';
 import _ from 'lodash';
 import { LoaderContext } from 'webpack';
-import { checkModule } from './checkers';
+import {
+    checkModule,
+    checkService,
+} from './checkers';
 
 const transform = (source: string, context: LoaderContext<{}>, ...transformers: LoaderTransformerConfig[]) => {
     const configParser = new ProjectConfigParser();
@@ -84,6 +87,7 @@ export default function(source) {
         source,
         this,
         checkModule,
+        checkService,
     );
 
     const newAST = transform(
