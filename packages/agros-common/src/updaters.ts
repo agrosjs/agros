@@ -18,15 +18,16 @@ export const updateImportedModuleToModule = async (
     sourceDescriptor: EntityDescriptor,
     targetDescriptor: EntityDescriptor,
 ): Promise<UpdateItem[]> => {
-    if (!fs.existsSync(sourceDescriptor.absolutePath)) {
-        throw new Error(`Source module '${sourceDescriptor.entityName}' does not exist`);
-    }
-
-    if (!fs.existsSync(targetDescriptor.absolutePath)) {
-        throw new Error(`Target module '${targetDescriptor.entityName}' does not exist`);
-    }
-
     const result: UpdateItem[] = [];
+
+    if (
+        sourceDescriptor.collectionType !== 'module' ||
+            targetDescriptor.collectionType !== 'module' ||
+            !fs.existsSync(sourceDescriptor.absolutePath) ||
+            !fs.existsSync(targetDescriptor.absolutePath)
+    ) {
+        return result;
+    }
 
     const importedClass = await detectImportedClass(
         sourceDescriptor.absolutePath,
@@ -88,27 +89,31 @@ export const updateImportedModuleToModule = async (
         return result;
     }
 
-    let importsProperty: t.ObjectProperty = argument.properties.find((property) => {
-        return property.type === 'ObjectProperty' && (
-            (property.key.type === 'Identifier' && property.key.name === 'imports') ||
-            (property.key.type === 'StringLiteral' && property.key.value === 'imports')
-        ) && property.value.type === 'ArrayExpression';
-    }) as t.ObjectProperty;
+    const decoratorProperties = ['imports', 'exports'];
 
-    if (!importsProperty) {
-        importsProperty = t.objectProperty(
-            t.identifier('imports'),
-            t.arrayExpression([]),
-        );
-        argument.properties.push(importsProperty);
-    }
+    for (const decoratorProperty of decoratorProperties) {
+        let property: t.ObjectProperty = argument.properties.find((property) => {
+            return property.type === 'ObjectProperty' && (
+                (property.key.type === 'Identifier' && property.key.name === decoratorProperty) ||
+                (property.key.type === 'StringLiteral' && property.key.value === decoratorProperty)
+            ) && property.value.type === 'ArrayExpression';
+        }) as t.ObjectProperty;
 
-    if (
-        !(importsProperty.value as t.ArrayExpression).elements.some((element) => {
-            return element.type === 'Identifier' && element.name === identifierName;
-        })
-    ) {
-        (importsProperty.value as t.ArrayExpression).elements.push(t.identifier(identifierName));
+        if (!property) {
+            property = t.objectProperty(
+                t.identifier(decoratorProperty),
+                t.arrayExpression([]),
+            );
+            argument.properties.push(property);
+        }
+
+        if (
+            !(property.value as t.ArrayExpression).elements.some((element) => {
+                return element.type === 'Identifier' && element.name === identifierName;
+            })
+        ) {
+            (property.value as t.ArrayExpression).elements.push(t.identifier(identifierName));
+        }
     }
 
     const decoratorCode = await generateDecoratorCode(decorator);
@@ -122,3 +127,12 @@ export const updateImportedModuleToModule = async (
 
     return result;
 };
+
+export const updateImportedServiceToService = async (
+    sourceDescriptor: EntityDescriptor,
+    targetDescriptor: EntityDescriptor,
+) => {
+
+};
+
+export const updateImportedComponentOrServiceToComponent = async () => {};

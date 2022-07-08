@@ -1,6 +1,7 @@
-import * as path from 'path';
-import fs from 'fs-extra';
-// import { getComponentGetDeclarationsUpdateLocation } from '../detectors';
+import { updateImportedModuleToModule } from '../updaters';
+import { getEntityDescriptorWithAlias } from '../utils';
 
-const absolutePath = path.resolve(__dirname, process.argv[2] + '.example');
-// console.log(getComponentGetDeclarationsUpdateLocation(fs.readFileSync(absolutePath).toString()));
+updateImportedModuleToModule(
+    getEntityDescriptorWithAlias('/Users/lenconda/workspace/agros/packages/agros-example/src/modules/foo/foo.module.ts'),
+    getEntityDescriptorWithAlias('/Users/lenconda/workspace/agros/packages/agros-example/src/modules/lorem/lorem.module.ts'),
+).then((res) => console.log(res));
