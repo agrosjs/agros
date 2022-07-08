@@ -11,9 +11,14 @@ import {
     Decorator as BabelDecorator,
 } from '@babel/types';
 import * as fs from 'fs-extra';
-import { transformAliasedPathToPath } from './transformers';
+import {
+    transformAliasedPathToPath,
+    transformPathToAliasedPath,
+} from './transformers';
 import { matchAlias } from './utils';
 import * as path from 'path';
+import { normalizeNoExtensionPath } from './normalizers';
+import _ from 'lodash';
 
 export type ExportMode = 'default' | 'named' | 'namedIdentifier' | 'defaultIdentifier';
 export interface ClassExportItem {
@@ -144,17 +149,22 @@ export const detectDecorators = (tree: ParseResult<File>, name: string) => {
 };
 
 export interface ClassImportItem {
+    imported: boolean;
     exportItem: ClassExportItem;
-    identifierName?: string;
+    identifierName: string;
+    sourceLiteralValue?: string;
+    importLiteralValue?: string;
 }
 
 export const detectImportedClass = (sourcePath: string, targetPath: string): ClassImportItem => {
     const result: ClassImportItem = {
+        imported: true,
         exportItem: null,
         identifierName: null,
     };
 
     if (!fs.existsSync(sourcePath) || !fs.existsSync(targetPath)) {
+        result.imported = false;
         return result;
     }
 
@@ -169,6 +179,7 @@ export const detectImportedClass = (sourcePath: string, targetPath: string): Cla
     result.exportItem = exportedClassItem;
 
     if (!exportedClassItem) {
+        result.imported = false;
         return result;
     }
 
@@ -182,7 +193,7 @@ export const detectImportedClass = (sourcePath: string, targetPath: string): Cla
             ? transformAliasedPathToPath(statementSource)
             : path.resolve(path.dirname(targetPath), statementSource);
 
-        if (sourcePath.split('.').slice(0, -1).join('.') !== statementSourcePath) {
+        if (normalizeNoExtensionPath(sourcePath) !== statementSourcePath) {
             continue;
         }
 
@@ -208,7 +219,6 @@ export const detectImportedClass = (sourcePath: string, targetPath: string): Cla
                 case 'ImportSpecifier': {
                     if (specifier.imported.type === 'Identifier' && specifier.imported.name === exportedName) {
                         result.identifierName = specifier.local.name;
-                        return result;
                     }
                     break;
                 }
@@ -216,6 +226,28 @@ export const detectImportedClass = (sourcePath: string, targetPath: string): Cla
                     break;
             }
         }
+    }
+
+    result.imported = false;
+    result.sourceLiteralValue = normalizeNoExtensionPath(
+        transformPathToAliasedPath(sourcePath, path.dirname(targetPath)),
+    );
+
+    switch (exportMode) {
+        case 'named':
+        case 'namedIdentifier': {
+            result.identifierName = exportedName;
+            result.importLiteralValue = `import { ${result.identifierName} } from '${result.sourceLiteralValue}'`;
+            break;
+        }
+        case 'default':
+        case 'defaultIdentifier': {
+            result.identifierName = _.startCase(path.basename(normalizeNoExtensionPath(sourcePath))).split(/\s+/).join('');
+            result.importLiteralValue = `import ${result.identifierName} from '${result.sourceLiteralValue}'`;
+            break;
+        }
+        default:
+            break;
     }
 
     return result;
