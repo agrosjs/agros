@@ -6,6 +6,7 @@ export interface LoaderGuardData {
     srcPath: string;
     parsedQuery: Record<string, any>;
     context: LoaderContext<{}>;
+    modulesPath: string;
 }
 
 export interface LoaderTransformerData extends LoaderGuardData {

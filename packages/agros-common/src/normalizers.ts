@@ -38,4 +38,18 @@ export const normalizeAlias = (aliasKey: string) => {
     return result.replace(/\*/gi, '(.*)');
 };
 
+export const normalizeCollectionPattern = (pattern: string) => {
+    if (!pattern) {
+        return '';
+    }
+
+    let result = pattern.replace(/\*\*(\/?)/gi, '').replace('*', '(.*)');
+
+    if (!result.startsWith('(.*).')) {
+        result = '(.*).' + result;
+    }
+
+    return result;
+};
+
 export const normalizeNoExtensionPath = (pathname: string) => pathname.split('.').slice(0, -1).join('.');

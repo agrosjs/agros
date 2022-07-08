@@ -9,6 +9,7 @@ import {
 } from './types';
 import {
     normalizeAlias,
+    normalizeCollectionPattern,
     normalizeModulesPath,
     normalizeNoExtensionPath,
     normalizeRelativePath,
@@ -64,7 +65,7 @@ export const getEntityDescriptorWithAlias = (pathname: string): EntityDescriptor
         return null;
     }
 
-    const moduleName = moduleFileName.split('.')[0];
+    const moduleName = getFileEntityIdentifier(moduleFileName);
     const pathDescriptor = getPathDescriptorWithAlias(pathname);
     const modulePrefixName = path.relative(normalizeModulesPath(), path.dirname(pathname))
         .split(path.sep)
@@ -84,7 +85,7 @@ export const getCollectionType = (pathname: string): CollectionType => {
     const collectionMap = projectConfigParser.getConfig('collection');
     for (const collectionType of Object.keys(collectionMap)) {
         for (const filenamePattern of collectionMap[collectionType]) {
-            const matchResult = new RegExp(`${filenamePattern.replace('*', '(.*)')}$`).exec(pathname);
+            const matchResult = new RegExp(`${normalizeCollectionPattern(filenamePattern)}$`).exec(pathname);
             if (matchResult && matchResult.length > 1) {
                 return collectionType as CollectionType;
             }
@@ -112,4 +113,32 @@ export const matchAlias = (pathname: string): boolean => {
         }
     }
     return false;
+};
+
+export const getFileEntityIdentifier = (pathname: string) => {
+    const basename = path.basename(pathname);
+    const collectionType = getCollectionType(pathname);
+
+    let identifier = basename.split('.')[0];
+
+    if (!collectionType) {
+        return identifier;
+    }
+
+    const patterns = projectConfigParser.getConfig(`collection.${collectionType}`);
+
+    if (!patterns || !Array.isArray(patterns) || patterns.length === 0) {
+        return identifier;
+    }
+
+    for (const pattern of patterns) {
+        const execResult = new RegExp(normalizeCollectionPattern(pattern) + '$').exec(basename);
+        if (!execResult || !execResult[1]) {
+            continue;
+        }
+        identifier = execResult[1];
+        break;
+    }
+
+    return identifier;
 };

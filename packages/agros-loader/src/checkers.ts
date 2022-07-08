@@ -2,12 +2,14 @@ import {
     detectClassExports,
     detectDecorators,
     getCollectionType,
+    getFileEntityIdentifier,
 } from '@agros/common';
 import {
     LoaderChecker,
     LoaderCheckerConfig,
     LoaderGuard,
 } from './types';
+import * as path from 'path';
 
 const createChecker = (guard: LoaderGuard, checker: LoaderChecker): LoaderCheckerConfig => {
     return {
@@ -18,8 +20,18 @@ const createChecker = (guard: LoaderGuard, checker: LoaderChecker): LoaderChecke
 
 export const checkModule = createChecker(
     ({ context }) => getCollectionType(context.resourcePath) === 'module',
-    ({ tree }) => {
+    ({
+        tree,
+        context,
+        srcPath,
+    }) => {
         const declaredClasses = detectClassExports(tree);
+        const moduleName = getFileEntityIdentifier(context.resourcePath);
+        const dirname = path.basename(path.dirname(context.resourcePath));
+
+        if (path.dirname(context.resourcePath) !== srcPath && moduleName !== dirname) {
+            throw new Error(`Module file '${path.basename(context.resourcePath)}' should match its directory name '${dirname}'`);
+        }
 
         if (declaredClasses.length > 1) {
             throw new Error('Module files should have only one named class export');

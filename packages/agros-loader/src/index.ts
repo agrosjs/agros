@@ -1,6 +1,4 @@
 /* eslint-disable @typescript-eslint/no-invalid-this */
-import * as path from 'path';
-import { ProjectConfigParser } from '@agros/config';
 import { parseAST } from '@agros/utils';
 import qs from 'qs';
 import {
@@ -20,15 +18,18 @@ import {
     checkModule,
     checkService,
 } from './checkers';
+import {
+    normalizeModulesPath,
+    normalizeSrcPath,
+} from '@agros/common';
 
 const transform = (source: string, context: LoaderContext<{}>, ...transformers: LoaderTransformerConfig[]) => {
-    const configParser = new ProjectConfigParser();
-    const srcPath = path.resolve(process.cwd(), configParser.getConfig('baseDir'));
     const parsedQuery = qs.parse((context.resourceQuery || '').replace(/^\?/, '')) || {};
     const guardData: LoaderGuardData = {
         context,
         parsedQuery,
-        srcPath,
+        srcPath: normalizeSrcPath(),
+        modulesPath: normalizeModulesPath(),
     };
     const matchedTransformerConfigs = (transformers || []).filter((transformerConfig) => {
         return transformerConfig.guard(guardData);
@@ -51,13 +52,12 @@ const transform = (source: string, context: LoaderContext<{}>, ...transformers: 
 };
 
 const check = (source: string, context: LoaderContext<{}>, ...checkers: LoaderCheckerConfig[]) => {
-    const configParser = new ProjectConfigParser();
-    const srcPath = path.resolve(process.cwd(), configParser.getConfig('baseDir'));
     const parsedQuery = qs.parse((context.resourceQuery || '').replace(/^\?/, '')) || {};
     const guardData: LoaderGuardData = {
         context,
         parsedQuery,
-        srcPath,
+        srcPath: normalizeSrcPath(),
+        modulesPath: normalizeModulesPath(),
     };
     const tree = parseAST(source);
     const matchedCheckerConfigs = (checkers || []).filter((checkerConfig) => {

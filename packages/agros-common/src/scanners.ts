@@ -5,6 +5,7 @@ import { EntityDescriptor } from './types';
 import {
     getCollectionType,
     getEntityDescriptorWithAlias,
+    getFileEntityIdentifier,
 } from './utils';
 
 export const scanProjectEntities = (startPath = normalizeModulesPath()): EntityDescriptor[] => {
@@ -20,13 +21,13 @@ export const scanProjectEntities = (startPath = normalizeModulesPath()): EntityD
     });
 
     if (moduleEntityNames.length === 1) {
-        moduleName = moduleEntityNames[0].split('.')[0];
+        moduleName = getFileEntityIdentifier(moduleEntityNames[0]);
     } else {
         const moduleEntityName = moduleEntityNames.find((moduleEntityName) => {
-            return moduleEntityName.split('.')[0] === path.basename(startPath);
+            return getFileEntityIdentifier(moduleEntityName) === path.basename(startPath);
         });
         if (moduleEntityName) {
-            moduleName = moduleEntityName.split('.')[0];
+            moduleName = getFileEntityIdentifier(moduleEntityName);
         }
     }
 

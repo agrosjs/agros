@@ -13,6 +13,7 @@ import {
 import { RootPointDescriptor } from './types';
 import {
     getCollectionType,
+    getFileEntityIdentifier,
     getPathDescriptorWithAlias,
 } from './utils';
 
@@ -132,7 +133,7 @@ export const parseRootPoints = (entryPathname = 'index.ts'): RootPointDescriptor
             exportName,
             name: relativeDirname
                 .split(path.sep)
-                .concat(baseFilename.split('.')[0])
+                .concat(getFileEntityIdentifier(baseFilename))
                 .join('/'),
         };
     });
