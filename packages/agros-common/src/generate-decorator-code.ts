@@ -33,6 +33,6 @@ export const generateDecoratorCode = async (ast: t.Node): Promise<string> => {
 
     const lintResultList = await eslint.lintText(rawCode);
 
-    const codeLines = _.get(lintResultList, '[0].output').split(/\r|\n|\r\n/);
+    const codeLines = (_.get(lintResultList, '[0].output') || rawCode).split(/\r|\n|\r\n/);
     return codeLines.slice(0, codeLines.indexOf(CLASS_PLACEHOLDER)).join('\n');
 };
