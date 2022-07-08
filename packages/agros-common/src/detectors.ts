@@ -15,7 +15,10 @@ import {
     transformAliasedPathToPath,
     transformPathToAliasedPath,
 } from './transformers';
-import { matchAlias } from './utils';
+import {
+    lintCode,
+    matchAlias,
+} from './utils';
 import * as path from 'path';
 import { normalizeNoExtensionPath } from './normalizers';
 import _ from 'lodash';
@@ -156,7 +159,7 @@ export interface ClassImportItem {
     importLiteralValue?: string;
 }
 
-export const detectImportedClass = (sourcePath: string, targetPath: string): ClassImportItem => {
+export const detectImportedClass = async (sourcePath: string, targetPath: string): Promise<ClassImportItem> => {
     const result: ClassImportItem = {
         imported: true,
         exportItem: null,
@@ -237,17 +240,21 @@ export const detectImportedClass = (sourcePath: string, targetPath: string): Cla
         case 'named':
         case 'namedIdentifier': {
             result.identifierName = exportedName;
-            result.importLiteralValue = `import { ${result.identifierName} } from '${result.sourceLiteralValue}'`;
+            result.importLiteralValue = `import { ${result.identifierName} } from '${result.sourceLiteralValue}';`;
             break;
         }
         case 'default':
         case 'defaultIdentifier': {
             result.identifierName = _.startCase(path.basename(normalizeNoExtensionPath(sourcePath))).split(/\s+/).join('');
-            result.importLiteralValue = `import ${result.identifierName} from '${result.sourceLiteralValue}'`;
+            result.importLiteralValue = `import ${result.identifierName} from '${result.sourceLiteralValue}';`;
             break;
         }
         default:
             break;
+    }
+
+    if (result.importLiteralValue) {
+        result.importLiteralValue = (await lintCode(result.importLiteralValue)).replace(/(\r|\n|\r\n)$/, '');
     }
 
     return result;

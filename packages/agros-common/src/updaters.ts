@@ -28,7 +28,7 @@ export const updateImportedModuleToModule = async (
 
     const result: UpdateItem[] = [];
 
-    const importedClass = detectImportedClass(
+    const importedClass = await detectImportedClass(
         sourceDescriptor.absolutePath,
         targetDescriptor.absolutePath,
     );
