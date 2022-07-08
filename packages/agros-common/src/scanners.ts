@@ -4,7 +4,7 @@ import { normalizeModulesPath } from './normalizers';
 import { EntityDescriptor } from './types';
 import {
     getCollectionType,
-    getPathDescriptorWithAlias,
+    getEntityDescriptorWithAlias,
 } from './utils';
 
 export const scanProjectEntities = (startPath = normalizeModulesPath()): EntityDescriptor[] => {
@@ -36,30 +36,18 @@ export const scanProjectEntities = (startPath = normalizeModulesPath()): EntityD
 
     for (const rawDirEntityName of rawDirEntityNames) {
         const absolutePath = path.resolve(startPath, rawDirEntityName);
-        const collectionType = getCollectionType(absolutePath);
-        const pathDescriptor = getPathDescriptorWithAlias(absolutePath);
-        const modulePrefixName = path.relative(normalizeModulesPath(), path.dirname(absolutePath))
-            .split(path.sep)
-            .slice(0, -1)
-            .join('.') || '';
+        const entityDescriptor = getEntityDescriptorWithAlias(absolutePath);
 
-        if (pathDescriptor.isDirectory()) {
+        if (fs.statSync(absolutePath).isDirectory()) {
             currentResult = currentResult.concat(scanProjectEntities(path.resolve(startPath, rawDirEntityName)));
             continue;
         }
 
-        if (!collectionType) {
+        if (!entityDescriptor) {
             continue;
         }
 
-        const entityName = rawDirEntityName.split('.').slice(0, -1).join('.');
-
-        currentResult = currentResult.concat({
-            ...pathDescriptor,
-            entityName,
-            collectionType,
-            moduleName: `${modulePrefixName ? modulePrefixName + '.' : ''}${moduleName}`,
-        });
+        currentResult = currentResult.concat(entityDescriptor);
     }
 
     return currentResult;

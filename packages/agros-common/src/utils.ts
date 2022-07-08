@@ -1,10 +1,16 @@
 import {
     statSync,
     existsSync,
+    readdirSync,
 } from 'fs';
-import { PathDescriptor } from './types';
+import {
+    EntityDescriptor,
+    PathDescriptor,
+} from './types';
 import {
     normalizeAlias,
+    normalizeModulesPath,
+    normalizeNoExtensionPath,
     normalizeRelativePath,
 } from './normalizers';
 import {
@@ -40,6 +46,37 @@ export const getPathDescriptorWithAlias = (pathname: string): PathDescriptor => 
         isFile: statResult.isFile.bind(statResult),
         isSocket: statResult.isSocket.bind(statResult),
         isSymbolicLink: statResult.isSymbolicLink.bind(statResult),
+    };
+};
+
+export const getEntityDescriptorWithAlias = (pathname: string): EntityDescriptor => {
+    const collectionType = getCollectionType(pathname);
+
+    if (!collectionType) {
+        return null;
+    }
+
+    const moduleFileName = readdirSync(path.dirname(pathname)).find((filename) => {
+        return getCollectionType(path.resolve(path.dirname(pathname), filename)) === 'module';
+    });
+
+    if (!moduleFileName) {
+        return null;
+    }
+
+    const moduleName = moduleFileName.split('.')[0];
+    const pathDescriptor = getPathDescriptorWithAlias(pathname);
+    const modulePrefixName = path.relative(normalizeModulesPath(), path.dirname(pathname))
+        .split(path.sep)
+        .slice(0, -1)
+        .join('.') || '';
+    const entityName = normalizeNoExtensionPath(path.basename(pathname));
+
+    return {
+        ...pathDescriptor,
+        entityName,
+        collectionType,
+        moduleName: `${modulePrefixName ? modulePrefixName + '.' : ''}${moduleName}`,
     };
 };
 
