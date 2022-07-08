@@ -23,13 +23,13 @@ export const checkModule = createChecker(
     ({
         tree,
         context,
-        srcPath,
+        modulesPath,
     }) => {
         const declaredClasses = detectClassExports(tree);
         const moduleName = getFileEntityIdentifier(context.resourcePath);
         const dirname = path.basename(path.dirname(context.resourcePath));
 
-        if (path.dirname(context.resourcePath) !== srcPath && moduleName !== dirname) {
+        if (path.dirname(context.resourcePath).startsWith(modulesPath) && moduleName !== dirname) {
             throw new Error(`Module file '${path.basename(context.resourcePath)}' should match its directory name '${dirname}'`);
         }
 
