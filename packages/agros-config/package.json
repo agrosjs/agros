@@ -20,6 +20,7 @@
         "pretest": "npm run lint",
         "lint-file": "node ./scripts/lint-file.js",
         "prepublish": "npm run lint-file",
+        "postpublish": "rimraf ./.eslintrc.js",
         "test": "exit 0"
     },
     "repository": {
