@@ -16,12 +16,12 @@ import {
     transformPathToAliasedPath,
 } from './transformers';
 import {
-    lintCode,
     matchAlias,
 } from './utils';
 import * as path from 'path';
 import { normalizeNoExtensionPath } from './normalizers';
 import _ from 'lodash';
+import { lintCode } from './linters';
 
 export type ExportMode = 'default' | 'named' | 'namedIdentifier' | 'defaultIdentifier';
 export interface ClassExportItem {

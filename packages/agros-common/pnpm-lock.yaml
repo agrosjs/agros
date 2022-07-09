@@ -10,11 +10,13 @@ specifiers:
   '@types/eslint': ^8.4.5
   '@types/fs-extra': ^9.0.13
   '@types/lodash': ^4.14.182
+  '@types/prettier': ^2.6.3
   cosmiconfig: ^7.0.1
   eslint: ^8.19.0
   fs-extra: ^10.1.0
   lodash: ^4.17.21
   parse-glob: ^3.0.4
+  prettier: ^2.7.1
 
 dependencies:
   '@agros/config': link:../agros-config
@@ -27,12 +29,14 @@ dependencies:
   fs-extra: 10.1.0
   lodash: 4.17.21
   parse-glob: 3.0.4
+  prettier: 2.7.1
 
 devDependencies:
   '@types/babel__generator': 7.6.4
   '@types/eslint': 8.4.5
   '@types/fs-extra': 9.0.13
   '@types/lodash': 4.14.182
+  '@types/prettier': 2.6.3
 
 packages:
 
@@ -193,6 +197,10 @@ packages:
   /@types/parse-json/4.0.0:
     resolution: {integrity: sha512-//oorEZjL6sbPcKUaCdIGlIUeH26mgzimjBB77G6XRgnDl/L5wOnpyBGRe/Mmf5CVW3PwEBE1NjiMZ/ssFh4wA==}
     dev: false
+
+  /@types/prettier/2.6.3:
+    resolution: {integrity: sha512-ymZk3LEC/fsut+/Q5qejp6R9O1rMxz3XaRHDV6kX8MrGAhOSPqVARbDi+EZvInBpw+BnCX3TD240byVkOfQsHg==}
+    dev: true
 
   /acorn-jsx/5.3.2_acorn@8.7.1:
     resolution: {integrity: sha512-rq9s+JNhf0IChjtDXxllJ7g41oZk5SlXtp0LHwyA5cejwn7vKmKp4pPri6YEePv2PU65sAsegbXtIinmDFDXgQ==}
@@ -763,6 +771,12 @@ packages:
   /prelude-ls/1.2.1:
     resolution: {integrity: sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==}
     engines: {node: '>= 0.8.0'}
+    dev: false
+
+  /prettier/2.7.1:
+    resolution: {integrity: sha512-ujppO+MkdPqoVINuDFDRLClm7D78qbDt0/NR+wp5FqEZOoTNAjPHWj17QRhu7geIHJfcNhRk1XVQmF8Bp3ye+g==}
+    engines: {node: '>=10.13.0'}
+    hasBin: true
     dev: false
 
   /punycode/2.1.1:
