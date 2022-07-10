@@ -161,13 +161,12 @@ export interface ClassImportItem {
 
 export const detectImportedClass = async (sourcePath: string, targetPath: string): Promise<ClassImportItem> => {
     const result: ClassImportItem = {
-        imported: true,
+        imported: false,
         exportItem: null,
         identifierName: null,
     };
 
     if (!fs.existsSync(sourcePath) || !fs.existsSync(targetPath)) {
-        result.imported = false;
         return result;
     }
 
@@ -182,7 +181,6 @@ export const detectImportedClass = async (sourcePath: string, targetPath: string
     result.exportItem = exportedClassItem;
 
     if (!exportedClassItem) {
-        result.imported = false;
         return result;
     }
 
@@ -208,6 +206,7 @@ export const detectImportedClass = async (sourcePath: string, targetPath: string
                     if (exportMode === 'default' || exportMode === 'defaultIdentifier') {
                         result.identifierName = specifier.local.name;
                     }
+                    result.imported = true;
                     break;
                 }
                 case 'ImportNamespaceSpecifier': {
@@ -217,12 +216,14 @@ export const detectImportedClass = async (sourcePath: string, targetPath: string
                     } else if (exportedName) {
                         result.identifierName = `${namespaceIdentifierName}.${exportedName}`;
                     }
+                    result.imported = true;
                     break;
                 }
                 case 'ImportSpecifier': {
                     if (specifier.imported.type === 'Identifier' && specifier.imported.name === exportedName) {
                         result.identifierName = specifier.local.name;
                     }
+                    result.imported = true;
                     break;
                 }
                 default:
@@ -231,10 +232,9 @@ export const detectImportedClass = async (sourcePath: string, targetPath: string
         }
     }
 
-    result.imported = false;
-    result.sourceLiteralValue = normalizeNoExtensionPath(
-        transformPathToAliasedPath(sourcePath, path.dirname(targetPath)),
-    );
+    if (!result.imported) {
+        result.sourceLiteralValue = normalizeNoExtensionPath(transformPathToAliasedPath(sourcePath, path.dirname(targetPath)));
+    }
 
     switch (exportMode) {
         case 'named':

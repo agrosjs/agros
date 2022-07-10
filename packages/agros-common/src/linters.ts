@@ -28,6 +28,9 @@ export const lintCode = async (
             rules: {
                 'array-element-newline': ['error', 'always'],
                 'array-bracket-newline': ['error', 'always'],
+                'object-curly-newline': ['error', { minProperties: 2 }],
+                'object-curly-spacing': ['error', 'always'],
+                'object-property-newline': ['error', { allowAllPropertiesOnSameLine: false }],
                 'no-undef': 'off',
                 'no-unused-vars': 'off',
             },
