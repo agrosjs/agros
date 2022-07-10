@@ -35,7 +35,5 @@ export const generateConstructorCode = async (ast: t.Node): Promise<string> => {
         sliceIndexes[1] = constructorSegment.loc?.end.line || sliceIndexes[1];
     }
 
-    console.log(lintedCodeLines, sliceIndexes);
-
     return lintedCodeLines.slice(...sliceIndexes).join('\n');
 };
