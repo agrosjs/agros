@@ -23,6 +23,8 @@ import {
     transformAliasedPathToPath,
     transformPathToAliasedPath,
 } from './transformers';
+import { cosmiconfigSync } from 'cosmiconfig';
+import _ from 'lodash';
 
 const projectConfigParser = new ProjectConfigParser();
 
@@ -141,4 +143,22 @@ export const getFileEntityIdentifier = (pathname: string) => {
     }
 
     return identifier;
+};
+
+export const getESLintIndentSize = (eslintPath = process.cwd()) => {
+    const { config = {} } = cosmiconfigSync('eslint').search(eslintPath) || {};
+    let tabWidth = 2;
+    const indentRule = _.get(config, 'rules.indent') || _.get(config, 'rules["@typescript-eslint/indent"]');
+
+    if (!indentRule) {
+        return tabWidth;
+    }
+
+    if (Array.isArray(indentRule)) {
+        tabWidth = indentRule[1];
+    } else if (typeof indentRule === 'number') {
+        tabWidth = indentRule;
+    }
+
+    return tabWidth;
 };

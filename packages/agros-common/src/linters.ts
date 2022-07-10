@@ -3,8 +3,10 @@ import { ESLint } from 'eslint';
 import _ from 'lodash';
 import * as path from 'path';
 import * as fs from 'fs';
+import prettier from 'prettier';
+import { getESLintIndentSize } from './utils';
 
-export type LinterPlugin = (code: string) => Promise<string>;
+export type LinterPlugin = (code: string, fromPath: string) => Promise<string>;
 
 export const lintCode = async (
     code: string,
@@ -32,8 +34,25 @@ export const lintCode = async (
         },
         fix: true,
     });
+    let rawCode: string = code;
 
-    const lintResultList = await eslint.lintText(code);
+    for (const prePlugin of prePlugins) {
+        rawCode = await prePlugin(rawCode, eslintConfigFilePath);
+    }
 
-    return _.get(lintResultList, '[0].output') || code;
+    rawCode = _.get(await eslint.lintText(rawCode), '[0].output') as string;
+
+    for (const postPlugin of postPlugins) {
+        rawCode = await postPlugin(rawCode, eslintConfigFilePath);
+    }
+
+    return rawCode;
+};
+
+export const lintWithPrettier = async (code: string, fromPath = process.cwd()) => {
+    const tabWidth = getESLintIndentSize(fromPath);
+    return prettier.format(code, {
+        parser: 'typescript',
+        tabWidth,
+    });
 };
