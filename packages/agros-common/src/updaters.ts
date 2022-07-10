@@ -6,7 +6,7 @@ import {
 } from './detectors';
 import { parseAST } from '@agros/utils';
 import * as t from '@babel/types';
-import { generateDecoratorCode } from './generate-decorator-code';
+import { generateDecoratorCode } from './code-generators';
 
 export interface UpdateItem {
     line: number;
