@@ -259,3 +259,17 @@ export const detectImportedClass = async (sourcePath: string, targetPath: string
 
     return result;
 };
+
+export const detectLastImportLine = (ast: ParseResult<File>) => {
+    let lastImportLine = 0;
+
+    for (const statement of ast.program.body) {
+        if (statement.type === 'ImportDeclaration') {
+            lastImportLine = statement.loc?.end.line;
+        } else {
+            continue;
+        }
+    }
+
+    return lastImportLine + 1;
+};

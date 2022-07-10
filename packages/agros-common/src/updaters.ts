@@ -1,12 +1,15 @@
 import { EntityDescriptor } from './types';
 import * as fs from 'fs';
 import {
+    ClassImportItem,
     detectDecorators,
     detectImportedClass,
+    detectLastImportLine,
 } from './detectors';
 import { parseAST } from '@agros/utils';
 import * as t from '@babel/types';
 import { generateDecoratorCode } from './code-generators';
+import { ParseResult } from '@babel/parser';
 
 export interface UpdateItem {
     line: number;
@@ -14,55 +17,63 @@ export interface UpdateItem {
     deleteLines: number;
 };
 
-export const updateImportedModuleToModule = async (
-    sourceDescriptor: EntityDescriptor,
-    targetDescriptor: EntityDescriptor,
-): Promise<UpdateItem[]> => {
-    const result: UpdateItem[] = [];
+export type Updater = (
+    targetAST: ParseResult<t.File>,
+    classImportItem: ClassImportItem,
+    initialResult: UpdateItem[],
+) => Promise<UpdateItem[]>;
 
-    if (
-        sourceDescriptor.collectionType !== 'module' ||
-            targetDescriptor.collectionType !== 'module' ||
-            !fs.existsSync(sourceDescriptor.absolutePath) ||
-            !fs.existsSync(targetDescriptor.absolutePath)
-    ) {
-        return result;
-    }
+const createUpdater = (updater: Updater) => {
+    return async (
+        sourceDescriptor: EntityDescriptor,
+        targetDescriptor: EntityDescriptor,
+    ) => {
+        const result: UpdateItem[] = [];
 
-    const importedClass = await detectImportedClass(
-        sourceDescriptor.absolutePath,
-        targetDescriptor.absolutePath,
-    );
-    const {
-        exportItem,
-        imported,
-        importLiteralValue,
-        identifierName,
-    } = importedClass;
-
-    if (!exportItem) {
-        return [];
-    }
-
-    const targetAST = parseAST(fs.readFileSync(targetDescriptor.absolutePath).toString());
-
-    if (!imported) {
-        let lastImportLine = 0;
-
-        for (const statement of targetAST.program.body) {
-            if (statement.type === 'ImportDeclaration') {
-                lastImportLine = statement.loc?.end.line;
-            } else {
-                continue;
-            }
+        if (
+            sourceDescriptor.collectionType !== 'module' ||
+                targetDescriptor.collectionType !== 'module' ||
+                !fs.existsSync(sourceDescriptor.absolutePath) ||
+                !fs.existsSync(targetDescriptor.absolutePath)
+        ) {
+            return result;
         }
 
-        result.push({
-            line: lastImportLine + 1,
-            content: [importLiteralValue],
-            deleteLines: 0,
-        });
-    }
+        const importedClass = await detectImportedClass(
+            sourceDescriptor.absolutePath,
+            targetDescriptor.absolutePath,
+        );
+        const {
+            exportItem,
+            imported,
+            importLiteralValue,
+        } = importedClass;
+
+        if (!exportItem) {
+            return [];
+        }
+
+        const targetAST = parseAST(fs.readFileSync(targetDescriptor.absolutePath).toString());
+
+        if (!imported) {
+            result.push({
+                line: detectLastImportLine(targetAST),
+                content: [importLiteralValue],
+                deleteLines: 0,
+            });
+        }
+
+        return await updater(targetAST, importedClass, result);
+    };
+};
+
+export const updateImportedModuleToModule = createUpdater(async (
+    targetAST,
+    classImportItem,
+    initialResult,
+) => {
+    const { identifierName } = classImportItem;
+    const result = Array.from(initialResult);
 
     const [decorator] = detectDecorators(targetAST, 'Module');
 
@@ -89,7 +100,7 @@ export const updateImportedModuleToModule = async (
         return result;
     }
 
-    const decoratorProperties = ['imports', 'exports'];
+    const decoratorProperties = ['imports'];
 
     for (const decoratorProperty of decoratorProperties) {
         let property: t.ObjectProperty = argument.properties.find((property) => {
@@ -126,7 +137,13 @@ export const updateImportedModuleToModule = async (
     });
 
     return result;
-};
+});
+
+// TODO
+// export const updateImportedServiceToModule = createUpdater(async () => {});
+
+// TODO
+// export const updateImportedComponentToModule = createUpdater(async () => {});
 
 export const updateImportedServiceToService = async (
     sourceDescriptor: EntityDescriptor,
