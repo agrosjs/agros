@@ -369,7 +369,7 @@ export const updateRouteToModule = createUpdater<UpdateRouteToModuleOptions>(
         }
 
         const { identifierName } = classImportItem;
-        const result = Array.from(initialResult);
+        const result = Array.from(initialResult) as UpdateItem[];
         const [decorator] = detectDecorators(targetAST, 'Module');
 
         if (!decorator) {
@@ -414,7 +414,7 @@ export const updateRouteToModule = createUpdater<UpdateRouteToModuleOptions>(
 
         routesPropertyDeclaration.value = routesPropertyDeclaration.value as t.ArrayExpression;
 
-        const createProperties = (currentPathname: string) => ([
+        const createRoutePathProperties = (currentPathname: string) => ([
             t.objectProperty(
                 t.identifier('path'),
                 t.stringLiteral(currentPathname),
@@ -425,40 +425,61 @@ export const updateRouteToModule = createUpdater<UpdateRouteToModuleOptions>(
             ),
         ]);
 
-        const pathSegments = pathname.split('/');
-        const routesPathDeclarationSegments: t.ObjectExpression[] = new Array(pathSegments.length).fill(null);
-
-        for (const [index, pathSegment] of pathSegments.entries()) {
-            let parentRoutesDeclaration = index === 0
-                ? routesPropertyDeclaration
-                : routesPathDeclarationSegments[index - 1];
-
-            if (!parentRoutesDeclaration) {
-                break;
-            }
-
-            routesPathDeclarationSegments[index] = routesPropertyDeclaration.value.elements.find((element) => {
-                return element.type === 'ObjectExpression' && element.properties.some((property) => {
-                    return property.type === 'ObjectProperty' && (
-                        (property.key.type === 'Identifier' && property.key.name === 'path') ||
+        const traverseObjectExpression = (pathname: string, arrayExpression: t.ArrayExpression) => {
+            const leadingPathSegment = pathname.split('/')[0];
+            const matchedRouteConfigExpression: t.ObjectExpression = arrayExpression.elements.find((element) => {
+                return element.type === 'ObjectExpression' &&
+                    element.properties.find((property) => {
+                        return property.type === 'ObjectProperty' && (
+                            (property.key.type === 'Identifier' && property.key.name === 'path') ||
                             (property.key.type === 'StringLiteral' && property.key.value === 'path')
-                    ) &&
-                        property.value.type === 'Identifier' &&
-                        property.value.name === pathSegment;
-                });
+                        ) && property.value.type === 'StringLiteral' && property.value.value === leadingPathSegment;
+                    });
             }) as t.ObjectExpression;
-        }
 
-        const lastNullSegmentIndex = routesPathDeclarationSegments.findIndex((segment) => segment === null);
+            if (matchedRouteConfigExpression) {
+                const childrenPropertyDeclaration: t.ObjectProperty = matchedRouteConfigExpression.properties.find((property) => {
+                    return property.type === 'ObjectProperty' && (
+                        (property.key.type === 'Identifier' && property.key.name === 'children') ||
+                        (property.key.type === 'StringLiteral' && property.key.value === 'children')
+                    ) && property.value.type === 'ArrayExpression';
+                }) as t.ObjectProperty;
 
-        if (lastNullSegmentIndex === -1) {
-            const lastSegment = routesPathDeclarationSegments[routesPathDeclarationSegments.length - 1];
-            lastSegment.properties = createProperties(pathSegments[pathSegments.length - 1]);
-        } else {
-            const currentPathname = pathSegments.slice(lastNullSegmentIndex).join('/');
-            const previousSegmentDeclaration = routesPathDeclarationSegments[lastNullSegmentIndex - 1] || routesPropertyDeclaration;
-            previousSegmentDeclaration;
-        }
+                let childrenArrayExpression: t.ArrayExpression;
+
+                if (childrenPropertyDeclaration) {
+                    childrenArrayExpression = childrenPropertyDeclaration.value as t.ArrayExpression;
+                }
+
+                if (!childrenArrayExpression) {
+                    const newChildrenPropertyDeclaration: t.ObjectProperty = t.objectProperty(
+                        t.identifier('children'),
+                        t.arrayExpression([]),
+                    );
+                    childrenArrayExpression = newChildrenPropertyDeclaration.value as t.ArrayExpression;
+                    matchedRouteConfigExpression.properties.push(newChildrenPropertyDeclaration);
+                }
+
+                return traverseObjectExpression(pathname.split('/').slice(1).join('/'), childrenArrayExpression);
+            } else {
+                arrayExpression.elements.push(
+                    t.objectExpression([
+                        ...createRoutePathProperties(pathname),
+                    ]),
+                );
+                return;
+            }
+        };
+
+        traverseObjectExpression(pathname, routesPropertyDeclaration.value);
+
+        result.push({
+            line: decorator.loc?.start.line,
+            content: (await generateDecoratorCode(decorator)).split(/\r|\n|\r\n/),
+            deleteLines: decorator.loc?.end.line - decorator.loc?.start.line + 1,
+        });
+
+        return result;
     },
     (source, target) => ['component', 'module'].indexOf(source.collectionType) !== -1 && target.collectionType === 'module',
 );
