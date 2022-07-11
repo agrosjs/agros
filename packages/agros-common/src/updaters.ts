@@ -94,7 +94,7 @@ export const updateImportedEntityToModule = createUpdater(
         options,
     }) => {
         const { identifierName } = classImportItem;
-        const result = Array.from(initialResult);
+        const result = Array.from(initialResult) as UpdateItem[];
 
         const [decorator] = detectDecorators(targetAST, 'Module');
 
@@ -140,6 +140,8 @@ export const updateImportedEntityToModule = createUpdater(
                 return result;
         }
 
+        let shouldUpdate = false;
+
         for (const decoratorProperty of decoratorProperties) {
             let property: t.ObjectProperty = argument.properties.find((property) => {
                 return property.type === 'ObjectProperty' && (
@@ -161,18 +163,21 @@ export const updateImportedEntityToModule = createUpdater(
                     return element.type === 'Identifier' && element.name === identifierName;
                 })
             ) {
+                shouldUpdate = true;
                 (property.value as t.ArrayExpression).elements.push(t.identifier(identifierName));
             }
         }
 
-        const decoratorCode = await generateDecoratorCode(decorator);
-        result.push({
-            line: decorator.loc?.start.line,
-            content: decoratorCode.split(/\r|\n|\r\n/).map((line) => {
-                return new Array(decorator.loc?.start.column).fill(' ').join('') + line;
-            }),
-            deleteLines: decorator.loc?.end.line - decorator.loc?.start.line + 1,
-        });
+        if (shouldUpdate) {
+            const decoratorCode = await generateDecoratorCode(decorator);
+            result.push({
+                line: decorator.loc?.start.line,
+                content: decoratorCode.split(/\r|\n|\r\n/).map((line) => {
+                    return new Array(decorator.loc?.start.column).fill(' ').join('') + line;
+                }),
+                deleteLines: decorator.loc?.end.line - decorator.loc?.start.line + 1,
+            });
+        }
 
         return result;
     },
@@ -275,8 +280,76 @@ export const updateImportedServiceToService = createUpdater(
     (source, target) => source.collectionType === 'service' && target.collectionType === 'service',
 );
 
-// TODO
-export const updateImportedEntityToComponent = async () => {};
+export const updateImportedEntityToComponent = createUpdater(
+    async ({
+        targetAST,
+        classImportItem,
+        initialResult,
+    }) => {
+        const DECORATOR_DECLARATION_KEY = 'declarations';
+        const { identifierName } = classImportItem;
+        const result = Array.from(initialResult) as UpdateItem[];
+
+        const [decorator] = detectDecorators(targetAST, 'Component');
+
+        if (!decorator) {
+            return result;
+        }
+
+        if (!decorator.expression.arguments[0]) {
+            decorator.expression.arguments.push(
+                t.objectExpression([
+                    t.objectProperty(
+                        t.identifier(DECORATOR_DECLARATION_KEY),
+                        t.arrayExpression([
+                            t.identifier(identifierName),
+                        ]),
+                    ),
+                ]),
+            );
+        }
+
+        const argument = decorator.expression.arguments[0];
+
+        if (argument.type !== 'ObjectExpression') {
+            return result;
+        }
+
+        let property: t.ObjectProperty = argument.properties.find((property) => {
+            return property.type === 'ObjectProperty' && (
+                (property.key.type === 'Identifier' && property.key.name === DECORATOR_DECLARATION_KEY) ||
+                (property.key.type === 'StringLiteral' && property.key.value === DECORATOR_DECLARATION_KEY)
+            ) && property.value.type === 'ArrayExpression';
+        }) as t.ObjectProperty;
+
+        if (!property) {
+            property = t.objectProperty(
+                t.identifier(DECORATOR_DECLARATION_KEY),
+                t.arrayExpression([]),
+            );
+            argument.properties.push(property);
+        }
+
+        const shouldUpdate = !(property.value as t.ArrayExpression).elements.some((element) => {
+            return element.type === 'Identifier' && element.name === identifierName;
+        });
+
+        if (shouldUpdate) {
+            (property.value as t.ArrayExpression).elements.push(t.identifier(identifierName));
+            const decoratorCode = await generateDecoratorCode(decorator);
+            result.push({
+                line: decorator.loc?.start.line,
+                content: decoratorCode.split(/\r|\n|\r\n/).map((line) => {
+                    return new Array(decorator.loc?.start.column).fill(' ').join('') + line;
+                }),
+                deleteLines: decorator.loc?.end.line - decorator.loc?.start.line + 1,
+            });
+        }
+
+        return result;
+    },
+    (source, target) => ['component', 'service'].indexOf(source.collectionType) !== -1 && target.collectionType === 'component',
+);
 
 // TODO
 export const updateRouteToModule = async () => {};
