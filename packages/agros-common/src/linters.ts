@@ -43,7 +43,7 @@ export const lintCode = async (
         rawCode = await prePlugin(rawCode, eslintConfigFilePath);
     }
 
-    rawCode = _.get(await eslint.lintText(rawCode), '[0].output') as string;
+    rawCode = _.get(await eslint.lintText(rawCode), '[0].output') as string || rawCode;
 
     for (const postPlugin of postPlugins) {
         rawCode = await postPlugin(rawCode, eslintConfigFilePath);

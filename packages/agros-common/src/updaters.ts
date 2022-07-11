@@ -9,8 +9,12 @@ import {
 } from './detectors';
 import { parseAST } from '@agros/utils';
 import * as t from '@babel/types';
-import { generateDecoratorCode } from './code-generators';
+import {
+    generateConstructorCode,
+    generateDecoratorCode,
+} from './code-generators';
 import { ParseResult } from '@babel/parser';
+import _ from 'lodash';
 
 export interface UpdateItem {
     line: number;
@@ -180,18 +184,16 @@ export const updateImportedServiceToService = createUpdater(
         classImportItem,
         initialResult,
         targetAST,
+        options,
     }) => {
-        const result = Array.from(initialResult);
+        const result = Array.from(initialResult) as UpdateItem[];
         const [targetServiceClassExportItem] = detectClassExports(targetAST);
 
         if (!targetServiceClassExportItem) {
             return result;
         }
 
-        const {
-            declaration,
-            exportMode,
-        } = targetServiceClassExportItem;
+        const { declaration } = targetServiceClassExportItem;
 
         const classBody = declaration.body.body || [];
         let constructorDeclaration: t.ClassMethod = classBody.find((statement) => {
@@ -213,17 +215,62 @@ export const updateImportedServiceToService = createUpdater(
         }
 
         const parameterExisted = constructorDeclaration.params.some((parameter) => {
-            if (parameter.type === 'TSParameterProperty') {
-                if (
-                    parameter.parameter.typeAnnotation?.type === 'TSTypeAnnotation' &&
-                    parameter.parameter.typeAnnotation?.typeAnnotation.type === 'TSTypeReference' &&
-                    parameter.parameter.typeAnnotation?.typeAnnotation.typeName.type === 'Identifier' &&
-                    parameter.parameter.typeAnnotation?.typeAnnotation.typeName.name === classImportItem.identifierName
-                ) {
-                    // TODO
-                }
+            let typeAnnotation: t.TypeAnnotation | t.TSTypeAnnotation;
+
+            if (parameter.type === 'Identifier' && parameter.typeAnnotation?.type !== 'Noop') {
+                typeAnnotation = parameter.typeAnnotation;
+            } else if (parameter.type === 'TSParameterProperty' && parameter.parameter.typeAnnotation?.type !== 'Noop') {
+                typeAnnotation = parameter.parameter.typeAnnotation;
             }
+
+            if (!typeAnnotation) {
+                return false;
+            }
+
+            if (
+                typeAnnotation?.typeAnnotation?.type === 'TSTypeReference' &&
+                    typeAnnotation?.typeAnnotation?.typeName?.type === 'Identifier' &&
+                    typeAnnotation?.typeAnnotation?.typeName?.name === classImportItem.identifierName
+            ) {
+                return true;
+            }
+
+            return false;
         });
+
+        if (parameterExisted) {
+            return result;
+        }
+
+        const parameterPropertyStatement = t.tsParameterProperty(
+            t.identifier(
+                _.camelCase(classImportItem.identifierName),
+            ),
+        );
+        parameterPropertyStatement.accessibility = options?.accessibility || 'private';
+        parameterPropertyStatement.parameter.typeAnnotation = t.tsTypeAnnotation(
+            t.tsTypeReference(t.identifier(classImportItem.identifierName)),
+        );
+        constructorDeclaration.params.push(parameterPropertyStatement);
+        let deleteLines = 0;
+
+        if (constructorDeclaration?.loc?.start && constructorDeclaration?.loc?.end) {
+            const {
+                end,
+                start,
+            } = constructorDeclaration.loc || {};
+            deleteLines = end.line - start.line + 1;
+        }
+
+        const code = await generateConstructorCode(constructorDeclaration);
+
+        result.push({
+            deleteLines,
+            content: code.split(/\r|\n|\r\n/),
+            line: constructorDeclaration?.loc?.start?.line || declaration.body.loc?.start.line,
+        });
+
+        return result;
     },
     (source, target) => source.collectionType === 'service' && target.collectionType === 'service',
 );
