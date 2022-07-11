@@ -2,6 +2,7 @@ import { EntityDescriptor } from './types';
 import * as fs from 'fs';
 import {
     ClassImportItem,
+    detectClassExports,
     detectDecorators,
     detectImportedClass,
     detectLastImportLine,
@@ -174,12 +175,58 @@ export const updateImportedEntityToModule = createUpdater(
     (source, target) => source.collectionType && target.collectionType === 'module',
 );
 
-export const updateImportedServiceToService = async (
-    sourceDescriptor: EntityDescriptor,
-    targetDescriptor: EntityDescriptor,
-) => {
+export const updateImportedServiceToService = createUpdater(
+    async ({
+        classImportItem,
+        initialResult,
+        targetAST,
+    }) => {
+        const result = Array.from(initialResult);
+        const [targetServiceClassExportItem] = detectClassExports(targetAST);
 
-};
+        if (!targetServiceClassExportItem) {
+            return result;
+        }
+
+        const {
+            declaration,
+            exportMode,
+        } = targetServiceClassExportItem;
+
+        const classBody = declaration.body.body || [];
+        let constructorDeclaration: t.ClassMethod = classBody.find((statement) => {
+            return statement.type === 'ClassMethod' && (
+                statement.kind === 'constructor' ||
+                    (statement.key.type === 'Identifier' && statement.key.name === 'constructor')
+            );
+        }) as t.ClassMethod;
+
+        if (!constructorDeclaration) {
+            constructorDeclaration = t.classMethod(
+                'constructor',
+                t.identifier('constructor'),
+                [],
+                t.blockStatement([]),
+            );
+            constructorDeclaration.accessibility = 'public';
+            classBody.push(constructorDeclaration);
+        }
+
+        const parameterExisted = constructorDeclaration.params.some((parameter) => {
+            if (parameter.type === 'TSParameterProperty') {
+                if (
+                    parameter.parameter.typeAnnotation?.type === 'TSTypeAnnotation' &&
+                    parameter.parameter.typeAnnotation?.typeAnnotation.type === 'TSTypeReference' &&
+                    parameter.parameter.typeAnnotation?.typeAnnotation.typeName.type === 'Identifier' &&
+                    parameter.parameter.typeAnnotation?.typeAnnotation.typeName.name === classImportItem.identifierName
+                ) {
+                    // TODO
+                }
+            }
+        });
+    },
+    (source, target) => source.collectionType === 'service' && target.collectionType === 'service',
+);
 
 // TODO
 export const updateImportedEntityToComponent = async () => {};
