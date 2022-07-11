@@ -95,7 +95,6 @@ export const updateImportedEntityToModule = createUpdater(
     }) => {
         const { identifierName } = classImportItem;
         const result = Array.from(initialResult) as UpdateItem[];
-
         const [decorator] = detectDecorators(targetAST, 'Module');
 
         if (!decorator) {
@@ -351,5 +350,115 @@ export const updateImportedEntityToComponent = createUpdater(
     (source, target) => ['component', 'service'].indexOf(source.collectionType) !== -1 && target.collectionType === 'component',
 );
 
-// TODO
-export const updateRouteToModule = async () => {};
+export interface UpdateRouteToModuleOptions {
+    path?: string;
+}
+
+export const updateRouteToModule = createUpdater<UpdateRouteToModuleOptions>(
+    async ({
+        initialResult,
+        classImportItem,
+        targetAST,
+        options,
+        sourceDescriptor,
+    }) => {
+        const pathname = (options.path || '').replace(/^\/+/, '').replace(/\/+/g, '/');
+
+        if (!pathname) {
+            return initialResult;
+        }
+
+        const { identifierName } = classImportItem;
+        const result = Array.from(initialResult);
+        const [decorator] = detectDecorators(targetAST, 'Module');
+
+        if (!decorator) {
+            return result;
+        }
+
+        if (!decorator.expression.arguments[0]) {
+            decorator.expression.arguments.push(
+                t.objectExpression([
+                    t.objectProperty(
+                        t.identifier('imports'),
+                        t.arrayExpression([
+                            t.identifier(identifierName),
+                        ]),
+                    ),
+                ]),
+            );
+        }
+
+        const argument = decorator.expression.arguments[0] as t.ObjectExpression;
+
+        if (argument.type !== 'ObjectExpression') {
+            return result;
+        }
+
+        let routesPropertyDeclaration: t.ObjectProperty = argument.properties.find((property) => {
+            return property.type === 'ObjectProperty' && (
+                (property.key.type === 'Identifier' && property.key.name === 'routes') ||
+                (property.key.type === 'StringLiteral' && property.key.value === 'routes')
+            );
+        }) as t.ObjectProperty;
+
+        if (!routesPropertyDeclaration) {
+            routesPropertyDeclaration = t.objectProperty(
+                t.identifier('routes'),
+                t.arrayExpression([]),
+            );
+            argument.properties.push(routesPropertyDeclaration);
+        } else if (routesPropertyDeclaration.value.type !== 'ArrayExpression') {
+            routesPropertyDeclaration.value = t.arrayExpression([]);
+        }
+
+        routesPropertyDeclaration.value = routesPropertyDeclaration.value as t.ArrayExpression;
+
+        const createProperties = (currentPathname: string) => ([
+            t.objectProperty(
+                t.identifier('path'),
+                t.stringLiteral(currentPathname),
+            ),
+            t.objectProperty(
+                t.identifier(_.camelCase('use_' + sourceDescriptor.collectionType + '_class')),
+                t.identifier(identifierName),
+            ),
+        ]);
+
+        const pathSegments = pathname.split('/');
+        const routesPathDeclarationSegments: t.ObjectExpression[] = new Array(pathSegments.length).fill(null);
+
+        for (const [index, pathSegment] of pathSegments.entries()) {
+            let parentRoutesDeclaration = index === 0
+                ? routesPropertyDeclaration
+                : routesPathDeclarationSegments[index - 1];
+
+            if (!parentRoutesDeclaration) {
+                break;
+            }
+
+            routesPathDeclarationSegments[index] = routesPropertyDeclaration.value.elements.find((element) => {
+                return element.type === 'ObjectExpression' && element.properties.some((property) => {
+                    return property.type === 'ObjectProperty' && (
+                        (property.key.type === 'Identifier' && property.key.name === 'path') ||
+                            (property.key.type === 'StringLiteral' && property.key.value === 'path')
+                    ) &&
+                        property.value.type === 'Identifier' &&
+                        property.value.name === pathSegment;
+                });
+            }) as t.ObjectExpression;
+        }
+
+        const lastNullSegmentIndex = routesPathDeclarationSegments.findIndex((segment) => segment === null);
+
+        if (lastNullSegmentIndex === -1) {
+            const lastSegment = routesPathDeclarationSegments[routesPathDeclarationSegments.length - 1];
+            lastSegment.properties = createProperties(pathSegments[pathSegments.length - 1]);
+        } else {
+            const currentPathname = pathSegments.slice(lastNullSegmentIndex).join('/');
+            const previousSegmentDeclaration = routesPathDeclarationSegments[lastNullSegmentIndex - 1] || routesPropertyDeclaration;
+            previousSegmentDeclaration;
+        }
+    },
+    (source, target) => ['component', 'module'].indexOf(source.collectionType) !== -1 && target.collectionType === 'module',
+);
