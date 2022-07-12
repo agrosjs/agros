@@ -1,53 +1,91 @@
 import {
+    detectClassExports,
+    detectDecorators,
+    detectNamedImports,
+    getCollectionType,
+    getFileEntityIdentifier,
+    getPathDescriptorWithAlias,
+    matchAlias,
+} from '@agros/common';
+import {
     ensureImport,
     EnsureImportOptions,
     parseAST,
 } from '@agros/utils';
+import { ParseResult } from '@babel/parser';
 import {
     CallExpression,
     Decorator,
     ExportDefaultDeclaration,
+    File,
     Identifier,
     ObjectExpression,
     ObjectProperty,
     Statement,
 } from '@babel/types';
-import generate from '@babel/generator';
+import * as path from 'path';
 import ejs from 'ejs';
 import * as fs from 'fs';
-import * as path from 'path';
-import {
-    detectClassExports,
-    detectNamedImports,
-    getCollectionType,
-    getPathDescriptorWithAlias,
-    matchAlias,
-} from '@agros/common';
+import generate from '@babel/generator';
+import { createLoaderAOP } from './utils';
+import * as t from '@babel/types';
+import template from '@babel/template';
 import _ from 'lodash';
 import qs from 'qs';
-import template from '@babel/template';
-import * as t from '@babel/types';
-import {
-    LoaderGuard,
-    LoaderTransformer,
-    LoaderTransformerConfig,
-} from './types';
 
-const createTransformer = (guard: LoaderGuard, transformer: LoaderTransformer): LoaderTransformerConfig => {
-    return {
-        guard,
-        transformer,
-    };
-};
-
-export const transformEntry = createTransformer(
+export const checkModule = createLoaderAOP(
     ({
-        srcPath,
+        tree,
         context,
+        modulesPath,
     }) => {
-        const absolutePath = context.resourcePath;
-        return path.dirname(absolutePath) === srcPath && path.basename(absolutePath) === 'index.ts';
+        const declaredClasses = detectClassExports(tree);
+        const moduleName = getFileEntityIdentifier(context.resourcePath);
+        const dirname = path.basename(path.dirname(context.resourcePath));
+
+        if (path.dirname(context.resourcePath).startsWith(modulesPath) && moduleName !== dirname) {
+            throw new Error(`Module file '${path.basename(context.resourcePath)}' should match its directory name '${dirname}'`);
+        }
+
+        if (declaredClasses.length > 1) {
+            throw new Error('Module files should have only one named class export');
+        } else if (declaredClasses.length === 0) {
+            throw new Error('A module file should have one named class export');
+        }
+
+        const decorators = detectDecorators(tree, 'Module');
+
+        if (decorators.length === 0) {
+            throw new Error('A module class should call `Module` function as decorator');
+        } else if (decorators.length > 1) {
+            throw new Error('A module should only call `Module` function once');
+        }
     },
+    ({ context }) => getCollectionType(context.resourcePath) === 'module',
+);
+
+export const checkService = createLoaderAOP(
+    ({ tree }) => {
+        const declaredClasses = detectClassExports(tree);
+
+        if (declaredClasses.length > 1) {
+            throw new Error('Service files should have only one named class export');
+        } else if (declaredClasses.length === 0) {
+            throw new Error('A service file should have one named class export');
+        }
+
+        const decorators = detectDecorators(tree, 'Injectable');
+
+        if (decorators.length === 0) {
+            throw new Error('A service class should call `Injectable` function as decorator');
+        } else if (decorators.length > 1) {
+            throw new Error('A service should only call `Injectable` function once');
+        }
+    },
+    ({ context }) => getCollectionType(context.resourcePath) === 'service',
+);
+
+export const transformEntry = createLoaderAOP<ParseResult<File>>(
     ({ tree }) => {
         let exportDefaultDeclaration: ExportDefaultDeclaration;
         let exportDefaultDeclarationIndex: number;
@@ -143,20 +181,20 @@ export const transformEntry = createTransformer(
 
         tree.program.body.splice(exportDefaultDeclarationIndex + bootstrapDeclarations.length, 1);
 
-        tree.program.body.push(
-            ...parseAST(
-                'bootstrap(' +
-            generate(exportDefaultDeclaration.declaration).code +
-            ');',
-            ).program.body,
-        );
+        tree.program.body.push(...parseAST('bootstrap(' + generate(exportDefaultDeclaration.declaration).code + ');').program.body);
 
         return tree;
     },
+    ({
+        srcPath,
+        context,
+    }) => {
+        const absolutePath = context.resourcePath;
+        return path.dirname(absolutePath) === srcPath && path.basename(absolutePath) === 'index.ts';
+    },
 );
 
-export const transformComponentDecorator = createTransformer(
-    ({ context }) => getCollectionType(context.resourcePath) === 'component',
+export const transformComponentDecorator = createLoaderAOP(
     ({
         context,
         tree,
@@ -379,10 +417,10 @@ export const transformComponentDecorator = createTransformer(
 
         return tree;
     },
+    ({ context }) => getCollectionType(context.resourcePath) === 'component',
 );
 
-export const transformComponentFile = createTransformer(
-    ({ parsedQuery }) => parsedQuery.component && parsedQuery.component === 'true',
+export const transformComponentFile = createLoaderAOP(
     ({
         tree,
         parsedQuery,
@@ -398,4 +436,5 @@ export const transformComponentFile = createTransformer(
 
         return tree;
     },
+    ({ parsedQuery }) => parsedQuery.component && parsedQuery.component === 'true',
 );
