@@ -273,3 +273,27 @@ export const detectLastImportLine = (ast: ParseResult<File>) => {
 
     return lastImportLine + 1;
 };
+
+export const detectEOLCharacter = (code: string): string => {
+    try {
+        const crCount = code.split('\r').length;
+        const lfCount = code.split('\n').length;
+        const crlfCount = code.split('\r\n').length;
+
+        if (crCount + lfCount === 0) {
+            return '\n';
+        }
+
+        if (crlfCount === crCount && crlfCount === lfCount) {
+            return '\r\n';
+        }
+
+        if (crCount > lfCount) {
+            return '\r';
+        } else {
+            return '\n';
+        }
+    } catch (e) {
+        return '\n';
+    }
+};

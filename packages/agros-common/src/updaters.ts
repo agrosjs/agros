@@ -183,7 +183,12 @@ export const updateImportedEntityToModule = createUpdater(
     (source, target) => source.collectionType && target.collectionType === 'module',
 );
 
-export const updateImportedServiceToService = createUpdater(
+export interface UpdateImportedServiceToServiceOptions {
+    noReadonly?: boolean;
+    accessibility?: 'public' | 'private' | 'protected';
+}
+
+export const updateImportedServiceToService = createUpdater<UpdateImportedServiceToServiceOptions>(
     async ({
         classImportItem,
         initialResult,
@@ -252,6 +257,7 @@ export const updateImportedServiceToService = createUpdater(
             ),
         );
         parameterPropertyStatement.accessibility = options?.accessibility || 'private';
+        parameterPropertyStatement.readonly = !options?.noReadonly;
         parameterPropertyStatement.parameter.typeAnnotation = t.tsTypeAnnotation(
             t.tsTypeReference(t.identifier(classImportItem.identifierName)),
         );
@@ -271,7 +277,7 @@ export const updateImportedServiceToService = createUpdater(
         result.push({
             deleteLines,
             content: code.split(/\r|\n|\r\n/),
-            line: constructorDeclaration?.loc?.start?.line || declaration.body.loc?.start.line,
+            line: constructorDeclaration?.loc?.start?.line || (declaration.body.loc?.start.line + 1),
         });
 
         return result;
