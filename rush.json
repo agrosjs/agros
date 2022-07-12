@@ -512,6 +512,11 @@
             "packageName": "@agros/example",
             "projectFolder": "packages/agros-example",
             "shouldPublish": false
+        },
+        {
+            "packageName": "@agros/collections",
+            "projectFolder": "packages/agros-collections",
+            "shouldPublish": true
         }
     ]
 }

@@ -1,6 +1,7 @@
 lockfileVersion: 5.4
 
 specifiers:
+  '@agros/collections': workspace:^0.0.0
   '@agros/common': workspace:^0.0.0
   '@agros/config': workspace:^0.0.2
   '@agros/logger': workspace:^0.0.1
@@ -9,6 +10,7 @@ specifiers:
   fs-extra: ^10.1.0
 
 dependencies:
+  '@agros/collections': link:../agros-collections
   '@agros/common': link:../agros-common
   '@agros/config': link:../agros-config
   '@agros/logger': link:../agros-logger
