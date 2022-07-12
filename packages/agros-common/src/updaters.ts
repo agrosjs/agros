@@ -85,7 +85,11 @@ const createUpdater = <T = Record<string, any>>(
     };
 };
 
-export const updateImportedEntityToModule = createUpdater(
+export interface UpdateImportedEntityToModuleOptions {
+    noExport?: boolean;
+}
+
+export const updateImportedEntityToModule = createUpdater<UpdateImportedEntityToModuleOptions>(
     async ({
         sourceDescriptor,
         targetAST,

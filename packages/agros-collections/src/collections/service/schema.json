@@ -1,0 +1,21 @@
+{
+    "properties": {
+        "name": {
+            "type": "string",
+            "message": "The name of the service"
+        },
+        "moduleName": {
+            "type": "string",
+            "message": "The name of module who manages this service",
+            "default": "$context$name"
+        },
+        "noExport": {
+            "type": "confirm",
+            "message": "Export this service from module",
+            "default": false
+        }
+    },
+    "required": [
+        "name"
+    ]
+}

@@ -10,12 +10,14 @@ import _ from 'lodash';
 interface ServiceCollectionOptions {
     name: string;
     moduleName?: string;
+    noExport?: boolean;
 }
 
 export class ServiceCollectionFactory extends AbstractCollection implements AbstractCollection {
     public async generate({
         name,
         moduleName,
+        noExport,
     }: ServiceCollectionOptions) {
         if (!name) {
             throw new Error('Expect `name` to be of type `string`');
@@ -45,6 +47,7 @@ export class ServiceCollectionFactory extends AbstractCollection implements Abst
             await updateImportedEntityToModule(
                 getEntityDescriptorWithAlias(targetPath),
                 moduleEntityDescriptor,
+                { noExport },
             );
         }
     }

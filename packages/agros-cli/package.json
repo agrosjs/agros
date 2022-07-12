@@ -34,6 +34,7 @@
     "homepage": "https://github.com/lenconda/agros#readme",
     "devDependencies": {
         "@types/fs-extra": "^9.0.13",
+        "@types/inquirer": "~8.1.1",
         "@types/jest": "^28.1.1",
         "@types/lodash": "^4.14.182",
         "@types/node": "^15.12.2",
@@ -49,6 +50,7 @@
         "@agros/config": "workspace:^0.0.2",
         "@agros/logger": "workspace:^0.0.1",
         "@agros/utils": "workspace:^0.0.1",
-        "fs-extra": "^10.1.0"
+        "fs-extra": "^10.1.0",
+        "inquirer": "~8.1.1"
     }
 }
