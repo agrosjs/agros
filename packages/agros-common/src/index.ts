@@ -5,3 +5,4 @@ export * from './types';
 export * from './scanners';
 export * from './detectors';
 export * from './collection';
+export * from './updaters';

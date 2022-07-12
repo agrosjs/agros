@@ -3,9 +3,11 @@ lockfileVersion: 5.4
 specifiers:
   '@agros/common': workspace:^0.0.0
   copyfiles: ^2.4.1
+  lodash: ^4.17.21
 
 dependencies:
   '@agros/common': link:../agros-common
+  lodash: 4.17.21
 
 devDependencies:
   copyfiles: 2.4.1
@@ -127,6 +129,10 @@ packages:
   /isarray/1.0.0:
     resolution: {integrity: sha512-VLghIWNM6ELQzo7zwmcg0NmTVyWKYjvIeM83yjp0wRDTmUnrM678fQbcKBo6n2CJEF0szoG//ytg+TKla89ALQ==}
     dev: true
+
+  /lodash/4.17.21:
+    resolution: {integrity: sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==}
+    dev: false
 
   /minimatch/3.1.2:
     resolution: {integrity: sha512-J7p63hRiAjw1NDEww1W7i37+ByIrOWO5XQQAzZ3VOcL0PNybwpfmV/N05zFAzwQ9USyEcX6t3UO+K5aqBQOIHw==}

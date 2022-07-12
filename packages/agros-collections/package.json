@@ -14,7 +14,7 @@
     },
     "scripts": {
         "lint": "eslint .",
-        "build": "rimraf ./lib && tsc --build tsconfig.json && copyfiles -u 1 src/**/*._ lib",
+        "build": "rimraf ./lib && tsc --build tsconfig.json && copyfiles -u 1 src/**/*._ src/**/*.json lib",
         "pretest": "npm run lint",
         "test": "exit 0"
     },
@@ -40,6 +40,7 @@
     "version": "0.0.0",
     "description": "Collections for Agros.js",
     "dependencies": {
-        "@agros/common": "workspace:^0.0.0"
+        "@agros/common": "workspace:^0.0.0",
+        "lodash": "^4.17.21"
     }
 }

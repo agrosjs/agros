@@ -1,5 +1,9 @@
 import * as path from 'path';
-import { ProjectConfigParser } from '@agros/config';
+import {
+    CollectionType,
+    ProjectConfigParser,
+} from '@agros/config';
+import parseGlob from 'parse-glob';
 
 const projectConfigParser = new ProjectConfigParser();
 
@@ -53,3 +57,23 @@ export const normalizeCollectionPattern = (pattern: string) => {
 };
 
 export const normalizeNoExtensionPath = (pathname: string) => pathname.split('.').slice(0, -1).join('.');
+
+export const normalizeEntityFileName = (type: CollectionType, name: string, fallbackSchema?: string) => {
+    if ((!type && !fallbackSchema) || !name) {
+        return null;
+    }
+
+    const collectionFileSchemas = projectConfigParser.getConfig<string[]>('collection.' + type) || [];
+
+    if ((!collectionFileSchemas || collectionFileSchemas.length === 0) && !fallbackSchema) {
+        return null;
+    }
+
+    const schema = collectionFileSchemas[0] || fallbackSchema;
+    const schemaParseResult = parseGlob(schema);
+    let extname = schemaParseResult.is.glob
+        ? schemaParseResult.path.extname
+        : schema;
+
+    return `${name}.`.concat(extname.replace(/^\.+/g, ''));
+};
