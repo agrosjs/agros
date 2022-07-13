@@ -1,8 +1,6 @@
 import _ from 'lodash';
-import * as path from 'path';
-import { requireModule } from '@agros/utils';
-import { PackageConfigParser } from './package-config-parser';
 import { Configuration } from 'webpack';
+import { cosmiconfigSync } from 'cosmiconfig';
 
 export type ScopeMap = Record<string, string>;
 export type AliasMap = Record<string, string>;
@@ -39,16 +37,10 @@ export class ProjectConfigParser {
         devServer: (config) => config,
     };
     private projectConfig: ProjectConfig = _.clone(this.defaultProjectConfig);
-    private PROCESS_CWD = process.cwd();
-    private packageConfigParser = new PackageConfigParser();
 
     public constructor() {
         try {
-            const userProjectConfigPath = path.resolve(
-                this.PROCESS_CWD,
-                this.packageConfigParser.getConfig('configPath'),
-            );
-            const userProjectConfig = requireModule(userProjectConfigPath) || {};
+            const userProjectConfig = cosmiconfigSync('agros').search()?.config || {};
             this.projectConfig = _.merge({}, this.projectConfig, userProjectConfig);
         } catch (e) {}
 
