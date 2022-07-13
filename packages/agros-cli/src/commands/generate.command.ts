@@ -5,6 +5,8 @@ import {
 import { AbstractCommand } from '../command.abstract';
 import { getCollections } from '../utils';
 import _ from 'lodash';
+import * as path from 'path';
+import { normalizeSrcPath } from '@agros/common';
 
 export class GenerateCommand extends AbstractCommand implements AbstractCommand {
     public register(): Command {
@@ -64,7 +66,6 @@ export class GenerateCommand extends AbstractCommand implements AbstractCommand 
                             if (!key) {
                                 return;
                             }
-
                             optionLiterals.push((key.length === 1 ? '-' : '--') + _.kebabCase(key));
                         });
 
@@ -139,7 +140,19 @@ export class GenerateCommand extends AbstractCommand implements AbstractCommand 
                     }, {});
 
                     const factory = new FactoryClass();
-                    await factory.generate(props);
+                    const result = await factory.generate(props);
+
+                    for (const resultKey of Object.keys(result)) {
+                        const files = result[resultKey];
+
+                        if (!Array.isArray(files)) {
+                            continue;
+                        }
+
+                        for (const filepath of files) {
+                            process.stdout.write(resultKey.toUpperCase() + ': ' + path.relative(normalizeSrcPath(), filepath) + '\n');
+                        }
+                    }
                 } catch (e) {
                     process.stdout.write('\x1b[31m' + (e.message || e.toString()) + '\x1b[0m\n');
                     process.stdout.write('\n');

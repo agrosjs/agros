@@ -14,6 +14,11 @@ export interface Collection {
     FactoryClass: new (...args: any[]) => AbstractCollection;
 }
 
+export interface CollectionGenerateResult {
+    update: string[];
+    create: string[];
+}
+
 export abstract class AbstractCollection {
     protected readonly projectConfig = new ProjectConfigParser();
     protected entities = scanProjectEntities();
@@ -65,5 +70,5 @@ export abstract class AbstractCollection {
         );
     }
 
-    public abstract generate(props): Promise<void>;
+    public abstract generate(props): Promise<CollectionGenerateResult>;
 }

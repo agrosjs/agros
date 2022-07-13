@@ -1,6 +1,7 @@
 import {
     AbstractCollection,
     applyUpdates,
+    CollectionGenerateResult,
     getEntityDescriptorWithAlias,
     normalizeEntityFileName,
     updateImportedEntityToModule,
@@ -25,6 +26,10 @@ class ServiceCollectionFactory extends AbstractCollection implements AbstractCol
             throw new Error('Expect `name` to be of type `string`');
         }
 
+        const result: CollectionGenerateResult = {
+            create: [],
+            update: [],
+        };
         const serviceName = _.kebabCase(name);
         const serviceModuleName = moduleName
             ? _.kebabCase(moduleName)
@@ -41,6 +46,7 @@ class ServiceCollectionFactory extends AbstractCollection implements AbstractCol
             },
         );
 
+        result.create.push(targetPath);
         this.updateEntities();
 
         const moduleEntityDescriptor = this.entities.find((entity) => {
@@ -59,7 +65,10 @@ class ServiceCollectionFactory extends AbstractCollection implements AbstractCol
                 moduleEntityDescriptor.absolutePath,
                 applyUpdates(updates, fs.readFileSync(moduleEntityDescriptor.absolutePath).toString()),
             );
+            result.update.push(moduleEntityDescriptor.absolutePath);
         }
+
+        return result;
     }
 }
 
