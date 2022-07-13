@@ -106,16 +106,7 @@ export const updateImportedEntityToModule = createUpdater<UpdateImportedEntityTo
         }
 
         if (!decorator.expression.arguments[0]) {
-            decorator.expression.arguments.push(
-                t.objectExpression([
-                    t.objectProperty(
-                        t.identifier('imports'),
-                        t.arrayExpression([
-                            t.identifier(identifierName),
-                        ]),
-                    ),
-                ]),
-            );
+            decorator.expression.arguments.push(t.objectExpression([]));
         }
 
         const argument = decorator.expression.arguments[0];
