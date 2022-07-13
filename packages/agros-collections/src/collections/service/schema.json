@@ -1,17 +1,18 @@
 {
+    "alias": "s",
     "properties": {
         "name": {
-            "type": "string",
+            "type": "input",
             "message": "The name of the service",
             "cliType": "argument"
         },
         "moduleName": {
-            "type": "string",
+            "type": "input",
             "message": "The name of module who manages this service",
             "default": "$context$name",
             "cliType": "argument"
         },
-        "noExport": {
+        "skipExport": {
             "type": "confirm",
             "message": "Export this service from module",
             "default": false,

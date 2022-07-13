@@ -1,5 +1,5 @@
 #!/usr/bin/env node
 
-const { scanProjectEntities } = require('@agros/common');
+const run = require('../lib').default;
 
-console.log(scanProjectEntities());
+run();

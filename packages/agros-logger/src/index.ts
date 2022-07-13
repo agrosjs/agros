@@ -45,6 +45,7 @@ export class Logger {
         const handleLogEnd = (status: 'success' | 'warning' | 'error', endText: string = message) => {
             clearInterval(intervalId);
             this.updateLog(colors[status] + icons[status] + '\x1b[0m' + ' ' + endText + '\n');
+            process.stdout.write('\n');
         };
 
         return handleLogEnd;

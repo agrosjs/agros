@@ -2,7 +2,7 @@ import { Command } from 'commander';
 import commands from './commands';
 
 const run = async () => {
-    const program = new Command();
+    const program = new Command('agros');
 
     for (const CommandClass of commands) {
         const subCommand = new CommandClass();
