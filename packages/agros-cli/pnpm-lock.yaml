@@ -8,6 +8,7 @@ specifiers:
   '@agros/utils': workspace:^0.0.1
   '@types/fs-extra': ^9.0.13
   '@types/inquirer': ^8.2.1
+  commander: ^9.3.0
   fs-extra: ^10.1.0
   inquirer: ^9.0.0
 
@@ -17,6 +18,7 @@ dependencies:
   '@agros/config': link:../agros-config
   '@agros/logger': link:../agros-logger
   '@agros/utils': link:../agros-utils
+  commander: 9.3.0
   fs-extra: 10.1.0
   inquirer: 9.0.0
 
@@ -114,6 +116,11 @@ packages:
   /clone/1.0.4:
     resolution: {integrity: sha512-JQHZ2QMW6l3aH/j6xCqQThY/9OH4D/9ls34cgkUBiEeocRTU04tHfKPBsUK1PqZCUQM7GiA0IIXJSuXHI64Kbg==}
     engines: {node: '>=0.8'}
+    dev: false
+
+  /commander/9.3.0:
+    resolution: {integrity: sha512-hv95iU5uXPbK83mjrJKuZyFM/LBAoCV/XhVGkS5Je6tl7sxr6A0ITMw5WoRV46/UaJ46Nllm3Xt7IaJhXTIkzw==}
+    engines: {node: ^12.20.0 || >=14}
     dev: false
 
   /defaults/1.0.3:

@@ -50,6 +50,7 @@
         "@agros/config": "workspace:^0.0.2",
         "@agros/logger": "workspace:^0.0.1",
         "@agros/utils": "workspace:^0.0.1",
+        "commander": "^9.3.0",
         "fs-extra": "^10.1.0",
         "inquirer": "~8.1.1"
     }

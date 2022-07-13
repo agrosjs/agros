@@ -1,17 +1,19 @@
-// export const _THIS_WILL_BE_REMOVED = null;
-import inquirer from 'inquirer';
+import { Command } from 'commander';
+import commands from './commands';
 
-inquirer.prompt([
-    {
-        name: 'name',
-        message: 'fuck1',
-    },
-    {
-        name: 'module',
-        message: 'fuck1',
-        default: (data) => {
-            console.log(data);
-            return data;
-        },
-    },
-]);
+const run = async () => {
+    const program = new Command();
+
+    for (const CommandClass of commands) {
+        const subCommand = new CommandClass();
+        if (typeof subCommand.register === 'function') {
+            program.addCommand(subCommand.register());
+        }
+    }
+
+    program.parse(process.argv);
+};
+
+run();
+
+export default run;
