@@ -13,7 +13,7 @@ interface ServiceCollectionOptions {
     noExport?: boolean;
 }
 
-export class ServiceCollectionFactory extends AbstractCollection implements AbstractCollection {
+class ServiceCollectionFactory extends AbstractCollection implements AbstractCollection {
     public async generate({
         name,
         moduleName,
@@ -52,3 +52,5 @@ export class ServiceCollectionFactory extends AbstractCollection implements Abst
         }
     }
 }
+
+export default ServiceCollectionFactory;

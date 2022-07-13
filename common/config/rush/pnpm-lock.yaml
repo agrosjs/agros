@@ -84,6 +84,7 @@ importers:
       '@types/jest': ^28.1.1
       '@types/lodash': ^4.14.182
       '@types/node': ^15.12.2
+      commander: ^9.3.0
       fs-extra: ^10.1.0
       inquirer: ~8.1.1
       rimraf: ^3.0.2
@@ -94,6 +95,7 @@ importers:
       '@agros/config': link:../agros-config
       '@agros/logger': link:../agros-logger
       '@agros/utils': link:../agros-utils
+      commander: 9.3.0
       fs-extra: 10.1.0
       inquirer: 8.1.5
     devDependencies:
@@ -3930,6 +3932,11 @@ packages:
   /commander/8.3.0:
     resolution: {integrity: sha512-OkTL9umf+He2DZkUq8f8J9of7yL6RJKI24dVITBmNfZBmri9zYZQrKkuXiKhyfPSu8tUhnVBB1iKXevvnlR4Ww==}
     engines: {node: '>= 12'}
+
+  /commander/9.3.0:
+    resolution: {integrity: sha512-hv95iU5uXPbK83mjrJKuZyFM/LBAoCV/XhVGkS5Je6tl7sxr6A0ITMw5WoRV46/UaJ46Nllm3Xt7IaJhXTIkzw==}
+    engines: {node: ^12.20.0 || >=14}
+    dev: false
 
   /common-path-prefix/3.0.0:
     resolution: {integrity: sha512-QE33hToZseCH3jS0qN96O/bSh3kaw/h+Tq7ngyY9eWDUnTlTNUyqfqvCXioLe5Na5jFsL78ra/wuBU4iuEgd4w==}

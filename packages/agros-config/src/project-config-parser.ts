@@ -90,10 +90,10 @@ export class ProjectConfigParser {
 
     public getConfig<T>(pathname?: string): T {
         if (!pathname) {
-            return _.clone(this.projectConfig) as T;
+            return _.cloneDeep(this.projectConfig) as T;
         }
 
-        return _.get(_.clone(this.projectConfig), pathname) as T;
+        return _.get(_.cloneDeep(this.projectConfig), pathname) as T;
     }
 
     public getEntry(): string {

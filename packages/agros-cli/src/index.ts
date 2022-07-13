@@ -14,6 +14,4 @@ const run = async () => {
     program.parse(process.argv);
 };
 
-run();
-
 export default run;

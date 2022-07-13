@@ -26,9 +26,9 @@ export class PackageConfigParser {
 
     public getConfig<T>(pathname?: string): T {
         if (!pathname) {
-            return _.clone(this.packageConfig) as T;
+            return _.cloneDeep(this.packageConfig) as T;
         }
 
-        return _.get(_.clone(this.packageConfig), pathname) as T;
+        return _.get(_.cloneDeep(this.packageConfig), pathname) as T;
     };
 }

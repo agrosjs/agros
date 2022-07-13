@@ -8,6 +8,12 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import ejs from 'ejs';
 
+export interface Collection {
+    name: string;
+    schema: Record<string, any>;
+    FactoryClass: new (...args: any[]) => AbstractCollection;
+}
+
 export abstract class AbstractCollection {
     protected readonly projectConfig = new ProjectConfigParser();
     protected entities = scanProjectEntities();
