@@ -1,11 +1,13 @@
 import {
     AbstractCollection,
+    applyUpdates,
     getEntityDescriptorWithAlias,
     normalizeEntityFileName,
     updateImportedEntityToModule,
 } from '@agros/common';
 import * as path from 'path';
 import _ from 'lodash';
+import * as fs from 'fs';
 
 interface ServiceCollectionOptions {
     name: string;
@@ -34,22 +36,28 @@ class ServiceCollectionFactory extends AbstractCollection implements AbstractCol
         this.writeTemplateFile(
             path.resolve(__dirname, 'files/service.ts._'),
             targetPath,
-            { name: serviceName },
+            {
+                name: _.startCase(serviceName.toLowerCase()),
+            },
         );
 
         this.updateEntities();
 
         const moduleEntityDescriptor = this.entities.find((entity) => {
-            return entity.collectionType === 'module' && entity.entityName === serviceModuleName;
+            return entity.collectionType === 'module' && entity.moduleName === serviceModuleName;
         });
 
         if (moduleEntityDescriptor) {
-            await updateImportedEntityToModule(
+            const updates = await updateImportedEntityToModule(
                 getEntityDescriptorWithAlias(targetPath),
                 moduleEntityDescriptor,
                 {
                     noExport: skipExport,
                 },
+            );
+            this.writeFile(
+                moduleEntityDescriptor.absolutePath,
+                applyUpdates(updates, fs.readFileSync(moduleEntityDescriptor.absolutePath).toString()),
             );
         }
     }

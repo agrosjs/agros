@@ -46,17 +46,22 @@ export abstract class AbstractCollection {
         return path.resolve(normalizeModulesPath(), pathname);
     }
 
-    protected writeTemplateFile(source: string, target: string, props: Record<string, any> = {}) {
-        const targetDirname = path.dirname(target);
+    protected writeFile(pathname: string, content: string) {
+        const targetDirname = path.dirname(pathname);
+
         if (!fs.existsSync(targetDirname)) {
             fs.mkdirpSync(targetDirname);
         }
-        fs.writeFileSync(
+
+        fs.writeFileSync(pathname, content, {
+            encoding: 'utf-8',
+        });
+    }
+
+    protected writeTemplateFile(source: string, target: string, props: Record<string, any> = {}) {
+        this.writeFile(
             target,
             ejs.render(fs.readFileSync(source).toString(), props),
-            {
-                encoding: 'utf-8',
-            },
         );
     }
 
