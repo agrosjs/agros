@@ -14,7 +14,7 @@
         },
         "skipExport": {
             "type": "confirm",
-            "message": "Export this service from module",
+            "message": "Skip exporting this service from module",
             "default": false,
             "cliType": "option"
         }

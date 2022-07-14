@@ -1,0 +1,4 @@
+import { Module } from '@agros/app';
+
+@Module()
+export class <%= name %>Module {}

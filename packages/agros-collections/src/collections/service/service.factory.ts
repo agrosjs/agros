@@ -42,7 +42,7 @@ class ServiceCollectionFactory extends AbstractCollection implements AbstractCol
             path.resolve(__dirname, 'files/service.ts._'),
             targetPath,
             {
-                name: _.startCase(serviceName.toLowerCase()),
+                name: _.startCase(serviceName.toLowerCase()).replace(/\s+/g, ''),
             },
         );
 

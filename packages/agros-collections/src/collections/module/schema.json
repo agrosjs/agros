@@ -1,0 +1,25 @@
+{
+    "alias": "m",
+    "properties": {
+        "name": {
+            "type": "input",
+            "message": "The name of the module",
+            "cliType": "argument"
+        },
+        "skipDeclareCollections": {
+            "type": "confirm",
+            "message": "Skip declaring existed collections (services & components)",
+            "default": false,
+            "cliType": "option"
+        },
+        "skipExportDeclaredCollections": {
+            "type": "confirm",
+            "message": "Skip exporting the collections declared before",
+            "default": false,
+            "cliType": "option"
+        }
+    },
+    "required": [
+        "name"
+    ]
+}
