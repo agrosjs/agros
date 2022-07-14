@@ -14,6 +14,7 @@ import {
     Node,
     Statement,
     ClassDeclaration,
+    Expression,
 } from '@babel/types';
 import * as fs from 'fs-extra';
 import {
@@ -37,7 +38,7 @@ import { RootPointDescriptor } from './types';
 import { ProjectConfigParser } from '@agros/config';
 
 export type ExportMode = 'default' | 'named' | 'namedIdentifier' | 'defaultIdentifier';
-export interface ExportItem<T = Statement> {
+export interface ExportItem<T = Statement | Expression> {
     declaration: T;
     exportMode: ExportMode;
     exportIndex: number;
@@ -60,7 +61,7 @@ export interface Decorator extends BabelDecorator {
     expression: CallExpression;
 }
 
-export const detectExports = <T extends Statement>(ast: ParseResult<File>, type: Node['type']): ExportItem<T>[] => {
+export const detectExports = <T extends Statement | Expression>(ast: ParseResult<File>, type: Node['type']): ExportItem<T>[] => {
     const result = [] as ExportItem<T>[];
     const exportedIdentifiers = [] as Array<[Identifier, Identifier, number]>;
 

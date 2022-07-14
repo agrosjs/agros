@@ -16,7 +16,6 @@ import { ParseResult } from '@babel/parser';
 import {
     CallExpression,
     Decorator,
-    ExportDefaultDeclaration,
     File,
     Identifier,
     ObjectExpression,
@@ -87,22 +86,14 @@ export const checkService = createLoaderAOP(
 
 export const transformEntry = createLoaderAOP<ParseResult<File>>(
     ({ tree }) => {
-        let exportDefaultDeclaration: ExportDefaultDeclaration;
         let exportDefaultDeclarationIndex: number;
         let lastImportDeclarationIndex: number;
         const ensureIdentifierNameMap = {};
 
-        for (const statement of tree.program.body) {
-            if (
-                statement.type === 'ExportDefaultDeclaration' &&
-                statement.declaration.type === 'ArrayExpression'
-            ) {
-                exportDefaultDeclaration = statement as ExportDefaultDeclaration;
-            }
-        }
+        const [exportDefaultDeclaration] = detectExports<t.ArrayExpression>(tree, 'ArrayExpression');
 
         if (!exportDefaultDeclaration) {
-            throw new Error('The entry of an Agros project should export an array of config as default');
+            throw new Error('The entry of an project should export an array of config');
         }
 
         const imports = [
