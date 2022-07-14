@@ -73,6 +73,7 @@ export class GenerateCommand extends AbstractCommand implements AbstractCommand 
                             case 'confirm': {
                                 break;
                             }
+                            case 'input':
                             case 'number': {
                                 optionLiterals.push(
                                     required.indexOf(propertyKey) === -1

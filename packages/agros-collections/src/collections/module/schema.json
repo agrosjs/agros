@@ -7,7 +7,7 @@
             "cliType": "argument"
         },
         "rootPoint": {
-            "type": "input",
+            "type": "number",
             "message": "Root point to manage this module",
             "cliType": "argument"
         },
