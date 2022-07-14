@@ -2,7 +2,7 @@ import { EntityDescriptor } from './types';
 import * as fs from 'fs';
 import {
     ClassImportItem,
-    detectClassExports,
+    detectExports,
     detectDecorators,
     detectImportedClass,
     detectLastImportLine,
@@ -26,7 +26,7 @@ export type Updater<T> = (data: {
     sourceDescriptor: EntityDescriptor,
     targetDescriptor: EntityDescriptor,
     targetAST: ParseResult<t.File>,
-    classImportItem: ClassImportItem,
+    classImportItem: ClassImportItem<t.ClassDeclaration>,
     initialResult: UpdateItem[],
     options?: T;
 }) => Promise<UpdateItem[]>;
@@ -191,7 +191,7 @@ export const updateImportedServiceToService = createUpdater<UpdateImportedServic
         options,
     }) => {
         const result = Array.from(initialResult) as UpdateItem[];
-        const [targetServiceClassExportItem] = detectClassExports(targetAST);
+        const [targetServiceClassExportItem] = detectExports<t.ClassDeclaration>(targetAST, 'ClassDeclaration');
 
         if (!targetServiceClassExportItem) {
             return result;

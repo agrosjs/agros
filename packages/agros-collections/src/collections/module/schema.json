@@ -6,6 +6,11 @@
             "message": "The name of the module",
             "cliType": "argument"
         },
+        "rootPoint": {
+            "type": "input",
+            "message": "Root point to manage this module",
+            "cliType": "argument"
+        },
         "skipDeclareCollections": {
             "type": "confirm",
             "message": "Skip declaring existed collections (services & components)",

@@ -1,5 +1,5 @@
 import {
-    detectClassExports,
+    detectExports,
     detectDecorators,
     detectNamedImports,
     getCollectionType,
@@ -39,7 +39,7 @@ export const checkModule = createLoaderAOP(
         context,
         modulesPath,
     }) => {
-        const declaredClasses = detectClassExports(tree);
+        const declaredClasses = detectExports<t.ClassDeclaration>(tree, 'ClassDeclaration');
         const moduleName = getFileEntityIdentifier(context.resourcePath);
         const dirname = path.basename(path.dirname(context.resourcePath));
 
@@ -66,7 +66,7 @@ export const checkModule = createLoaderAOP(
 
 export const checkService = createLoaderAOP(
     ({ tree }) => {
-        const declaredClasses = detectClassExports(tree);
+        const declaredClasses = detectExports<t.ClassDeclaration>(tree, 'ClassDeclaration');
 
         if (declaredClasses.length > 1) {
             throw new Error('Service files should have only one named class export');
@@ -200,7 +200,7 @@ export const transformComponentDecorator = createLoaderAOP(
         tree,
     }) => {
         const ensureIdentifierNameMap = {};
-        const declaredClasses = detectClassExports(tree);
+        const declaredClasses = detectExports<t.ClassDeclaration>(tree, 'ClassDeclaration');
         const componentDecoratorSpecifiers = detectNamedImports(tree, 'Component', (source) => {
             return source.indexOf('@agros/app') !== -1;
         });

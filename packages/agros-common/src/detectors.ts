@@ -2,13 +2,18 @@ import { parseAST } from '@agros/utils';
 import { ParseResult } from '@babel/parser';
 import {
     CallExpression as BabelCallExpression,
-    ClassDeclaration,
     ExportSpecifier,
     File,
     Identifier,
     ImportDeclaration,
     ImportSpecifier,
     Decorator as BabelDecorator,
+    ExpressionStatement,
+    ObjectExpression,
+    ObjectProperty,
+    Node,
+    Statement,
+    ClassDeclaration,
 } from '@babel/types';
 import * as fs from 'fs-extra';
 import {
@@ -16,16 +21,24 @@ import {
     transformPathToAliasedPath,
 } from './transformers';
 import {
+    getCollectionType,
+    getFileEntityIdentifier,
+    getPathDescriptorWithAlias,
     matchAlias,
 } from './utils';
 import * as path from 'path';
-import { normalizeNoExtensionPath } from './normalizers';
+import {
+    normalizeNoExtensionPath,
+    normalizeSrcPath,
+} from './normalizers';
 import _ from 'lodash';
 import { lintCode } from './linters';
+import { RootPointDescriptor } from './types';
+import { ProjectConfigParser } from '@agros/config';
 
 export type ExportMode = 'default' | 'named' | 'namedIdentifier' | 'defaultIdentifier';
-export interface ClassExportItem {
-    declaration: ClassDeclaration;
+export interface ExportItem<T = Statement> {
+    declaration: T;
     exportMode: ExportMode;
     exportIndex: number;
     declarationIndex: number;
@@ -33,49 +46,61 @@ export interface ClassExportItem {
     exportedName?: string;
 }
 
+export interface ImportedItem {
+    localName: string;
+    exportName: string;
+    source: string;
+}
+
 interface CallExpression extends BabelCallExpression {
     callee: Identifier;
 }
+
 export interface Decorator extends BabelDecorator {
     expression: CallExpression;
 }
 
-export const detectClassExports = (ast: ParseResult<File>): ClassExportItem[] => {
-    const result = [] as ClassExportItem[];
+export const detectExports = <T extends Statement>(ast: ParseResult<File>, type: Node['type']): ExportItem<T>[] => {
+    const result = [] as ExportItem<T>[];
     const exportedIdentifiers = [] as Array<[Identifier, Identifier, number]>;
+
+    if (!type) {
+        return result;
+    }
 
     for (const [index, statement] of ast.program.body.entries()) {
         if (statement.type === 'ExportDefaultDeclaration') {
-            if (statement.declaration.type === 'ClassDeclaration') {
+            if (statement.declaration.type === type) {
                 result.push({
-                    declaration: statement.declaration,
+                    declaration: statement.declaration as T,
                     exportMode: 'default',
                     exportIndex: index,
                     declarationIndex: index,
                 });
             } else if (statement.declaration.type === 'Identifier') {
-                const exportedDefaultClassDeclarationIndex = ast.program.body.findIndex((currentStatement) => {
-                    return currentStatement.type === 'ClassDeclaration' &&
-                        currentStatement?.id.name === (statement.declaration as Identifier).name;
+                const exportedDefaultDeclarationIndex = ast.program.body.findIndex((currentStatement) => {
+                    return currentStatement.type === type &&
+                        (currentStatement as any)?.id.name === (statement.declaration as Identifier).name;
                 });
 
-                if (exportedDefaultClassDeclarationIndex !== -1) {
+                if (exportedDefaultDeclarationIndex !== -1) {
                     result.push({
-                        declaration: ast.program.body[exportedDefaultClassDeclarationIndex] as ClassDeclaration,
+                        declaration: ast.program.body[exportedDefaultDeclarationIndex] as T,
                         exportMode: 'defaultIdentifier',
                         localName: statement.declaration.name,
                         exportIndex: index,
-                        declarationIndex: exportedDefaultClassDeclarationIndex,
+                        declarationIndex: exportedDefaultDeclarationIndex,
                     });
                 }
             }
         } else if (statement.type === 'ExportNamedDeclaration') {
-            if (statement?.declaration?.type === 'ClassDeclaration') {
+            if (statement?.declaration?.type === type) {
+                const declaration = statement.declaration as any;
                 result.push({
-                    declaration: statement.declaration,
+                    declaration,
                     exportMode: 'named',
-                    localName: statement.declaration.id.name,
-                    exportedName: statement.declaration.id.name,
+                    localName: declaration.id.name,
+                    exportedName: declaration.id.name,
                     exportIndex: index,
                     declarationIndex: index,
                 });
@@ -96,18 +121,18 @@ export const detectClassExports = (ast: ParseResult<File>): ClassExportItem[] =>
     }
 
     for (const [localIdentifier, exportedIdentifier, exportIndex] of exportedIdentifiers) {
-        const identifiedClassDeclarationIndex = ast.program.body.findIndex((statement) => {
-            return statement.type === 'ClassDeclaration' && statement?.id.name === exportedIdentifier.name;
+        const identifiedDeclarationIndex = ast.program.body.findIndex((statement) => {
+            return statement.type === type && (statement as any)?.id.name === exportedIdentifier.name;
         });
 
-        if (identifiedClassDeclarationIndex !== -1) {
+        if (identifiedDeclarationIndex !== -1) {
             result.push({
-                declaration: ast.program.body[identifiedClassDeclarationIndex] as ClassDeclaration,
+                declaration: ast.program.body[identifiedDeclarationIndex] as T,
                 exportMode: 'namedIdentifier',
                 localName: localIdentifier.name,
                 exportedName: exportedIdentifier.name,
                 exportIndex,
-                declarationIndex: identifiedClassDeclarationIndex,
+                declarationIndex: identifiedDeclarationIndex,
             });
         }
     }
@@ -133,7 +158,7 @@ export const detectNamedImports = (
 };
 
 export const detectDecorators = (tree: ParseResult<File>, name: string) => {
-    const [exportedClass] = detectClassExports(tree);
+    const [exportedClass] = detectExports<ClassDeclaration>(tree, 'ClassDeclaration');
     const decoratorImports = detectNamedImports(
         tree,
         name,
@@ -151,16 +176,16 @@ export const detectDecorators = (tree: ParseResult<File>, name: string) => {
     return decorators as Decorator[];
 };
 
-export interface ClassImportItem {
+export interface ClassImportItem<T extends Statement> {
     imported: boolean;
-    exportItem: ClassExportItem;
+    exportItem: ExportItem<T>;
     identifierName: string;
     sourceLiteralValue?: string;
     importLiteralValue?: string;
 }
 
-export const detectImportedClass = async (sourcePath: string, targetPath: string): Promise<ClassImportItem> => {
-    const result: ClassImportItem = {
+export const detectImportedClass = async (sourcePath: string, targetPath: string): Promise<ClassImportItem<ClassDeclaration>> => {
+    const result: ClassImportItem<ClassDeclaration> = {
         imported: false,
         exportItem: null,
         identifierName: null,
@@ -173,7 +198,7 @@ export const detectImportedClass = async (sourcePath: string, targetPath: string
     const sourceAST = parseAST(fs.readFileSync(sourcePath).toString());
     const targetAST = parseAST(fs.readFileSync(targetPath).toString());
 
-    const [exportedClassItem] = detectClassExports(sourceAST);
+    const [exportedClassItem] = detectExports<ClassDeclaration>(sourceAST, 'ClassDeclaration');
     const {
         exportMode,
         exportedName,
@@ -296,4 +321,114 @@ export const detectEOLCharacter = (code: string): string => {
     } catch (e) {
         return '\n';
     }
+};
+
+export const detectRootPoints = (): RootPointDescriptor[] => {
+    const projectConfigParser = new ProjectConfigParser();
+    const content = fs.readFileSync(
+        path.resolve(
+            normalizeSrcPath(),
+            projectConfigParser.getConfig<string>('entry'),
+        ),
+    ).toString();
+    const body = parseAST(content).program.body;
+    const appImportDeclaration: ImportDeclaration = body.find((statement) => {
+        return statement.type === 'ImportDeclaration' &&
+            statement.source.value.indexOf('@agros/app') !== -1;
+    }) as ImportDeclaration;
+
+    if (!appImportDeclaration) {
+        return [];
+    }
+
+    let bootstrapFnLocalName: string;
+
+    for (const specifier of (appImportDeclaration.specifiers || [])) {
+        const currentSpecifier = specifier as any;
+        if (!currentSpecifier.imported && specifier.local.name === 'bootstrap') {
+            bootstrapFnLocalName = 'bootstrap';
+            break;
+        } else if (currentSpecifier.imported && currentSpecifier.imported.name === 'bootstrap') {
+            bootstrapFnLocalName = specifier.local.name;
+            break;
+        }
+    }
+
+    if (!bootstrapFnLocalName) {
+        return [];
+    }
+
+    const callerDeclaration: ExpressionStatement = body.find((statement) => {
+        if (
+            statement.type === 'ExpressionStatement' &&
+            statement.expression.type === 'CallExpression' &&
+            (statement.expression.callee as any).name === bootstrapFnLocalName
+        ) {
+            return true;
+        }
+        return false;
+    }) as ExpressionStatement;
+
+    const moduleNames: string[] = ((callerDeclaration.expression as any)?.arguments[0]?.elements as any[] || [])
+        .filter((element) => element.type === 'ObjectExpression')
+        .map((element: ObjectExpression) => {
+            const moduleProperty: ObjectProperty = (element?.properties || [])
+                .find((property: ObjectProperty) => {
+                    return (property.key as any).name === 'module';
+                }) as ObjectProperty;
+            if (moduleProperty) {
+                return (moduleProperty.value as any).name;
+            }
+            return null;
+        })
+        .filter((moduleName) => !!moduleName);
+
+    const importedItems: ImportedItem[] = body.filter((statement) => {
+        return statement.type === 'ImportDeclaration';
+    }).reduce((result, currentStatement: ImportDeclaration) => {
+        return result.concat(currentStatement.specifiers.map((specifier) => {
+            return {
+                localName: specifier.local.name,
+                source: currentStatement.source.value,
+                exportName: (specifier as any).imported.name,
+            };
+        }));
+    }, [] as ImportedItem[]).filter((importedItem) => {
+        return moduleNames.indexOf(importedItem.localName) !== -1;
+    });
+
+    return importedItems.map((importedItem) => {
+        const {
+            source,
+            localName,
+            exportName,
+        } = importedItem;
+
+        const pathDescriptor = getPathDescriptorWithAlias(source);
+
+        if (!pathDescriptor) {
+            return null;
+        }
+
+        const collectionType = getCollectionType(pathDescriptor.absolutePath);
+
+        if (!collectionType) {
+            return null;
+        }
+
+        const baseFilename = path.basename(pathDescriptor.absolutePath);
+        const absoluteDirname = path.dirname(pathDescriptor.absolutePath);
+        const relativeDirname = path.relative(normalizeSrcPath(), absoluteDirname);
+
+        return {
+            ...pathDescriptor,
+            localName,
+            collectionType,
+            exportName,
+            name: relativeDirname
+                .split(path.sep)
+                .concat(getFileEntityIdentifier(baseFilename))
+                .join('/'),
+        };
+    });
 };
