@@ -9,7 +9,8 @@
         "rootPoint": {
             "type": "number",
             "message": "Root point to manage this module",
-            "cliType": "argument"
+            "cliType": "option",
+            "default": 0
         },
         "skipDeclareCollections": {
             "type": "confirm",

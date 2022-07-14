@@ -17,7 +17,7 @@ export interface EntityDescriptor extends CollectionDescriptor {
     moduleName: string;
 }
 
-export interface RootPointDescriptor extends CollectionDescriptor {
+export interface RootPointDescriptor extends EntityDescriptor {
     localName: string;
     exportName: string | 'default';
     name: string;

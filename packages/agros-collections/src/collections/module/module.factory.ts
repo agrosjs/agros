@@ -2,6 +2,7 @@ import {
     AbstractCollection,
     applyUpdates,
     CollectionGenerateResult,
+    detectRootPoints,
     getEntityDescriptorWithAlias,
     normalizeEntityFileName,
     updateImportedEntityToModule,
@@ -12,6 +13,7 @@ import * as fs from 'fs';
 
 interface ModuleCollectionOptions {
     name: string;
+    rootPoint?: number;
     skipDeclareCollections?: boolean;
     skipExportDeclaredCollections?: boolean;
 }
@@ -19,6 +21,7 @@ interface ModuleCollectionOptions {
 class ModuleCollectionFactory extends AbstractCollection implements AbstractCollection {
     public async generate({
         name,
+        rootPoint: rootPointIndex,
         skipDeclareCollections,
         skipExportDeclaredCollections,
     }: ModuleCollectionOptions) {
@@ -67,6 +70,22 @@ class ModuleCollectionFactory extends AbstractCollection implements AbstractColl
                 targetPath,
                 applyUpdates(updates, fs.readFileSync(targetPath).toString()),
             );
+        }
+
+        if (_.isNumber(rootPointIndex)) {
+            const rootPointDescriptor = (detectRootPoints() || [])[rootPointIndex];
+
+            if (rootPointDescriptor) {
+                const updates = await updateImportedEntityToModule(
+                    getEntityDescriptorWithAlias(targetPath),
+                    rootPointDescriptor,
+                );
+                this.writeFile(
+                    rootPointDescriptor.absolutePath,
+                    applyUpdates(updates, fs.readFileSync(rootPointDescriptor.absolutePath).toString()),
+                );
+                result.update.push(rootPointDescriptor.absolutePath);
+            }
         }
 
         return result;

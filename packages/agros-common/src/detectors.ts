@@ -24,8 +24,8 @@ import {
 } from './transformers';
 import {
     getCollectionType,
+    getEntityDescriptorWithAlias,
     getFileEntityIdentifier,
-    getPathDescriptorWithAlias,
     matchAlias,
 } from './utils';
 import * as path from 'path';
@@ -378,32 +378,33 @@ export const detectRootPoints = (): RootPointDescriptor[] => {
             exportName,
         } = importedItem;
 
-        const pathDescriptor = getPathDescriptorWithAlias(
+        const entityDescriptor = getEntityDescriptorWithAlias(
             normalizeAbsolutePath(transformAliasedPathToPath(source) + '.ts'),
         );
 
-        if (!pathDescriptor) {
+        if (!entityDescriptor) {
             return null;
         }
 
-        const collectionType = getCollectionType(pathDescriptor.absolutePath);
+        const collectionType = getCollectionType(entityDescriptor.absolutePath);
 
         if (!collectionType) {
             return null;
         }
 
-        const baseFilename = path.basename(pathDescriptor.absolutePath);
-        const absoluteDirname = path.dirname(pathDescriptor.absolutePath);
+        const baseFilename = path.basename(entityDescriptor.absolutePath);
+        const absoluteDirname = path.dirname(entityDescriptor.absolutePath);
         const relativeDirname = path.relative(normalizeSrcPath(), absoluteDirname);
 
         return {
-            ...pathDescriptor,
+            ...entityDescriptor,
             localName,
             collectionType,
             exportName,
             name: relativeDirname
                 .split(path.sep)
                 .concat(getFileEntityIdentifier(baseFilename))
+                .filter((segment) => !!segment)
                 .join('/'),
         };
     }).filter((importedItem) => !!importedItem);
