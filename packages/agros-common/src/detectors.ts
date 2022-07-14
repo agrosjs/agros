@@ -8,13 +8,14 @@ import {
     ImportDeclaration,
     ImportSpecifier,
     Decorator as BabelDecorator,
-    ExpressionStatement,
     ObjectExpression,
     ObjectProperty,
     Node,
     Statement,
     ClassDeclaration,
     Expression,
+    ArrayExpression,
+    StringLiteral,
 } from '@babel/types';
 import * as fs from 'fs-extra';
 import {
@@ -29,6 +30,7 @@ import {
 } from './utils';
 import * as path from 'path';
 import {
+    normalizeAbsolutePath,
     normalizeNoExtensionPath,
     normalizeSrcPath,
 } from './normalizers';
@@ -332,54 +334,25 @@ export const detectRootPoints = (): RootPointDescriptor[] => {
             projectConfigParser.getConfig<string>('entry'),
         ),
     ).toString();
-    const body = parseAST(content).program.body;
-    const appImportDeclaration: ImportDeclaration = body.find((statement) => {
-        return statement.type === 'ImportDeclaration' &&
-            statement.source.value.indexOf('@agros/app') !== -1;
-    }) as ImportDeclaration;
+    const ast = parseAST(content);
+    const body = ast.program.body;
+    const [configDeclaration] = detectExports<ArrayExpression>(ast, 'ArrayExpression');
 
-    if (!appImportDeclaration) {
+    if (!configDeclaration) {
         return [];
     }
 
-    let bootstrapFnLocalName: string;
-
-    for (const specifier of (appImportDeclaration.specifiers || [])) {
-        const currentSpecifier = specifier as any;
-        if (!currentSpecifier.imported && specifier.local.name === 'bootstrap') {
-            bootstrapFnLocalName = 'bootstrap';
-            break;
-        } else if (currentSpecifier.imported && currentSpecifier.imported.name === 'bootstrap') {
-            bootstrapFnLocalName = specifier.local.name;
-            break;
-        }
-    }
-
-    if (!bootstrapFnLocalName) {
-        return [];
-    }
-
-    const callerDeclaration: ExpressionStatement = body.find((statement) => {
-        if (
-            statement.type === 'ExpressionStatement' &&
-            statement.expression.type === 'CallExpression' &&
-            (statement.expression.callee as any).name === bootstrapFnLocalName
-        ) {
-            return true;
-        }
-        return false;
-    }) as ExpressionStatement;
-
-    const moduleNames: string[] = ((callerDeclaration.expression as any)?.arguments[0]?.elements as any[] || [])
+    const moduleNames: string[] = (configDeclaration.declaration.elements as any[] || [])
         .filter((element) => element.type === 'ObjectExpression')
         .map((element: ObjectExpression) => {
-            const moduleProperty: ObjectProperty = (element?.properties || [])
-                .find((property: ObjectProperty) => {
-                    return (property.key as any).name === 'module';
-                }) as ObjectProperty;
+            const moduleProperty: ObjectProperty = (element?.properties || []).find((property: ObjectProperty) => {
+                return (property.key as Identifier).name === 'module' || (property.key as StringLiteral).value === 'module';
+            }) as ObjectProperty;
+
             if (moduleProperty) {
                 return (moduleProperty.value as any).name;
             }
+
             return null;
         })
         .filter((moduleName) => !!moduleName);
@@ -389,9 +362,9 @@ export const detectRootPoints = (): RootPointDescriptor[] => {
     }).reduce((result, currentStatement: ImportDeclaration) => {
         return result.concat(currentStatement.specifiers.map((specifier) => {
             return {
-                localName: specifier.local.name,
-                source: currentStatement.source.value,
-                exportName: (specifier as any).imported.name,
+                localName: specifier?.local?.name,
+                source: currentStatement?.source?.value,
+                exportName: (specifier as any)?.imported?.name,
             };
         }));
     }, [] as ImportedItem[]).filter((importedItem) => {
@@ -405,7 +378,9 @@ export const detectRootPoints = (): RootPointDescriptor[] => {
             exportName,
         } = importedItem;
 
-        const pathDescriptor = getPathDescriptorWithAlias(source);
+        const pathDescriptor = getPathDescriptorWithAlias(
+            normalizeAbsolutePath(transformAliasedPathToPath(source) + '.ts'),
+        );
 
         if (!pathDescriptor) {
             return null;
@@ -431,5 +406,5 @@ export const detectRootPoints = (): RootPointDescriptor[] => {
                 .concat(getFileEntityIdentifier(baseFilename))
                 .join('/'),
         };
-    });
+    }).filter((importedItem) => !!importedItem);
 };
