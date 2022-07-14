@@ -26,9 +26,26 @@ export const lintCode = async (
         cwd: path.dirname(eslintConfigFilePath),
         overrideConfig: {
             rules: {
-                'array-element-newline': ['error', 'always'],
-                'array-bracket-newline': ['error', 'always'],
-                'object-curly-newline': ['error', { minProperties: 2 }],
+                'array-element-newline': ['error', {
+                    'multiline': true,
+                    'minItems': 2,
+                }],
+                'array-bracket-newline': ['error', {
+                    'multiline': true,
+                    'minItems': 2,
+                }],
+                'object-curly-newline': ['error', {
+                    'ObjectExpression': 'always',
+                    'ObjectPattern': 'always',
+                    'ImportDeclaration': {
+                        'multiline': true,
+                        'minProperties': 2,
+                    },
+                    'ExportDeclaration': {
+                        'multiline': true,
+                        'minProperties': 2,
+                    },
+                }],
                 'object-curly-spacing': ['error', 'always'],
                 'object-property-newline': ['error', { allowAllPropertiesOnSameLine: false }],
                 'no-undef': 'off',
