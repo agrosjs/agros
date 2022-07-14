@@ -1,0 +1,9 @@
+import { FC } from 'react';
+
+const <%= name %>: FC = () => {
+    const container = getContainer(<%= name %>);
+
+    return (<div><%= name %> Component is working!</div>);
+};
+
+export default <%= name %>;
