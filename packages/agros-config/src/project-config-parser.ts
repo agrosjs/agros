@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import { Configuration } from 'webpack';
 import { cosmiconfigSync } from 'cosmiconfig';
+import * as path from 'path';
 
 export type ScopeMap = Record<string, string>;
 export type AliasMap = Record<string, string>;
@@ -99,8 +100,12 @@ export class ProjectConfigParser {
         const alias = this.getConfig<Record<string, string>>('alias') || {};
         return Object.keys(alias).reduce((result, key) => {
             const aliasKey = key.replace(/(\/?)\*$/, '');
-            const aliasValue = key.replace(/(\/?)\*$/, '');
-            result[aliasKey] = [baseDir, aliasValue].filter((value) => !!value).join('/');
+            const aliasValue = alias[key].replace(/(\/?)\*$/, '');
+            result[aliasKey] = path.join(
+                path.resolve(process.cwd()),
+                baseDir,
+                aliasValue || '',
+            );
             return result;
         }, {});
     }
