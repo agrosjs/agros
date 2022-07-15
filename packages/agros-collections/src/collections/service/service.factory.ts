@@ -31,11 +31,8 @@ class ServiceCollectionFactory extends AbstractCollection implements AbstractCol
             update: [],
         };
         const serviceName = _.kebabCase(name);
-        const serviceModuleName = moduleName
-            ? _.kebabCase(moduleName)
-            : serviceName;
+        const serviceModuleName = moduleName ? _.kebabCase(moduleName) : serviceName;
         const filename = normalizeEntityFileName('service', serviceName, '*.service.ts');
-
         const targetPath = this.modulesPath(`${serviceModuleName}/${filename}`);
 
         await this.writeTemplateFile(

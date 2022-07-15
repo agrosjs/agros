@@ -17,6 +17,20 @@ export const getCollections = () => {
         }
 
         if (!collectionIndexFilePath) {
+            try {
+                const projectCollectionPackagePath = path.resolve(
+                    process.cwd(),
+                    'node_modules',
+                    collectionPackageName,
+                    'lib/collections',
+                );
+                if (fs.existsSync(projectCollectionPackagePath) && fs.statSync(projectCollectionPackagePath).isDirectory()) {
+                    collectionIndexFilePath = projectCollectionPackagePath;
+                }
+            } catch (e) {}
+        }
+
+        if (!collectionIndexFilePath) {
             return [];
         }
 
