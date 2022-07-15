@@ -14,6 +14,7 @@ import * as fs from 'fs';
 interface ModuleCollectionOptions {
     name: string;
     rootPoint?: number;
+    global?: boolean;
     skipDeclareCollections?: boolean;
     skipExportDeclaredCollections?: boolean;
 }
@@ -22,6 +23,7 @@ class ModuleCollectionFactory extends AbstractCollection implements AbstractColl
     public async generate({
         name,
         rootPoint: rootPointIndex,
+        global: globalModule = false,
         skipDeclareCollections,
         skipExportDeclaredCollections,
     }: ModuleCollectionOptions) {
@@ -42,6 +44,7 @@ class ModuleCollectionFactory extends AbstractCollection implements AbstractColl
             path.resolve(__dirname, 'files/module.ts._'),
             targetPath,
             {
+                globalModule,
                 name: _.startCase(moduleName.toLowerCase()).replace(/\s+/g, ''),
             },
         );

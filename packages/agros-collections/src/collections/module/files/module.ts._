@@ -1,4 +1,14 @@
+<% if (globalModule) { -%>
+import {
+    Global,
+    Module,
+} from '@agros/app';
+<% } else { -%>
 import { Module } from '@agros/app';
+<% } -%>
 
+<% if (globalModule) { -%>
+@Global()
+<% } -%>
 @Module()
 export class <%= name %>Module {}

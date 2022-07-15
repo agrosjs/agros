@@ -12,6 +12,12 @@
             "cliType": "option",
             "default": 0
         },
+        "global": {
+            "type": "confirm",
+            "message": "Set this module as a global module",
+            "cliType": "option",
+            "default": false
+        },
         "skipDeclareCollections": {
             "type": "confirm",
             "message": "Skip declaring existed collections (services & components)",

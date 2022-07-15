@@ -66,7 +66,7 @@ export abstract class AbstractCollection {
         }
 
         const {
-            lint = true,
+            lint = false,
             lintOptions,
         } = options;
         const targetDirname = path.dirname(pathname);
@@ -93,7 +93,10 @@ export abstract class AbstractCollection {
         await this.writeFile(
             target,
             ejs.render(fs.readFileSync(source).toString(), props),
-            options,
+            {
+                lint: true,
+                ...options,
+            },
         );
     }
 
