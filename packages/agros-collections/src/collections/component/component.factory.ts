@@ -4,6 +4,7 @@ import {
     CollectionGenerateResult,
     getEntityDescriptorWithAlias,
     normalizeEntityFileName,
+    normalizeNoExtensionPath,
     transformPathToAliasedPath,
     updateImportedEntityToModule,
 } from '@agros/common';
@@ -48,7 +49,7 @@ class ComponentCollectionFactory extends AbstractCollection implements AbstractC
             componentTargetPath,
             {
                 name: declarationName,
-                file: transformPathToAliasedPath(declarationTargetPath),
+                file: transformPathToAliasedPath(normalizeNoExtensionPath(declarationTargetPath)),
                 ...(lazy ? { lazy: true } : {}),
             },
         );
