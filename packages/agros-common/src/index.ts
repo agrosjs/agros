@@ -7,3 +7,4 @@ export * from './collection';
 export * from './updaters';
 export * from './apply-updates';
 export * from './transformers';
+export * from './linters';

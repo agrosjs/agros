@@ -9,7 +9,7 @@ import * as fs from 'fs-extra';
 import ejs from 'ejs';
 import {
     lintCode,
-    LinterPlugin,
+    LinterOptions,
 } from './linters';
 
 export interface Collection {
@@ -25,8 +25,7 @@ export interface CollectionGenerateResult {
 
 export interface CollectionWriteFileOptions {
     lint?: boolean;
-    lintPrePlugins?: LinterPlugin[];
-    lintPostPlugins?: LinterPlugin[];
+    lintOptions?: LinterOptions;
 }
 
 export abstract class AbstractCollection {
@@ -68,8 +67,7 @@ export abstract class AbstractCollection {
 
         const {
             lint = true,
-            lintPrePlugins = [],
-            lintPostPlugins = [],
+            lintOptions,
         } = options;
         const targetDirname = path.dirname(pathname);
 
@@ -78,7 +76,7 @@ export abstract class AbstractCollection {
         }
 
         const fileContent = lint
-            ? await lintCode(content, lintPrePlugins, lintPostPlugins)
+            ? await lintCode(content, lintOptions)
             : content;
 
         fs.writeFileSync(pathname, fileContent, {

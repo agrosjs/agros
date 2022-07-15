@@ -21,7 +21,9 @@ export const generateConstructorCode = async (ast: t.Node): Promise<string> => {
         .concat(generate(ast).code)
         .concat(postPlaceholders)
         .join('\n');
-    const lintedCode = await lintCode(code, [lintWithPrettier]);
+    const lintedCode = await lintCode(code, {
+        prePlugins: [lintWithPrettier],
+    });
     const lintedCodeLines = lintedCode.split(/\r|\n|\r\n/);
     const lintedCodeAST = parseAST(lintedCode);
     const classBody = (lintedCodeAST.program.body.find((statement) => {
