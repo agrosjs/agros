@@ -1,0 +1,52 @@
+{
+    "main": "lib/index.js",
+    "types": "lib/index.d.ts",
+    "files": [
+        "lib",
+        "files",
+        "bin",
+        "LICENSE",
+        "README.md",
+        "package.json",
+        "package-lock.json"
+    ],
+    "publishConfig": {
+        "access": "public"
+    },
+    "scripts": {
+        "lint": "eslint .",
+        "build": "rimraf ./lib && tsc --build tsconfig.json",
+        "watch": "tsc --watch --project tsconfig.json",
+        "pretest": "npm run lint",
+        "test": "exit 0"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/lenconda/agros.git"
+    },
+    "author": "Lenconda <i@lenconda.top>",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/lenconda/agros/issues"
+    },
+    "homepage": "https://github.com/lenconda/agros#readme",
+    "devDependencies": {
+        "@types/fs-extra": "^9.0.13",
+        "@types/inquirer": "~8.1.1",
+        "@types/jest": "^28.1.1",
+        "@types/lodash": "^4.14.182",
+        "@types/node": "^15.12.2",
+        "rimraf": "^3.0.2",
+        "typescript": "^4.5.5"
+    },
+    "name": "@agros/create-app",
+    "version": "0.0.0",
+    "description": "Agros project initializer",
+    "dependencies": {
+        "@agros/common": "workspace:^0.0.0",
+        "fs-extra": "^10.1.0",
+        "inquirer": "~8.1.1",
+        "lodash": "^4.17.21",
+        "yup": "^0.32.11"
+    }
+}
