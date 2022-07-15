@@ -8,6 +8,7 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import _ from 'lodash';
 import * as yup from 'yup';
+import * as semver from 'semver';
 
 export interface AppCollectionOptions {
     path?: string;
@@ -94,9 +95,24 @@ export class AppCollectionFactory extends AbstractCollection implements Abstract
 
         const configValidator = yup.object().shape({
             name: yup.string().required(),
-            // version: yup.string()
+            version: yup.string().required().test(
+                'test-semver',
+                `Property "version" must be a valid semver string, but got: "${props.version}"`,
+                (value) => {
+                    return Boolean(semver.valid(value));
+                },
+            ),
+            description: yup.string().optional(),
+            author: yup.string().optional(),
+            repository: yup.string().optional().test(
+                'test-git-url',
+                'Property "repository" must be a valid Git URL',
+                (value) => {
+                    return /^(([A-Za-z0-9]+@|http(|s)\:\/\/)|(http(|s)\:\/\/[A-Za-z0-9]+@))([A-Za-z0-9.]+(:\d+)?)(?::|\/)([\d\/\w.-]+?)(\.git){1}$/i.test(value);
+                },
+            ),
+            license: yup.string().optional(),
         });
-
         const config = _.get(
             props,
             [
@@ -108,8 +124,42 @@ export class AppCollectionFactory extends AbstractCollection implements Abstract
                 'license',
             ],
         );
+        let installCommand: string[] = [];
 
-        const { packageManager } = props;
+        if (!skipInstall) {
+            const { packageManager } = props;
+
+            switch (packageManager) {
+                case 'npm': {
+                    installCommand = ['npm', 'i'];
+                    break;
+                }
+                case 'yarn': {
+                    installCommand = ['yarn'];
+                    break;
+                }
+                case 'pnpm': {
+                    installCommand = ['pnpm', 'i'];
+                    break;
+                }
+                case 'other':
+                default: {
+                    const { installCommandStr } = await inquirer.prompt([
+                        {
+                            name: 'installCommandStr',
+                            type: 'input',
+                            message: 'Please input the install command',
+                        },
+                    ]);
+
+                    if (_.isString(installCommandStr)) {
+                        installCommand = installCommandStr.split(/\s+/g);
+                    }
+
+                    break;
+                }
+            }
+        }
 
         return result;
     }
