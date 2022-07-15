@@ -1,4 +1,9 @@
 import { Component } from '@agros/app';
 
-@Component(<%= componentConfig %>)
+@Component({
+    file: '<%= file %>',
+    <% if (typeof lazy === "boolean") { %>
+    lazy: <%= lazy %>,
+    <% } else {} %>
+})
 export class <%= name %>Component {}

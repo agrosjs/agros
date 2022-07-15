@@ -7,6 +7,10 @@ import { scanProjectEntities } from './scanners';
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import ejs from 'ejs';
+import {
+    lintCode,
+    LinterPlugin,
+} from './linters';
 
 export interface Collection {
     name: string;
@@ -17,6 +21,12 @@ export interface Collection {
 export interface CollectionGenerateResult {
     update: string[];
     create: string[];
+}
+
+export interface CollectionWriteFileOptions {
+    lint?: boolean;
+    lintPrePlugins?: LinterPlugin[];
+    lintPostPlugins?: LinterPlugin[];
 }
 
 export abstract class AbstractCollection {
@@ -51,22 +61,41 @@ export abstract class AbstractCollection {
         return path.resolve(normalizeModulesPath(), pathname);
     }
 
-    protected writeFile(pathname: string, content: string) {
+    protected async writeFile(pathname: string, content: string, options: CollectionWriteFileOptions = {}) {
+        if (!pathname || !content) {
+            return;
+        }
+
+        const {
+            lint = true,
+            lintPrePlugins = [],
+            lintPostPlugins = [],
+        } = options;
         const targetDirname = path.dirname(pathname);
 
         if (!fs.existsSync(targetDirname)) {
             fs.mkdirpSync(targetDirname);
         }
 
-        fs.writeFileSync(pathname, content, {
+        const fileContent = lint
+            ? await lintCode(content, lintPrePlugins, lintPostPlugins)
+            : content;
+
+        fs.writeFileSync(pathname, fileContent, {
             encoding: 'utf-8',
         });
     }
 
-    protected writeTemplateFile(source: string, target: string, props: Record<string, any> = {}) {
-        this.writeFile(
+    protected async writeTemplateFile(
+        source: string,
+        target: string,
+        props: Record<string, any> = {},
+        options: CollectionWriteFileOptions = {},
+    ) {
+        await this.writeFile(
             target,
             ejs.render(fs.readFileSync(source).toString(), props),
+            options,
         );
     }
 

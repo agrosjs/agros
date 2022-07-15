@@ -38,7 +38,7 @@ class ModuleCollectionFactory extends AbstractCollection implements AbstractColl
 
         const targetPath = this.modulesPath(`${moduleName}/${filename}`);
 
-        this.writeTemplateFile(
+        await this.writeTemplateFile(
             path.resolve(__dirname, 'files/module.ts._'),
             targetPath,
             {
@@ -66,7 +66,7 @@ class ModuleCollectionFactory extends AbstractCollection implements AbstractColl
                     noExport: skipExportDeclaredCollections,
                 },
             );
-            this.writeFile(
+            await this.writeFile(
                 targetPath,
                 applyUpdates(updates, fs.readFileSync(targetPath).toString()),
             );
@@ -80,7 +80,7 @@ class ModuleCollectionFactory extends AbstractCollection implements AbstractColl
                     getEntityDescriptorWithAlias(targetPath),
                     rootPointDescriptor,
                 );
-                this.writeFile(
+                await this.writeFile(
                     rootPointDescriptor.absolutePath,
                     applyUpdates(updates, fs.readFileSync(rootPointDescriptor.absolutePath).toString()),
                 );

@@ -38,7 +38,7 @@ class ServiceCollectionFactory extends AbstractCollection implements AbstractCol
 
         const targetPath = this.modulesPath(`${serviceModuleName}/${filename}`);
 
-        this.writeTemplateFile(
+        await this.writeTemplateFile(
             path.resolve(__dirname, 'files/service.ts._'),
             targetPath,
             {
@@ -61,7 +61,7 @@ class ServiceCollectionFactory extends AbstractCollection implements AbstractCol
                     noExport: skipExport,
                 },
             );
-            this.writeFile(
+            await this.writeFile(
                 moduleEntityDescriptor.absolutePath,
                 applyUpdates(updates, fs.readFileSync(moduleEntityDescriptor.absolutePath).toString()),
             );
