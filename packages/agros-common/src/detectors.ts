@@ -305,7 +305,7 @@ export const detectImportedClass = async (
         case 'namedIdentifier': {
             result.identifierName = exportedName;
             result.importLiteralValue = dynamic
-                ? `const ${exportedName} = import('${result.sourceLiteralValue}').then(({ ${exportedName} }) => ${exportedName});`
+                ? `const ${exportedName} = import('${result.sourceLiteralValue}').then(({${exportedName}}) => ${exportedName});`
                 : `import { ${result.identifierName} } from '${result.sourceLiteralValue}';`;
             break;
         }
