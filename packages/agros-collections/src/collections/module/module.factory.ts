@@ -13,6 +13,7 @@ import * as fs from 'fs';
 
 interface ModuleCollectionOptions {
     name: string;
+    async?: boolean;
     rootPoint?: number;
     global?: boolean;
     skipDeclareCollections?: boolean;
@@ -22,6 +23,7 @@ interface ModuleCollectionOptions {
 class ModuleCollectionFactory extends AbstractCollection implements AbstractCollection {
     public async generate({
         name,
+        async: asyncModule,
         rootPoint: rootPointIndex,
         global: globalModule = false,
         skipDeclareCollections,
@@ -82,6 +84,9 @@ class ModuleCollectionFactory extends AbstractCollection implements AbstractColl
                 const updates = await updateImportedEntityToModule(
                     getEntityDescriptorWithAlias(targetPath),
                     rootPointDescriptor,
+                    {
+                        asyncModule,
+                    },
                 );
                 await this.writeFile(
                     rootPointDescriptor.absolutePath,

@@ -69,7 +69,7 @@ const createUpdater = <T = Record<string, any>>(
         if (!imported) {
             result.push({
                 line: detectLastImportLine(targetAST),
-                content: [importLiteralValue],
+                content: importLiteralValue.split(/\r|\n|\r\n/),
                 deleteLines: 0,
             });
         }
@@ -87,23 +87,46 @@ const createUpdater = <T = Record<string, any>>(
 
 export interface UpdateImportedEntityToModuleOptions {
     noExport?: boolean;
+    asyncModule?: boolean,
 }
 
 export const updateImportedEntityToModule = createUpdater<UpdateImportedEntityToModuleOptions>(
     async ({
         sourceDescriptor,
+        targetDescriptor,
         targetAST,
-        classImportItem,
+        classImportItem: originalClassImportItem,
         initialResult,
         options,
     }) => {
-        const { identifierName } = classImportItem;
-        const result = Array.from(initialResult) as UpdateItem[];
+        const {
+            noExport,
+            asyncModule,
+        } = options;
+        let classImportItem = originalClassImportItem;
+        const result = asyncModule ? [] : Array.from(initialResult) as UpdateItem[];
         const [decorator] = detectDecorators(targetAST, 'Module');
 
         if (!decorator) {
             return result;
         }
+
+        if (asyncModule) {
+            classImportItem = await detectImportedClass(
+                sourceDescriptor.absolutePath,
+                targetDescriptor.absolutePath,
+                true,
+            );
+            if (!classImportItem.imported) {
+                result.push({
+                    line: detectLastImportLine(targetAST),
+                    content: (classImportItem.importLiteralValue || '').split(/\r|\n|\r\n/),
+                    deleteLines: 0,
+                });
+            }
+        }
+
+        const { identifierName } = classImportItem;
 
         if (!decorator.expression.arguments[0]) {
             decorator.expression.arguments.push(t.objectExpression([]));
@@ -119,11 +142,11 @@ export const updateImportedEntityToModule = createUpdater<UpdateImportedEntityTo
 
         switch (sourceDescriptor.collectionType) {
             case 'component': {
-                decoratorProperties = ['components', ...(options.noExport ? [] : ['exports'])];
+                decoratorProperties = ['components', ...(noExport ? [] : ['exports'])];
                 break;
             }
             case 'service': {
-                decoratorProperties = ['providers', ...(options.noExport ? [] : ['exports'])];
+                decoratorProperties = ['providers', ...(noExport ? [] : ['exports'])];
                 break;
             }
             case 'module': {
@@ -140,7 +163,7 @@ export const updateImportedEntityToModule = createUpdater<UpdateImportedEntityTo
             let property: t.ObjectProperty = argument.properties.find((property) => {
                 return property.type === 'ObjectProperty' && (
                     (property.key.type === 'Identifier' && property.key.name === decoratorProperty) ||
-                (property.key.type === 'StringLiteral' && property.key.value === decoratorProperty)
+                        (property.key.type === 'StringLiteral' && property.key.value === decoratorProperty)
                 ) && property.value.type === 'ArrayExpression';
             }) as t.ObjectProperty;
 

@@ -18,6 +18,12 @@
             "cliType": "option",
             "default": false
         },
+        "async": {
+            "type": "confirm",
+            "message": "Set this module as a async module",
+            "cliType": "option",
+            "default": false
+        },
         "skipDeclareCollections": {
             "type": "confirm",
             "message": "Skip declaring existed collections (services & components)",

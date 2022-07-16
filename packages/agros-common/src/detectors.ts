@@ -38,6 +38,7 @@ import _ from 'lodash';
 import { lintCode } from './linters';
 import { RootPointDescriptor } from './types';
 import { ProjectConfigParser } from '@agros/config';
+import traverse from '@babel/traverse';
 
 export type ExportMode = 'default' | 'named' | 'namedIdentifier' | 'defaultIdentifier';
 export interface ExportItem<T = Statement | Expression> {
@@ -187,7 +188,17 @@ export interface ClassImportItem<T extends Statement> {
     importLiteralValue?: string;
 }
 
-export const detectImportedClass = async (sourcePath: string, targetPath: string): Promise<ClassImportItem<ClassDeclaration>> => {
+const getPath = (targetPath, statementSource) => {
+    return matchAlias(statementSource)
+        ? transformAliasedPathToPath(statementSource)
+        : path.resolve(path.dirname(targetPath), statementSource);
+};
+
+export const detectImportedClass = async (
+    sourcePath: string,
+    targetPath: string,
+    dynamic = false,
+): Promise<ClassImportItem<ClassDeclaration>> => {
     const result: ClassImportItem<ClassDeclaration> = {
         imported: false,
         exportItem: null,
@@ -212,15 +223,40 @@ export const detectImportedClass = async (sourcePath: string, targetPath: string
         return result;
     }
 
+    const dynamicImportDeclarations = await new Promise<CallExpression[]>((resolve) => {
+        const expressions: CallExpression[] = [];
+        traverse(_.cloneDeep(targetAST) as any, {
+            CallExpression: (path) => {
+                if (
+                    path.node.type === 'CallExpression' &&
+                        path.node.callee.type === 'Import' &&
+                        path.node.arguments[0].type === 'StringLiteral' &&
+                        getPath(targetPath, path.node.arguments[0].value) === normalizeNoExtensionPath(sourcePath)
+                ) {
+                    expressions.push(path.node as CallExpression);
+                }
+            },
+            Program: {
+                exit: () => {
+                    resolve(expressions);
+                },
+            },
+        });
+    });
+
+    if (dynamicImportDeclarations.length > 0) {
+        result.imported = true;
+        result.identifierName = exportedName;
+        return result;
+    }
+
     for (const statement of targetAST.program.body) {
         if (statement.type !== 'ImportDeclaration') {
             continue;
         }
 
         const statementSource = statement.source.value;
-        const statementSourcePath = matchAlias(statementSource)
-            ? transformAliasedPathToPath(statementSource)
-            : path.resolve(path.dirname(targetPath), statementSource);
+        const statementSourcePath = getPath(targetPath, statementSource);
 
         if (normalizeNoExtensionPath(sourcePath) !== statementSourcePath) {
             continue;
@@ -268,13 +304,17 @@ export const detectImportedClass = async (sourcePath: string, targetPath: string
         case 'named':
         case 'namedIdentifier': {
             result.identifierName = exportedName;
-            result.importLiteralValue = `import { ${result.identifierName} } from '${result.sourceLiteralValue}';`;
+            result.importLiteralValue = dynamic
+                ? `const ${exportedName} = import('${result.sourceLiteralValue}').then(({ ${exportedName} }) => ${exportedName});`
+                : `import { ${result.identifierName} } from '${result.sourceLiteralValue}';`;
             break;
         }
         case 'default':
         case 'defaultIdentifier': {
             result.identifierName = _.startCase(path.basename(normalizeNoExtensionPath(sourcePath))).split(/\s+/).join('');
-            result.importLiteralValue = `import ${result.identifierName} from '${result.sourceLiteralValue}';`;
+            result.importLiteralValue = dynamic
+                ? `const ${result.identifierName} = import('${result.sourceLiteralValue}');`
+                : `import ${result.identifierName} from '${result.sourceLiteralValue}';`;
             break;
         }
         default:
