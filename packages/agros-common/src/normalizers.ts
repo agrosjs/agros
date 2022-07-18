@@ -4,6 +4,8 @@ import {
     ProjectConfigParser,
 } from '@agros/config';
 import parseGlob from 'parse-glob';
+import { EntityDescriptor } from './types';
+import _ from 'lodash';
 
 const projectConfigParser = new ProjectConfigParser();
 
@@ -76,4 +78,45 @@ export const normalizeEntityFileName = (type: CollectionType, name: string, fall
         : schema;
 
     return `${name}.`.concat(extname.replace(/^\.+/g, ''));
+};
+
+export const normalizeCLIPath = (pathname: string, entities: EntityDescriptor[]) => {
+    if (!pathname || !_.isString(pathname)) {
+        return null;
+    }
+
+    const regexResult = /(\w+:)?(\w+).(\w+)/g.exec(pathname);
+
+    let moduleScope: string;
+    let entityName: string;
+    let collectionType: string;
+    let result: string = null;
+
+    if (regexResult) {
+        moduleScope = regexResult[1];
+        entityName = regexResult[2];
+        collectionType = regexResult[3];
+
+        if (moduleScope) {
+            moduleScope = moduleScope.replace(/:+$/g, '');
+        } else {
+            moduleScope = entityName;
+        }
+    }
+
+    if (!regexResult || !entityName || !collectionType) {
+        const absolutePath = path.resolve(process.cwd(), pathname);
+
+        if (entities.some((entity) => entity.absolutePath === absolutePath)) {
+            result = absolutePath;
+        }
+    } else {
+        const entityDescriptor = entities.find((entity) => entity.entityName === entityName && entity.collectionType === collectionType);
+
+        if (entityDescriptor) {
+            result = entityDescriptor.absolutePath;
+        }
+    }
+
+    return result;
 };
