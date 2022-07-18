@@ -5,12 +5,14 @@
             "type": "input",
             "message": "Target path of the project",
             "cliType": "option",
+            "alias": "p",
             "default": ""
         },
         "skipInstall": {
             "type": "input",
             "message": "Skip dependencies installation",
             "cliType": "option",
+            "alias": "S",
             "default": false
         }
     },

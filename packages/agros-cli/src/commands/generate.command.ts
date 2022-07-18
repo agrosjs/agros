@@ -66,7 +66,7 @@ export class GenerateCommand extends AbstractCommand implements AbstractCommand 
                             if (!key) {
                                 return;
                             }
-                            optionLiterals.push((key.length === 1 ? '-' + key : '--' + _.kebabCase(key)) );
+                            optionLiterals.unshift((key.length === 1 ? '-' + key : '--' + _.kebabCase(key)));
                         });
 
                         switch (type) {
