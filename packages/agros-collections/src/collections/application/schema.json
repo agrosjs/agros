@@ -1,0 +1,18 @@
+{
+    "alias": "a",
+    "properties": {
+        "path": {
+            "type": "input",
+            "message": "Target path of the project",
+            "cliType": "option",
+            "default": ""
+        },
+        "skipInstall": {
+            "type": "input",
+            "message": "Skip dependencies installation",
+            "cliType": "option",
+            "default": false
+        }
+    },
+    "required": []
+}

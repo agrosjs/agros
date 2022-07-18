@@ -13,6 +13,9 @@
     "publishConfig": {
         "access": "public"
     },
+    "bin": {
+        "create-app": "./bin/create-app.js"
+    },
     "scripts": {
         "lint": "eslint .",
         "build": "rimraf ./lib && tsc --build tsconfig.json",
@@ -31,6 +34,7 @@
     },
     "homepage": "https://github.com/lenconda/agros#readme",
     "devDependencies": {
+        "@types/commander": "^2.12.2",
         "@types/fs-extra": "^9.0.13",
         "@types/glob": "^7.2.0",
         "@types/inquirer": "~8.1.1",
@@ -48,6 +52,7 @@
         "@agros/common": "workspace:^0.0.0",
         "@agros/logger": "workspace:^0.0.1",
         "@agros/utils": "workspace:^0.0.1",
+        "commander": "^9.3.0",
         "fs-extra": "^10.1.0",
         "glob": "^8.0.3",
         "inquirer": "~8.1.1",

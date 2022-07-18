@@ -110,6 +110,7 @@ importers:
   ../../packages/agros-collections:
     specifiers:
       '@agros/common': workspace:^0.0.0
+      '@agros/create-app': workspace:^0.0.0
       '@types/jest': ^28.1.1
       '@types/lodash': ^4.14.182
       '@types/node': ^15.12.2
@@ -119,6 +120,7 @@ importers:
       typescript: ^4.5.5
     dependencies:
       '@agros/common': link:../agros-common
+      '@agros/create-app': link:../create-agros-app
       lodash: 4.17.21
     devDependencies:
       '@types/jest': 28.1.1
@@ -359,6 +361,7 @@ importers:
       '@agros/common': workspace:^0.0.0
       '@agros/logger': workspace:^0.0.1
       '@agros/utils': workspace:^0.0.1
+      '@types/commander': ^2.12.2
       '@types/fs-extra': ^9.0.13
       '@types/glob': ^7.2.0
       '@types/inquirer': ~8.1.1
@@ -366,6 +369,7 @@ importers:
       '@types/lodash': ^4.14.182
       '@types/node': ^15.12.2
       '@types/semver': ^7.3.10
+      commander: ^9.3.0
       fs-extra: ^10.1.0
       glob: ^8.0.3
       inquirer: ~8.1.1
@@ -378,6 +382,7 @@ importers:
       '@agros/common': link:../agros-common
       '@agros/logger': link:../agros-logger
       '@agros/utils': link:../agros-utils
+      commander: 9.3.0
       fs-extra: 10.1.0
       glob: 8.0.3
       inquirer: 8.1.5
@@ -385,6 +390,7 @@ importers:
       semver: 7.3.7
       yup: 0.32.11
     devDependencies:
+      '@types/commander': 2.12.2
       '@types/fs-extra': 9.0.13
       '@types/glob': 7.2.0
       '@types/inquirer': 8.1.3
@@ -2555,6 +2561,13 @@ packages:
     resolution: {integrity: sha512-hs+1QSCZC5/yZPNqTOC6Q/ic8DmRna65H2GpvC8zlXjgWZrQyYBD5T5dJafo70bfDTXrBO9c/j5cw3/nY/qMiA==}
     dev: true
 
+  /@types/commander/2.12.2:
+    resolution: {integrity: sha512-0QEFiR8ljcHp9bAbWxecjVRuAMr16ivPiGOw6KFQBVrVd0RQIcM3xKdRisH2EDWgVWujiYtHwhSkSUoAAGzH7Q==}
+    deprecated: This is a stub types definition for commander (https://github.com/tj/commander.js). commander provides its own type definitions, so you don't need @types/commander installed!
+    dependencies:
+      commander: 9.3.0
+    dev: true
+
   /@types/connect-history-api-fallback/1.3.5:
     resolution: {integrity: sha512-h8QJa8xSb1WD4fpKBDcATDNGXghFj6/3GRWG6dhmRcu0RX1Ubasur2Uvx5aeEwlf0MwblEC2bMzzMQntxnw/Cw==}
     dependencies:
@@ -3984,7 +3997,6 @@ packages:
   /commander/9.3.0:
     resolution: {integrity: sha512-hv95iU5uXPbK83mjrJKuZyFM/LBAoCV/XhVGkS5Je6tl7sxr6A0ITMw5WoRV46/UaJ46Nllm3Xt7IaJhXTIkzw==}
     engines: {node: ^12.20.0 || >=14}
-    dev: false
 
   /common-path-prefix/3.0.0:
     resolution: {integrity: sha512-QE33hToZseCH3jS0qN96O/bSh3kaw/h+Tq7ngyY9eWDUnTlTNUyqfqvCXioLe5Na5jFsL78ra/wuBU4iuEgd4w==}

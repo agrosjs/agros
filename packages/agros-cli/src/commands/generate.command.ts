@@ -66,14 +66,21 @@ export class GenerateCommand extends AbstractCommand implements AbstractCommand 
                             if (!key) {
                                 return;
                             }
-                            optionLiterals.push((key.length === 1 ? '-' : '--') + _.kebabCase(key));
+                            optionLiterals.push((key.length === 1 ? '-' + key : '--' + _.kebabCase(key)) );
                         });
 
                         switch (type) {
                             case 'confirm': {
                                 break;
                             }
-                            case 'input':
+                            case 'input': {
+                                optionLiterals.push(
+                                    required.indexOf(propertyKey) === -1
+                                        ? '[value]'
+                                        : '<value>',
+                                );
+                                break;
+                            }
                             case 'number': {
                                 optionLiterals.push(
                                     required.indexOf(propertyKey) === -1
@@ -97,7 +104,14 @@ export class GenerateCommand extends AbstractCommand implements AbstractCommand 
                             }
                         }
 
-                        const option = new Option(optionLiterals.join(' '), message);
+                        const option = new Option(
+                            optionLiterals
+                                .slice(0, -1)
+                                .join(', ')
+                                .concat(' ')
+                                .concat(optionLiterals[optionLiterals.length - 1]),
+                            message,
+                        );
 
                         if (!_.isUndefined(defaultValue)) {
                             option.defaultValue = defaultValue;
