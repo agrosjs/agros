@@ -11,6 +11,7 @@ import {
     lintCode,
     LinterOptions,
 } from './linters';
+import { isBinaryFileSync } from 'isbinaryfile';
 
 export interface Collection {
     name: string;
@@ -90,14 +91,34 @@ export abstract class AbstractCollection {
         props: Record<string, any> = {},
         options: CollectionWriteFileOptions = {},
     ) {
-        await this.writeFile(
-            target,
-            ejs.render(fs.readFileSync(source).toString(), props),
-            {
-                lint: true,
-                ...options,
-            },
-        );
+        const buffer = fs.readFileSync(source);
+
+        if (isBinaryFileSync(buffer)) {
+            this.writeBinaryFile(target, buffer);
+        } else {
+            await this.writeFile(
+                target,
+                ejs.render(buffer.toString(), props),
+                {
+                    lint: true,
+                    ...options,
+                },
+            );
+        }
+    }
+
+    private writeBinaryFile(pathname: string, buffer: Buffer) {
+        if (!pathname || !buffer) {
+            return;
+        }
+
+        const targetDirname = path.dirname(pathname);
+
+        if (!fs.existsSync(targetDirname)) {
+            fs.mkdirpSync(targetDirname);
+        }
+
+        fs.writeFileSync(pathname, buffer);
     }
 
     public abstract generate(props): Promise<CollectionGenerateResult>;

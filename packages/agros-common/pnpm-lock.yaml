@@ -19,6 +19,7 @@ specifiers:
   ejs: ^3.1.8
   eslint: ^8.19.0
   fs-extra: ^10.1.0
+  isbinaryfile: ^5.0.0
   lodash: ^4.17.21
   parse-glob: ^3.0.4
   prettier: ^2.7.1
@@ -34,6 +35,7 @@ dependencies:
   ejs: 3.1.8
   eslint: 8.19.0
   fs-extra: 10.1.0
+  isbinaryfile: 5.0.0
   lodash: 4.17.21
   parse-glob: 3.0.4
   prettier: 2.7.1
@@ -754,6 +756,11 @@ packages:
     engines: {node: '>=0.10.0'}
     dependencies:
       is-extglob: 2.1.1
+    dev: false
+
+  /isbinaryfile/5.0.0:
+    resolution: {integrity: sha512-UDdnyGvMajJUWCkib7Cei/dvyJrrvo4FIrsvSFWdPpXSUorzXrDJ0S+X5Q4ZlasfPjca4yqCNNsjbCeiy8FFeg==}
+    engines: {node: '>= 14.0.0'}
     dev: false
 
   /isexe/2.0.0:
