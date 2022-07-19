@@ -192,12 +192,24 @@ export const addArgumentsAndOptionsToCommandWithSchema = (
     return (data: any[]) => {
         const argumentValues = data.slice(0, -2) || [];
         const options = data[data.length - 2] || {};
-        return {
+        const propsWithContext = {
             ...options,
             ...argumentIndexes.reduce((result, keyIndex, valueIndex) => {
                 result[Object.keys(properties)[keyIndex]] = argumentValues[valueIndex];
                 return result;
             }, {}) as Record<string, any>,
         };
+        return Object.keys(propsWithContext).reduce((result, key) => {
+            const value = propsWithContext[key];
+            if (_.isString(value) && value.startsWith('$context$')) {
+                const contextKey = value.replace(/^\$context\$/g, '');
+                if (contextKey) {
+                    result[key] = propsWithContext[contextKey];
+                    return result;
+                }
+            }
+            result[key] = propsWithContext[key];
+            return result;
+        }, {});
     };
 };

@@ -31,10 +31,16 @@ export type Updater<T> = (data: {
     options?: T;
 }) => Promise<UpdateItem[]>;
 
+export type UpdaterWithChecker<T = any> = (
+    sourceDescriptor: EntityDescriptor,
+    targetDescriptor: EntityDescriptor,
+    options: T,
+) => Promise<UpdateItem[]>;
+
 const createUpdater = <T = Record<string, any>>(
     updater: Updater<T>,
     check: (source: EntityDescriptor, target: EntityDescriptor) => boolean = () => true,
-) => {
+): UpdaterWithChecker<T> => {
     return async (
         sourceDescriptor: EntityDescriptor,
         targetDescriptor: EntityDescriptor,

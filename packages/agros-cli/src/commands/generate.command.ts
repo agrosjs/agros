@@ -1,20 +1,15 @@
 import { Command } from 'commander';
 import { AbstractCommand } from '../command.abstract';
-import {
-    addArgumentsAndOptionsToCommandWithSchema,
-    getCollections,
-} from '../utils';
-import _ from 'lodash';
+import { addArgumentsAndOptionsToCommandWithSchema } from '../utils';
 import * as path from 'path';
 import { normalizeSrcPath } from '@agros/common';
 
 export class GenerateCommand extends AbstractCommand implements AbstractCommand {
     public register(): Command {
-        const collections = getCollections();
         const command = new Command('generate');
         command.alias('g').description('Generate Agros.js collections');
 
-        for (const collection of collections) {
+        for (const collection of this.collections) {
             const {
                 name,
                 schema = {},
@@ -30,20 +25,7 @@ export class GenerateCommand extends AbstractCommand implements AbstractCommand 
 
             collectionCommand.action(async (...data) => {
                 try {
-                    const propsWithContext = parseProps(data);
-                    const props = Object.keys(propsWithContext).reduce((result, key) => {
-                        const value = propsWithContext[key];
-                        if (_.isString(value) && value.startsWith('$context$')) {
-                            const contextKey = value.replace(/^\$context\$/g, '');
-                            if (contextKey) {
-                                result[key] = propsWithContext[contextKey];
-                                return result;
-                            }
-                        }
-                        result[key] = propsWithContext[key];
-                        return result;
-                    }, {});
-
+                    const props = parseProps(data);
                     const factory = new FactoryClass();
                     const result = await factory.generate(props);
 
