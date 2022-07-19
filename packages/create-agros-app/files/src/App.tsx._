@@ -1,0 +1,9 @@
+export default () => {
+    return (
+        <div className="app">
+            <img src="/logo192.png" width="20" height="20" />
+            <span><strong>agros.js</strong></span>&nbsp;
+            <span>is now working!</span>
+        </div>
+    );
+};
