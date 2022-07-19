@@ -68,7 +68,7 @@ class ModuleCollectionFactory extends AbstractCollection implements AbstractColl
                 collectionDescriptor,
                 getEntityDescriptorWithAlias(targetPath),
                 {
-                    noExport: skipExportDeclaredCollections,
+                    skipExport: skipExportDeclaredCollections,
                 },
             );
             await this.writeFile(

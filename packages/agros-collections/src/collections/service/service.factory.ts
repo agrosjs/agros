@@ -55,7 +55,7 @@ class ServiceCollectionFactory extends AbstractCollection implements AbstractCol
                 getEntityDescriptorWithAlias(targetPath),
                 moduleEntityDescriptor,
                 {
-                    noExport: skipExport,
+                    skipExport: skipExport,
                 },
             );
             await this.writeFile(

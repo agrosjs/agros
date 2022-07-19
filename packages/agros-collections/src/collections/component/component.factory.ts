@@ -74,7 +74,7 @@ class ComponentCollectionFactory extends AbstractCollection implements AbstractC
                 getEntityDescriptorWithAlias(componentTargetPath),
                 moduleEntityDescriptor,
                 {
-                    noExport: skipExport,
+                    skipExport,
                 },
             );
             await this.writeFile(

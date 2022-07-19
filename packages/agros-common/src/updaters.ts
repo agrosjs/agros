@@ -86,7 +86,7 @@ const createUpdater = <T = Record<string, any>>(
 };
 
 export interface UpdateImportedEntityToModuleOptions {
-    noExport?: boolean;
+    skipExport?: boolean;
     asyncModule?: boolean,
 }
 
@@ -100,7 +100,7 @@ export const updateImportedEntityToModule = createUpdater<UpdateImportedEntityTo
         options,
     }) => {
         const {
-            noExport,
+            skipExport,
             asyncModule,
         } = options;
         let classImportItem = originalClassImportItem;
@@ -142,11 +142,11 @@ export const updateImportedEntityToModule = createUpdater<UpdateImportedEntityTo
 
         switch (sourceDescriptor.collectionType) {
             case 'component': {
-                decoratorProperties = ['components', ...(noExport ? [] : ['exports'])];
+                decoratorProperties = ['components', ...(skipExport ? [] : ['exports'])];
                 break;
             }
             case 'service': {
-                decoratorProperties = ['providers', ...(noExport ? [] : ['exports'])];
+                decoratorProperties = ['providers', ...(skipExport ? [] : ['exports'])];
                 break;
             }
             case 'module': {
@@ -202,7 +202,7 @@ export const updateImportedEntityToModule = createUpdater<UpdateImportedEntityTo
 );
 
 export interface UpdateImportedServiceToServiceOptions {
-    noReadonly?: boolean;
+    skipReadonly?: boolean;
     accessibility?: 'public' | 'private' | 'protected';
 }
 
@@ -275,7 +275,7 @@ export const updateImportedServiceToService = createUpdater<UpdateImportedServic
             ),
         );
         parameterPropertyStatement.accessibility = options?.accessibility || 'private';
-        parameterPropertyStatement.readonly = !options?.noReadonly;
+        parameterPropertyStatement.readonly = !options?.skipReadonly;
         parameterPropertyStatement.parameter.typeAnnotation = t.tsTypeAnnotation(
             t.tsTypeReference(t.identifier(classImportItem.identifierName)),
         );

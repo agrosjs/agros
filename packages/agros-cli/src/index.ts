@@ -7,7 +7,7 @@ const run = async () => {
     for (const CommandClass of commands) {
         const subCommand = new CommandClass();
         if (typeof subCommand.register === 'function') {
-            program.addCommand(subCommand.register());
+            program.addCommand(subCommand.register.call(subCommand));
         }
     }
 
