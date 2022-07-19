@@ -80,43 +80,47 @@ export const normalizeEntityFileName = (type: CollectionType, name: string, fall
     return `${name}.`.concat(extname.replace(/^\.+/g, ''));
 };
 
-export const normalizeCLIPath = (pathname: string, entities: EntityDescriptor[]) => {
+export const normalizeCLIPath = (pathname: string, entities: EntityDescriptor[], collectionType?: string) => {
     if (!pathname || !_.isString(pathname)) {
         return null;
     }
 
-    const regexResult = /(\w+:)?(\w+).(\w+)/g.exec(pathname);
+    const collectionTypes = Object.keys(projectConfigParser.getConfig<Record<string, string[]>>('collection') || {});
+    let result: EntityDescriptor = null;
 
-    let moduleScope: string;
-    let entityName: string;
-    let collectionType: string;
-    let result: string = null;
+    const testAbsolutePath = path.resolve(process.cwd(), pathname);
+    result = entities.find((entity) => entity.absolutePath === testAbsolutePath);
 
-    if (regexResult) {
-        moduleScope = regexResult[1];
-        entityName = regexResult[2];
-        collectionType = regexResult[3];
-
-        if (moduleScope) {
-            moduleScope = moduleScope.replace(/:+$/g, '');
-        } else {
-            moduleScope = entityName;
-        }
+    if (result) {
+        return result;
     }
 
-    if (!regexResult || !entityName || !collectionType) {
-        const absolutePath = path.resolve(process.cwd(), pathname);
+    let [moduleScope, pathnameBody] = pathname.split(':');
+    let [entityName, entityCollectionType] = pathnameBody.split('.');
 
-        if (entities.some((entity) => entity.absolutePath === absolutePath)) {
-            result = absolutePath;
-        }
-    } else {
-        const entityDescriptor = entities.find((entity) => entity.entityName === entityName && entity.collectionType === collectionType);
-
-        if (entityDescriptor) {
-            result = entityDescriptor.absolutePath;
-        }
+    if (_.isString(collectionType) && !!collectionType) {
+        entityCollectionType = collectionType;
     }
+
+    if (!moduleScope) {
+        moduleScope = entityName;
+    }
+
+    if (!moduleScope || !entityName || !entityCollectionType) {
+        return null;
+    }
+
+    if (collectionTypes.indexOf(entityCollectionType) === -1) {
+        return null;
+    }
+
+    result = entities.find(({
+        moduleName,
+        entityName: currentEntityName,
+        collectionType: currentCollectionType,
+    }) => {
+        return moduleName === moduleScope && entityName === currentEntityName && entityCollectionType === currentCollectionType;
+    });
 
     return result;
 };
