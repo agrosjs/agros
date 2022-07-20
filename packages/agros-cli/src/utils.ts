@@ -3,10 +3,7 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import { Collection } from '@agros/common';
 import _ from 'lodash';
-import {
-    Command,
-    Option,
-} from 'commander';
+import { Command } from 'commander';
 
 export const getCollections = () => {
     try {
@@ -77,18 +74,35 @@ export const getCollections = () => {
     }
 };
 
-export const addArgumentsAndOptionsToCommandWithSchema = (
+export const addArgumentsAndOptionsToCommandWithSchema = ({
+    command,
+    schema,
+    propertiesKey,
+    requiredPropertiesKey,
+    prependProperties = {},
+    appendProperties = {},
+    defaultRequired = [],
+}: {
     command: Command,
     schema: Record<string, any>,
     propertiesKey: string,
     requiredPropertiesKey: string,
-) => {
+    prependProperties?: Record<string, Record<string, any>>;
+    appendProperties?: Record<string, Record<string, any>>;
+    defaultRequired?: string[];
+}) => {
     if (schema?.alias) {
         command.alias(schema.alias);
     }
 
-    const properties = schema[propertiesKey] || {};
-    const required = schema[requiredPropertiesKey] || [];
+    let properties = schema[propertiesKey] || {};
+    const required = defaultRequired.concat(schema[requiredPropertiesKey] || []);
+
+    properties = {
+        ...prependProperties,
+        ...properties,
+        ...appendProperties,
+    };
 
     /**
      * an array stores a map for argument index and schema properties index
@@ -147,7 +161,12 @@ export const addArgumentsAndOptionsToCommandWithSchema = (
                                 ? '[value]'
                                 : '<value>',
                         );
-                        transformer = (option) => parseInt(option, 10);
+                        transformer = (option) => {
+                            if (_.isUndefined) {
+                                return defaultValue;
+                            }
+                            return parseInt(option, 10);
+                        };
                         break;
                     }
                     case 'list':
@@ -164,24 +183,29 @@ export const addArgumentsAndOptionsToCommandWithSchema = (
                     }
                 }
 
-                const option = new Option(
-                    optionLiterals
-                        .slice(0, -1)
-                        .join(', ')
-                        .concat(' ')
-                        .concat(optionLiterals[optionLiterals.length - 1]),
+                const optionFlags = optionLiterals
+                    .slice(0, -1)
+                    .join(', ')
+                    .concat(' ')
+                    .concat(optionLiterals[optionLiterals.length - 1]);
+
+                const optionOtherArgs = [
                     message,
-                );
+                    ...(
+                        transformer
+                            ? [transformer]
+                            : _.isUndefined(defaultValue)
+                                ? []
+                                : [defaultValue]
+                    ),
+                ];
 
-                if (!_.isUndefined(defaultValue)) {
-                    option.defaultValue = defaultValue;
+                if (required.indexOf(propertyKey) !== -1) {
+                    command.requiredOption(optionFlags, ...optionOtherArgs);
+                } else {
+                    command.option(optionFlags, ...optionOtherArgs);
                 }
 
-                if (_.isFunction(transformer)) {
-                    option.argParser(transformer);
-                }
-
-                command.addOption(option);
                 break;
             }
             default:
@@ -210,6 +234,6 @@ export const addArgumentsAndOptionsToCommandWithSchema = (
             }
             result[key] = propsWithContext[key];
             return result;
-        }, {});
+        }, {}) as Record<string, any>;
     };
 };

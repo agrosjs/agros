@@ -95,7 +95,13 @@ export const normalizeCLIPath = (pathname: string, entities: EntityDescriptor[],
         return result;
     }
 
-    let [moduleScope, pathnameBody] = pathname.split(':');
+    let [moduleScope, pathnameBody = ''] = pathname.split(':');
+
+    if (moduleScope && !pathnameBody) {
+        pathnameBody = moduleScope;
+        moduleScope = null;
+    }
+
     let [entityName, entityCollectionType] = pathnameBody.split('.');
 
     if (_.isString(collectionType) && !!collectionType) {

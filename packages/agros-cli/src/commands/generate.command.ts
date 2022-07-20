@@ -16,12 +16,12 @@ export class GenerateCommand extends AbstractCommand implements AbstractCommand 
                 FactoryClass,
             } = collection;
             const collectionCommand = new Command(name);
-            const parseProps = addArgumentsAndOptionsToCommandWithSchema(
-                collectionCommand,
+            const parseProps = addArgumentsAndOptionsToCommandWithSchema({
+                command: collectionCommand,
                 schema,
-                'properties',
-                'required',
-            );
+                propertiesKey: 'properties',
+                requiredPropertiesKey: 'required',
+            });
 
             collectionCommand.action(async (...data) => {
                 try {
