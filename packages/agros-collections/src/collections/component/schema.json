@@ -1,37 +1,41 @@
 {
     "alias": "c",
-    "properties": {
-        "name": {
-            "type": "input",
-            "message": "The name of the component",
-            "cliType": "argument"
-        },
-        "moduleName": {
-            "type": "input",
-            "message": "The name of module who manages this component",
-            "default": "$context$name",
-            "cliType": "argument"
-        },
-        "forwardMode": {
-            "type": "confirm",
-            "message": "Use `forwardContainer` to declare component",
-            "default": false,
-            "cliType": "option"
-        },
-        "lazy": {
-            "type": "confirm",
-            "message": "Lazy-load component",
-            "default": false,
-            "cliType": "option"
-        },
-        "skipExport": {
-            "type": "confirm",
-            "message": "Skip exporting this component from module",
-            "default": false,
-            "cliType": "option"
+    "scenes": {
+        "generate": {
+            "properties": {
+                "name": {
+                    "type": "input",
+                    "message": "The name of the component",
+                    "cliType": "argument"
+                },
+                "moduleName": {
+                    "type": "input",
+                    "message": "The name of module who manages this component",
+                    "default": "$context$name",
+                    "cliType": "argument"
+                },
+                "forwardMode": {
+                    "type": "confirm",
+                    "message": "Use `forwardContainer` to declare component",
+                    "default": false,
+                    "cliType": "option"
+                },
+                "lazy": {
+                    "type": "confirm",
+                    "message": "Lazy-load component",
+                    "default": false,
+                    "cliType": "option"
+                },
+                "skipExport": {
+                    "type": "confirm",
+                    "message": "Skip exporting this component from module",
+                    "default": false,
+                    "cliType": "option"
+                }
+            },
+            "required": [
+                "name"
+            ]
         }
-    },
-    "required": [
-        "name"
-    ]
+    }
 }

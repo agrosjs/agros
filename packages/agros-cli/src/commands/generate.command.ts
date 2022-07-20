@@ -1,15 +1,19 @@
 import { Command } from 'commander';
 import { AbstractCommand } from '../command.abstract';
-import { addArgumentsAndOptionsToCommandWithSchema } from '../utils';
+import {
+    addArgumentsAndOptionsToCommandWithSchema,
+    getCollections,
+} from '../utils';
 import * as path from 'path';
 import { normalizeSrcPath } from '@agros/common';
 
 export class GenerateCommand extends AbstractCommand implements AbstractCommand {
     public register(): Command {
+        const collections = getCollections('generate');
         const command = new Command('generate');
         command.alias('g').description('Generate Agros.js collections');
 
-        for (const collection of this.collections) {
+        for (const collection of collections) {
             const {
                 name,
                 schema = {},
@@ -17,10 +21,9 @@ export class GenerateCommand extends AbstractCommand implements AbstractCommand 
             } = collection;
             const collectionCommand = new Command(name);
             const parseProps = addArgumentsAndOptionsToCommandWithSchema({
+                scene: 'generate',
                 command: collectionCommand,
                 schema,
-                propertiesKey: 'properties',
-                requiredPropertiesKey: 'required',
             });
 
             collectionCommand.action(async (...data) => {

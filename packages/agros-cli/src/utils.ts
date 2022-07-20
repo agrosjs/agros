@@ -8,7 +8,7 @@ import {
     Option,
 } from 'commander';
 
-export const getCollections = () => {
+export const getCollections = (scene: string) => {
     try {
         const cliConfigParser = new CLIConfigParser();
         const collectionPackageName = cliConfigParser.getConfig<string>('collection');
@@ -54,8 +54,7 @@ export const getCollections = () => {
         const collections: Collection[] = fs.readdirSync(collectionsDir)
             .filter((entity) => {
                 const absolutePath = path.resolve(collectionsDir, entity);
-                return fs.statSync(absolutePath).isDirectory() &&
-                    fs.existsSync(path.resolve(absolutePath, 'schema.json'));
+                return fs.statSync(absolutePath).isDirectory() && fs.existsSync(path.resolve(absolutePath, 'schema.json'));
             })
             .map((dirname) => {
                 try {
@@ -63,7 +62,7 @@ export const getCollections = () => {
                     return {
                         name,
                         schema: fs.readJsonSync(path.resolve(collectionsDir, dirname, 'schema.json')),
-                        FactoryClass: collectionExports[name],
+                        FactoryClass: collectionExports[scene][name],
                     } as Collection;
                 } catch (e) {
                     return null;
@@ -78,18 +77,16 @@ export const getCollections = () => {
 };
 
 export const addArgumentsAndOptionsToCommandWithSchema = ({
+    scene,
     command,
     schema,
-    propertiesKey,
-    requiredPropertiesKey,
     prependProperties = {},
     appendProperties = {},
     defaultRequired = [],
 }: {
-    command: Command,
-    schema: Record<string, any>,
-    propertiesKey: string,
-    requiredPropertiesKey: string,
+    scene: string;
+    command: Command;
+    schema: Record<string, any>;
     prependProperties?: Record<string, Record<string, any>>;
     appendProperties?: Record<string, Record<string, any>>;
     defaultRequired?: string[];
@@ -98,8 +95,8 @@ export const addArgumentsAndOptionsToCommandWithSchema = ({
         command.alias(schema.alias);
     }
 
-    let properties = schema[propertiesKey] || {};
-    const required = defaultRequired.concat(schema[requiredPropertiesKey] || []);
+    let properties = _.get(schema, `scenes.${scene}.properties`) || {};
+    const required = defaultRequired.concat(_.get(schema, `scenes.${scene}.required`) || []);
 
     properties = {
         ...prependProperties,

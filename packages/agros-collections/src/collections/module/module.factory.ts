@@ -4,14 +4,16 @@ import {
     CollectionGenerateResult,
     detectRootPoints,
     getEntityDescriptorWithAlias,
+    normalizeCLIPath,
     normalizeEntityFileName,
+    UpdateBaseOptions,
     updateImportedEntityToModule,
 } from '@agros/common';
 import * as path from 'path';
 import _ from 'lodash';
 import * as fs from 'fs';
 
-interface ModuleCollectionOptions {
+interface ModuleCollectionGenerateOptions {
     name: string;
     async?: boolean;
     rootPoint?: number;
@@ -20,7 +22,7 @@ interface ModuleCollectionOptions {
     skipExportDeclaredCollections?: boolean;
 }
 
-class ModuleCollectionFactory extends AbstractCollection implements AbstractCollection {
+export class ModuleCollectionGenerateFactory extends AbstractCollection implements AbstractCollection {
     public async generate({
         name,
         async: asyncModule,
@@ -28,7 +30,7 @@ class ModuleCollectionFactory extends AbstractCollection implements AbstractColl
         global: globalModule = false,
         skipDeclareCollections,
         skipExportDeclaredCollections,
-    }: ModuleCollectionOptions) {
+    }: ModuleCollectionGenerateOptions) {
         if (!name) {
             throw new Error('Expect `name` to be of type `string`');
         }
@@ -100,4 +102,47 @@ class ModuleCollectionFactory extends AbstractCollection implements AbstractColl
     }
 }
 
-export default ModuleCollectionFactory;
+interface ModuleCollectionUpdateOptions extends UpdateBaseOptions {
+    skipExport?: boolean;
+    asyncModule?: boolean;
+}
+
+export class ModuleCollectionUpdateFactory extends AbstractCollection implements AbstractCollection {
+    public async generate({
+        source,
+        target,
+        skipExport,
+        asyncModule,
+    }: ModuleCollectionUpdateOptions) {
+        const result: CollectionGenerateResult = {
+            create: [],
+            update: [],
+        };
+
+        const sourceDescriptor = normalizeCLIPath(source, this.entities);
+        const targetDescriptor = normalizeCLIPath(target, this.entities, 'module');
+
+        if (!sourceDescriptor) {
+            throw new Error(`Cannot find source entity with identifier: ${source}`);
+        }
+
+        if (!targetDescriptor) {
+            throw new Error(`Cannot find target entity with identifier: ${target}`);
+        }
+
+        const updates = await updateImportedEntityToModule(sourceDescriptor, targetDescriptor, {
+            skipExport,
+            asyncModule,
+        });
+
+        if (updates.length > 0) {
+            this.writeFile(
+                targetDescriptor.absolutePath,
+                applyUpdates(updates, fs.readFileSync(targetDescriptor.absolutePath).toString()),
+            );
+            result.update.push(targetDescriptor.absolutePath);
+        }
+
+        return result;
+    }
+}

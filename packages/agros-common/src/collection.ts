@@ -123,3 +123,8 @@ export abstract class AbstractCollection {
 
     public abstract generate(props): Promise<CollectionGenerateResult>;
 }
+
+export interface UpdateBaseOptions {
+    source: string;
+    target: string;
+}

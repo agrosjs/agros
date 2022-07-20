@@ -3,25 +3,28 @@ import {
     applyUpdates,
     CollectionGenerateResult,
     getEntityDescriptorWithAlias,
+    normalizeCLIPath,
     normalizeEntityFileName,
+    UpdateBaseOptions,
     updateImportedEntityToModule,
+    updateImportedServiceToService,
 } from '@agros/common';
 import * as path from 'path';
 import _ from 'lodash';
 import * as fs from 'fs';
 
-interface ServiceCollectionOptions {
+interface ServiceCollectionGenerateOptions {
     name: string;
     moduleName?: string;
     skipExport?: boolean;
 }
 
-class ServiceCollectionFactory extends AbstractCollection implements AbstractCollection {
+export class ServiceCollectionGenerateFactory extends AbstractCollection implements AbstractCollection {
     public async generate({
         name,
         moduleName,
         skipExport,
-    }: ServiceCollectionOptions) {
+    }: ServiceCollectionGenerateOptions) {
         if (!name) {
             throw new Error('Expect `name` to be of type `string`');
         }
@@ -55,7 +58,7 @@ class ServiceCollectionFactory extends AbstractCollection implements AbstractCol
                 getEntityDescriptorWithAlias(targetPath),
                 moduleEntityDescriptor,
                 {
-                    skipExport: skipExport,
+                    skipExport,
                 },
             );
             await this.writeFile(
@@ -69,4 +72,47 @@ class ServiceCollectionFactory extends AbstractCollection implements AbstractCol
     }
 }
 
-export default ServiceCollectionFactory;
+interface ServiceCollectionUpdateOptions extends UpdateBaseOptions {
+    accessibility?: 'private' | 'protected' | 'public';
+    skipReadonly?: boolean;
+}
+
+export class ServiceCollectionUpdateFactory extends AbstractCollection implements AbstractCollection {
+    public async generate({
+        source,
+        target,
+        accessibility,
+        skipReadonly,
+    }: ServiceCollectionUpdateOptions) {
+        const result: CollectionGenerateResult = {
+            create: [],
+            update: [],
+        };
+
+        const sourceDescriptor = normalizeCLIPath(source, this.entities);
+        const targetDescriptor = normalizeCLIPath(target, this.entities, 'service');
+
+        if (!sourceDescriptor) {
+            throw new Error(`Cannot find source entity with identifier: ${source}`);
+        }
+
+        if (!targetDescriptor) {
+            throw new Error(`Cannot find target entity with identifier: ${target}`);
+        }
+
+        const updates = await updateImportedServiceToService(sourceDescriptor, targetDescriptor, {
+            skipReadonly,
+            accessibility,
+        });
+
+        if (updates.length > 0) {
+            this.writeFile(
+                targetDescriptor.absolutePath,
+                applyUpdates(updates, fs.readFileSync(targetDescriptor.absolutePath).toString()),
+            );
+            result.update.push(targetDescriptor.absolutePath);
+        }
+
+        return result;
+    }
+}

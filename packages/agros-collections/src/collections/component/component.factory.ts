@@ -3,16 +3,19 @@ import {
     applyUpdates,
     CollectionGenerateResult,
     getEntityDescriptorWithAlias,
+    normalizeCLIPath,
     normalizeEntityFileName,
     normalizeNoExtensionPath,
     transformPathToAliasedPath,
+    UpdateBaseOptions,
+    updateImportedEntityToComponent,
     updateImportedEntityToModule,
 } from '@agros/common';
 import * as path from 'path';
 import _ from 'lodash';
 import * as fs from 'fs';
 
-interface ComponentCollectionOptions {
+interface ComponentCollectionGenerateOptions {
     name: string;
     moduleName?: string;
     forwardMode?: boolean;
@@ -20,14 +23,14 @@ interface ComponentCollectionOptions {
     skipExport?: boolean;
 }
 
-class ComponentCollectionFactory extends AbstractCollection implements AbstractCollection {
+export class ComponentCollectionGenerateFactory extends AbstractCollection implements AbstractCollection {
     public async generate({
         name,
         moduleName,
         forwardMode,
         lazy,
         skipExport,
-    }: ComponentCollectionOptions) {
+    }: ComponentCollectionGenerateOptions) {
         if (!name) {
             throw new Error('Expect `name` to be of type `string`');
         }
@@ -88,4 +91,39 @@ class ComponentCollectionFactory extends AbstractCollection implements AbstractC
     }
 }
 
-export default ComponentCollectionFactory;
+type ComponentCollectionUpdateOptions = UpdateBaseOptions;
+
+export class ComponentCollectionUpdateFactory extends AbstractCollection implements AbstractCollection {
+    public async generate({
+        source,
+        target,
+    }: ComponentCollectionUpdateOptions) {
+        const result: CollectionGenerateResult = {
+            create: [],
+            update: [],
+        };
+
+        const sourceDescriptor = normalizeCLIPath(source, this.entities);
+        const targetDescriptor = normalizeCLIPath(target, this.entities, 'component');
+
+        if (!sourceDescriptor) {
+            throw new Error(`Cannot find source entity with identifier: ${source}`);
+        }
+
+        if (!targetDescriptor) {
+            throw new Error(`Cannot find target entity with identifier: ${target}`);
+        }
+
+        const updates = await updateImportedEntityToComponent(sourceDescriptor, targetDescriptor, {});
+
+        if (updates.length > 0) {
+            this.writeFile(
+                targetDescriptor.absolutePath,
+                applyUpdates(updates, fs.readFileSync(targetDescriptor.absolutePath).toString()),
+            );
+            result.update.push(targetDescriptor.absolutePath);
+        }
+
+        return result;
+    }
+}

@@ -1,11 +1,27 @@
-import ServiceCollectionFactory from './service/service.factory';
-import ModuleCollectionFactory from './module/module.factory';
-import ComponentCollectionFactory from './component/component.factory';
-import { ApplicationCollectionFactory } from './application/application.factory';
+import {
+    ServiceCollectionGenerateFactory,
+    ServiceCollectionUpdateFactory,
+} from './service/service.factory';
+import {
+    ModuleCollectionGenerateFactory,
+    ModuleCollectionUpdateFactory,
+} from './module/module.factory';
+import {
+    ComponentCollectionGenerateFactory,
+    ComponentCollectionUpdateFactory,
+} from './component/component.factory';
+import { ApplicationCollectionGenerateFactory } from './application/application.factory';
 
 export default {
-    application: ApplicationCollectionFactory,
-    service: ServiceCollectionFactory,
-    module: ModuleCollectionFactory,
-    component: ComponentCollectionFactory,
+    generate: {
+        application: ApplicationCollectionGenerateFactory,
+        service: ServiceCollectionGenerateFactory,
+        module: ModuleCollectionGenerateFactory,
+        component: ComponentCollectionGenerateFactory,
+    },
+    update: {
+        service: ServiceCollectionUpdateFactory,
+        module: ModuleCollectionUpdateFactory,
+        component: ComponentCollectionUpdateFactory,
+    },
 };
