@@ -51,11 +51,6 @@
             "default": false
         }
     },
-    "updateSources": [
-        "module",
-        "service",
-        "component"
-    ],
     "required": [
         "name"
     ]
