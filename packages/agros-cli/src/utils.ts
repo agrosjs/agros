@@ -3,7 +3,10 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import { Collection } from '@agros/common';
 import _ from 'lodash';
-import { Command } from 'commander';
+import {
+    Command,
+    Option,
+} from 'commander';
 
 export const getCollections = () => {
     try {
@@ -148,19 +151,11 @@ export const addArgumentsAndOptionsToCommandWithSchema = ({
                         break;
                     }
                     case 'input': {
-                        optionLiterals.push(
-                            required.indexOf(propertyKey) === -1
-                                ? '[value]'
-                                : '<value>',
-                        );
+                        optionLiterals.push('[value]');
                         break;
                     }
                     case 'number': {
-                        optionLiterals.push(
-                            required.indexOf(propertyKey) === -1
-                                ? '[value]'
-                                : '<value>',
-                        );
+                        optionLiterals.push('[value]');
                         transformer = (option) => {
                             if (_.isUndefined) {
                                 return defaultValue;
@@ -171,11 +166,7 @@ export const addArgumentsAndOptionsToCommandWithSchema = ({
                     }
                     case 'list':
                     case 'rawlist': {
-                        optionLiterals.push(
-                            required.indexOf(propertyKey) === -1
-                                ? '[value...]'
-                                : '<value...>',
-                        );
+                        optionLiterals.push('[value...]');
                         break;
                     }
                     default: {
@@ -189,22 +180,22 @@ export const addArgumentsAndOptionsToCommandWithSchema = ({
                     .concat(' ')
                     .concat(optionLiterals[optionLiterals.length - 1]);
 
-                const optionOtherArgs = [
-                    message,
-                    ...(
-                        transformer
-                            ? [transformer]
-                            : _.isUndefined(defaultValue)
-                                ? []
-                                : [defaultValue]
-                    ),
-                ];
+                let option = new Option(optionFlags, message);
+
+                if (_.isFunction(transformer)) {
+                    option = option.argParser(transformer);
+                }
 
                 if (required.indexOf(propertyKey) !== -1) {
-                    command.requiredOption(optionFlags, ...optionOtherArgs);
-                } else {
-                    command.option(optionFlags, ...optionOtherArgs);
+                    if (_.isUndefined(defaultValue)) {
+                        option = option.preset('');
+                    }
+                    option = option.makeOptionMandatory(true);
+                } else if (!_.isUndefined(defaultValue)) {
+                    option = option.default(defaultValue);
                 }
+
+                command.addOption(option);
 
                 break;
             }

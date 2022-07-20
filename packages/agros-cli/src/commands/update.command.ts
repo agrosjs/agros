@@ -37,22 +37,23 @@ export class UpdateCommand extends AbstractCommand implements AbstractCommand {
                         message: 'Target entity pathname or identifier',
                         cliType: 'argument',
                     },
-                    source: {
+                    from: {
                         type: 'input',
                         message: 'Source entity pathname or identifier',
-                        cliType: 'argument',
+                        cliType: 'option',
                     },
                 },
-                defaultRequired: ['source', 'target'],
+                defaultRequired: ['from', 'target'],
             });
 
             collectionCommand.action(async (...data) => {
                 try {
                     const {
-                        source,
+                        from: source,
                         target,
                         ...updaterOptions
                     } = parseProps(data);
+
                     const entities = scanProjectEntities();
                     const sourceDescriptor = normalizeCLIPath(source, entities);
                     const targetDescriptor = normalizeCLIPath(target, entities, name.toLowerCase());
