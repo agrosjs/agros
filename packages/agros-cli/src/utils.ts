@@ -1,12 +1,16 @@
 import { CLIConfigParser } from '@agros/config';
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import { Collection } from '@agros/common';
+import {
+    Collection,
+    CollectionGenerateResult,
+} from '@agros/common';
 import _ from 'lodash';
 import {
     Command,
     Option,
 } from 'commander';
+import { Logger } from '@agros/logger';
 
 export const getCollections = (scene: string) => {
     try {
@@ -224,4 +228,37 @@ export const addArgumentsAndOptionsToCommandWithSchema = ({
             return result;
         }, {}) as Record<string, any>;
     };
+};
+
+export const logGenerateResult = (result: CollectionGenerateResult) => {
+    const logger = new Logger();
+    const terminateLog = logger.loadingLog('Updating and creating files...');
+    const bgColorMap = {
+        CREATE: '\x1b[42m',
+        UPDATE: '\x1b[44m',
+    };
+    const fgColorMap = {
+        CREATE: '\x1b[37m',
+        UPDATE: '\x1b[37m',
+    };
+
+    if (!Object.keys(result).some((key) => Array.isArray(result[key]) && result[key].length > 0)) {
+        terminateLog('warning', 'No files was updated or created');
+    } else {
+        terminateLog('success', 'Updated and/or created files successfully');
+        for (const resultKey of Object.keys(result)) {
+            const files = result[resultKey];
+
+            if (!Array.isArray(files)) {
+                continue;
+            }
+
+            for (const filepath of files) {
+                const key = resultKey.toUpperCase();
+                const fgColor = fgColorMap[key] || '\x1b[7m';
+                const bgColor = bgColorMap[key] || '\x1b[7m';
+                process.stdout.write(fgColor + bgColor + key + '\x1b[0m ' + path.relative(process.cwd(), filepath) + '\n');
+            }
+        }
+    }
 };

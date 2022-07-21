@@ -3,9 +3,8 @@ import { AbstractCommand } from '../command.abstract';
 import {
     addArgumentsAndOptionsToCommandWithSchema,
     getCollections,
+    logGenerateResult,
 } from '../utils';
-import * as path from 'path';
-import { normalizeSrcPath } from '@agros/common';
 
 export class GenerateCommand extends AbstractCommand implements AbstractCommand {
     public register(): Command {
@@ -31,21 +30,9 @@ export class GenerateCommand extends AbstractCommand implements AbstractCommand 
                     const props = parseProps(data);
                     const factory = new FactoryClass();
                     const result = await factory.generate(props);
-
-                    for (const resultKey of Object.keys(result)) {
-                        const files = result[resultKey];
-
-                        if (!Array.isArray(files)) {
-                            continue;
-                        }
-
-                        for (const filepath of files) {
-                            process.stdout.write(resultKey.toUpperCase() + ': ' + path.relative(normalizeSrcPath(), filepath) + '\n');
-                        }
-                    }
+                    logGenerateResult(result);
                 } catch (e) {
-                    process.stdout.write('\x1b[31m' + (e.message || e.toString()) + '\x1b[0m\n');
-                    process.stdout.write('\n');
+                    this.logger.error('error', e.message || e.toString());
                     process.exit(1);
                 }
             });
