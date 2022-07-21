@@ -14,6 +14,7 @@ import {
 import * as glob from 'glob';
 import { Logger } from '@agros/logger';
 import { runCommand } from '@agros/utils';
+import { LicenseUtils } from './license';
 
 export interface AppCollectionOptions {
     path?: string;
@@ -21,6 +22,9 @@ export interface AppCollectionOptions {
 }
 
 export class AppCollectionFactory extends AbstractCollection implements AbstractCollection {
+    private licenseUtils = new LicenseUtils();
+    private licenseList = this.licenseUtils.getLicenseList();
+
     public async generate({
         path: targetPath = process.cwd(),
         skipInstall,
@@ -88,12 +92,19 @@ export class AppCollectionFactory extends AbstractCollection implements Abstract
                 type: 'input',
                 message: 'Project repository URL',
             },
-            {
-                name: 'license',
-                type: 'input',
-                message: 'The license of this project',
-                default: 'MIT',
-            },
+            ...(
+                this.licenseList.length > 0
+                    ? [
+                        {
+                            name: 'license',
+                            type: 'list',
+                            message: 'The license of this project',
+                            default: 'mit',
+                            choices: this.licenseList,
+                        },
+                    ]
+                    : []
+            ),
             {
                 name: 'packageManager',
                 type: 'list',
@@ -152,6 +163,10 @@ export class AppCollectionFactory extends AbstractCollection implements Abstract
             ],
         );
 
+        if (templateConfig?.license) {
+            templateConfig.license = this.licenseUtils.getLicenseName(templateConfig.license);
+        }
+
         configValidator.validateSync(templateConfig);
 
         let installCommand: string[] = [];
@@ -199,6 +214,17 @@ export class AppCollectionFactory extends AbstractCollection implements Abstract
                 pathname,
                 path.resolve(targetAbsolutePath, path.relative(templateAbsolutePath, pathname)).replace(/\.\_$/g, ''),
                 templateConfig,
+            );
+        }
+
+        if (props.license) {
+            this.writeFile(
+                this.projectPath('LICENSE'),
+                this.licenseUtils.generate(props.license, {
+                    user: props.author,
+                    description: props.description,
+                    year: new Date().getFullYear().toString(),
+                }),
             );
         }
 
