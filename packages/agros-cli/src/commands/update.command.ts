@@ -51,7 +51,7 @@ export class UpdateCommand extends AbstractCommand implements AbstractCommand {
                     });
                     logGenerateResult(result);
                 } catch (e) {
-                    this.logger.error('error', e.message || e.toString());
+                    this.logger.error(e.message || e.toString());
                     process.exit(1);
                 }
             });
