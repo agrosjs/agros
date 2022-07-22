@@ -321,16 +321,19 @@ export class Factory {
          */
         const generateDependencyMap = () => {
             const ComponentClass = componentInstance.metadata.Class;
-            const dependedProviderClasses: Type[] = Reflect.getMetadata(
+            const dependedClasses: Type[] = [
                 DI_DEPS_SYMBOL,
-                componentInstance.metadata.Class,
-            ) || [];
+                DI_METADATA_USE_INTERCEPTORS_SYMBOL,
+            ].reduce((result, symbol) => {
+                const classes = Reflect.getMetadata(symbol, componentInstance.metadata.Class) || [];
+                return result.concat(classes);
+            }, [] as Type[]);
             const moduleInstance = this.moduleInstanceMap.get(
                 this.componentClassToModuleClassMap.get(ComponentClass),
             );
             let dependencyMap = ImmutableMap<Type, any>();
 
-            for (const ProviderClass of dependedProviderClasses) {
+            for (const ProviderClass of dependedClasses) {
                 if (this.componentInstanceMap.get(ProviderClass)) {
                     /**
                      * if provider class is a component class, that set the map value
@@ -393,9 +396,11 @@ export class Factory {
                 DI_METADATA_USE_INTERCEPTORS_SYMBOL,
                 componentInstance.metadata.Class,
             ) || [];
+            // TODO
+            // eslint-disable-next-line no-unused-vars
             const interceptorInstances = interceptorClasses.map((InterceptorClass) => {
-                return this.providerInstanceMap.get(InterceptorClass);
-            }).filter((instance) => !!instance) as Interceptor[];
+                return dependencyMap.get(InterceptorClass);
+            }).filter((instance: Interceptor) => !!instance && typeof instance.intercept === 'function') as Interceptor[];
 
             const forwardRef: FactoryForwardRef = (promise) => {
                 return promise.then((result) => {
@@ -431,7 +436,6 @@ export class Factory {
 
                 React.useEffect(() => {
                     // TODO
-                    console.log(interceptorInstances);
                 }, []);
 
                 return interceptorEnd
