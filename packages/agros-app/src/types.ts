@@ -54,6 +54,7 @@ export interface ModuleInstanceMetadata extends ModuleMetadata {
 
 export type FactoryForwardRef = <T = any>(promise: Promise<{ default: T }>) => Promise<{ default: T }>;
 
+type Fallback = boolean | React.ReactChild | React.ReactFragment | React.ReactPortal | null;
 export interface ComponentDecoratorOptions<T = any> {
     file?: string;
     lazy?: boolean;
@@ -61,7 +62,8 @@ export interface ComponentDecoratorOptions<T = any> {
     boundary?: ErrorBoundaryProps;
     declarations?: Type[];
     elementProps?: T;
-    suspenseFallback?: boolean | React.ReactChild | React.ReactFragment | React.ReactPortal | null;
+    suspenseFallback?: Fallback;
+    interceptorsFallback?: Fallback;
 }
 
 export type ComponentMetadata = Omit<ComponentDecoratorOptions, 'declarations' | 'file' | 'lazy'> & {
@@ -99,8 +101,4 @@ export interface InterceptorContext<T = any> {
     upstream?: T;
 }
 
-export interface Interceptor<T = any, P = any, R = any> {
-    intercept: (props: P, context: InterceptorContext<T>) => Promise<R> | R;
-}
-
-export type UseInterceptorsDecoratorOptions = Interceptor[];
+export type UseInterceptorsDecoratorOptions = Type[];

@@ -3,6 +3,7 @@ import { BarModule } from '../bar/bar.module';
 import { FooBoundaryComponent } from './foo-boundary.component';
 import { FooChildComponent } from './foo-child.component';
 import { FooComponent } from './foo.component';
+import { FooInterceptor } from './foo.interceptor';
 import { FooService } from './foo.service';
 
 @Module({
@@ -16,6 +17,7 @@ import { FooService } from './foo.service';
     ],
     providers: [
         FooService,
+        FooInterceptor,
     ],
     routes: [
         {

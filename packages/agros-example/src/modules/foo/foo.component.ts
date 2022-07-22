@@ -1,8 +1,9 @@
 import {
-    Component,
+    Component, UseInterceptors,
 } from '@agros/app';
 import { BarComponent } from '../bar/bar.component';
 import { BarService } from '../bar/bar.service';
+import { FooInterceptor } from './foo.interceptor';
 import { FooService } from './foo.service';
 
 @Component({
@@ -15,4 +16,5 @@ import { FooService } from './foo.service';
         BarService,
     ],
 })
+@UseInterceptors(FooInterceptor)
 export class FooComponent {}

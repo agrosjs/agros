@@ -1,7 +1,6 @@
 import {
     detectExports,
     detectDecorators,
-    detectNamedImports,
     getCollectionType,
     getFileEntityIdentifier,
     getPathDescriptorWithAlias,
@@ -17,7 +16,6 @@ import {
     CallExpression,
     Decorator,
     File,
-    Identifier,
     ObjectExpression,
     ObjectProperty,
     Statement,
@@ -196,9 +194,6 @@ export const transformComponentDecorator = createLoaderAOP(
     }) => {
         const ensureIdentifierNameMap = {};
         const declaredClasses = detectExports<t.ClassDeclaration>(tree, 'ClassDeclaration');
-        const componentDecoratorSpecifiers = detectNamedImports(tree, 'Component', (source) => {
-            return source.indexOf('@agros/app') !== -1;
-        });
 
         if (declaredClasses.length > 1) {
             throw new Error('Component files should have only one named class export');
@@ -208,19 +203,9 @@ export const transformComponentDecorator = createLoaderAOP(
 
         const [exportedClassInfo] = declaredClasses;
         const componentClassDeclaration = exportedClassInfo.declaration;
-        const decorators = componentClassDeclaration.decorators?.filter((decorator) => {
-            return decorator.expression.type === 'CallExpression' &&
-                decorator.expression.callee.type === 'Identifier' &&
-                componentDecoratorSpecifiers.some((specifier) => {
-                    return specifier.local.name === ((decorator.expression as CallExpression).callee as Identifier).name;
-                });
-        });
+        const [decorator] = detectDecorators(tree, 'Component');
 
-        if (componentClassDeclaration.decorators?.length !== 1) {
-            throw new Error('A component declaration should have only one decorator');
-        }
-
-        const decoratorArgument: ObjectExpression = (decorators[0].expression as CallExpression).arguments[0] as ObjectExpression;
+        const decoratorArgument: ObjectExpression = (decorator.expression as CallExpression).arguments[0] as ObjectExpression;
         const componentMetadataConfig = ['file', 'lazy', 'styles'].reduce((result, key) => {
             const rawValue = (decoratorArgument.properties.find((property: ObjectProperty) => {
                 return property.key.type === 'Identifier' && property.key.name === key;

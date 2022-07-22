@@ -10,6 +10,7 @@ import {
     DI_GLOBAL_MODULE_SYMBOL,
     DI_METADATA_COMPONENT_SYMBOL,
     DI_METADATA_MODULE_SYMBOL,
+    DI_METADATA_USE_INTERCEPTORS_SYMBOL,
 } from './constants';
 import {
     AsyncModuleClass,
@@ -22,6 +23,7 @@ import {
 } from './types';
 import isPromise from 'is-promise';
 import { Map as ImmutableMap } from 'immutable';
+import { Interceptor } from './interfaces';
 
 export class Factory {
     /**
@@ -319,16 +321,13 @@ export class Factory {
          */
         const generateDependencyMap = () => {
             const ComponentClass = componentInstance.metadata.Class;
-
             const dependedProviderClasses: Type[] = Reflect.getMetadata(
                 DI_DEPS_SYMBOL,
                 componentInstance.metadata.Class,
             ) || [];
-
             const moduleInstance = this.moduleInstanceMap.get(
                 this.componentClassToModuleClassMap.get(ComponentClass),
             );
-
             let dependencyMap = ImmutableMap<Type, any>();
 
             for (const ProviderClass of dependedProviderClasses) {
@@ -390,6 +389,13 @@ export class Factory {
                 enumerable: false,
             };
             let component: React.FC<any> | React.ExoticComponent<any>;
+            const interceptorClasses: Type[] = Reflect.getMetadata(
+                DI_METADATA_USE_INTERCEPTORS_SYMBOL,
+                componentInstance.metadata.Class,
+            ) || [];
+            const interceptorInstances = interceptorClasses.map((InterceptorClass) => {
+                return this.providerInstanceMap.get(InterceptorClass);
+            }).filter((instance) => !!instance) as Interceptor[];
 
             const forwardRef: FactoryForwardRef = (promise) => {
                 return promise.then((result) => {
@@ -420,9 +426,13 @@ export class Factory {
             }
 
             return React.createElement(() => {
-                // TODO
                 // eslint-disable-next-line no-unused-vars
                 const [interceptorEnd, setInterceptorEnd] = React.useState<boolean>(true);
+
+                React.useEffect(() => {
+                    // TODO
+                    console.log(interceptorInstances);
+                }, []);
 
                 return interceptorEnd
                     ? React.createElement(
