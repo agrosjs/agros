@@ -6,6 +6,7 @@ import {
     useParams,
 } from 'react-router-dom';
 import { ComponentInstance } from './classes';
+import { ErrorBoundaryProps } from 'react-error-boundary';
 
 export type Type<T = any> = new (...args: Array<any>) => T;
 
@@ -57,7 +58,7 @@ export interface ComponentDecoratorOptions<T = any> {
     file?: string;
     lazy?: boolean;
     styles?: string[];
-    boundaryComponent?: React.FC<any>;
+    boundary?: ErrorBoundaryProps;
     declarations?: Type[];
     elementProps?: T;
     suspenseFallback?: boolean | React.ReactChild | React.ReactFragment | React.ReactPortal | null;

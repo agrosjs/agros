@@ -7,7 +7,7 @@ const createRoutes = (routerItems, level = 0) => {
         } = routerItem;
 
         const {
-            boundaryComponent: BoundaryComponent = null,
+            boundary = {},
             suspenseFallback = null,
             elementProps = {},
         } = componentInstance.metadata;
@@ -32,10 +32,10 @@ const createRoutes = (routerItems, level = 0) => {
                 ...(
                     Component
                         ? {
-                            element: BoundaryComponent
+                            element: boundary
                                 ? <%= map.createElement %>(
-                                    BoundaryComponent,
-                                    {},
+                                    <%= map.ErrorBoundary %>,
+                                    boundary,
                                     createAppRouterElement(Component),
                                 )
                                 : createAppRouterElement(Component),

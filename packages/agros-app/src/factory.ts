@@ -422,7 +422,7 @@ export class Factory {
             return React.createElement(() => {
                 // TODO
                 // eslint-disable-next-line no-unused-vars
-                const [interceptorEnd, setInterceptorEnd] = React.useState<boolean>(false);
+                const [interceptorEnd, setInterceptorEnd] = React.useState<boolean>(true);
 
                 return interceptorEnd
                     ? React.createElement(

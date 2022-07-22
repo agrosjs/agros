@@ -133,6 +133,10 @@ export const transformEntry = createLoaderAOP<ParseResult<File>>(
                 libName: '@agros/app',
                 identifierName: 'Suspense',
             },
+            {
+                libName: '@agros/app',
+                identifierName: 'ErrorBoundary',
+            },
         ] as Omit<EnsureImportOptions, 'statements'>[];
 
         for (const importItem of imports) {
