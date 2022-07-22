@@ -212,7 +212,7 @@ export interface UpdateImportedServiceToServiceOptions {
     accessibility?: 'public' | 'private' | 'protected';
 }
 
-export const updateImportedServiceToService = createUpdater<UpdateImportedServiceToServiceOptions>(
+export const updateImportedInjectableToInjectable = createUpdater<UpdateImportedServiceToServiceOptions>(
     async ({
         classImportItem,
         initialResult,

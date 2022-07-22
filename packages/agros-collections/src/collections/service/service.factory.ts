@@ -7,7 +7,7 @@ import {
     normalizeEntityFileName,
     UpdateBaseOptions,
     updateImportedEntityToModule,
-    updateImportedServiceToService,
+    updateImportedInjectableToInjectable,
 } from '@agros/common';
 import * as path from 'path';
 import _ from 'lodash';
@@ -100,7 +100,7 @@ export class ServiceCollectionUpdateFactory extends AbstractCollection implement
             throw new Error(`Cannot find target entity with identifier: ${target}`);
         }
 
-        const updates = await updateImportedServiceToService(sourceDescriptor, targetDescriptor, {
+        const updates = await updateImportedInjectableToInjectable(sourceDescriptor, targetDescriptor, {
             skipReadonly,
             accessibility,
         });
