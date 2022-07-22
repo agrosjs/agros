@@ -33,6 +33,7 @@ export class ProjectConfigParser {
             module: ['*.module.ts', '*.module.tsx'],
             service: ['*.service.ts'],
             component: ['*.component.ts', '*.component.tsx'],
+            interceptor: ['*.interceptor.ts'],
         },
         builder: [],
         devServer: (config) => config,

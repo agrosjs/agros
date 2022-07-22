@@ -1,5 +1,10 @@
 import React from 'react';
-import { RouteProps } from 'react-router-dom';
+import {
+    Location,
+    RouteProps,
+    useSearchParams,
+    useParams,
+} from 'react-router-dom';
 import { ComponentInstance } from './classes';
 
 export type Type<T = any> = new (...args: Array<any>) => T;
@@ -83,3 +88,18 @@ export interface ContainerForwardedComponentProps<Props> {
 export interface BootstrapConfigItem extends RootContainerProps {
     container?: HTMLElement;
 }
+
+export interface InterceptorContext<T = any> {
+    route: {
+        location: Location;
+        params: ReturnType<typeof useParams>;
+        searchParams: ReturnType<typeof useSearchParams>;
+    };
+    upstream?: T;
+}
+
+export interface Interceptor<T = any, P = any, R = any> {
+    intercept: (props: P, context: InterceptorContext<T>) => Promise<R> | R;
+}
+
+export type UseInterceptorsDecoratorOptions = Interceptor[];

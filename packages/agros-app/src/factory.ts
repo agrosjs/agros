@@ -419,17 +419,26 @@ export class Factory {
                 );
             }
 
-            return React.createElement(
-                component,
-                {
-                    ...props,
-                    $container: {
-                        get: <T>(ProviderClass: Type): T => {
-                            return dependencyMap.get(ProviderClass);
+            return React.createElement(() => {
+                // TODO
+                // eslint-disable-next-line no-unused-vars
+                const [interceptorEnd, setInterceptorEnd] = React.useState<boolean>(false);
+
+                return interceptorEnd
+                    ? React.createElement(
+                        component,
+                        {
+                            ...props,
+                            $container: {
+                                get: <T>(ProviderClass: Type): T => {
+                                    return dependencyMap.get(ProviderClass);
+                                },
+                            },
                         },
-                    },
-                },
-            );
+                    )
+                    // TODO
+                    : React.createElement('div', {}, 'waiting for interceptors');
+            });
         });
     }
 

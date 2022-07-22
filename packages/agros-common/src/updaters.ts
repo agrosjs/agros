@@ -146,21 +146,23 @@ export const updateImportedEntityToModule = createUpdater<UpdateImportedEntityTo
 
         let decoratorProperties: string[];
 
+        if (!sourceDescriptor.collectionType) {
+            return result;
+        }
+
         switch (sourceDescriptor.collectionType) {
             case 'component': {
                 decoratorProperties = ['components', ...(skipExport ? [] : ['exports'])];
-                break;
-            }
-            case 'service': {
-                decoratorProperties = ['providers', ...(skipExport ? [] : ['exports'])];
                 break;
             }
             case 'module': {
                 decoratorProperties = ['imports'];
                 break;
             }
-            default:
-                return result;
+            default: {
+                decoratorProperties = ['providers', ...(skipExport ? [] : ['exports'])];
+                break;
+            }
         }
 
         let shouldUpdate = false;
