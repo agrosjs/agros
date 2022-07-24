@@ -7,6 +7,7 @@ specifiers:
   '@agros/utils': workspace:^0.0.1
   '@types/webpack': ^5.28.0
   react-error-boundary: ^3.1.4
+  use-async-effect: ^2.2.6
 
 dependencies:
   '@agros/config': link:../agros-config
@@ -14,6 +15,7 @@ dependencies:
   '@agros/logger': link:../agros-logger
   '@agros/utils': link:../agros-utils
   react-error-boundary: 3.1.4
+  use-async-effect: 2.2.6
 
 devDependencies:
   '@types/webpack': 5.28.0
@@ -516,6 +518,12 @@ packages:
     dependencies:
       punycode: 2.1.1
     dev: true
+
+  /use-async-effect/2.2.6:
+    resolution: {integrity: sha512-wKUpaHkuF4rzBHawP87o1KzoK2IxJ6De8fUyQ3GN2114zb4zqT87+SEbCHS+F+0inZ2Y+k6Tm1LOCQgYTSD9ww==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0
+    dev: false
 
   /watchpack/2.4.0:
     resolution: {integrity: sha512-Lcvm7MGST/4fup+ifyKi2hjyIAwcdI4HRgtvTpIUxBRhB+RFtUh8XtDOxUfctVCnhVi+QQj49i91OyvzkJl6cg==}

@@ -33,11 +33,13 @@ importers:
       react-app-rewired: ^2.2.1
       react-dev-utils: ^12.0.1
       react-dom: ^17.0.0
+      react-error-boundary: ^3.1.4
       react-router-dom: ^6.3.0
       react-scripts: ^5.0.0
       reflect-metadata: ^0.1.13
       rimraf: ^3.0.2
       typescript: ^4.5.5
+      use-async-effect: ^2.2.6
     dependencies:
       '@agros/config': link:../agros-config
       '@agros/loader': link:../agros-loader
@@ -56,8 +58,10 @@ importers:
       react-app-rewired: 2.2.1_react-scripts@5.0.1
       react-dev-utils: 12.0.1_typescript@4.7.3
       react-dom: 17.0.2_react@17.0.2
+      react-error-boundary: 3.1.4_react@17.0.2
       react-router-dom: 6.3.0_sfoxds7t5ydpegc3knd667wn6m
       reflect-metadata: 0.1.13
+      use-async-effect: 2.2.6_react@17.0.2
     devDependencies:
       '@types/customize-cra': 1.0.2
       '@types/figlet': 1.5.4
@@ -9684,6 +9688,14 @@ packages:
     resolution: {integrity: sha512-7rKUyy33Q1yc98pQ1DAmLtwX109F7TIfWlW1Ydo8Wl1ii1SeHieeh0HHfPeL2fMXK6z0s8ecKs9frCuLJvndBg==}
     dependencies:
       punycode: 2.1.1
+
+  /use-async-effect/2.2.6_react@17.0.2:
+    resolution: {integrity: sha512-wKUpaHkuF4rzBHawP87o1KzoK2IxJ6De8fUyQ3GN2114zb4zqT87+SEbCHS+F+0inZ2Y+k6Tm1LOCQgYTSD9ww==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0
+    dependencies:
+      react: 17.0.2
+    dev: false
 
   /util-deprecate/1.0.2:
     resolution: {integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==}

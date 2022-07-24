@@ -24,6 +24,12 @@ import {
 import isPromise from 'is-promise';
 import { Map as ImmutableMap } from 'immutable';
 import { Interceptor } from './interfaces';
+import {
+    useLocation,
+    useParams,
+    useSearchParams,
+} from 'react-router-dom';
+import { useAsyncEffect } from 'use-async-effect';
 
 export class Factory {
     /**
@@ -396,7 +402,6 @@ export class Factory {
                 DI_METADATA_USE_INTERCEPTORS_SYMBOL,
                 componentInstance.metadata.Class,
             ) || [];
-            // TODO
             const interceptorInstances = interceptorClasses.map((InterceptorClass) => {
                 return dependencyMap.get(InterceptorClass);
             }).filter((instance: Interceptor) => !!instance && typeof instance.intercept === 'function') as Interceptor[];
@@ -430,20 +435,32 @@ export class Factory {
             }
 
             return React.createElement(() => {
-                const fallback = componentInstance.metadata.interceptorsFallback = '';
-                const [interceptorEnd, setInterceptorEnd] = React.useState<boolean>(true);
+                const fallback = componentInstance.metadata.interceptorsFallback = null;
+                const [interceptorEnd, setInterceptorEnd] = React.useState<boolean>(false);
+                const routeLocation = useLocation();
+                const routeParams = useParams();
+                const routeSearchParams = useSearchParams();
 
-                React.useEffect(() => {
-                    new Promise(async (resolve) => {
+                useAsyncEffect(async () => {
+                    if (routeLocation && routeParams && routeSearchParams) {
                         let result: any;
                         for (const interceptorInstance of interceptorInstances) {
                             result = await interceptorInstance.intercept(result, {
-                                // TODO
+                                route: {
+                                    location: routeLocation,
+                                    params: routeParams,
+                                    searchParams: routeSearchParams,
+                                },
+                                upstream: result,
                             });
                         }
-                        resolve(undefined);
-                    }).then(() => {});
-                }, []);
+                        setInterceptorEnd(true);
+                    }
+                }, [
+                    routeLocation,
+                    routeParams,
+                    routeSearchParams,
+                ]);
 
                 return interceptorEnd
                     ? React.createElement(
@@ -457,7 +474,7 @@ export class Factory {
                             },
                         },
                     )
-                    : React.createElement(fallback);
+                    : fallback;
             });
         });
     }
