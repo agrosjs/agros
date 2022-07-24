@@ -397,7 +397,6 @@ export class Factory {
                 componentInstance.metadata.Class,
             ) || [];
             // TODO
-            // eslint-disable-next-line no-unused-vars
             const interceptorInstances = interceptorClasses.map((InterceptorClass) => {
                 return dependencyMap.get(InterceptorClass);
             }).filter((instance: Interceptor) => !!instance && typeof instance.intercept === 'function') as Interceptor[];
@@ -431,11 +430,19 @@ export class Factory {
             }
 
             return React.createElement(() => {
-                // eslint-disable-next-line no-unused-vars
+                const fallback = componentInstance.metadata.interceptorsFallback = '';
                 const [interceptorEnd, setInterceptorEnd] = React.useState<boolean>(true);
 
                 React.useEffect(() => {
-                    // TODO
+                    new Promise(async (resolve) => {
+                        let result: any;
+                        for (const interceptorInstance of interceptorInstances) {
+                            result = await interceptorInstance.intercept(result, {
+                                // TODO
+                            });
+                        }
+                        resolve(undefined);
+                    }).then(() => {});
                 }, []);
 
                 return interceptorEnd
@@ -450,8 +457,7 @@ export class Factory {
                             },
                         },
                     )
-                    // TODO
-                    : React.createElement('div', {}, 'waiting for interceptors');
+                    : React.createElement(fallback);
             });
         });
     }
