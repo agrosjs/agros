@@ -6,11 +6,15 @@
         "cz-conventional-changelog": "^3.3.0",
         "eslint": "^7.28.0",
         "eslint-config-alloy": "^4.5.1",
+        "md5-file": "^5.0.0",
         "typescript": "^4.5.5"
     },
     "config": {
         "commitizen": {
             "path": "./node_modules/cz-conventional-changelog"
         }
+    },
+    "scripts": {
+        "checksum": "node scripts/checksum.js"
     }
 }
