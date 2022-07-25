@@ -6,7 +6,7 @@ import * as path from 'path';
 export type ScopeMap = Record<string, string>;
 export type AliasMap = Record<string, string>;
 export type CollectionMap = Record<string, string[]>;
-export type CollectionType = 'module' | 'service' | 'component';
+export type CollectionType = 'module' | 'service' | 'component' | 'interceptor';
 
 export interface ProjectConfig {
     npmClient?: string;

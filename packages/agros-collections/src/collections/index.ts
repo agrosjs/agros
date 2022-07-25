@@ -11,6 +11,10 @@ import {
     ComponentCollectionUpdateFactory,
 } from './component/component.factory';
 import { ApplicationCollectionGenerateFactory } from './application/application.factory';
+import {
+    InterceptorCollectionGenerateFactory,
+    InterceptorCollectionUpdateFactory,
+} from './interceptor/interceptor.factory';
 
 export default {
     generate: {
@@ -18,10 +22,12 @@ export default {
         service: ServiceCollectionGenerateFactory,
         module: ModuleCollectionGenerateFactory,
         component: ComponentCollectionGenerateFactory,
+        interceptor: InterceptorCollectionGenerateFactory,
     },
     update: {
         service: ServiceCollectionUpdateFactory,
         module: ModuleCollectionUpdateFactory,
         component: ComponentCollectionUpdateFactory,
+        interceptor: InterceptorCollectionUpdateFactory,
     },
 };

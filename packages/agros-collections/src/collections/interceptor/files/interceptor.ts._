@@ -1,0 +1,9 @@
+import {
+    Injectable,
+    Interceptor,
+} from '@agros/app';
+
+@Injectable()
+export class <%= name %>Interceptor implements Interceptor {
+    public intercept(props, context) {}
+}
