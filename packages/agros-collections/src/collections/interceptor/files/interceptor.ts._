@@ -2,8 +2,9 @@ import {
     Injectable,
     Interceptor,
 } from '@agros/app';
+import { InterceptorContext } from '@agros/app/lib/types';
 
 @Injectable()
 export class <%= name %>Interceptor implements Interceptor {
-    public intercept(props, context) {}
+    public intercept(props: any, context: InterceptorContext) {}
 }
