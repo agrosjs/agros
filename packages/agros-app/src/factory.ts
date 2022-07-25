@@ -442,18 +442,19 @@ export class Factory {
                 const routeSearchParams = useSearchParams();
 
                 useAsyncEffect(async () => {
-                    if (routeLocation && routeParams && routeSearchParams) {
-                        let result: any;
-                        for (const interceptorInstance of interceptorInstances) {
-                            result = await interceptorInstance.intercept(result, {
-                                route: {
-                                    location: routeLocation,
-                                    params: routeParams,
-                                    searchParams: routeSearchParams,
-                                },
-                                upstream: result,
-                            });
+                    try {
+                        if (routeLocation && routeParams && routeSearchParams) {
+                            for (const interceptorInstance of interceptorInstances) {
+                                await interceptorInstance.intercept(props, {
+                                    route: {
+                                        location: routeLocation,
+                                        params: routeParams,
+                                        searchParams: routeSearchParams,
+                                    },
+                                });
+                            }
                         }
+                    } finally {
                         setInterceptorEnd(true);
                     }
                 }, [

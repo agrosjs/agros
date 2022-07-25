@@ -92,13 +92,12 @@ export interface BootstrapConfigItem extends RootContainerProps {
     container?: HTMLElement;
 }
 
-export interface InterceptorContext<T = any> {
+export interface InterceptorContext {
     route: {
         location: Location;
         params: ReturnType<typeof useParams>;
         searchParams: ReturnType<typeof useSearchParams>;
     };
-    upstream?: T;
 }
 
 export type UseInterceptorsDecoratorOptions = Type[];
