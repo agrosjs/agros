@@ -75,19 +75,9 @@ cd agros
 rush build
 ```
 
-After executing the commands above, the packages will be watched to compile from TS to JS automatically.
+After executing the commands above, the packages will be compiled from TS to JS automatically.
 
-## Versioning
-
-Please note that the version must follow the following conventions:
-The version is seperated by `major`, `minor` and `patch` parts:
-1. `major` means major updates, usually represents the API changes or some APIs are deleted
-2. `minor` means the new version add some new APIs or refactor the existed APIs
-3. `patch` means some bugs are fixed
-
-## Publish Packages
-
-> NOTE: Only core contributors can publish packages, by merging from other branch to `master` and add a tag in `agros@<number>.<number>.<number>` format. After a commit on `master` is beeing tagged, the CI will build and publish all packages automatically.
+Once you finish your development work, you should make a Pull Request from your branch to `origin/master` on GitHub.
 
 ## Pull Request Guidelines
 
@@ -102,7 +92,33 @@ The version is seperated by `major`, `minor` and `patch` parts:
   - Provide detailed description of the bug in the PR. Live demo preferred.
   - Add appropriate test coverage if applicable.
 
-## Issue Reporting Guidelines
+## Publishing
+
+> This could be done only with the owner access of this project.
+
+In `master` branch, run:
+
+```bash
+(git master)$ rush change --target-branch origin/publish
+```
+
+Answer the questions and write the changelogs in the prompt, and there will be several changelogs that indeicates the changed packages.
+
+Then, run:
+
+```bash
+(git master)$ rush publish --apply
+```
+
+Versions will be bumped. Then merge the `origin/master` branch into `origin/publish` and run:
+
+```bash
+(git publish)$ rush publish --publish --include-all
+```
+
+> There is no need to run these commands manually, it is overtook by CI/CD workflows
+
+# Issue Reporting Guide
 
 - The issue list of this repo is **exclusively** for bug reports and feature requests. Non-conforming issues will be closed immediately.
   - For simple beginner questions, you can get quick answers from
@@ -112,7 +128,7 @@ The version is seperated by `major`, `minor` and `patch` parts:
 - For bugs that involves build setups, you can create a reproduction repository with steps in the README.
 - If your issue is resolved but still open, don’t hesitate to close it. In case you found a solution by yourself, it could be helpful to explain how you fixed it.
 
-## Git Commit Specific
+# Git Commit Specific
 
 - Your commits message must follow our [git commit specific](./GIT_COMMIT_SPECIFIC.md).
 - We will check your commit message, if it does not conform to the specification, the commit will be automatically refused, make sure you have read the specification above.

@@ -4,7 +4,7 @@
     </a>
 </p>
 
-<p align="center">Build your web apps by modules and dependency injecting.</p>
+<p align="center">Build robust, clean and scalable web applications.</p>
 
 <p align="center">
   <a href="https://github.com/agrosjs/agros/blob/master/LICENSE"><img src="https://img.shields.io/github/license/agrosjs/agros"></a>
@@ -16,7 +16,7 @@
 
 # Introduction
 
-Agros is a framework for building robust, clean and scalable React.js applications. It based on TypeScript and combines elements of OOP (Object Oriented Programming), FP (Functional Programming).
+Agros is a framework for building robust, clean and scalable web applications. It based on TypeScript and combines elements of OOP (Object Oriented Programming), FP (Functional Programming).
 
 ## Motivation
 
