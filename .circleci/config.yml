@@ -1,6 +1,7 @@
 version: 2
 aliases: [
   &dependency-paths [
+    "common",
     "node_modules",
     "packages",
     "checksum.txt",
