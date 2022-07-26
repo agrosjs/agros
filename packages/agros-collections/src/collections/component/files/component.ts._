@@ -1,0 +1,9 @@
+import { Component } from '@agros/app';
+
+@Component({
+    file: "<%= file %>",
+    <% if (typeof lazy === "boolean") { -%>
+    lazy: <%= lazy %>,
+    <% } -%>
+})
+export class <%= name %>Component {}

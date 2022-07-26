@@ -1,0 +1,10 @@
+{
+  "changes": [
+    {
+      "packageName": "@agros/utils",
+      "comment": "Update utilities with several functions",
+      "type": "patch"
+    }
+  ],
+  "packageName": "@agros/utils"
+}

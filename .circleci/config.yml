@@ -1,0 +1,84 @@
+version: 2
+aliases: [
+  &dependency-paths [
+    "node_modules",
+    "packages",
+    "checksum.txt",
+    "~/.ssh",
+  ],
+  &output-paths [
+    "packages",
+    "checksum.txt",
+  ],
+]
+defaults: &defaults
+  working_directory: ~/repo
+  docker:
+    - image: lenconda/rushstack:0.0.1
+jobs:
+  prepare:
+    <<: *defaults
+    steps:
+      - run: echo -e "$GPG_SECRET_KEY" | gpg --import
+      - run: git config --global user.email deploy@pugiojs.org
+      - run: git config --global user.name "Pugio Deploy Bot"
+      - run: git config --global user.signingkey $GPG_KEY_ID
+      - run: git config --global commit.gpgsign true
+      - run: ssh-keyscan github.com >> ~/.ssh/known_hosts
+  install:
+    <<: *defaults
+    steps:
+      - checkout
+      - run: npm install
+      - run: rush update
+      - run: npm run checksum
+      - save_cache:
+          paths: *dependency-paths
+          key: v1-dependencies-{{ checksum "checksum.txt" }}
+      - persist_to_workspace:
+          root: ~/repo
+          paths: .
+  build:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/repo
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "checksum.txt" }}
+      - run: rush build
+      - save_cache:
+          paths: *output-paths
+          key: v1-dist-{{ checksum "checksum.txt" }}
+  publish_packages:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/repo
+      - restore_cache:
+          keys:
+            - v1-dist-{{ checksum "checksum.txt" }}
+            - v1-dependencies-{{ checksum "checksum.txt" }}
+      - run: rush publish --publish --include-all
+      - run: git add -A && git commit -S -m "publish packages" && git push origin publish
+workflows:
+  version: 2
+  npm_workflow:
+    jobs:
+      - prepare
+      - install:
+          requires:
+            - prepare
+          filters:
+            tags:
+              only: /.*/
+      - build:
+          requires:
+            - install
+      - publish_packages:
+          requires:
+            - build
+          filters:
+            branches:
+              only:
+                - /^publish$/

@@ -31,8 +31,9 @@ bower_components
 build/Release
 
 # Dependency directories
-node_modules/
-jspm_packages/
+node_modules
+jspm_packages
+**/*/node_modules
 
 # Optional npm cache directory
 .npm
@@ -74,3 +75,7 @@ packages/**/umd
 packages/**/amd
 packages/**/cjs
 checksum.txt
+
+# Tests
+test.ts
+test

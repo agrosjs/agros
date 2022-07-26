@@ -1,0 +1,10 @@
+{
+  "changes": [
+    {
+      "packageName": "@agros/collections",
+      "comment": "Initialize default collections for Agros CLI",
+      "type": "patch"
+    }
+  ],
+  "packageName": "@agros/collections"
+}

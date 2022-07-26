@@ -1,0 +1,4 @@
+import { Injectable } from '@agros/app';
+
+@Injectable()
+export class <%= name %>Service {}

@@ -8,17 +8,19 @@ import _ from 'lodash';
 
 export class Logger {
     public info(message: string) {
-        process.stdout.write(message);
+        process.stdout.write(message + '\n');
     }
 
     public warning(message: string) {
-        process.stdout.write('\x1b[33m' + 'Warning: ' + message + '\x1b[0m');
+        process.stdout.write('\x1b[33m' + 'Warning: ' + message + '\x1b[0m\n');
     }
 
     public error(message: string, error?: Error) {
-        process.stdout.write('\x1b[31m' + 'Error: ' + message + '\x1b[0m');
-        process.stdout.write('\x1b[31m' + error?.message + '\x1b[0m');
-        process.stdout.write('\x1b[31m' + error?.stack + '\x1b[0m');
+        process.stdout.write('\x1b[31m' + 'Error: ' + message + '\x1b[0m\n');
+        if (error) {
+            process.stdout.write('\x1b[31m' + error?.message + '\x1b[0m\n');
+            process.stdout.write('\x1b[31m' + error?.stack + '\x1b[0m\n');
+        }
     }
 
     public loadingLog(message: string) {

@@ -1,0 +1,10 @@
+{
+  "changes": [
+    {
+      "packageName": "@agros/cli",
+      "comment": "Initialize CLI toolchain for Agros.js",
+      "type": "patch"
+    }
+  ],
+  "packageName": "@agros/cli"
+}

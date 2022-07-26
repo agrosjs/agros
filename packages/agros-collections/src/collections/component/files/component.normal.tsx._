@@ -1,0 +1,10 @@
+import { FC } from 'react';
+import { getContainer } from '@agros/app';
+
+const <%= name %>: FC = () => {
+    const container = getContainer(<%= name %>);
+
+    return (<div><%= name %> Component is working!</div>);
+};
+
+export default <%= name %>;

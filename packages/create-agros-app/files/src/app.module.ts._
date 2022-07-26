@@ -1,0 +1,18 @@
+import { Module } from '@agros/app';
+import { AppComponent } from '@/app.component';
+
+@Module({
+    components: [
+        AppComponent,
+    ],
+    routes: [
+        {
+            path: '',
+            useComponentClass: AppComponent,
+        },
+    ],
+    exports: [
+        AppComponent,
+    ],
+})
+export class AppModule {}
