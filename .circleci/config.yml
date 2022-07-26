@@ -18,12 +18,20 @@ defaults: &defaults
     - image: circleci/node:14.15
 
 jobs:
+  prepare:
+    <<: *defaults
+    steps:
+      - run: echo -e "$GPG_KEY" | gpg --import
+      - run: git config --global user.email deploy@pugiojs.org
+      - run: git config --global user.name "Pugio Deploy Bot"
+      - run: git config --global user.signingkey $GPG_ID
+      - run: git config --global commit.gpgsign true
   install:
     <<: *defaults
     steps:
       - checkout
       - run: npm install
-      - run: npm i @microsoft/rush pnpm --local=global
+      - run: npm i @microsoft/rush pnpm --location=global
       - run: rush update
       - run: npm run checksum
       - save_cache:
@@ -53,22 +61,22 @@ jobs:
           keys:
             - v1-dist-{{ checksum "checksum.txt" }}
             - v1-dependencies-{{ checksum "checksum.txt" }}
-      - run: npm run publish
+      - run: rush publish --publish --include-all
+      - run: git add -A && git commit -S -m "publish packages" && git push origin publish
 
 workflows:
   version: 2
   npm_workflow:
     jobs:
       - install:
+          requires:
+            - prepare
           filters:
             tags:
               only: /.*/
       - build:
           requires:
             - install
-          filters:
-            tags:
-              only: /.*/
       - publish_packages:
           requires:
             - build

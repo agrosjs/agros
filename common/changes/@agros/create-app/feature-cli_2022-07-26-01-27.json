@@ -1,0 +1,11 @@
+{
+  "changes": [
+    {
+      "comment": "test",
+      "type": "patch",
+      "packageName": "@agros/create-app"
+    }
+  ],
+  "packageName": "@agros/create-app",
+  "email": "i@lenconda.top"
+}

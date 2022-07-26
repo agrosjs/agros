@@ -1,0 +1,11 @@
+{
+  "changes": [
+    {
+      "comment": "test",
+      "type": "patch",
+      "packageName": "@agros/common"
+    }
+  ],
+  "packageName": "@agros/common",
+  "email": "i@lenconda.top"
+}
