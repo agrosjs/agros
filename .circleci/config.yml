@@ -1,5 +1,4 @@
 version: 2
-
 aliases: [
   &dependency-paths [
     "node_modules",
@@ -11,12 +10,10 @@ aliases: [
     "checksum.txt",
   ],
 ]
-
 defaults: &defaults
   working_directory: ~/repo
   docker:
     - image: circleci/node:14.15
-
 jobs:
   prepare:
     <<: *defaults
@@ -64,7 +61,6 @@ jobs:
             - v1-dependencies-{{ checksum "checksum.txt" }}
       - run: rush publish --publish --include-all
       - run: git add -A && git commit -S -m "publish packages" && git push origin publish
-
 workflows:
   version: 2
   npm_workflow:
