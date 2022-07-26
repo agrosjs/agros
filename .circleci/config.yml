@@ -32,7 +32,7 @@ jobs:
     steps:
       - checkout
       - run: npm install
-      - run: npm i @microsoft/rush pnpm -g --unsafe-perm=true
+      - run: sudo npm i @microsoft/rush pnpm -g --unsafe-perm=true
       - run: rush update
       - run: npm run checksum
       - save_cache:
