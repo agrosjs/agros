@@ -1,0 +1,10 @@
+{
+  "changes": [
+    {
+      "packageName": "@agros/app",
+      "comment": "Refactor and initialize Agros.js app packages and build scripts",
+      "type": "patch"
+    }
+  ],
+  "packageName": "@agros/app"
+}

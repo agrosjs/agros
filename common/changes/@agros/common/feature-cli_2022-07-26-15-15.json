@@ -1,0 +1,10 @@
+{
+  "changes": [
+    {
+      "packageName": "@agros/common",
+      "comment": "Update common packages with updaters and normalizers",
+      "type": "minor"
+    }
+  ],
+  "packageName": "@agros/common"
+}

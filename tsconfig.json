@@ -26,10 +26,6 @@
             "es2016"
         ]
     },
-    "include": [
-        "src/**/*.ts",
-        "examples/**/*.ts"
-    ],
     "exclude": [
         "node_modules/**/*",
         "scripts/**/*"

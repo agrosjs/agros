@@ -7,3 +7,4 @@ docs
 .vscode
 *.d.ts
 lib
+common

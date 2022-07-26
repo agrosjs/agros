@@ -1,0 +1,10 @@
+{
+  "changes": [
+    {
+      "packageName": "@agros/create-app",
+      "comment": "Initialize project scaffold",
+      "type": "patch"
+    }
+  ],
+  "packageName": "@agros/create-app"
+}

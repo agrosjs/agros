@@ -1,0 +1,14 @@
+function Agros$$ComponentWithFactory(options): ClassDecorator {
+    const {
+        declarations = [],
+        ...metadataValue
+    } = options;
+    return (target) => {
+        Reflect.defineMetadata(
+            <%= map.DI_METADATA_COMPONENT_SYMBOL %>,
+            metadataValue,
+            target,
+        );
+        Reflect.defineMetadata(<%= map.DI_DEPS_SYMBOL %>, declarations, target);
+    };
+}
