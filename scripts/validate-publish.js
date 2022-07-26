@@ -3,10 +3,13 @@ const path = require('path');
 const Checksum = require('./utils/checksum');
 const checksum = new Checksum(fs.readFileSync(path.resolve(__dirname, '../.gitignore')).toString());
 
-fs.writeFileSync(
-    path.resolve(__dirname, '../checksum.txt'),
+const diff = checksum.diffChecksum(
+    fs.readFileSync(path.resolve(__dirname, '../checksum.txt').toString()),
     checksum.stringifyChecksum(checksum.getChecksum(path.resolve(__dirname, '..'))),
-    {
-        encoding: 'utf-8',
-    },
 );
+
+if (diff.length > 0) {
+    console.log('Diff changed');
+    console.log(diff.map((diffItem) => diffItem.pathname) + '\n');
+    process.exit(1);
+}
