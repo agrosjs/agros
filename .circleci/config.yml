@@ -23,6 +23,7 @@ jobs:
       - run: git config --global user.name "Pugio Deploy Bot"
       - run: git config --global user.signingkey $GPG_KEY_ID
       - run: git config --global commit.gpgsign true
+      - run: ssh-keyscan github.com >> ~/.ssh/known_hosts
       - run: ssh -T git@github.com
   install:
     <<: *defaults
