@@ -5,7 +5,6 @@ aliases: [
     "packages",
     "checksum.txt",
     "~/.ssh",
-    "/usr/local/lib/node_modules"
   ],
   &output-paths [
     "packages",
@@ -15,7 +14,7 @@ aliases: [
 defaults: &defaults
   working_directory: ~/repo
   docker:
-    - image: circleci/node:14.15
+    - image: lenconda/rushstack:0.0.1
 jobs:
   prepare:
     <<: *defaults
@@ -25,15 +24,12 @@ jobs:
       - run: git config --global user.name "Pugio Deploy Bot"
       - run: git config --global user.signingkey $GPG_KEY_ID
       - run: git config --global commit.gpgsign true
-      - run: mkdir -p ~/.ssh
-      - run: touch ~/.ssh/known_hosts
       - run: ssh-keyscan github.com >> ~/.ssh/known_hosts
   install:
     <<: *defaults
     steps:
       - checkout
       - run: npm install
-      - run: sudo npm i @microsoft/rush pnpm -g --unsafe-perm=true
       - run: rush update
       - run: npm run checksum
       - save_cache:
