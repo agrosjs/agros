@@ -69,6 +69,7 @@ workflows:
   version: 2
   npm_workflow:
     jobs:
+      - prepare
       - install:
           requires:
             - prepare
