@@ -4,7 +4,8 @@ aliases: [
     "node_modules",
     "packages",
     "checksum.txt",
-    "~/.ssh"
+    "~/.ssh",
+    "/usr/local/lib/node_modules"
   ],
   &output-paths [
     "packages",
