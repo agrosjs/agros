@@ -17,6 +17,7 @@
     },
     "scripts": {
         "checksum": "node scripts/checksum.js",
-        "validate-publish": "node scripts/checksum.js"
+        "validate-publish": "node scripts/checksum.js",
+        "sync-readme": "node scripts/sync-readme.js"
     }
 }
