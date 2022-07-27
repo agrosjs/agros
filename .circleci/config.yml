@@ -14,7 +14,7 @@ aliases: [
 defaults: &defaults
   working_directory: ~/repo
   docker:
-    - image: lenconda/rushstack:0.0.1
+    - image: lenconda/rushstack:0.0.2
 jobs:
   prepare:
     <<: *defaults
@@ -85,3 +85,4 @@ workflows:
             branches:
               only:
                 - /^publish$/
+
