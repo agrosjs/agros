@@ -53,7 +53,7 @@ jobs:
       - run: rush update
       - run: rush build
       - run: rush publish --apply
-      # - run: rush publish --publish --include-all
+      - run: rush publish --publish --include-all
       - run: echo -e "$GPG_SECRET_KEY" | gpg --import
       - run: git config --global user.email deploy@pugiojs.org
       - run: git config --global user.name "Pugio Deploy Bot"
