@@ -1,0 +1,25 @@
+{
+  "name": "@agros/common",
+  "entries": [
+    {
+      "version": "0.1.0",
+      "tag": "@agros/common_v0.1.0",
+      "date": "Wed, 27 Jul 2022 01:23:09 GMT",
+      "comments": {
+        "minor": [
+          {
+            "comment": "Update common packages with updaters and normalizers"
+          }
+        ],
+        "dependency": [
+          {
+            "comment": "Updating dependency \"@agros/config\" from `^0.0.2` to `^0.1.0`"
+          },
+          {
+            "comment": "Updating dependency \"@agros/utils\" from `^0.0.1` to `^0.0.2`"
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "name": "@agros/create-app",
+  "entries": [
+    {
+      "version": "0.0.1",
+      "tag": "@agros/create-app_v0.0.1",
+      "date": "Wed, 27 Jul 2022 01:23:09 GMT",
+      "comments": {
+        "patch": [
+          {
+            "comment": "Initialize project scaffold"
+          }
+        ],
+        "dependency": [
+          {
+            "comment": "Updating dependency \"@agros/common\" from `^0.0.0` to `^0.1.0`"
+          },
+          {
+            "comment": "Updating dependency \"@agros/logger\" from `^0.0.1` to `^0.0.2`"
+          },
+          {
+            "comment": "Updating dependency \"@agros/utils\" from `^0.0.1` to `^0.0.2`"
+          }
+        ]
+      }
+    }
+  ]
+}
