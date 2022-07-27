@@ -21,14 +21,14 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/lenconda/agros.git"
+        "url": "git+https://github.com/agrosjs/agros.git"
     },
     "author": "Lenconda <i@lenconda.top>",
     "license": "MIT",
     "bugs": {
-        "url": "https://github.com/lenconda/agros/issues"
+        "url": "https://github.com/agrosjs/agros/issues"
     },
-    "homepage": "https://github.com/lenconda/agros#readme",
+    "homepage": "https://github.com/agrosjs/agros#readme",
     "devDependencies": {
         "@types/babel__generator": "^7.6.4",
         "@types/babel__template": "^7.4.1",
