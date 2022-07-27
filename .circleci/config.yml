@@ -16,15 +16,6 @@ defaults: &defaults
   docker:
     - image: lenconda/rushstack:0.0.2
 jobs:
-  prepare:
-    <<: *defaults
-    steps:
-      - run: echo -e "$GPG_SECRET_KEY" | gpg --import
-      - run: git config --global user.email deploy@pugiojs.org
-      - run: git config --global user.name "Pugio Deploy Bot"
-      - run: git config --global user.signingkey $GPG_KEY_ID
-      - run: git config --global commit.gpgsign true
-      - run: ssh-keyscan github.com >> ~/.ssh/known_hosts
   install:
     <<: *defaults
     steps:
@@ -62,16 +53,19 @@ jobs:
       - run: rush update
       - run: rush build
       - run: rush publish --apply
-      - run: rush publish --publish --include-all
+      # - run: rush publish --publish --include-all
+      - run: echo -e "$GPG_SECRET_KEY" | gpg --import
+      - run: git config --global user.email deploy@pugiojs.org
+      - run: git config --global user.name "Pugio Deploy Bot"
+      - run: git config --global user.signingkey $GPG_KEY_ID
+      - run: git config --global commit.gpgsign true
+      - run: ssh-keyscan github.com >> ~/.ssh/known_hosts
       - run: git add -A && git commit -S -m "publish packages" && git push origin publish
 workflows:
   version: 2
   npm_workflow:
     jobs:
-      - prepare
       - install:
-          requires:
-            - prepare
           filters:
             tags:
               only: /.*/
