@@ -2,6 +2,18 @@
   "name": "@agros/logger",
   "entries": [
     {
+      "version": "0.0.2",
+      "tag": "@agros/logger_v0.0.2",
+      "date": "Wed, 27 Jul 2022 01:23:09 GMT",
+      "comments": {
+        "patch": [
+          {
+            "comment": "Optimize logger outputs"
+          }
+        ]
+      }
+    },
+    {
       "version": "0.0.1",
       "tag": "@agros/logger_v0.0.1",
       "date": "Mon, 20 Jun 2022 11:53:20 GMT",

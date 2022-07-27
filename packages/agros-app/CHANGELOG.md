@@ -1,18 +1,11 @@
-# Change Log - @agros/logger
+# Change Log - @agros/app
 
 This log was last generated on Wed, 27 Jul 2022 01:23:09 GMT and should not be manually modified.
 
-## 0.0.2
+## 0.3.3
 Wed, 27 Jul 2022 01:23:09 GMT
 
 ### Patches
 
-- Optimize logger outputs
-
-## 0.0.1
-Mon, 20 Jun 2022 11:53:20 GMT
-
-### Patches
-
-- Initialize loggers
+- Refactor and initialize Agros.js app packages and build scripts
 

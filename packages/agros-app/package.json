@@ -47,10 +47,10 @@
         "typescript": "^4.5.5"
     },
     "dependencies": {
-        "@agros/config": "workspace:^0.0.2",
-        "@agros/loader": "workspace:^0.0.0",
-        "@agros/logger": "workspace:^0.0.1",
-        "@agros/utils": "workspace:^0.0.1",
+        "@agros/config": "workspace:^0.1.0",
+        "@agros/loader": "workspace:^0.0.1",
+        "@agros/logger": "workspace:^0.0.2",
+        "@agros/utils": "workspace:^0.0.2",
         "@babel/core": "^7.18.5",
         "@babel/plugin-proposal-class-properties": "^7.17.12",
         "@babel/plugin-proposal-decorators": "^7.18.2",
@@ -73,6 +73,6 @@
         "react-scripts": "^5.0.0"
     },
     "name": "@agros/app",
-    "version": "0.3.2",
+    "version": "0.3.3",
     "description": "Agros app"
 }
