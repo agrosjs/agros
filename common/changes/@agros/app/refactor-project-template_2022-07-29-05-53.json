@@ -1,0 +1,10 @@
+{
+  "changes": [
+    {
+      "packageName": "@agros/app",
+      "comment": "Added path to config-overrides.js",
+      "type": "patch"
+    }
+  ],
+  "packageName": "@agros/app"
+}

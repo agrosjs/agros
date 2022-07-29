@@ -1,0 +1,10 @@
+{
+  "changes": [
+    {
+      "packageName": "@agros/create-app",
+      "comment": "Fixed typos in src/App.tsx._",
+      "type": "patch"
+    }
+  ],
+  "packageName": "@agros/create-app"
+}

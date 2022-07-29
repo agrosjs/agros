@@ -1,0 +1,10 @@
+{
+  "changes": [
+    {
+      "packageName": "@agros/loader",
+      "comment": "Added path to templates",
+      "type": "patch"
+    }
+  ],
+  "packageName": "@agros/loader"
+}

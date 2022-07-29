@@ -1,7 +1,13 @@
 import { Module } from '@agros/app';
 import { AppComponent } from '@/app.component';
+import { AppService } from '@/app.service';
+import { AppInterceptor } from '@/app.interceptor';
 
 @Module({
+    providers: [
+        AppInterceptor,
+        AppService,
+    ],
     components: [
         AppComponent,
     ],
@@ -13,6 +19,8 @@ import { AppComponent } from '@/app.component';
     ],
     exports: [
         AppComponent,
+        AppInterceptor,
+        AppService,
     ],
 })
 export class AppModule {}
