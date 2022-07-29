@@ -1,7 +1,16 @@
-import { Component } from '@agros/app';
+import {
+    Component,
+    UseInterceptors,
+} from '@agros/app';
+import { AppService } from '@/app.service';
+import { AppInterceptor } from '@/app.interceptor';
 
 @Component({
     file: '@/App',
     styles: ['@/app.component.css'],
+    declarations: [
+        AppService,
+    ],
 })
+@UseInterceptors(AppInterceptor)
 export class AppComponent {}

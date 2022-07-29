@@ -1,4 +1,13 @@
-export default () => {
+import { FC } from 'react';
+import { getContainer } from '@agros/app';
+import { AppService } from '@/app.service';
+
+const App: FC () => {
+    const container = getContainer(App);
+    const appService = container.get<AppService>(AppService);
+
+    appService.sayHello();
+
     return (
         <div className="app">
             <img src="/logo192.png" />
@@ -7,3 +16,5 @@ export default () => {
         </div>
     );
 };
+
+export default App;

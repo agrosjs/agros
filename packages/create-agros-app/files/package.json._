@@ -19,8 +19,7 @@
         "eslint": "^7.28.0",
         "eslint-config-alloy": "^4.5.1",
         "rimraf": "^3.0.2",
-        "typescript": "^4.5.5",
-        "web-vitals": "^2.1.4"
+        "typescript": "^4.5.5"
     },
     "dependencies": {
         "@agros/app": "^0.3.2",
