@@ -1,0 +1,11 @@
+{
+  "changes": [
+    {
+      "comment": "Fix Git URLs",
+      "type": "patch",
+      "packageName": "@agros/config"
+    }
+  ],
+  "packageName": "@agros/config",
+  "email": "i@lenconda.top"
+}

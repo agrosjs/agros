@@ -7,7 +7,8 @@
         "LICENSE",
         "README.md",
         "package.json",
-        "package-lock.json"
+        "package-lock.json",
+        "config-overrides.js"
     ],
     "publishConfig": {
         "access": "public"
@@ -24,14 +25,14 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/lenconda/agros.git"
+        "url": "git+https://github.com/agrosjs/agros.git"
     },
     "author": "Lenconda <i@lenconda.top>",
     "license": "MIT",
     "bugs": {
-        "url": "https://github.com/lenconda/agros/issues"
+        "url": "https://github.com/agrosjs/agros/issues"
     },
-    "homepage": "https://github.com/lenconda/agros#readme",
+    "homepage": "https://github.com/agrosjs/agros#readme",
     "devDependencies": {
         "@types/customize-cra": "^1.0.2",
         "@types/figlet": "^1.5.4",

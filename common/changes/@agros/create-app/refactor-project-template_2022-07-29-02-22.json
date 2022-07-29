@@ -1,0 +1,10 @@
+{
+  "changes": [
+    {
+      "packageName": "@agros/create-app",
+      "comment": "Add more examples to project template",
+      "type": "minor"
+    }
+  ],
+  "packageName": "@agros/create-app"
+}

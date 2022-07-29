@@ -16,14 +16,13 @@
         "@typescript-eslint/eslint-plugin": "^5.28.0",
         "@typescript-eslint/parser": "^5.28.0",
         "customize-cra-less-loader": "^2.0.0",
-        "eslint": "^7.28.0",
+        "eslint": "^8.18.0",
         "eslint-config-alloy": "^4.5.1",
         "rimraf": "^3.0.2",
-        "typescript": "^4.5.5",
-        "web-vitals": "^2.1.4"
+        "typescript": "^4.5.5"
     },
     "dependencies": {
-        "@agros/app": "^0.3.2",
+        "@agros/app": "^0.3.3",
         "react": "^17.0.0"
     },
     "browserslist": {
