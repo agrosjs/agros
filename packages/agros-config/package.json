@@ -45,10 +45,10 @@
         "typescript": "^4.5.5"
     },
     "name": "@agros/config",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "description": "Config parser for Agros.js",
     "dependencies": {
-        "@agros/utils": "workspace:^0.0.2",
+        "@agros/utils": "workspace:^0.0.3",
         "@typescript-eslint/eslint-plugin": "^5.30.5",
         "@typescript-eslint/parser": "^5.30.5",
         "cosmiconfig": "^7.0.1",
