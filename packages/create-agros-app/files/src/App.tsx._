@@ -2,7 +2,7 @@ import { FC } from 'react';
 import { getContainer } from '@agros/app';
 import { AppService } from '@/app.service';
 
-const App: FC () => {
+const App: FC = () => {
     const container = getContainer(App);
     const appService = container.get<AppService>(AppService);
 
