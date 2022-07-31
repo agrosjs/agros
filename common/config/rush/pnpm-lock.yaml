@@ -331,6 +331,20 @@ importers:
       rimraf: 3.0.2
       typescript: 4.7.3
 
+  ../../packages/agros-platform-react:
+    specifiers:
+      '@types/jest': ^28.1.1
+      '@types/lodash': ^4.14.182
+      '@types/node': ^15.12.2
+      rimraf: ^3.0.2
+      typescript: ^4.5.5
+    devDependencies:
+      '@types/jest': 28.1.1
+      '@types/lodash': 4.14.182
+      '@types/node': 15.14.9
+      rimraf: 3.0.2
+      typescript: 4.7.3
+
   ../../packages/agros-utils:
     specifiers:
       '@babel/parser': ^7.18.5
