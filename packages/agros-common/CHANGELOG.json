@@ -2,6 +2,26 @@
   "name": "@agros/common",
   "entries": [
     {
+      "version": "0.1.1",
+      "tag": "@agros/common_v0.1.1",
+      "date": "Fri, 29 Jul 2022 08:55:34 GMT",
+      "comments": {
+        "patch": [
+          {
+            "comment": "Fix Git URLs"
+          }
+        ],
+        "dependency": [
+          {
+            "comment": "Updating dependency \"@agros/config\" from `^0.1.0` to `^0.1.1`"
+          },
+          {
+            "comment": "Updating dependency \"@agros/utils\" from `^0.0.2` to `^0.0.3`"
+          }
+        ]
+      }
+    },
+    {
       "version": "0.1.0",
       "tag": "@agros/common_v0.1.0",
       "date": "Wed, 27 Jul 2022 01:23:09 GMT",

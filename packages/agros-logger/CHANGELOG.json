@@ -2,6 +2,18 @@
   "name": "@agros/logger",
   "entries": [
     {
+      "version": "0.0.3",
+      "tag": "@agros/logger_v0.0.3",
+      "date": "Fri, 29 Jul 2022 08:55:34 GMT",
+      "comments": {
+        "patch": [
+          {
+            "comment": "Fix Git URLs"
+          }
+        ]
+      }
+    },
+    {
       "version": "0.0.2",
       "tag": "@agros/logger_v0.0.2",
       "date": "Wed, 27 Jul 2022 01:23:09 GMT",
