@@ -1,5 +1,4 @@
 import _ from 'lodash';
-import { Configuration } from 'webpack';
 import { cosmiconfigSync } from 'cosmiconfig';
 import * as path from 'path';
 
@@ -8,19 +7,20 @@ export type AliasMap = Record<string, string>;
 export type CollectionMap = Record<string, string[]>;
 export type CollectionType = 'module' | 'service' | 'component' | 'interceptor';
 
-export interface ProjectConfig {
+export interface ProjectConfig<P = any> {
+    platform?: string;
     npmClient?: string;
     alias?: AliasMap;
     entry?: string;
     baseDir?: string;
     collection?: CollectionMap;
     modulesDir?: string;
-    builder?: Function[];
-    devServer?: (config: Configuration) => Configuration;
+    platformConfig?: Record<string, P>;
 }
 
 export class ProjectConfigParser {
     private defaultProjectConfig: ProjectConfig = {
+        platform: '@agros/platform-react',
         npmClient: 'npm',
         alias: {
             '@/*': '*',
@@ -35,8 +35,12 @@ export class ProjectConfigParser {
             component: ['*.component.ts', '*.component.tsx'],
             interceptor: ['*.interceptor.ts'],
         },
-        builder: [],
-        devServer: (config) => config,
+        platformConfig: {
+            '@agros/platform-react': {
+                builder: [],
+                devServer: (config) => config,
+            },
+        },
     };
     private projectConfig: ProjectConfig = _.clone(this.defaultProjectConfig);
 
@@ -44,6 +48,16 @@ export class ProjectConfigParser {
         try {
             const userProjectConfig = cosmiconfigSync('agros').search()?.config || {};
             this.projectConfig = _.merge({}, this.projectConfig, userProjectConfig);
+            let Platform = require(require.resolve(this.projectConfig.platform, {
+                paths: [path.resolve(process.cwd(), 'node_modules')],
+            }));
+            Platform = Platform?.default || Platform;
+            const platform = new Platform();
+            this.projectConfig = _.set(
+                _.cloneDeep(this.projectConfig),
+                `platformConfig['${this.projectConfig.platform}']`,
+                platform.getDefaultConfig() || {},
+            );
         } catch (e) {}
 
         /**
@@ -67,18 +81,6 @@ export class ProjectConfigParser {
             ) {
                 throw new Error(`Alias value '${aliasValue}' is in wrong type`);
             }
-        }
-
-        /**
-         * validate webpack and dev-server config
-         */
-        const builderConfigArray = this.getConfig<Function[]>('builder') || [];
-        if (!Array.isArray(builderConfigArray) || builderConfigArray.some((item) => typeof item !== 'function')) {
-            throw new Error('`builder` must be a array of functions');
-        }
-
-        if (typeof this.getConfig<Function>('devServer') !== 'function') {
-            throw new Error('`devServer` must be a function');
         }
     }
 
@@ -109,5 +111,13 @@ export class ProjectConfigParser {
             );
             return result;
         }, {});
+    }
+
+    public getPlatformConfig<T>(pathname?: string): T {
+        if (!pathname) {
+            return _.cloneDeep((this.projectConfig?.platform || {})[this.projectConfig.platform] || {}) as T;
+        }
+
+        return _.get(_.cloneDeep((this.projectConfig?.platform || {})[this.projectConfig.platform] || {}), pathname) as T;
     }
 }

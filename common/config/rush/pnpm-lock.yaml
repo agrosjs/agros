@@ -7,6 +7,7 @@ importers:
 
   ../../packages/agros-app:
     specifiers:
+      '@agros/common': workspace:^0.1.1
       '@agros/config': workspace:^0.1.1
       '@agros/loader': workspace:^0.0.2
       '@agros/logger': workspace:^0.0.3
@@ -41,6 +42,7 @@ importers:
       typescript: ^4.5.5
       use-async-effect: ^2.2.6
     dependencies:
+      '@agros/common': link:../agros-common
       '@agros/config': link:../agros-config
       '@agros/loader': link:../agros-loader
       '@agros/logger': link:../agros-logger
@@ -152,6 +154,7 @@ importers:
       '@types/node': ^15.12.2
       '@types/parse-glob': ^3.0.29
       '@types/prettier': ^2.6.3
+      '@types/react': ^17.0.0
       cosmiconfig: ^7.0.1
       ejs: ^3.1.8
       eslint: ^8.19.0
@@ -160,6 +163,7 @@ importers:
       lodash: ^4.17.21
       parse-glob: ^3.0.4
       prettier: ^2.7.1
+      react: ^17.0.0
       rimraf: ^3.0.2
       typescript: ^4.5.5
     dependencies:
@@ -169,6 +173,7 @@ importers:
       '@babel/parser': 7.18.5
       '@babel/traverse': 7.18.8
       '@babel/types': 7.18.4
+      '@types/react': 17.0.46
       cosmiconfig: 7.0.1
       ejs: 3.1.8
       eslint: 8.19.0
@@ -177,6 +182,7 @@ importers:
       lodash: 4.17.21
       parse-glob: 3.0.4
       prettier: 2.7.1
+      react: 17.0.2
     devDependencies:
       '@types/babel__generator': 7.6.4
       '@types/babel__traverse': 7.17.1
@@ -347,11 +353,16 @@ importers:
 
   ../../packages/agros-platforms:
     specifiers:
+      '@agros/common': workspace:^0.1.1
+      '@agros/utils': workspace:^0.0.3
       '@types/jest': ^28.1.1
       '@types/lodash': ^4.14.182
       '@types/node': ^15.12.2
       rimraf: ^3.0.2
       typescript: ^4.5.5
+    dependencies:
+      '@agros/common': link:../agros-common
+      '@agros/utils': link:../agros-utils
     devDependencies:
       '@types/jest': 28.1.1
       '@types/lodash': 4.14.182
@@ -2766,7 +2777,6 @@ packages:
 
   /@types/prop-types/15.7.5:
     resolution: {integrity: sha512-JCB8C6SnDoQf0cNycqd/35A7MjcnK+ZTqE7judS6o7utxUCg6imJg3QK2qzHKszlTjcj2cn+NwMB2i96ubpj7w==}
-    dev: true
 
   /@types/q/1.5.5:
     resolution: {integrity: sha512-L28j2FcJfSZOnL1WBjDYp2vUHCeIFlyYI/53EwD/rKUBQ7MtUUfbQWiyKJGpcnv4/WgrhWsFKrcPstcAt/J0tQ==}
@@ -2789,7 +2799,6 @@ packages:
       '@types/prop-types': 15.7.5
       '@types/scheduler': 0.16.2
       csstype: 3.1.0
-    dev: true
 
   /@types/resolve/1.17.1:
     resolution: {integrity: sha512-yy7HuzQhj0dhGpD8RLXSZWEkLsV9ibvxvi6EiJ3bkqLAO1RGo0WbkWQiwpRlSFymTJRz0d3k5LM3kkx8ArDbLw==}
@@ -2801,7 +2810,6 @@ packages:
 
   /@types/scheduler/0.16.2:
     resolution: {integrity: sha512-hppQEBDmlwhFAXKJX2KnWLYu5yMfi91yazPb2l+lbJiwW+wdo1gNeRA+3RgNSO39WYX2euey41KEwnqesU2Jew==}
-    dev: true
 
   /@types/semver/7.3.10:
     resolution: {integrity: sha512-zsv3fsC7S84NN6nPK06u79oWgrPVd0NvOyqgghV1haPaFcVxIrP4DLomRwGAXk0ui4HZA7mOcSFL98sMVW9viw==}
@@ -4414,7 +4422,6 @@ packages:
 
   /csstype/3.1.0:
     resolution: {integrity: sha512-uX1KG+x9h5hIJsaKR9xHUeUraxf8IODOwq9JLNPq6BwB04a/xgpq3rcx47l5BZu5zBPlgD342tdke3Hom/nJRA==}
-    dev: true
 
   /customize-cra-less-loader/2.0.0:
     resolution: {integrity: sha512-b+ofZYNNyZgav09t+HJA4Fm7IKhmF6F/QOCrLpZvo0cod5uT+53EuelvYJV9t12vGgd/xJuvfw+AbaQhJR2Tgg==}

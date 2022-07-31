@@ -1,5 +1,5 @@
 import React from 'react';
-import { ComponentInstanceMetadata } from '../types';
+import { ComponentInstanceMetadata } from './types';
 
 /**
  * @class

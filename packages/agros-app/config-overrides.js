@@ -38,7 +38,7 @@ module.exports = {
             config.entry = projectConfigParser.getEntry();
             return config;
         },
-        ...projectConfigParser.getConfig('builder'),
+        ...projectConfigParser.getPlatformConfig('builder') || [],
     ),
-    devServer: projectConfigParser.getConfig('devServer'),
+    devServer: projectConfigParser.getPlatformConfig('devServer') || ((config) => config),
 };

@@ -2,7 +2,6 @@ import 'reflect-metadata';
 import React from 'react';
 import {
     ModuleInstance,
-    ComponentInstance,
 } from './classes';
 import {
     DEPS_PROPERTY_NAME,
@@ -14,11 +13,8 @@ import {
 } from './constants';
 import {
     AsyncModuleClass,
-    ComponentMetadata,
-    FactoryForwardRef,
     ModuleMetadata,
     RouteOptionItem,
-    RouterItem,
     Type,
 } from './types';
 import isPromise from 'is-promise';
@@ -30,6 +26,12 @@ import {
     useSearchParams,
 } from 'react-router-dom';
 import { useAsyncEffect } from 'use-async-effect';
+import {
+    ComponentMetadata,
+    RouterItem,
+    FactoryForwardRef,
+} from '@agros/common';
+import { ComponentInstance } from '@agros/common/lib/component-instance.class';
 
 export class Factory {
     /**
