@@ -114,10 +114,12 @@ export class ProjectConfigParser {
     }
 
     public getPlatformConfig<T>(pathname?: string): T {
+        const platformConfig = _.cloneDeep(_.get(this.projectConfig, `platform["${this.projectConfig.platform}"]`) || {});
+
         if (!pathname) {
-            return _.cloneDeep((this.projectConfig?.platform || {})[this.projectConfig.platform] || {}) as T;
+            return platformConfig as T;
         }
 
-        return _.get(_.cloneDeep((this.projectConfig?.platform || {})[this.projectConfig.platform] || {}), pathname) as T;
+        return _.get(platformConfig, pathname) as T;
     }
 }
