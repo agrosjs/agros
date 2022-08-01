@@ -1,9 +1,6 @@
 import 'reflect-metadata';
 import React from 'react';
 import {
-    ModuleInstance,
-} from './classes';
-import {
     DEPS_PROPERTY_NAME,
     DI_DEPS_SYMBOL,
     DI_GLOBAL_MODULE_SYMBOL,
@@ -11,12 +8,6 @@ import {
     DI_METADATA_MODULE_SYMBOL,
     DI_METADATA_USE_INTERCEPTORS_SYMBOL,
 } from './constants';
-import {
-    AsyncModuleClass,
-    ModuleMetadata,
-    RouteOptionItem,
-    Type,
-} from './types';
 import isPromise from 'is-promise';
 import { Map as ImmutableMap } from 'immutable';
 import { Interceptor } from './interfaces';
@@ -27,11 +18,16 @@ import {
 } from 'react-router-dom';
 import { useAsyncEffect } from 'use-async-effect';
 import {
+    AsyncModuleClass,
+    ModuleMetadata,
+    RouteOptionItem,
+    Type,
     ComponentMetadata,
     RouterItem,
     FactoryForwardRef,
 } from '@agros/common';
 import { ComponentInstance } from '@agros/common/lib/component-instance.class';
+import { ModuleInstance } from '@agros/common/lib/module-instance.class';
 
 export class Factory {
     /**
@@ -86,7 +82,7 @@ export class Factory {
         await this.createProviderInstances(rootModuleInstance);
         this.createComponentInstances(rootModuleInstance);
         this.generateReactComponentForInstances();
-        this.routerItems = await this.createRoutes(Array.from(rootModuleInstance.metadata.routes));
+        this.routerItems = await this.createRouterItems(Array.from(rootModuleInstance.metadata.routes));
         return Array.from(this.routerItems);
     }
 
@@ -505,7 +501,7 @@ export class Factory {
      * @param {RouteOptionItem[]} routes route config items from modules
      * @param {string} prefixPathname prefix pathname of current level routes
      */
-    private async createRoutes(routes: RouteOptionItem[], prefixPathname = ''): Promise<RouterItem[]> {
+    private async createRouterItems(routes: RouteOptionItem[], prefixPathname = ''): Promise<RouterItem[]> {
         let result: RouterItem[] = [];
 
         for (const routeItem of Array.from(routes)) {
@@ -540,7 +536,7 @@ export class Factory {
                 } as RouterItem;
 
                 if (Array.isArray(children)) {
-                    currentRouterItem.children = await this.createRoutes(routeItem.children);
+                    currentRouterItem.children = await this.createRouterItems(routeItem.children);
                 }
 
                 result = result.concat(currentRouterItem);
@@ -551,14 +547,14 @@ export class Factory {
                 const ModuleClass = await this.getModuleClass(useModuleClass);
                 const moduleInstance = this.moduleInstanceMap.get(ModuleClass);
                 const currentRouteOptionItems = Array.from(moduleInstance.metadata.routes);
-                const currentRouterItems = await this.createRoutes(
+                const currentRouterItems = await this.createRouterItems(
                     currentRouteOptionItems,
                     this.normalizePath(pathname) || '',
                 );
 
                 for (const currentRouterItem of currentRouterItems) {
                     if (Array.isArray(routeItem.children)) {
-                        currentRouterItem.children = await this.createRoutes(currentRouterItem.children);
+                        currentRouterItem.children = await this.createRouterItems(currentRouterItem.children);
                     }
                 }
 

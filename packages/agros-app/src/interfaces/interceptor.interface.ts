@@ -1,5 +1,3 @@
-import { InterceptorContext } from '../types';
-
-export interface Interceptor<P = any, R = any> {
-    intercept: (props: P, context: InterceptorContext) => Promise<R> | R;
+export interface Interceptor<P = any, C = any, R = any> {
+    intercept: (props: P, context: C) => Promise<R> | R;
 }

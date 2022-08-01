@@ -1,7 +1,7 @@
 import {
     ModuleInstanceMetadata,
     Type,
-} from '../types';
+} from './types';
 
 /**
  * @class

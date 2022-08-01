@@ -75,3 +75,39 @@ export interface RootContainerProps {
 export interface BootstrapConfigItem extends RootContainerProps {
     container?: HTMLElement;
 }
+
+export interface ModuleDecoratorOptions {
+    imports?: Array<AsyncModuleClass>;
+    providers?: Array<Type>;
+    components?: Array<Type>;
+    routes?: Array<RouteOptionItem>;
+    exports?: Array<Type>;
+}
+
+export interface ModuleMetadata {
+    imports: Set<AsyncModuleClass>;
+    providers: Set<Type<any>>;
+    exports: Set<Type<any>>;
+    components: Set<Type<any>>;
+    routes: Set<RouteOptionItem>;
+}
+
+export interface ModuleInstanceMetadata extends ModuleMetadata {
+    Class: Type<any>;
+    isGlobal: boolean;
+}
+
+export interface Container {
+    get: <T>(ProviderClass: Type) => T;
+}
+
+export interface ContainerForwardedComponentProps<Props> {
+    props: Props;
+    container: Container;
+}
+
+export type UseInterceptorsDecoratorOptions = Type[];
+
+export interface Factory {
+
+}

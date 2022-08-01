@@ -1,6 +1,6 @@
 import React from 'react';
 import { DEPS_PROPERTY_NAME } from './constants';
-import { Type } from './types';
+import { Type } from '@agros/common';
 
 /**
  * get container dependencies

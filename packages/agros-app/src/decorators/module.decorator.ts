@@ -2,7 +2,7 @@ import { DI_METADATA_MODULE_SYMBOL } from '../constants';
 import {
     ModuleDecoratorOptions,
     ModuleMetadata,
-} from '../types';
+} from '@agros/common';
 
 export function Module(options: ModuleDecoratorOptions = {}): ClassDecorator {
     return (target) => {

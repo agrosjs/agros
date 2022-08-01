@@ -5,7 +5,7 @@ import {
 import {
     Container,
     ContainerForwardedComponentProps,
-} from './types';
+} from '@agros/common';
 
 export const forwardContainer = <Props>(
     render: (props: ContainerForwardedComponentProps<Props>) => ReactElement,
