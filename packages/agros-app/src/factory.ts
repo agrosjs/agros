@@ -25,11 +25,12 @@ import {
     ComponentMetadata,
     RouterItem,
     FactoryForwardRef,
+    Factory as IFactory,
 } from '@agros/common';
 import { ComponentInstance } from '@agros/common/lib/component-instance.class';
 import { ModuleInstance } from '@agros/common/lib/module-instance.class';
 
-export class Factory {
+export class Factory implements IFactory {
     /**
      * @private
      * the flattened map for all module instances created from module classes
@@ -85,6 +86,74 @@ export class Factory {
         this.routerItems = await this.createRouterItems(Array.from(rootModuleInstance.metadata.routes));
         return Array.from(this.routerItems);
     }
+
+    /**
+     * generate dependency map that can be used by `declarations.get` method
+     *
+     * @returns {Map<ClassType, any>} a map for storing relationships between provider class
+     * and provider instance, when the provider class infers to a component class, its value
+     * would be a React component
+     */
+    public generateDependencyMap(componentInstance: ComponentInstance) {
+        const ComponentClass = componentInstance.metadata.Class;
+        const dependedClasses: Type[] = [
+            DI_DEPS_SYMBOL,
+            DI_METADATA_USE_INTERCEPTORS_SYMBOL,
+        ].reduce((result, symbol) => {
+            const classes = Reflect.getMetadata(symbol, componentInstance.metadata.Class) || [];
+            return result.concat(classes);
+        }, [] as Type[]);
+        const moduleInstance = this.moduleInstanceMap.get(
+            this.componentClassToModuleClassMap.get(ComponentClass),
+        );
+        let dependencyMap = ImmutableMap<Type, any>();
+
+        for (const ProviderClass of dependedClasses) {
+            if (this.componentInstanceMap.get(ProviderClass)) {
+                /**
+                         * if provider class is a component class, that set the map value
+                         * to a React component
+                         */
+                const dependedComponentInstance = this.componentInstanceMap.get(ProviderClass);
+                let dependedComponent = dependedComponentInstance.getComponent();
+
+                /**
+                         * if current depended component class is not initialized, then create
+                         * the React component recursively
+                         */
+                if (!dependedComponent) {
+                    dependedComponent = this.generateReactComponent(dependedComponentInstance);
+                }
+
+                /**
+                         * get the React component from depended component class
+                         */
+                dependencyMap = dependencyMap.set(
+                    ProviderClass,
+                    (props) => React.createElement(dependedComponent, props),
+                );
+            } else {
+                /**
+                         * if provider class is a normal provider class, than get the provider
+                         * instance by provider class and set it to the map value
+                         */
+                if (moduleInstance.hasDependedProviderClass(ProviderClass)) {
+                    dependencyMap = dependencyMap.set(
+                        ProviderClass,
+                        this.providerInstanceMap.get(ProviderClass),
+                    );
+
+                    if (!dependencyMap.get(ProviderClass)) {
+                        throw new Error(`Cannot find provider ${ProviderClass.name} that can be injected`);
+                    }
+                } else {
+                    throw new Error(`Cannot inject provider ${ProviderClass.name} into component ${ComponentClass.name}`);
+                }
+            }
+        }
+
+        return dependencyMap;
+    };
 
     /**
      * @param {AsyncModuleClass} ModuleClassOrPromise
@@ -317,78 +386,10 @@ export class Factory {
         }
 
         /**
-         * generate dependency map that can be used by `declarations.get` method
-         *
-         * @returns {Map<ClassType, any>} a map for storing relationships between provider class
-         * and provider instance, when the provider class infers to a component class, its value
-         * would be a React component
-         */
-        const generateDependencyMap = () => {
-            const ComponentClass = componentInstance.metadata.Class;
-            const dependedClasses: Type[] = [
-                DI_DEPS_SYMBOL,
-                DI_METADATA_USE_INTERCEPTORS_SYMBOL,
-            ].reduce((result, symbol) => {
-                const classes = Reflect.getMetadata(symbol, componentInstance.metadata.Class) || [];
-                return result.concat(classes);
-            }, [] as Type[]);
-            const moduleInstance = this.moduleInstanceMap.get(
-                this.componentClassToModuleClassMap.get(ComponentClass),
-            );
-            let dependencyMap = ImmutableMap<Type, any>();
-
-            for (const ProviderClass of dependedClasses) {
-                if (this.componentInstanceMap.get(ProviderClass)) {
-                    /**
-                     * if provider class is a component class, that set the map value
-                     * to a React component
-                     */
-                    const dependedComponentInstance = this.componentInstanceMap.get(ProviderClass);
-                    let dependedComponent = dependedComponentInstance.getComponent();
-
-                    /**
-                     * if current depended component class is not initialized, then create
-                     * the React component recursively
-                     */
-                    if (!dependedComponent) {
-                        dependedComponent = this.generateReactComponent(dependedComponentInstance);
-                    }
-
-                    /**
-                     * get the React component from depended component class
-                     */
-                    dependencyMap = dependencyMap.set(
-                        ProviderClass,
-                        (props) => React.createElement(dependedComponent, props),
-                    );
-                } else {
-                    /**
-                     * if provider class is a normal provider class, than get the provider
-                     * instance by provider class and set it to the map value
-                     */
-                    if (moduleInstance.hasDependedProviderClass(ProviderClass)) {
-                        dependencyMap = dependencyMap.set(
-                            ProviderClass,
-                            this.providerInstanceMap.get(ProviderClass),
-                        );
-
-                        if (!dependencyMap.get(ProviderClass)) {
-                            throw new Error(`Cannot find provider ${ProviderClass.name} that can be injected`);
-                        }
-                    } else {
-                        throw new Error(`Cannot inject provider ${ProviderClass.name} into component ${ComponentClass.name}`);
-                    }
-                }
-            }
-
-            return dependencyMap;
-        };
-
-        /**
          * set component directly so that it can prevent unlimited creating tasks
          */
         componentInstance.setComponent((props: any) => {
-            const dependencyMap = generateDependencyMap();
+            const dependencyMap = this.generateDependencyMap(componentInstance);
             const definePropertyData = {
                 value: dependencyMap,
                 configurable: false,

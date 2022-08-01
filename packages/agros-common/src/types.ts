@@ -1,6 +1,7 @@
 import { CollectionType } from '@agros/config';
 import { Dirent } from 'fs';
 import { ComponentInstance } from './component-instance.class';
+import { Map as ImmutableMap } from 'immutable';
 
 export interface PathDescriptor extends Omit<Dirent, 'name'> {
     relativePath: string;
@@ -109,5 +110,6 @@ export interface ContainerForwardedComponentProps<Props> {
 export type UseInterceptorsDecoratorOptions = Type[];
 
 export interface Factory {
-
+    create: <T = any>(ModuleClass: Type<T>) => Promise<RouterItem[]>;
+    generateDependencyMap: (componentInstance: ComponentInstance) => ImmutableMap<Type<any>, any>;
 }

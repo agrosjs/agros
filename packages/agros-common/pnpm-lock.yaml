@@ -12,6 +12,7 @@ specifiers:
   '@types/ejs': ^3.1.1
   '@types/eslint': ^8.4.5
   '@types/fs-extra': ^9.0.13
+  '@types/immutable': ^3.8.7
   '@types/lodash': ^4.14.182
   '@types/parse-glob': ^3.0.29
   '@types/prettier': ^2.6.3
@@ -20,6 +21,7 @@ specifiers:
   ejs: ^3.1.8
   eslint: ^8.19.0
   fs-extra: ^10.1.0
+  immutable: ^4.1.0
   isbinaryfile: ^5.0.0
   lodash: ^4.17.21
   parse-glob: ^3.0.4
@@ -38,6 +40,7 @@ dependencies:
   ejs: 3.1.8
   eslint: 8.19.0
   fs-extra: 10.1.0
+  immutable: 4.1.0
   isbinaryfile: 5.0.0
   lodash: 4.17.21
   parse-glob: 3.0.4
@@ -50,6 +53,7 @@ devDependencies:
   '@types/ejs': 3.1.1
   '@types/eslint': 8.4.5
   '@types/fs-extra': 9.0.13
+  '@types/immutable': 3.8.7
   '@types/lodash': 4.14.182
   '@types/parse-glob': 3.0.29
   '@types/prettier': 2.6.3
@@ -276,6 +280,13 @@ packages:
     resolution: {integrity: sha512-nEnwB++1u5lVDM2UI4c1+5R+FYaKfaAzS4OococimjVm3nQw3TuzH5UNsocrcTBbhnerblyHj4A49qXbIiZdpA==}
     dependencies:
       '@types/node': 18.0.0
+    dev: true
+
+  /@types/immutable/3.8.7:
+    resolution: {integrity: sha512-nsHFDX48Tl3RaP4BF47HHe5njx40Pcp+0a8CIqzJata80Fp7JzkcuGB7UhZBGjH9aA1fMEahIqvPQQNmro5YLg==}
+    deprecated: This is a stub types definition for Facebook's Immutable (https://github.com/facebook/immutable-js). Facebook's Immutable provides its own type definitions, so you don't need @types/immutable installed!
+    dependencies:
+      immutable: 4.1.0
     dev: true
 
   /@types/json-schema/7.0.11:
@@ -724,6 +735,9 @@ packages:
     resolution: {integrity: sha512-CmxgYGiEPCLhfLnpPp1MoRmifwEIOgjcHXxOBjv7mY96c+eWScsOP9c112ZyLdWHi0FxHjI+4uVhKYp/gcdRmQ==}
     engines: {node: '>= 4'}
     dev: false
+
+  /immutable/4.1.0:
+    resolution: {integrity: sha512-oNkuqVTA8jqG1Q6c+UglTOD1xhC1BtjKI7XkCXRkZHrN5m18/XsnUp8Q89GkQO/z+0WjonSvl0FLhDYftp46nQ==}
 
   /import-fresh/3.3.0:
     resolution: {integrity: sha512-veYYhQa+D1QBKznvhUHxb8faxlrwUnxseDAbAp457E0wLNio2bOSKnjYDhMj+YiAq61xrMGhQk9iXVk5FzgQMw==}
