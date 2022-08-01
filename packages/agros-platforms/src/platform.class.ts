@@ -9,7 +9,7 @@ import {
 } from './types';
 
 export abstract class AbstractPlatform {
-    public getImports(): EnsureImportOptions[] {
+    public getImports(): Omit<EnsureImportOptions, 'statements'>[] {
         return [];
     }
 
@@ -20,5 +20,5 @@ export abstract class AbstractPlatform {
     public abstract getCommands(): CommandConfig | Promise<CommandConfig>;
     public abstract getBootstrapCode(ensuredImports: EnsureImportResult[]): string;
     public abstract getRoutes<T>(routerItems: RouterItem[], ...args: any): T[];
-    public abstract generateReactComponent<T = any>(componentInstance: ComponentInstance): T
+    public abstract generateReactComponent<T = any>(componentInstance: ComponentInstance): T;
 }
