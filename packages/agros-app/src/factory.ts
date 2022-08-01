@@ -111,32 +111,29 @@ export class Factory implements IFactory {
         for (const ProviderClass of dependedClasses) {
             if (this.componentInstanceMap.get(ProviderClass)) {
                 /**
-                         * if provider class is a component class, that set the map value
-                         * to a React component
-                         */
+                 * if provider class is a component class, that set the map value
+                 * to a React component
+                 */
                 const dependedComponentInstance = this.componentInstanceMap.get(ProviderClass);
                 let dependedComponent = dependedComponentInstance.getComponent();
 
                 /**
-                         * if current depended component class is not initialized, then create
-                         * the React component recursively
-                         */
+                 * if current depended component class is not initialized, then create
+                 * the React component recursively
+                 */
                 if (!dependedComponent) {
                     dependedComponent = this.generateReactComponent(dependedComponentInstance);
                 }
 
                 /**
-                         * get the React component from depended component class
-                         */
-                dependencyMap = dependencyMap.set(
-                    ProviderClass,
-                    (props) => React.createElement(dependedComponent, props),
-                );
+                 * get the React component from depended component class
+                 */
+                dependencyMap = dependencyMap.set(ProviderClass, dependedComponent);
             } else {
                 /**
-                         * if provider class is a normal provider class, than get the provider
-                         * instance by provider class and set it to the map value
-                         */
+                 * if provider class is a normal provider class, than get the provider
+                 * instance by provider class and set it to the map value
+                 */
                 if (moduleInstance.hasDependedProviderClass(ProviderClass)) {
                     dependencyMap = dependencyMap.set(
                         ProviderClass,

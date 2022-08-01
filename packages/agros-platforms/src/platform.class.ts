@@ -1,4 +1,5 @@
 import { RouterItem } from '@agros/common';
+import { ComponentInstance } from '@agros/common/lib/component-instance.class';
 import {
     EnsureImportOptions,
     EnsureImportResult,
@@ -19,4 +20,5 @@ export abstract class AbstractPlatform {
     public abstract getCommands(): CommandConfig | Promise<CommandConfig>;
     public abstract getBootstrapCode(ensuredImports: EnsureImportResult[]): string;
     public abstract getRoutes<T>(routerItems: RouterItem[], ...args: any): T[];
+    public abstract generateReactComponent<T = any>(componentInstance: ComponentInstance): T
 }
