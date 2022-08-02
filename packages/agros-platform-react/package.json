@@ -30,6 +30,7 @@
     },
     "homepage": "https://github.com/lenconda/agros#readme",
     "devDependencies": {
+        "@types/customize-cra": "^1.0.2",
         "@types/jest": "^28.1.1",
         "@types/lodash": "^4.14.182",
         "@types/node": "^15.12.2",
@@ -46,7 +47,9 @@
         "@agros/logger": "workspace:^0.0.3",
         "@agros/platforms": "workspace:^0.0.0",
         "@agros/utils": "workspace:^0.0.3",
+        "customize-cra": "^1.0.0",
         "react": "^17.0.0",
+        "react-app-rewired": "^2.2.1",
         "react-dom": "^17.0.0",
         "react-router-dom": "^6.0.0",
         "reflect-metadata": "^0.1.13",
