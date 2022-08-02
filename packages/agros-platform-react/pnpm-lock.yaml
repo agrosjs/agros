@@ -2,6 +2,7 @@ lockfileVersion: 5.4
 
 specifiers:
   '@agros/common': workspace:^0.1.1
+  '@agros/loader': workspace:^0.0.2
   '@agros/logger': workspace:^0.0.3
   '@agros/platforms': workspace:^0.0.0
   '@agros/utils': workspace:^0.0.3
@@ -18,6 +19,7 @@ specifiers:
 
 dependencies:
   '@agros/common': link:../agros-common
+  '@agros/loader': link:../agros-loader
   '@agros/logger': link:../agros-logger
   '@agros/platforms': link:../agros-platforms
   '@agros/utils': link:../agros-utils
