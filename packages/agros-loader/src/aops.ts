@@ -5,6 +5,7 @@ import {
     getFileEntityIdentifier,
     getPathDescriptorWithAlias,
     matchAlias,
+    detectNamedImports,
 } from '@agros/common';
 import {
     ensureImport,
@@ -13,6 +14,8 @@ import {
 } from '@agros/utils';
 import { ParseResult } from '@babel/parser';
 import {
+    CallExpression as BabelCallExpression,
+    Identifier,
     CallExpression,
     Decorator,
     File,
@@ -204,6 +207,26 @@ export const transformComponentDecorator = createLoaderAOP(
         const [exportedClassInfo] = declaredClasses;
         const componentClassDeclaration = exportedClassInfo.declaration;
         const [decorator] = detectDecorators(tree, 'Component');
+        const [importedComponentDecoratorSpecifier] = detectNamedImports(
+            tree,
+            'Component',
+            (source) => source.indexOf('@agros/app') !== -1,
+        );
+
+        if (!importedComponentDecoratorSpecifier) {
+            throw new Error('A component file should import decorator `Component`');
+        }
+
+        const componentDecoratorName = importedComponentDecoratorSpecifier.local.name;
+        const componentDecoratorIndex = componentClassDeclaration.decorators?.findIndex((decorator) => {
+            return decorator.expression.type === 'CallExpression' &&
+                decorator.expression.callee.type === 'Identifier' &&
+                componentDecoratorName === ((decorator.expression as BabelCallExpression).callee as Identifier).name;
+        });
+
+        if (componentDecoratorIndex === -1) {
+            throw new Error('A component file should be decorated with decorator `@Component`');
+        }
 
         const decoratorArgument: ObjectExpression = (decorator.expression as CallExpression).arguments[0] as ObjectExpression;
         const componentMetadataConfig = ['file', 'lazy', 'styles'].reduce((result, key) => {
@@ -310,9 +333,9 @@ export const transformComponentDecorator = createLoaderAOP(
             map: ensureIdentifierNameMap,
         })).program.body;
 
-        const legacyDecorator: Decorator = _.clone(componentClassDeclaration?.decorators[0]);
+        const legacyDecorator: Decorator = _.clone(componentClassDeclaration?.decorators[componentDecoratorIndex]);
         componentClassDeclaration?.decorators?.splice(
-            0,
+            componentDecoratorIndex,
             1,
             t.decorator(
                 t.callExpression(
