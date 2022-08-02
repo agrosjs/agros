@@ -27,6 +27,7 @@
     "description": "Agros example",
     "dependencies": {
         "@agros/app": "workspace:^0.3.4",
+        "@agros/platform-react": "workspace:^0.0.0",
         "react": "^17.0.0",
         "react-error-boundary": "^3.1.4"
     },

@@ -32,6 +32,8 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { Logger } from '@agros/logger';
 
+export { loadPlatform } from '@agros/utils/lib/platform-loader';
+
 export default class PlatformReact extends AbstractPlatform implements AbstractPlatform {
     public getLoaderImports(): Omit<EnsureImportOptions, 'statements'>[] {
         return [
@@ -57,8 +59,12 @@ export default class PlatformReact extends AbstractPlatform implements AbstractP
                 type: 'default',
             },
             {
-                libName: '@agros/platform-react',
+                libName: '@agros/platform-react/lib/react-dom',
                 identifierName: 'render',
+            },
+            {
+                libName: '@agros/platform-react',
+                identifierName: 'loadPlatform',
             },
         ];
     }
@@ -158,6 +164,8 @@ export default class PlatformReact extends AbstractPlatform implements AbstractP
     public getBootstrapCode(ensuredImportsMap: Record<string, string>): string {
         const reactIdentifier = ensuredImportsMap['React'] || 'React';
         return `
+            const platform = ${ensuredImportsMap['loadPlatform'] || 'platform'}('@agros/platform-react');
+
             const useRouteElements = (Module) => {
                 const [routerItems, setRouterItems] = ${reactIdentifier}.useState([]);
                 const [elements, setElements] = ${reactIdentifier}.useState(null);
@@ -171,7 +179,7 @@ export default class PlatformReact extends AbstractPlatform implements AbstractP
                 }, [Module]);
 
                 ${reactIdentifier}.useEffect(() => {
-                    const elements = createRoutes(routerItems);
+                    const elements = platform.getRoutes(routerItems);
                     setElements(elements);
                 }, [routerItems]);
 
@@ -190,6 +198,30 @@ export default class PlatformReact extends AbstractPlatform implements AbstractP
                     routerProps,
                     ${reactIdentifier}.createElement(${ensuredImportsMap['Routes'] || 'Routes'}, {}, elements),
                 );
+            };
+
+            const bootstrap = (configList) => {
+                if (!Array.isArray(configList)) {
+                    return;
+                }
+
+                for (const configItem of configList) {
+                    const {
+                        module: Module,
+                        RouterComponent,
+                        routerProps,
+                        container = document.getElementById('root'),
+                    } = configItem;
+
+                    ${ensuredImportsMap['render'] || 'render'}(
+                        ${reactIdentifier}.createElement(RootContainer, {
+                            module: Module,
+                            RouterComponent,
+                            routerProps,
+                        }),
+                        container,
+                    );
+                }
             };
         `;
     }

@@ -1,13 +1,6 @@
 import 'reflect-metadata';
-import React from 'react';
 import isPromise from 'is-promise';
 import { Map as ImmutableMap } from 'immutable';
-import {
-    useLocation,
-    useParams,
-    useSearchParams,
-} from 'react-router-dom';
-import { useAsyncEffect } from 'use-async-effect';
 import {
     AsyncModuleClass,
     ModuleMetadata,
@@ -15,10 +8,7 @@ import {
     Type,
     ComponentMetadata,
     RouterItem,
-    FactoryForwardRef,
     Factory as IFactory,
-    Interceptor,
-    DEPS_PROPERTY_NAME,
     DI_DEPS_SYMBOL,
     DI_GLOBAL_MODULE_SYMBOL,
     DI_METADATA_COMPONENT_SYMBOL,
@@ -27,8 +17,12 @@ import {
 } from '@agros/common';
 import { ComponentInstance } from '@agros/common/lib/component-instance.class';
 import { ModuleInstance } from '@agros/common/lib/module-instance.class';
+import { ProjectConfigParser } from '@agros/config';
+import { AbstractPlatform } from '@agros/platforms';
+import { loadPlatform } from '@agros/utils/lib/platform-loader';
 
 export class Factory implements IFactory {
+    protected platform: AbstractPlatform;
     /**
      * @private
      * the flattened map for all module instances created from module classes
@@ -65,6 +59,10 @@ export class Factory implements IFactory {
      */
     private globalModuleInstances = new Set<ModuleInstance>();
 
+    public constructor(protected readonly projectConfigParser: ProjectConfigParser) {
+        this.platform = loadPlatform(this.projectConfigParser.getConfig<string>('platform'));
+    }
+
     /**
      * @public
      * @async
@@ -80,7 +78,7 @@ export class Factory implements IFactory {
         this.createProviderClassToModuleClassMap();
         await this.createProviderInstances(rootModuleInstance);
         this.createComponentInstances(rootModuleInstance);
-        this.generateReactComponentForInstances();
+        this.generateComponentForInstances();
         this.routerItems = await this.createRouterItems(Array.from(rootModuleInstance.metadata.routes));
         return Array.from(this.routerItems);
     }
@@ -120,7 +118,7 @@ export class Factory implements IFactory {
                  * the component recursively
                  */
                 if (!dependedComponent) {
-                    dependedComponent = this.generateReactComponent(dependedComponentInstance);
+                    dependedComponent = this.platform.generateComponent(dependedComponentInstance, this);
                 }
 
                 /**
@@ -373,110 +371,9 @@ export class Factory implements IFactory {
         }
     }
 
-    private generateReactComponent(componentInstance: ComponentInstance) {
-        const component = componentInstance.getComponent();
-
-        if (component) {
-            return component;
-        }
-
-        /**
-         * set component directly so that it can prevent unlimited creating tasks
-         */
-        componentInstance.setComponent((props: any) => {
-            const dependencyMap = this.generateDependencyMap(componentInstance);
-            const definePropertyData = {
-                value: dependencyMap,
-                configurable: false,
-                writable: false,
-                enumerable: false,
-            };
-            let component: React.FC<any> | React.ExoticComponent<any>;
-            const interceptorClasses: Type[] = Reflect.getMetadata(
-                DI_METADATA_USE_INTERCEPTORS_SYMBOL,
-                componentInstance.metadata.Class,
-            ) || [];
-            const interceptorInstances = interceptorClasses.map((InterceptorClass) => {
-                return dependencyMap.get(InterceptorClass);
-            }).filter((instance: Interceptor) => !!instance && typeof instance.intercept === 'function') as Interceptor[];
-
-            const forwardRef: FactoryForwardRef = (promise) => {
-                return promise.then((result) => {
-                    if (Object.getOwnPropertyDescriptor(result.default, DEPS_PROPERTY_NAME)) {
-                        return result;
-                    }
-
-                    Object.defineProperty(
-                        result.default,
-                        DEPS_PROPERTY_NAME,
-                        definePropertyData,
-                    );
-
-                    return result;
-                });
-            };
-
-            if (typeof componentInstance.metadata.factory === 'function') {
-                component = componentInstance.metadata.factory(forwardRef);
-            }
-
-            if (!Object.getOwnPropertyDescriptor(component, DEPS_PROPERTY_NAME)) {
-                Object.defineProperty(
-                    component,
-                    DEPS_PROPERTY_NAME,
-                    definePropertyData,
-                );
-            }
-
-            return React.createElement(() => {
-                const fallback = componentInstance.metadata.interceptorsFallback = null;
-                const [interceptorEnd, setInterceptorEnd] = React.useState<boolean>(false);
-                const routeLocation = useLocation();
-                const routeParams = useParams();
-                const routeSearchParams = useSearchParams();
-
-                useAsyncEffect(async () => {
-                    try {
-                        if (routeLocation && routeParams && routeSearchParams) {
-                            for (const interceptorInstance of interceptorInstances) {
-                                await interceptorInstance.intercept(props, {
-                                    route: {
-                                        location: routeLocation,
-                                        params: routeParams,
-                                        searchParams: routeSearchParams,
-                                    },
-                                });
-                            }
-                        }
-                    } finally {
-                        setInterceptorEnd(true);
-                    }
-                }, [
-                    routeLocation,
-                    routeParams,
-                    routeSearchParams,
-                ]);
-
-                return interceptorEnd
-                    ? React.createElement(
-                        component,
-                        {
-                            ...props,
-                            $container: {
-                                get: <T>(ProviderClass: Type): T => {
-                                    return dependencyMap.get(ProviderClass);
-                                },
-                            },
-                        },
-                    )
-                    : fallback;
-            });
-        });
-    }
-
-    private generateReactComponentForInstances() {
+    private generateComponentForInstances() {
         for (const [, componentInstance] of this.componentInstanceMap.entries()) {
-            this.generateReactComponent(componentInstance);
+            this.platform.generateComponent(componentInstance, this);
         }
     }
 

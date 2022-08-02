@@ -11,6 +11,7 @@ importers:
       '@agros/config': workspace:^0.1.1
       '@agros/loader': workspace:^0.0.2
       '@agros/logger': workspace:^0.0.3
+      '@agros/platforms': workspace:^0.0.0
       '@agros/utils': workspace:^0.0.3
       '@babel/core': ^7.18.5
       '@babel/plugin-proposal-class-properties': ^7.17.12
@@ -46,6 +47,7 @@ importers:
       '@agros/config': link:../agros-config
       '@agros/loader': link:../agros-loader
       '@agros/logger': link:../agros-logger
+      '@agros/platforms': link:../agros-platforms
       '@agros/utils': link:../agros-utils
       '@babel/core': 7.18.5
       '@babel/plugin-proposal-class-properties': 7.17.12_@babel+core@7.18.5
@@ -241,6 +243,7 @@ importers:
   ../../packages/agros-example:
     specifiers:
       '@agros/app': workspace:^0.3.4
+      '@agros/platform-react': workspace:^0.0.0
       '@babel/core': ^7.18.5
       '@types/jest': ^28.1.1
       '@types/lodash': ^4.14.182
@@ -256,6 +259,7 @@ importers:
       web-vitals: ^2.1.4
     dependencies:
       '@agros/app': link:../agros-app
+      '@agros/platform-react': link:../agros-platform-react
       react: 17.0.2
       react-error-boundary: 3.1.4_react@17.0.2
     devDependencies:

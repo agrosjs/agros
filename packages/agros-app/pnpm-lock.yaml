@@ -5,6 +5,7 @@ specifiers:
   '@agros/config': workspace:^0.1.1
   '@agros/loader': workspace:^0.0.2
   '@agros/logger': workspace:^0.0.3
+  '@agros/platforms': workspace:^0.0.0
   '@agros/utils': workspace:^0.0.3
   '@types/webpack': ^5.28.0
   react-error-boundary: ^3.1.4
@@ -15,6 +16,7 @@ dependencies:
   '@agros/config': link:../agros-config
   '@agros/loader': link:../agros-loader
   '@agros/logger': link:../agros-logger
+  '@agros/platforms': link:../agros-platforms
   '@agros/utils': link:../agros-utils
   react-error-boundary: 3.1.4
   use-async-effect: 2.2.6
