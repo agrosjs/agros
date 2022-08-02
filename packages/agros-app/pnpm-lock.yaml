@@ -8,8 +8,6 @@ specifiers:
   '@agros/platforms': workspace:^0.0.0
   '@agros/utils': workspace:^0.0.3
   '@types/webpack': ^5.28.0
-  react-error-boundary: ^3.1.4
-  use-async-effect: ^2.2.6
 
 dependencies:
   '@agros/common': link:../agros-common
@@ -18,20 +16,11 @@ dependencies:
   '@agros/logger': link:../agros-logger
   '@agros/platforms': link:../agros-platforms
   '@agros/utils': link:../agros-utils
-  react-error-boundary: 3.1.4
-  use-async-effect: 2.2.6
 
 devDependencies:
   '@types/webpack': 5.28.0
 
 packages:
-
-  /@babel/runtime/7.18.9:
-    resolution: {integrity: sha512-lkqXDcvlFT5rvEjiu6+QYO+1GXrEHRo2LOtS7E4GtX5ESIZOgepqsZBVIj6Pv+a6zqsya9VCgiK1KAK4BvJDAw==}
-    engines: {node: '>=6.9.0'}
-    dependencies:
-      regenerator-runtime: 0.13.9
-    dev: false
 
   /@jridgewell/gen-mapping/0.3.2:
     resolution: {integrity: sha512-mh65xKQAzI6iBcFzwv28KVWSmCkdRBWoOh+bYQGW3+6OZvbbN3TqMGo5hqYxQniRcH9F2VZIoJCm4pa3BPDK/A==}
@@ -415,19 +404,6 @@ packages:
       safe-buffer: 5.2.1
     dev: true
 
-  /react-error-boundary/3.1.4:
-    resolution: {integrity: sha512-uM9uPzZJTF6wRQORmSrvOIgt4lJ9MC1sNgEOj2XGsDTRE4kmpWxg7ENK9EWNKJRMAOY9z0MuF4yIfl6gp4sotA==}
-    engines: {node: '>=10', npm: '>=6'}
-    peerDependencies:
-      react: '>=16.13.1'
-    dependencies:
-      '@babel/runtime': 7.18.9
-    dev: false
-
-  /regenerator-runtime/0.13.9:
-    resolution: {integrity: sha512-p3VT+cOEgxFsRRA9X4lkI1E+k2/CtnKtU4gcxyaCUreilL/vqI6CdZ3wxVUx3UOUg+gnUOQQcRI7BmSI656MYA==}
-    dev: false
-
   /safe-buffer/5.2.1:
     resolution: {integrity: sha512-rp3So07KcdmmKbGvgaNxQSJr7bGVSVk5S9Eq1F+ppbRo70+YeaDxkw5Dd8NPN+GD6bjnYm2VuPuCXmpuYvmCXQ==}
     dev: true
@@ -522,12 +498,6 @@ packages:
     dependencies:
       punycode: 2.1.1
     dev: true
-
-  /use-async-effect/2.2.6:
-    resolution: {integrity: sha512-wKUpaHkuF4rzBHawP87o1KzoK2IxJ6De8fUyQ3GN2114zb4zqT87+SEbCHS+F+0inZ2Y+k6Tm1LOCQgYTSD9ww==}
-    peerDependencies:
-      react: ^16.8.0 || ^17.0.0 || ^18.0.0
-    dev: false
 
   /watchpack/2.4.0:
     resolution: {integrity: sha512-Lcvm7MGST/4fup+ifyKi2hjyIAwcdI4HRgtvTpIUxBRhB+RFtUh8XtDOxUfctVCnhVi+QQj49i91OyvzkJl6cg==}

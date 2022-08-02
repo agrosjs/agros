@@ -1,4 +1,6 @@
 import {
+    Container,
+    ContainerForwardedComponentProps,
     DEPS_PROPERTY_NAME,
     DI_METADATA_USE_INTERCEPTORS_SYMBOL,
     Factory,
@@ -17,6 +19,7 @@ import {
     createElement,
     ExoticComponent,
     FC,
+    ReactElement,
     Suspense,
     useState,
 } from 'react';
@@ -394,3 +397,18 @@ export default class PlatformReact extends AbstractPlatform implements AbstractP
         return false;
     };
 }
+
+export const forwardContainer = <Props>(
+    render: (props: ContainerForwardedComponentProps<Props>) => ReactElement,
+) => {
+    return ({ $container, ...props }: Props & { $container: Container }) => {
+        const componentProps = props as unknown as Props;
+        return createElement(
+            render,
+            {
+                container: $container,
+                props: componentProps,
+            },
+        );
+    };
+};

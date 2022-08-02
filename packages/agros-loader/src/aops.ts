@@ -9,9 +9,9 @@ import {
 } from '@agros/common';
 import {
     ensureImport,
-    EnsureImportOptions,
     parseAST,
 } from '@agros/utils';
+import { loadPlatform } from '@agros/utils/lib/platform-loader';
 import { ParseResult } from '@babel/parser';
 import {
     CallExpression as BabelCallExpression,
@@ -22,16 +22,18 @@ import {
     ObjectExpression,
     ObjectProperty,
     Statement,
+    ExpressionStatement,
 } from '@babel/types';
 import * as path from 'path';
 import ejs from 'ejs';
-import * as fs from 'fs';
 import generate from '@babel/generator';
 import { createLoaderAOP } from './utils';
 import * as t from '@babel/types';
 import template from '@babel/template';
 import _ from 'lodash';
 import qs from 'qs';
+import { ProjectConfigParser } from '@agros/config';
+import { AbstractPlatform } from '@agros/platforms';
 
 export const checkModule = createLoaderAOP(
     ({
@@ -89,7 +91,9 @@ export const transformEntry = createLoaderAOP<ParseResult<File>>(
     ({ tree }) => {
         let exportDefaultDeclarationIndex: number;
         let lastImportDeclarationIndex: number;
-        const ensureIdentifierNameMap = {};
+        const ensureIdentifierNameMap: Record<string, string> = {};
+        const configParser = new ProjectConfigParser();
+        const platform = loadPlatform<AbstractPlatform>(configParser.getConfig<string>('platform'));
 
         const [exportDefaultDeclaration] = detectExports<t.ArrayExpression>(tree, 'ArrayExpression');
 
@@ -97,48 +101,7 @@ export const transformEntry = createLoaderAOP<ParseResult<File>>(
             throw new Error('The entry of an project should export an array of config');
         }
 
-        const imports = [
-            {
-                libName: '@agros/app/lib/router',
-                identifierName: 'Routes',
-            },
-            {
-                libName: '@agros/app/lib/router',
-                identifierName: 'Route',
-            },
-            {
-                libName: '@agros/app/lib/router',
-                identifierName: 'BrowserRouter',
-            },
-            {
-                libName: '@agros/app/lib/factory',
-                identifierName: 'Factory',
-            },
-            {
-                libName: '@agros/app',
-                identifierName: 'useEffect',
-            },
-            {
-                libName: '@agros/app',
-                identifierName: 'useState',
-            },
-            {
-                libName: '@agros/app',
-                identifierName: 'createElement',
-            },
-            {
-                libName: '@agros/app',
-                identifierName: 'render',
-            },
-            {
-                libName: '@agros/app',
-                identifierName: 'Suspense',
-            },
-            {
-                libName: '@agros/app',
-                identifierName: 'ErrorBoundary',
-            },
-        ] as Omit<EnsureImportOptions, 'statements'>[];
+        const imports = platform.getLoaderImports();
 
         for (const importItem of imports) {
             const {
@@ -153,20 +116,7 @@ export const transformEntry = createLoaderAOP<ParseResult<File>>(
             ensureIdentifierNameMap[importItem.identifierName] = ensuredIdentifierName;
         }
 
-        const bootstrapDeclarationTemplate = fs.readFileSync(path.resolve(__dirname, '../templates/bootstrap.js.template')).toString();
-        const bootstrapDeclarationStr = ejs.render(bootstrapDeclarationTemplate, {
-            map: ensureIdentifierNameMap,
-        });
-
-        for (const [index, statement] of tree.program.body.entries()) {
-            if (statement.type === 'ImportDeclaration') {
-                lastImportDeclarationIndex = index;
-            }
-            if (statement.type === 'ExportDefaultDeclaration') {
-                exportDefaultDeclarationIndex = index;
-            }
-        }
-
+        const bootstrapDeclarationStr = platform.getBootstrapCode(ensureIdentifierNameMap);
         const bootstrapDeclarations = parseAST(bootstrapDeclarationStr).program.body;
 
         tree.program.body.splice(
@@ -174,9 +124,7 @@ export const transformEntry = createLoaderAOP<ParseResult<File>>(
             0,
             ...bootstrapDeclarations,
         );
-
         tree.program.body.splice(exportDefaultDeclarationIndex + bootstrapDeclarations.length, 1);
-
         tree.program.body.push(...parseAST('bootstrap(' + generate(exportDefaultDeclaration.declaration).code + ');').program.body);
 
         return tree;
@@ -195,8 +143,10 @@ export const transformComponentDecorator = createLoaderAOP(
         context,
         tree,
     }) => {
-        const ensureIdentifierNameMap = {};
+        const ensureIdentifierNameMap: Record<string, string> = {};
         const declaredClasses = detectExports<t.ClassDeclaration>(tree, 'ClassDeclaration');
+        const configParser = new ProjectConfigParser();
+        const platform = loadPlatform<AbstractPlatform>(configParser.getConfig<string>('platform'));
 
         if (declaredClasses.length > 1) {
             throw new Error('Component files should have only one named class export');
@@ -287,20 +237,7 @@ export const transformComponentDecorator = createLoaderAOP(
             ),
         });
 
-        const imports = [
-            {
-                libName: '@agros/app/lib/constants',
-                identifierName: 'DI_METADATA_COMPONENT_SYMBOL',
-            },
-            {
-                libName: '@agros/app/lib/constants',
-                identifierName: 'DI_DEPS_SYMBOL',
-            },
-            {
-                libName: '@agros/app',
-                identifierName: 'lazy',
-            },
-        ] as Omit<EnsureImportOptions, 'statements'>[];
+        const imports = platform.getDecoratorImports();
 
         for (const importItem of imports) {
             const {
@@ -310,30 +247,27 @@ export const transformComponentDecorator = createLoaderAOP(
                 statements: tree.program.body,
                 ...importItem,
             });
-
             tree.program.body = statements;
             ensureIdentifierNameMap[importItem.identifierName] = ensuredIdentifierName;
         }
 
-        const componentFactoryStr = fs.readFileSync(
-            path.resolve(
-                __dirname,
-                '../templates/component.decorator.ts.template',
-            ),
-        ).toString();
-
-        const componentIdentifierName = 'Agros$$CurrentComponent';
-        const forwardRefIdentifierName = 'Agros$$forwardRef';
-
-        const componentFileImportDeclaration = componentMetadataConfig.lazy
-            ? null
-            : template.ast(`import ${componentIdentifierName} from '${componentMetadataConfig.file}';`) as Statement;
-
+        const componentFactoryStr = platform.getComponentDecoratorCode(ensureIdentifierNameMap);
+        // const componentFileImportDeclaration = componentMetadataConfig.lazy
+        //     ? null
+        //     : template.ast(`import ${componentIdentifierName} from '${componentMetadataConfig.file}';`) as Statement;
         const componentFactoryDeclarations = parseAST(ejs.render(componentFactoryStr, {
             map: ensureIdentifierNameMap,
         })).program.body;
-
         const legacyDecorator: Decorator = _.clone(componentClassDeclaration?.decorators[componentDecoratorIndex]);
+        const {
+            lazy,
+            file,
+        } = componentMetadataConfig;
+        const {
+            importCodeLines = [],
+            factoryCode = '',
+        } = platform.getComponentFactoryCode(file, lazy);
+
         componentClassDeclaration?.decorators?.splice(
             componentDecoratorIndex,
             1,
@@ -344,30 +278,7 @@ export const transformComponentDecorator = createLoaderAOP(
                         t.objectExpression([
                             t.objectProperty(
                                 t.stringLiteral('factory'),
-                                t.arrowFunctionExpression(
-                                    [t.identifier(forwardRefIdentifierName)],
-                                    componentMetadataConfig.lazy
-                                        ? t.callExpression(
-                                            t.identifier(ensureIdentifierNameMap['lazy']),
-                                            [
-                                                t.arrowFunctionExpression(
-                                                    [],
-                                                    t.callExpression(
-                                                        t.identifier(forwardRefIdentifierName),
-                                                        [
-                                                            t.callExpression(
-                                                                t.identifier('import'),
-                                                                [
-                                                                    t.stringLiteral(componentMetadataConfig.file),
-                                                                ],
-                                                            ),
-                                                        ],
-                                                    ),
-                                                ),
-                                            ],
-                                        )
-                                        : t.identifier(componentIdentifierName),
-                                ),
+                                (template.ast(factoryCode) as ExpressionStatement).expression,
                             ),
                             ...(((legacyDecorator.expression as CallExpression)?.arguments[0] as ObjectExpression).properties || []).filter((property: ObjectProperty) => {
                                 return property.key.type === 'Identifier' && [
@@ -396,7 +307,13 @@ export const transformComponentDecorator = createLoaderAOP(
         } = exportedClassInfo;
 
         const addedDeclarations = [
-            ...(componentFileImportDeclaration ? [componentFileImportDeclaration] : []),
+            ...importCodeLines.map((importCodeLine) => {
+                try {
+                    return template.ast(importCodeLine) as Statement;
+                } catch (e) {
+                    return null;
+                }
+            }).filter((ast) => !!ast),
             ...componentFactoryDeclarations,
         ];
         if (lastImportDeclarationIndex) {
