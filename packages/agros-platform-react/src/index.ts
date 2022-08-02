@@ -33,7 +33,7 @@ import * as path from 'path';
 import { Logger } from '@agros/logger';
 
 export default class PlatformReact extends AbstractPlatform implements AbstractPlatform {
-    public getImports(): Omit<EnsureImportOptions, 'statements'>[] {
+    public getLoaderImports(): Omit<EnsureImportOptions, 'statements'>[] {
         return [
             {
                 libName: '@agros/platform/react/lib/react-router-dom',
@@ -61,6 +61,38 @@ export default class PlatformReact extends AbstractPlatform implements AbstractP
                 identifierName: 'render',
             },
         ];
+    }
+
+    public getDecoratorImports(): Omit<EnsureImportOptions, 'statements'>[] {
+        return [
+            {
+                libName: '@agros/app/lib/constants',
+                identifierName: 'DI_METADATA_COMPONENT_SYMBOL',
+            },
+            {
+                libName: '@agros/app/lib/constants',
+                identifierName: 'DI_DEPS_SYMBOL',
+            },
+        ];
+    }
+
+    public getComponentDecoratorCode(ensuredImportsMap: Record<string, string>): string {
+        return `
+            function Agros$$ComponentWithFactory(options): ClassDecorator {
+                const {
+                    declarations = [],
+                    ...metadataValue
+                } = options;
+                return (target) => {
+                    Reflect.defineMetadata(
+                        ${ensuredImportsMap['DI_METADATA_COMPONENT_SYMBOL']},
+                        metadataValue,
+                        target,
+                    );
+                    Reflect.defineMetadata(${ensuredImportsMap['DI_DEPS_SYMBOL']}, declarations, target);
+                };
+            }
+        `;
     }
 
     public runCommand(command: string) {

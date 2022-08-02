@@ -90,7 +90,7 @@ export class Factory implements IFactory {
      *
      * @returns {Map<ClassType, any>} a map for storing relationships between provider class
      * and provider instance, when the provider class infers to a component class, its value
-     * would be a React component
+     * would be a component
      */
     public generateDependencyMap(componentInstance: ComponentInstance) {
         const ComponentClass = componentInstance.metadata.Class;
@@ -110,21 +110,21 @@ export class Factory implements IFactory {
             if (this.componentInstanceMap.get(ProviderClass)) {
                 /**
                  * if provider class is a component class, that set the map value
-                 * to a React component
+                 * to a component
                  */
                 const dependedComponentInstance = this.componentInstanceMap.get(ProviderClass);
                 let dependedComponent = dependedComponentInstance.getComponent();
 
                 /**
                  * if current depended component class is not initialized, then create
-                 * the React component recursively
+                 * the component recursively
                  */
                 if (!dependedComponent) {
                     dependedComponent = this.generateReactComponent(dependedComponentInstance);
                 }
 
                 /**
-                 * get the React component from depended component class
+                 * get the component from depended component class
                  */
                 dependencyMap = dependencyMap.set(ProviderClass, dependedComponent);
             } else {
@@ -354,7 +354,7 @@ export class Factory implements IFactory {
             );
 
             /**
-             * create a component instance, but not real React component yet
+             * create a component instance, but not real component yet
              */
             const componentInstance = new ComponentInstance({
                 ...metadataValue,

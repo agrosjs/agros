@@ -1,4 +1,3 @@
-import React from 'react';
 import {
     DEPS_PROPERTY_NAME,
     Type,
@@ -6,10 +5,10 @@ import {
 
 /**
  * get container dependencies
- * @param {React.FC | React.Component} component
+ * @param {any} component
  * @returns {Object}
  */
-export const getContainer = (component: React.FC | React.Component) => {
+export const getContainer = (component: any) => {
     const descriptor = Object.getOwnPropertyDescriptor(
         component,
         DEPS_PROPERTY_NAME,
