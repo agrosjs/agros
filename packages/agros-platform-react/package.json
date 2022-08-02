@@ -42,10 +42,14 @@
     "version": "0.0.0",
     "description": "Official React.js platform adapter for Agros.js",
     "dependencies": {
+        "@agros/common": "workspace:^0.1.1",
+        "@agros/logger": "workspace:^0.0.3",
         "@agros/platforms": "workspace:^0.0.0",
         "@agros/utils": "workspace:^0.0.3",
         "react": "^17.0.0",
         "react-dom": "^17.0.0",
-        "react-router-dom": "^6.0.0"
+        "react-router-dom": "^6.0.0",
+        "reflect-metadata": "^0.1.13",
+        "use-async-effect": "^2.2.6"
     }
 }

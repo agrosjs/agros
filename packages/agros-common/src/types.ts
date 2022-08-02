@@ -113,3 +113,7 @@ export interface Factory {
     create: <T = any>(ModuleClass: Type<T>) => Promise<RouterItem[]>;
     generateDependencyMap: (componentInstance: ComponentInstance) => ImmutableMap<Type<any>, any>;
 }
+
+export interface Interceptor<P = any, C = any, R = any> {
+    intercept: (props: P, context: C) => Promise<R> | R;
+}

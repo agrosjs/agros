@@ -1,5 +1,5 @@
-import { DI_METADATA_MODULE_SYMBOL } from '../constants';
 import {
+    DI_METADATA_MODULE_SYMBOL,
     ModuleDecoratorOptions,
     ModuleMetadata,
 } from '@agros/common';

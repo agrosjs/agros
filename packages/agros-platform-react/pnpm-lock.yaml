@@ -1,6 +1,8 @@
 lockfileVersion: 5.4
 
 specifiers:
+  '@agros/common': workspace:^0.1.1
+  '@agros/logger': workspace:^0.0.3
   '@agros/platforms': workspace:^0.0.0
   '@agros/utils': workspace:^0.0.3
   '@types/react': ^17.0.0
@@ -8,13 +10,19 @@ specifiers:
   react: ^17.0.0
   react-dom: ^17.0.0
   react-router-dom: ^6.0.0
+  reflect-metadata: ^0.1.13
+  use-async-effect: ^2.2.6
 
 dependencies:
+  '@agros/common': link:../agros-common
+  '@agros/logger': link:../agros-logger
   '@agros/platforms': link:../agros-platforms
   '@agros/utils': link:../agros-utils
   react: 17.0.2
   react-dom: 17.0.2
   react-router-dom: 6.3.0_react@17.0.2
+  reflect-metadata: 0.1.13
+  use-async-effect: 2.2.6
 
 devDependencies:
   '@types/react': 17.0.48
@@ -115,6 +123,10 @@ packages:
       object-assign: 4.1.1
     dev: false
 
+  /reflect-metadata/0.1.13:
+    resolution: {integrity: sha512-Ts1Y/anZELhSsjMcU605fU9RE4Oi3p5ORujwbIKXfWa+0Zxs510Qrmrce5/Jowq3cHSZSJqBjypxmHarc+vEWg==}
+    dev: false
+
   /regenerator-runtime/0.13.9:
     resolution: {integrity: sha512-p3VT+cOEgxFsRRA9X4lkI1E+k2/CtnKtU4gcxyaCUreilL/vqI6CdZ3wxVUx3UOUg+gnUOQQcRI7BmSI656MYA==}
     dev: false
@@ -124,4 +136,10 @@ packages:
     dependencies:
       loose-envify: 1.4.0
       object-assign: 4.1.1
+    dev: false
+
+  /use-async-effect/2.2.6:
+    resolution: {integrity: sha512-wKUpaHkuF4rzBHawP87o1KzoK2IxJ6De8fUyQ3GN2114zb4zqT87+SEbCHS+F+0inZ2Y+k6Tm1LOCQgYTSD9ww==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0
     dev: false

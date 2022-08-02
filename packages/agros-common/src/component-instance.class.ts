@@ -1,4 +1,3 @@
-import React from 'react';
 import { ComponentInstanceMetadata } from './types';
 
 /**
@@ -11,7 +10,7 @@ export class ComponentInstance {
      * @property
      * the React component for current component instance
      */
-    private Component: React.FC;
+    private Component: any;
 
     /**
      * @constructor
@@ -21,11 +20,11 @@ export class ComponentInstance {
         public readonly metadata: ComponentInstanceMetadata,
     ) {}
 
-    public setComponent<T = any>(Component: React.FC<T>) {
+    public setComponent(Component: any) {
         this.Component = Component;
     }
 
-    public getComponent<T = any>() {
-        return this.Component as React.FC<T>;
+    public getComponent<T = any>(): T {
+        return this.Component as T;
     }
 }

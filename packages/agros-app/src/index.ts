@@ -5,4 +5,3 @@ export * from './get-container';
 export * from './forward-container';
 export { render } from 'react-dom';
 export * from 'react-error-boundary';
-export * from './interfaces';

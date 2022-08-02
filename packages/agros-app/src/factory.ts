@@ -1,16 +1,7 @@
 import 'reflect-metadata';
 import React from 'react';
-import {
-    DEPS_PROPERTY_NAME,
-    DI_DEPS_SYMBOL,
-    DI_GLOBAL_MODULE_SYMBOL,
-    DI_METADATA_COMPONENT_SYMBOL,
-    DI_METADATA_MODULE_SYMBOL,
-    DI_METADATA_USE_INTERCEPTORS_SYMBOL,
-} from './constants';
 import isPromise from 'is-promise';
 import { Map as ImmutableMap } from 'immutable';
-import { Interceptor } from './interfaces';
 import {
     useLocation,
     useParams,
@@ -26,6 +17,13 @@ import {
     RouterItem,
     FactoryForwardRef,
     Factory as IFactory,
+    Interceptor,
+    DEPS_PROPERTY_NAME,
+    DI_DEPS_SYMBOL,
+    DI_GLOBAL_MODULE_SYMBOL,
+    DI_METADATA_COMPONENT_SYMBOL,
+    DI_METADATA_MODULE_SYMBOL,
+    DI_METADATA_USE_INTERCEPTORS_SYMBOL,
 } from '@agros/common';
 import { ComponentInstance } from '@agros/common/lib/component-instance.class';
 import { ModuleInstance } from '@agros/common/lib/module-instance.class';
