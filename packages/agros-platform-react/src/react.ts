@@ -1,2 +1,2 @@
-import * as react from 'react';
-export default react;
+import React from 'react';
+export default React;

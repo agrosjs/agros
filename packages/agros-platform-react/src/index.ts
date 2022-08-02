@@ -5,15 +5,15 @@ export default class PlatformReact extends AbstractPlatform implements AbstractP
     public getImports(): Omit<EnsureImportOptions, 'statements'>[] {
         return [
             {
-                libName: '@agros/app/lib/router',
+                libName: '@agros/platform/react/lib/react--outer',
                 identifierName: 'Routes',
             },
             {
-                libName: '@agros/app/lib/router',
+                libName: '@agros/platform/react/lib/react--outer',
                 identifierName: 'Route',
             },
             {
-                libName: '@agros/app/lib/router',
+                libName: '@agros/platform/react/lib/react--outer',
                 identifierName: 'BrowserRouter',
             },
             {
@@ -21,23 +21,23 @@ export default class PlatformReact extends AbstractPlatform implements AbstractP
                 identifierName: 'Factory',
             },
             {
-                libName: '@agros/app',
+                libName: '@agros/platform-react/lib/react',
                 identifierName: 'useEffect',
             },
             {
-                libName: '@agros/app',
+                libName: '@agros/platform-react/lib/react',
                 identifierName: 'useState',
             },
             {
-                libName: '@agros/app',
+                libName: '@agros/platform-react/lib/react',
                 identifierName: 'createElement',
             },
             {
-                libName: '@agros/app',
+                libName: '@agros/platform-react',
                 identifierName: 'render',
             },
             {
-                libName: '@agros/app',
+                libName: '@agros/platform-react/lib/react',
                 identifierName: 'Suspense',
             },
         ];
