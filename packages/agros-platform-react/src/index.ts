@@ -109,7 +109,7 @@ export default class PlatformReact extends AbstractPlatform implements AbstractP
                         ? []
                         : [
                             '--config-overrides',
-                            path.resolve(__dirname, '../../../config-overrides.js'),
+                            path.resolve(__dirname, '../config-overrides.js'),
                         ]
                 ),
             ],
