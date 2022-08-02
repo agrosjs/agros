@@ -194,6 +194,16 @@ export default class PlatformReact extends AbstractPlatform implements AbstractP
         `;
     }
 
+    public getComponentFactoryCode(filePath: string, lazy = false) {
+        const componentIdentifierName = 'Agros$$CurrentComponent';
+        return {
+            factoryCode: `forwardRef => ${lazy ? `forwardRef(import(${filePath}))` : componentIdentifierName}`,
+            importCodeLines: lazy
+                ? []
+                : [`import ${componentIdentifierName} from '${filePath}';`],
+        };
+    }
+
     public getRoutes(routerItems: RouterItem[], level = 0) {
         return routerItems.map((routerItem, index) => {
             const {
