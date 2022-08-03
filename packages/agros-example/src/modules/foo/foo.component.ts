@@ -1,5 +1,6 @@
 import {
-    Component, UseInterceptors,
+    Component,
+    UseInterceptors,
 } from '@agros/app';
 import { BarComponent } from '../bar/bar.component';
 import { BarService } from '../bar/bar.service';

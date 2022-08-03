@@ -1,17 +1,9 @@
-import * as path from 'path';
+import { runCommand } from '@agros/utils/lib/run-command';
 import * as fs from 'fs';
-import { runCommand } from '@agros/utils';
-import { overridesFileExists } from '../utils';
-import { Logger } from '@agros/logger';
+import * as path from 'path';
+import { overridesFileExists } from './override-file-exists';
 
-export const run = (command) => {
-    const logger = new Logger();
-
-    if (!command) {
-        logger.error('Command must be specified');
-        process.exit(1);
-    }
-
+export const runCommands = (command: string) => {
     if (
         [
             'build',
@@ -19,8 +11,7 @@ export const run = (command) => {
             'test',
         ].indexOf(command) === -1
     ) {
-        logger.error(`Command "${command}" does not match none of the supported commands`);
-        process.exit(1);
+        throw new Error(`Command "${command}" does not match none of the supported commands`);
     }
 
     let reactAppRewiredBinaryPath = path.resolve(
@@ -36,8 +27,7 @@ export const run = (command) => {
     }
 
     if (!fs.existsSync(reactAppRewiredBinaryPath)) {
-        logger.error('Fatal: lost engine files');
-        process.exit(1);
+        throw new Error('Fatal: lost engine files');
     }
 
     runCommand(
@@ -50,7 +40,7 @@ export const run = (command) => {
                     ? []
                     : [
                         '--config-overrides',
-                        path.resolve(__dirname, '../../../config-overrides.js'),
+                        path.resolve(__dirname, '../config-overrides.js'),
                     ]
             ),
         ],

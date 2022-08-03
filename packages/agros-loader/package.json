@@ -7,8 +7,7 @@
         "LICENSE",
         "README.md",
         "package.json",
-        "package-lock.json",
-        "templates"
+        "package-lock.json"
     ],
     "publishConfig": {
         "access": "public"

@@ -3,7 +3,7 @@ const {
     removeModuleScopePlugin,
     addBabelPlugins,
     addWebpackAlias,
-} = require('./lib/scripts/customize');
+} = require('customize-cra');
 const { ProjectConfigParser } = require('@agros/config');
 
 const projectConfigParser = new ProjectConfigParser();

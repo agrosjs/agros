@@ -9,9 +9,10 @@ import {
 } from '@agros/common';
 import {
     ensureImport,
-    parseAST,
-} from '@agros/utils';
-import { loadPlatform } from '@agros/utils/lib/platform-loader';
+    EnsureImportOptions,
+} from '@agros/utils/lib/ensure-import';
+import { parseAST } from '@agros/utils/lib/parse-ast';
+import { PlatformLoader } from '@agros/utils/lib/platform-loader';
 import { ParseResult } from '@babel/parser';
 import {
     CallExpression as BabelCallExpression,
@@ -25,7 +26,6 @@ import {
     ExpressionStatement,
 } from '@babel/types';
 import * as path from 'path';
-import ejs from 'ejs';
 import generate from '@babel/generator';
 import { createLoaderAOP } from './utils';
 import * as t from '@babel/types';
@@ -33,7 +33,7 @@ import template from '@babel/template';
 import _ from 'lodash';
 import qs from 'qs';
 import { ProjectConfigParser } from '@agros/config';
-import { AbstractPlatform } from '@agros/platforms';
+import { Platform } from '@agros/platforms/lib/platform.interface';
 
 export const checkModule = createLoaderAOP(
     ({
@@ -93,7 +93,9 @@ export const transformEntry = createLoaderAOP<ParseResult<File>>(
         let lastImportDeclarationIndex: number;
         const ensureIdentifierNameMap: Record<string, string> = {};
         const configParser = new ProjectConfigParser();
-        const platform = loadPlatform<AbstractPlatform>(configParser.getConfig<string>('platform'));
+        const platformName = configParser.getConfig<string>('platform');
+        const platformLoader = new PlatformLoader(platformName);
+        const platform = platformLoader.getPlatform<Platform>();
 
         const [exportDefaultDeclaration] = detectExports<t.ArrayExpression>(tree, 'ArrayExpression');
 
@@ -101,7 +103,13 @@ export const transformEntry = createLoaderAOP<ParseResult<File>>(
             throw new Error('The entry of an project should export an array of config');
         }
 
-        const imports = platform.getLoaderImports();
+        const imports = [
+            {
+                libName: `${platformName}/lib/platform`,
+                identifierName: 'platform',
+                type: 'default',
+            } as Omit<EnsureImportOptions, 'statements'>,
+        ].concat(platform.getLoaderImports());
 
         for (const importItem of imports) {
             const {
@@ -117,6 +125,16 @@ export const transformEntry = createLoaderAOP<ParseResult<File>>(
         }
 
         const bootstrapDeclarationStr = platform.getBootstrapCode(ensureIdentifierNameMap);
+
+        for (const [index, statement] of tree.program.body.entries()) {
+            if (statement.type === 'ImportDeclaration') {
+                lastImportDeclarationIndex = index;
+            }
+            if (statement.type === 'ExportDefaultDeclaration') {
+                exportDefaultDeclarationIndex = index;
+            }
+        }
+
         const bootstrapDeclarations = parseAST(bootstrapDeclarationStr).program.body;
 
         tree.program.body.splice(
@@ -146,7 +164,8 @@ export const transformComponentDecorator = createLoaderAOP(
         const ensureIdentifierNameMap: Record<string, string> = {};
         const declaredClasses = detectExports<t.ClassDeclaration>(tree, 'ClassDeclaration');
         const configParser = new ProjectConfigParser();
-        const platform = loadPlatform<AbstractPlatform>(configParser.getConfig<string>('platform'));
+        const platformLoader = new PlatformLoader(configParser.getConfig<string>('platform'));
+        const platform = platformLoader.getPlatform<Platform>();
 
         if (declaredClasses.length > 1) {
             throw new Error('Component files should have only one named class export');
@@ -252,12 +271,7 @@ export const transformComponentDecorator = createLoaderAOP(
         }
 
         const componentFactoryStr = platform.getComponentDecoratorCode(ensureIdentifierNameMap);
-        // const componentFileImportDeclaration = componentMetadataConfig.lazy
-        //     ? null
-        //     : template.ast(`import ${componentIdentifierName} from '${componentMetadataConfig.file}';`) as Statement;
-        const componentFactoryDeclarations = parseAST(ejs.render(componentFactoryStr, {
-            map: ensureIdentifierNameMap,
-        })).program.body;
+        const componentFactoryDeclarations = parseAST(componentFactoryStr).program.body;
         const legacyDecorator: Decorator = _.clone(componentClassDeclaration?.decorators[componentDecoratorIndex]);
         const {
             lazy,

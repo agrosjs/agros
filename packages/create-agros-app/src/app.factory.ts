@@ -13,7 +13,7 @@ import {
 } from 'child_process';
 import * as glob from 'glob';
 import { Logger } from '@agros/logger';
-import { runCommand } from '@agros/utils';
+import { runCommand } from '@agros/utils/lib/run-command';
 import { LicenseUtils } from './license';
 
 export interface AppCollectionOptions {

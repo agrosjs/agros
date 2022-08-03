@@ -1,15 +1,11 @@
-import { FC } from 'react';
-import {
-    forwardContainer,
-    useEffect,
-    memo,
-} from '@agros/app';
+import React from '@agros/platform-react/lib/react';
 import { LoremService } from './lorem.service';
+import { forwardContainer } from '@agros/platform-react/lib/forward-container';
 
-const Lorem: FC = forwardContainer(({ container }) => {
+const Lorem: React.FC = forwardContainer(({ container }) => {
     const loremService = container.get<LoremService>(LoremService);
 
-    useEffect(() => {
+    React.useEffect(() => {
         loremService.sayHello();
     }, []);
 
@@ -18,4 +14,4 @@ const Lorem: FC = forwardContainer(({ container }) => {
     );
 });
 
-export default memo(Lorem);
+export default React.memo(Lorem);

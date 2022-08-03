@@ -1,1 +1,1 @@
-export { default } from 'customize-cra';
+export * from 'customize-cra';

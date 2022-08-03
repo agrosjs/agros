@@ -1,4 +1,4 @@
-import { Navigate } from '@agros/app/lib/router';
+import { Navigate } from '@agros/platform-react/lib/react-router-dom';
 
 export default () => {
     return (

@@ -1,4 +1,4 @@
-import { parseAST } from '@agros/utils';
+import { parseAST } from '@agros/utils/lib/parse-ast';
 import generate from '@babel/generator';
 import * as t from '@babel/types';
 import {

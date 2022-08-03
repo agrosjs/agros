@@ -1,4 +1,4 @@
-import { Outlet } from '@agros/app/lib/router';
+import { Outlet } from '@agros/platform-react/lib/react-router-dom';
 
 export default () => {
     return (

@@ -1,6 +1,6 @@
-import { FC } from 'react';
+import React from '@agros/platform-react/lib/react';
 
-const FooChild: FC = () => {
+const FooChild: React.FC = () => {
     return (
         <div style={{ color: 'red' }}>Greet from foo/child page!</div>
     );

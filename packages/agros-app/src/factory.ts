@@ -9,20 +9,19 @@ import {
     ComponentMetadata,
     RouterItem,
     Factory as IFactory,
+} from '@agros/common/lib/types';
+import {
     DI_DEPS_SYMBOL,
     DI_GLOBAL_MODULE_SYMBOL,
     DI_METADATA_COMPONENT_SYMBOL,
     DI_METADATA_MODULE_SYMBOL,
     DI_METADATA_USE_INTERCEPTORS_SYMBOL,
-} from '@agros/common';
+} from '@agros/common/lib/constants';
 import { ComponentInstance } from '@agros/common/lib/component-instance.class';
 import { ModuleInstance } from '@agros/common/lib/module-instance.class';
-import { ProjectConfigParser } from '@agros/config';
-import { AbstractPlatform } from '@agros/platforms';
-import { loadPlatform } from '@agros/utils/lib/platform-loader';
+import { Platform } from '@agros/platforms/lib/platform.interface';
 
 export class Factory implements IFactory {
-    protected platform: AbstractPlatform;
     /**
      * @private
      * the flattened map for all module instances created from module classes
@@ -59,9 +58,7 @@ export class Factory implements IFactory {
      */
     private globalModuleInstances = new Set<ModuleInstance>();
 
-    public constructor(protected readonly projectConfigParser: ProjectConfigParser) {
-        this.platform = loadPlatform(this.projectConfigParser.getConfig<string>('platform'));
-    }
+    public constructor(protected readonly platform: Platform) {}
 
     /**
      * @public

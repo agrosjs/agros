@@ -1,6 +1,4 @@
-import {
-    Component,
-} from '@agros/app';
+import { Component } from '@agros/app';
 import { LoremService } from './lorem.service';
 
 @Component({

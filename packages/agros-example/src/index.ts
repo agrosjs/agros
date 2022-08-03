@@ -1,6 +1,6 @@
 import './index.css';
 import reportWebVitals from './reportWebVitals';
-import { HashRouter } from '@agros/app/lib/router';
+import { HashRouter } from '@agros/platform-react/lib/react-router-dom';
 import { AppModule } from '@/app.module';
 
 // If you want to start measuring performance in your app, pass a function

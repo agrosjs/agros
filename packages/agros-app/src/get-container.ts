@@ -1,7 +1,5 @@
-import {
-    DEPS_PROPERTY_NAME,
-    Type,
-} from '@agros/common';
+import { Type } from '@agros/common/lib/types';
+import { DEPS_PROPERTY_NAME } from '@agros/common/lib/constants';
 
 /**
  * get container dependencies

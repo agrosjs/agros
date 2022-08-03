@@ -1,8 +1,8 @@
+import { ComponentDecoratorOptions } from '@agros/common/lib/types';
 import {
-    ComponentDecoratorOptions,
     DI_DEPS_SYMBOL,
     DI_METADATA_COMPONENT_SYMBOL,
-} from '@agros/common';
+} from '@agros/common/lib/constants';
 
 export function Component(options: ComponentDecoratorOptions = {}): ClassDecorator {
     const {

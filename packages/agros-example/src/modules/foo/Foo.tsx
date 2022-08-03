@@ -1,23 +1,17 @@
-import {
-    FC,
-    PropsWithChildren,
-} from 'react';
-import {
-    getContainer,
-    useEffect,
-} from '@agros/app';
-import { Outlet } from '@agros/app/lib/router';
+import React from '@agros/platform-react/lib/react';
+import { getContainer } from '@agros/app';
+import { Outlet } from '@agros/platform-react/lib/react-router-dom';
 import { BarComponent } from '../bar/bar.component';
 import { BarService } from '../bar/bar.service';
 import { FooService } from './foo.service';
 
-const Foo: FC = () => {
+const Foo: React.FC = () => {
     const container = getContainer(Foo);
-    const Bar = container.get<FC<PropsWithChildren<{ used: string }>>>(BarComponent);
+    const Bar = container.get<React.FC<React.PropsWithChildren<{ used: string }>>>(BarComponent);
     const fooService = container.get<FooService>(FooService);
     const barService = container.get<BarService>(BarService);
 
-    useEffect(() => {
+    React.useEffect(() => {
         fooService.logHello();
         barService.sayHello();
     }, []);

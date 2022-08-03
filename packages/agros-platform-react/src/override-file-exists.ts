@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { permanentlyReadJson } from '@agros/utils';
+import { permanentlyReadJson } from '@agros/utils/lib/permanently-read-json';
 
 export const overridesFileExists = () => {
     const cwd = process.cwd();
