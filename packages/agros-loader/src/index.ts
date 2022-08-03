@@ -13,7 +13,7 @@ import {
 } from './aops';
 
 export default function(source) {
-    const resourceAbsolutePath = this.resourcePath;
+    const resourceAbsolutePath: string = this.resourcePath;
 
     if (!resourceAbsolutePath) {
         return source;
@@ -38,5 +38,7 @@ export default function(source) {
         return source;
     }
 
-    return generate(newAST).code;
+    const newCode = generate(newAST).code;
+
+    return newCode;
 }

@@ -13,6 +13,10 @@ export interface Platform {
     getDefaultConfig: () => Record<string, any>;
     getBootstrapCode: (ensuredImportsMap: Record<string, string>) => string;
     getComponentDecoratorCode: (ensuredImportsMap: Record<string, string>) => string;
-    getComponentFactoryCode: (filePath: string, lazy: boolean) => FactoryCodeConfig;
+    getComponentFactoryCode: (
+        ensuredImportsMap: Record<string, string>,
+        filePath: string,
+        lazy: boolean,
+    ) => FactoryCodeConfig;
     generateComponent: <T = any>(componentInstance: ComponentInstance, context: Factory) => T;
 }

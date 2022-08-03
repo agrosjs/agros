@@ -174,6 +174,7 @@ export const transformComponentDecorator = createLoaderAOP(
         }
 
         const [exportedClassInfo] = declaredClasses;
+        const exportDeclaration = tree.program.body[exportedClassInfo.exportIndex];
         const componentClassDeclaration = exportedClassInfo.declaration;
         const [decorator] = detectDecorators(tree, 'Component');
         const [importedComponentDecoratorSpecifier] = detectNamedImports(
@@ -280,7 +281,7 @@ export const transformComponentDecorator = createLoaderAOP(
         const {
             importCodeLines = [],
             factoryCode = '',
-        } = platform.getComponentFactoryCode(file, lazy);
+        } = platform.getComponentFactoryCode(ensureIdentifierNameMap, file, lazy);
 
         componentClassDeclaration?.decorators?.splice(
             componentDecoratorIndex,
@@ -291,7 +292,7 @@ export const transformComponentDecorator = createLoaderAOP(
                     [
                         t.objectExpression([
                             t.objectProperty(
-                                t.stringLiteral('factory'),
+                                t.identifier('factory'),
                                 (template.ast(factoryCode) as ExpressionStatement).expression,
                             ),
                             ...(((legacyDecorator.expression as CallExpression)?.arguments[0] as ObjectExpression).properties || []).filter((property: ObjectProperty) => {
@@ -323,7 +324,8 @@ export const transformComponentDecorator = createLoaderAOP(
         const addedDeclarations = [
             ...importCodeLines.map((importCodeLine) => {
                 try {
-                    return template.ast(importCodeLine) as Statement;
+                    const importCodeAST = template.ast(importCodeLine) as Statement;
+                    return importCodeAST;
                 } catch (e) {
                     return null;
                 }
@@ -338,7 +340,8 @@ export const transformComponentDecorator = createLoaderAOP(
             if (!componentClassDeclaration.id) {
                 componentClassDeclaration.id = t.identifier('Agros$TemporaryComponentClass');
             }
-            tree.program.body.splice(exportIndex + addedDeclarations.length + 1, 1, componentClassDeclaration);
+            tree.program.body.splice(lastImportDeclarationIndex + exportIndex + addedDeclarations.length + 1, 0, componentClassDeclaration);
+            tree.program.body = tree.program.body.filter((item) => item !== exportDeclaration);
         }
 
         if (exportMode === 'named') {

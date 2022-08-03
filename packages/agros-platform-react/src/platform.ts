@@ -71,6 +71,11 @@ const platform: Platform = {
                 libName: '@agros/app/lib/constants',
                 identifierName: 'DI_DEPS_SYMBOL',
             },
+            {
+                libName: '@agros/platform-react/lib/react',
+                identifierName: 'React',
+                type: 'default',
+            },
         ];
     },
     getComponentDecoratorCode(ensuredImportsMap: Record<string, string>): string {
@@ -153,10 +158,10 @@ const platform: Platform = {
             };
         `;
     },
-    getComponentFactoryCode(filePath: string, lazy = false) {
+    getComponentFactoryCode(map: Record<string, string>, filePath: string, lazy = false) {
         const componentIdentifierName = 'Agros$$CurrentComponent';
         return {
-            factoryCode: `forwardRef => ${lazy ? `forwardRef(import('${filePath}'))` : componentIdentifierName}`,
+            factoryCode: `forwardRef => ${lazy ? `${map['React'] || 'React'}.lazy(() => forwardRef(import('${filePath}')))` : componentIdentifierName}`,
             importCodeLines: lazy
                 ? []
                 : [`import ${componentIdentifierName} from '${filePath}';`],
