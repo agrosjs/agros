@@ -1,6 +1,6 @@
 import React from '@agros/platform-react/lib/react';
 import { LoremService } from './lorem.service';
-import { forwardContainer } from '@agros/platform-react/lib/forward-container';
+import { forwardContainer } from '@agros/platform-react';
 
 const Lorem: React.FC = forwardContainer(({ container }) => {
     const loremService = container.get<LoremService>(LoremService);

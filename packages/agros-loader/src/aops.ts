@@ -103,13 +103,17 @@ export const transformEntry = createLoaderAOP<ParseResult<File>>(
             throw new Error('The entry of an project should export an array of config');
         }
 
-        const imports = [
+        const imports = ([
             {
-                libName: `${platformName}/lib/platform`,
+                libName: platformName,
                 identifierName: 'platform',
                 type: 'default',
-            } as Omit<EnsureImportOptions, 'statements'>,
-        ].concat(platform.getLoaderImports());
+            },
+            {
+                libName: platformName,
+                identifierName: 'createRoutes',
+            },
+        ] as Omit<EnsureImportOptions, 'statements'>[]).concat(platform.getLoaderImports());
 
         for (const importItem of imports) {
             const {

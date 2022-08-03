@@ -55,10 +55,6 @@ const platform: Platform = {
                 libName: '@agros/platform-react/lib/react-dom',
                 identifierName: 'render',
             },
-            {
-                libName: '@agros/platform-react/lib/create-routes',
-                identifierName: 'createRoutes',
-            },
         ];
     },
     getDecoratorImports(): Omit<EnsureImportOptions, 'statements'>[] {
