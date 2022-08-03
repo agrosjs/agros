@@ -79,3 +79,5 @@ workflows:
             branches:
               only:
                 - /^publish$/
+            tags:
+              only: /^publish\@.+$/
