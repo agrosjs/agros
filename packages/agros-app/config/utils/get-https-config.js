@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
-const paths = require('./paths');
+const paths = require('../paths');
 
 // Ensure the certificate and key provided are valid and if not
 // throw an easy to debug error

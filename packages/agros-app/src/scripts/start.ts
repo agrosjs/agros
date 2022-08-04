@@ -1,18 +1,21 @@
-const { checkBrowsers } = require('react-dev-utils/browsersHelper');
-const checkRequiredFiles = require('react-dev-utils/checkRequiredFiles');
-const {
+import * as fs from 'fs';
+import {
+    webpack,
+    Compiler,
+} from 'webpack';
+import { Logger } from '@agros/logger';
+import WebpackDevServer from 'webpack-dev-server';
+import { checkBrowsers } from 'react-dev-utils/browsersHelper';
+import checkRequiredFiles = require('react-dev-utils/checkRequiredFiles');
+import {
     choosePort,
     createCompiler,
     prepareProxy,
     prepareUrls,
-} = require('react-dev-utils/WebpackDevServerUtils');
-import * as fs from 'fs';
-import webpack from 'webpack';
-import { Logger } from '@agros/logger';
-import WebpackDevServer from 'webpack-dev-server';
+} from 'react-dev-utils/WebpackDevServerUtils';
 
-const configFactory = require('../config/webpack.config');
-const createDevServerConfig = require('../config/webpackDevServer.config');
+const configFactory = require('../../config/webpack.config');
+const createDevServerConfig = require('../../config/webpack.devserver.config');
 const paths = require('../../config/paths');
 require('../../config/env');
 
@@ -66,21 +69,21 @@ checkBrowsers(paths.appPath, isInteractive)
         const appName = require(paths.appPackageJson).name;
 
         const useTypeScript = fs.existsSync(paths.appTsConfig);
-        const urls = prepareUrls(
+        const urls = (prepareUrls as any)(
             protocol,
             HOST,
             port,
             paths.publicUrlOrPath.slice(0, -1),
         );
         // Create a webpack compiler that is configured with custom messages.
-        const compiler = createCompiler({
+        const compiler: Compiler = createCompiler({
             appName,
             config,
             urls,
             useYarn,
             useTypeScript,
             webpack,
-        });
+        } as any) as unknown as Compiler;
         // Load proxy config
         const proxySetting = require(paths.appPackageJson).proxy;
         const proxyConfig = prepareProxy(
