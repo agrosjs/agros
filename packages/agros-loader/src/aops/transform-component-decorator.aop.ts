@@ -2,163 +2,31 @@ import {
     detectExports,
     detectDecorators,
     getCollectionType,
-    getFileEntityIdentifier,
     getPathDescriptorWithAlias,
     matchAlias,
     detectNamedImports,
 } from '@agros/common';
-import {
-    ensureImport,
-    EnsureImportOptions,
-} from '@agros/utils/lib/ensure-import';
+import { ensureImport } from '@agros/utils/lib/ensure-import';
 import { parseAST } from '@agros/utils/lib/parse-ast';
 import { PlatformLoader } from '@agros/utils/lib/platform-loader';
-import { ParseResult } from '@babel/parser';
 import {
     CallExpression as BabelCallExpression,
     Identifier,
     CallExpression,
     Decorator,
-    File,
     ObjectExpression,
     ObjectProperty,
     Statement,
     ExpressionStatement,
 } from '@babel/types';
 import * as path from 'path';
-import generate from '@babel/generator';
-import { createLoaderAOP } from './utils';
+import { createLoaderAOP } from '../utils';
 import * as t from '@babel/types';
 import template from '@babel/template';
 import _ from 'lodash';
 import qs from 'qs';
 import { ProjectConfigParser } from '@agros/config';
 import { Platform } from '@agros/platforms/lib/platform.interface';
-
-export const checkModule = createLoaderAOP(
-    ({
-        tree,
-        context,
-        modulesPath,
-    }) => {
-        const declaredClasses = detectExports<t.ClassDeclaration>(tree, 'ClassDeclaration');
-        const moduleName = getFileEntityIdentifier(context.resourcePath);
-        const dirname = path.basename(path.dirname(context.resourcePath));
-
-        if (path.dirname(context.resourcePath).startsWith(modulesPath) && moduleName !== dirname) {
-            throw new Error(`Module file '${path.basename(context.resourcePath)}' should match its directory name '${dirname}'`);
-        }
-
-        if (declaredClasses.length > 1) {
-            throw new Error('Module files should have only one named class export');
-        } else if (declaredClasses.length === 0) {
-            throw new Error('A module file should have one named class export');
-        }
-
-        const decorators = detectDecorators(tree, 'Module');
-
-        if (decorators.length === 0) {
-            throw new Error('A module class should call `Module` function as decorator');
-        } else if (decorators.length > 1) {
-            throw new Error('A module should only call `Module` function once');
-        }
-    },
-    ({ context }) => getCollectionType(context.resourcePath) === 'module',
-);
-
-export const checkService = createLoaderAOP(
-    ({ tree }) => {
-        const declaredClasses = detectExports<t.ClassDeclaration>(tree, 'ClassDeclaration');
-
-        if (declaredClasses.length > 1) {
-            throw new Error('Service files should have only one named class export');
-        } else if (declaredClasses.length === 0) {
-            throw new Error('A service file should have one named class export');
-        }
-
-        const decorators = detectDecorators(tree, 'Injectable');
-
-        if (decorators.length === 0) {
-            throw new Error('A service class should call `Injectable` function as decorator');
-        } else if (decorators.length > 1) {
-            throw new Error('A service should only call `Injectable` function once');
-        }
-    },
-    ({ context }) => getCollectionType(context.resourcePath) === 'service',
-);
-
-export const transformEntry = createLoaderAOP<ParseResult<File>>(
-    ({ tree }) => {
-        let exportDefaultDeclarationIndex: number;
-        let lastImportDeclarationIndex: number;
-        const ensureIdentifierNameMap: Record<string, string> = {};
-        const configParser = new ProjectConfigParser();
-        const platformName = configParser.getConfig<string>('platform');
-        const platformLoader = new PlatformLoader(platformName);
-        const platform = platformLoader.getPlatform<Platform>();
-
-        const [exportDefaultDeclaration] = detectExports<t.ArrayExpression>(tree, 'ArrayExpression');
-
-        if (!exportDefaultDeclaration) {
-            throw new Error('The entry of an project should export an array of config');
-        }
-
-        const imports = ([
-            {
-                libName: platformName,
-                identifierName: 'platform',
-                type: 'default',
-            },
-            {
-                libName: platformName,
-                identifierName: 'createRoutes',
-            },
-        ] as Omit<EnsureImportOptions, 'statements'>[]).concat(platform.getLoaderImports());
-
-        for (const importItem of imports) {
-            const {
-                statements,
-                identifierName: ensuredIdentifierName,
-            } = ensureImport({
-                statements: tree.program.body,
-                ...importItem,
-            });
-
-            tree.program.body = statements;
-            ensureIdentifierNameMap[importItem.identifierName] = ensuredIdentifierName;
-        }
-
-        const bootstrapDeclarationStr = platform.getBootstrapCode(ensureIdentifierNameMap);
-
-        for (const [index, statement] of tree.program.body.entries()) {
-            if (statement.type === 'ImportDeclaration') {
-                lastImportDeclarationIndex = index;
-            }
-            if (statement.type === 'ExportDefaultDeclaration') {
-                exportDefaultDeclarationIndex = index;
-            }
-        }
-
-        const bootstrapDeclarations = parseAST(bootstrapDeclarationStr).program.body;
-
-        tree.program.body.splice(
-            lastImportDeclarationIndex + 1,
-            0,
-            ...bootstrapDeclarations,
-        );
-        tree.program.body.splice(exportDefaultDeclarationIndex + bootstrapDeclarations.length, 1);
-        tree.program.body.push(...parseAST('bootstrap(' + generate(exportDefaultDeclaration.declaration).code + ');').program.body);
-
-        return tree;
-    },
-    ({
-        srcPath,
-        context,
-    }) => {
-        const absolutePath = context.resourcePath;
-        return path.dirname(absolutePath) === srcPath && path.basename(absolutePath) === 'index.ts';
-    },
-);
 
 export const transformComponentDecorator = createLoaderAOP(
     ({
@@ -384,23 +252,4 @@ export const transformComponentDecorator = createLoaderAOP(
         return tree;
     },
     ({ context }) => getCollectionType(context.resourcePath) === 'component',
-);
-
-export const transformComponentFile = createLoaderAOP(
-    ({
-        tree,
-        parsedQuery,
-    }) => {
-        const styleUrls = (parsedQuery.styles as string || '')
-            .split(',')
-            .filter((styleUrl) => !!styleUrl)
-            .map((styleUrl) => decodeURI(styleUrl));
-
-        for (const styleUrl of styleUrls) {
-            tree.program.body.unshift(t.importDeclaration([], t.stringLiteral(styleUrl)));
-        }
-
-        return tree;
-    },
-    ({ parsedQuery }) => parsedQuery.component && parsedQuery.component === 'true',
 );
