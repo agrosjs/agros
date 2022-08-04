@@ -6,6 +6,7 @@
         "bin",
         "LICENSE",
         "README.md",
+        "agros-platform.config.js",
         "package.json",
         "package-lock.json"
     ],

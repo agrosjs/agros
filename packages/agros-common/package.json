@@ -41,6 +41,7 @@
         "@types/node": "^15.12.2",
         "@types/parse-glob": "^3.0.29",
         "@types/prettier": "^2.6.3",
+        "@types/webpack": "^5.28.0",
         "rimraf": "^3.0.2",
         "typescript": "^4.5.5"
     },
@@ -64,6 +65,7 @@
         "lodash": "^4.17.21",
         "parse-glob": "^3.0.4",
         "prettier": "^2.7.1",
-        "react": "^17.0.0"
+        "react": "^17.0.0",
+        "webpack": "^5.28.0"
     }
 }
