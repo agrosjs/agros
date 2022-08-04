@@ -261,7 +261,16 @@ export const transformComponentDecorator = createLoaderAOP(
             ),
         });
 
-        const imports = platform.getDecoratorImports();
+        const imports = [
+            {
+                libName: '@agros/app/lib/constants',
+                identifierName: 'DI_METADATA_COMPONENT_SYMBOL',
+            },
+            {
+                libName: '@agros/app/lib/constants',
+                identifierName: 'DI_DEPS_SYMBOL',
+            },
+        ].concat(platform.getDecoratorImports());
 
         for (const importItem of imports) {
             const {
@@ -276,7 +285,22 @@ export const transformComponentDecorator = createLoaderAOP(
         }
 
         const componentDecoratorFactoryName = 'Agros$$ComponentWithFactory';
-        const componentFactoryStr = `const ${componentDecoratorFactoryName} = ` + platform.getComponentDecoratorCode(ensureIdentifierNameMap);
+        const componentFactoryStr = `
+            const ${componentDecoratorFactoryName} = (options): ClassDecorator => {
+                const {
+                    declarations = [],
+                    ...metadataValue
+                } = options;
+                return (target) => {
+                    Reflect.defineMetadata(
+                        ${ensureIdentifierNameMap['DI_METADATA_COMPONENT_SYMBOL']},
+                        metadataValue,
+                        target,
+                    );
+                    Reflect.defineMetadata(${ensureIdentifierNameMap['DI_DEPS_SYMBOL']}, declarations, target);
+                };
+            }
+        `;
         const componentFactoryDeclarations = parseAST(componentFactoryStr).program.body;
         const legacyDecorator: Decorator = _.clone(componentClassDeclaration?.decorators[componentDecoratorIndex]);
         const {

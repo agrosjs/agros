@@ -12,7 +12,6 @@ export interface Platform {
     getDecoratorImports: () => Omit<EnsureImportOptions, 'statements'>[];
     getDefaultConfig: () => Record<string, any>;
     getBootstrapCode: (ensuredImportsMap: Record<string, string>) => string;
-    getComponentDecoratorCode: (ensuredImportsMap: Record<string, string>) => string;
     getComponentFactoryCode: (
         ensuredImportsMap: Record<string, string>,
         filePath: string,

@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import {
     Factory,
     FactoryForwardRef,
@@ -21,7 +22,6 @@ import {
     useParams,
     useSearchParams,
 } from 'react-router-dom';
-import 'reflect-metadata';
 import { useAsyncEffect } from 'use-async-effect';
 
 const platform: Platform = {
@@ -60,37 +60,11 @@ const platform: Platform = {
     getDecoratorImports(): Omit<EnsureImportOptions, 'statements'>[] {
         return [
             {
-                libName: '@agros/app/lib/constants',
-                identifierName: 'DI_METADATA_COMPONENT_SYMBOL',
-            },
-            {
-                libName: '@agros/app/lib/constants',
-                identifierName: 'DI_DEPS_SYMBOL',
-            },
-            {
                 libName: '@agros/platform-react/lib/react',
                 identifierName: 'React',
                 type: 'default',
             },
         ];
-    },
-    getComponentDecoratorCode(ensuredImportsMap: Record<string, string>): string {
-        return `
-            (options): ClassDecorator => {
-                const {
-                    declarations = [],
-                    ...metadataValue
-                } = options;
-                return (target) => {
-                    Reflect.defineMetadata(
-                        ${ensuredImportsMap['DI_METADATA_COMPONENT_SYMBOL']},
-                        metadataValue,
-                        target,
-                    );
-                    Reflect.defineMetadata(${ensuredImportsMap['DI_DEPS_SYMBOL']}, declarations, target);
-                };
-            }
-        `;
     },
     getBootstrapCode(ensuredImportsMap: Record<string, string>): string {
         const reactIdentifier = ensuredImportsMap['React'] || 'React';
