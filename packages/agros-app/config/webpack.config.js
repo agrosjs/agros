@@ -19,7 +19,9 @@ const getClientEnvironment = require('./env');
 const ForkTsCheckerWebpackPlugin = process.env.TSC_COMPILE_ON_ERROR === 'true'
     ? require('react-dev-utils/ForkTsCheckerWarningWebpackPlugin')
     : require('react-dev-utils/ForkTsCheckerWebpackPlugin');
+const { ProjectConfigParser } = require('@agros/config');
 
+const configParser = new ProjectConfigParser();
 const shouldUseSourceMap = process.env.GENERATE_SOURCEMAP !== 'false';
 const shouldInlineRuntimeChunk = process.env.INLINE_RUNTIME_CHUNK !== 'false';
 const imageInlineSizeLimit = parseInt(process.env.IMAGE_INLINE_SIZE_LIMIT || '10000', 10);
@@ -193,6 +195,7 @@ module.exports = function (webpackEnv) {
                 .filter((ext) => useTypeScript || !ext.includes('ts')),
             alias: {
                 ...(modules.webpackAliases || {}),
+                ...(configParser.getAlias() || {}),
             },
             plugins: [],
         },
