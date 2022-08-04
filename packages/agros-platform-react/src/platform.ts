@@ -76,7 +76,7 @@ const platform: Platform = {
     },
     getComponentDecoratorCode(ensuredImportsMap: Record<string, string>): string {
         return `
-            function Agros$$ComponentWithFactory(options): ClassDecorator {
+            (options): ClassDecorator => {
                 const {
                     declarations = [],
                     ...metadataValue

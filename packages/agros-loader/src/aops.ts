@@ -275,7 +275,8 @@ export const transformComponentDecorator = createLoaderAOP(
             ensureIdentifierNameMap[importItem.identifierName] = ensuredIdentifierName;
         }
 
-        const componentFactoryStr = platform.getComponentDecoratorCode(ensureIdentifierNameMap);
+        const componentDecoratorFactoryName = 'Agros$$ComponentWithFactory';
+        const componentFactoryStr = `const ${componentDecoratorFactoryName} = ` + platform.getComponentDecoratorCode(ensureIdentifierNameMap);
         const componentFactoryDeclarations = parseAST(componentFactoryStr).program.body;
         const legacyDecorator: Decorator = _.clone(componentClassDeclaration?.decorators[componentDecoratorIndex]);
         const {
@@ -292,7 +293,7 @@ export const transformComponentDecorator = createLoaderAOP(
             1,
             t.decorator(
                 t.callExpression(
-                    t.identifier('Agros$$ComponentWithFactory'),
+                    t.identifier(componentDecoratorFactoryName),
                     [
                         t.objectExpression([
                             t.objectProperty(
