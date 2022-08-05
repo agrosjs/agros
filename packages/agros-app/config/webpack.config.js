@@ -19,7 +19,11 @@ const getClientEnvironment = require('./env');
 const ForkTsCheckerWebpackPlugin = process.env.TSC_COMPILE_ON_ERROR === 'true'
     ? require('react-dev-utils/ForkTsCheckerWarningWebpackPlugin')
     : require('react-dev-utils/ForkTsCheckerWebpackPlugin');
-const { ProjectConfigParser } = require('@agros/config');
+const {
+    ProjectConfigParser,
+    PlatformConfigParser,
+} = require('@agros/config');
+const { Logger } = require('@agros/logger');
 
 const configParser = new ProjectConfigParser();
 const shouldUseSourceMap = process.env.GENERATE_SOURCEMAP !== 'false';
@@ -38,6 +42,7 @@ const lessRegex = /\.less$/;
 const lessModuleRegex = /\.module\.less$/;
 
 module.exports = function (webpackEnv) {
+    const logger = new Logger();
     const isEnvDevelopment = webpackEnv === 'development';
     const isEnvProduction = webpackEnv === 'production';
     const isEnvProductionProfile = isEnvProduction && process.argv.includes('--profile');
@@ -115,7 +120,7 @@ module.exports = function (webpackEnv) {
         return loaders;
     };
 
-    return {
+    let config = {
         target: ['browserslist'],
         stats: 'errors-warnings',
         mode: isEnvProduction ? 'production' : isEnvDevelopment && 'development',
@@ -259,6 +264,7 @@ module.exports = function (webpackEnv) {
                             include: paths.appSrc,
                             loader: require.resolve('babel-loader'),
                             options: {
+                                presets: [],
                                 plugins: [
                                     require.resolve('babel-plugin-transform-typescript-metadata'),
                                     [
@@ -502,4 +508,20 @@ module.exports = function (webpackEnv) {
         ].filter(Boolean),
         performance: false,
     };
+
+    try {
+        const platformConfigParser = new PlatformConfigParser();
+        const configFactory = platformConfigParser.getConfigFactory();
+
+        if (typeof configFactory === 'function') {
+            const currentConfig = configFactory(config);
+            if (currentConfig) {
+                config = currentConfig;
+            }
+        }
+    } catch (e) {
+        logger.warning(`Build config error: ${e.message || e.toString()}`);
+    }
+
+    return config;
 };
