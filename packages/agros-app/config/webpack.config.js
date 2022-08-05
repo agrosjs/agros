@@ -123,7 +123,7 @@ module.exports = function (webpackEnv) {
         devtool: isEnvProduction
             ? shouldUseSourceMap ? 'source-map' : false
             : isEnvDevelopment && 'cheap-module-source-map',
-        entry: paths.appIndexJs,
+        entry: configParser.getEntry() || 'src/index.ts',
         output: {
             path: paths.appBuild,
             pathinfo: isEnvDevelopment,
@@ -422,17 +422,14 @@ module.exports = function (webpackEnv) {
                         : undefined),
                 },
             ),
-            isEnvProduction &&
-        shouldInlineRuntimeChunk &&
-        new InlineChunkHtmlPlugin(HtmlWebpackPlugin, [/runtime-.+[.]js/]),
+            isEnvProduction && shouldInlineRuntimeChunk && new InlineChunkHtmlPlugin(HtmlWebpackPlugin, [/runtime-.+[.]js/]),
             new InterpolateHtmlPlugin(HtmlWebpackPlugin, env.raw),
             new webpack.DefinePlugin(env.stringified),
             isEnvDevelopment && new CaseSensitivePathsPlugin(),
-            isEnvProduction &&
-        new MiniCssExtractPlugin({
-            filename: 'static/css/[name].[contenthash:8].css',
-            chunkFilename: 'static/css/[name].[contenthash:8].chunk.css',
-        }),
+            isEnvProduction && new MiniCssExtractPlugin({
+                filename: 'static/css/[name].[contenthash:8].css',
+                chunkFilename: 'static/css/[name].[contenthash:8].chunk.css',
+            }),
             new WebpackManifestPlugin({
                 fileName: 'asset-manifest.json',
                 publicPath: paths.publicUrlOrPath,
@@ -461,48 +458,47 @@ module.exports = function (webpackEnv) {
                 exclude: [/\.map$/, /asset-manifest\.json$/, /LICENSE/],
                 maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
             }),
-            useTypeScript &&
-        new ForkTsCheckerWebpackPlugin({
-            async: isEnvDevelopment,
-            typescript: {
-                typescriptPath: resolve.sync('typescript', {
-                    basedir: paths.appNodeModules,
-                }),
-                configOverwrite: {
-                    compilerOptions: {
-                        sourceMap: isEnvProduction
-                            ? shouldUseSourceMap
-                            : isEnvDevelopment,
-                        skipLibCheck: true,
-                        inlineSourceMap: false,
-                        declarationMap: false,
-                        noEmit: true,
-                        incremental: true,
-                        tsBuildInfoFile: paths.appTsBuildInfoFile,
+            useTypeScript && new ForkTsCheckerWebpackPlugin({
+                async: isEnvDevelopment,
+                typescript: {
+                    typescriptPath: resolve.sync('typescript', {
+                        basedir: paths.appNodeModules,
+                    }),
+                    configOverwrite: {
+                        compilerOptions: {
+                            sourceMap: isEnvProduction
+                                ? shouldUseSourceMap
+                                : isEnvDevelopment,
+                            skipLibCheck: true,
+                            inlineSourceMap: false,
+                            declarationMap: false,
+                            noEmit: true,
+                            incremental: true,
+                            tsBuildInfoFile: paths.appTsBuildInfoFile,
+                        },
                     },
+                    context: paths.appPath,
+                    diagnosticOptions: {
+                        syntactic: true,
+                    },
+                    mode: 'write-references',
                 },
-                context: paths.appPath,
-                diagnosticOptions: {
-                    syntactic: true,
+                issue: {
+                    include: [
+                        { file: '../**/src/**/*.{ts,tsx}' },
+                        { file: '**/src/**/*.{ts,tsx}' },
+                    ],
+                    exclude: [
+                        { file: '**/src/**/__tests__/**' },
+                        { file: '**/src/**/?(*.){spec|test}.*' },
+                        { file: '**/src/setupProxy.*' },
+                        { file: '**/src/setupTests.*' },
+                    ],
                 },
-                mode: 'write-references',
-            },
-            issue: {
-                include: [
-                    { file: '../**/src/**/*.{ts,tsx}' },
-                    { file: '**/src/**/*.{ts,tsx}' },
-                ],
-                exclude: [
-                    { file: '**/src/**/__tests__/**' },
-                    { file: '**/src/**/?(*.){spec|test}.*' },
-                    { file: '**/src/setupProxy.*' },
-                    { file: '**/src/setupTests.*' },
-                ],
-            },
-            logger: {
-                infrastructure: 'silent',
-            },
-        }),
+                logger: {
+                    infrastructure: 'silent',
+                },
+            }),
         ].filter(Boolean),
         performance: false,
     };
