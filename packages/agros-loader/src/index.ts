@@ -9,7 +9,6 @@ import {
     checkService,
     transformEntry,
     transformComponentDecorator,
-    transformComponentFile,
 } from './aops';
 
 export default function(source) {
@@ -31,7 +30,6 @@ export default function(source) {
         this,
         transformEntry,
         transformComponentDecorator,
-        transformComponentFile,
     );
 
     if (!newAST) {

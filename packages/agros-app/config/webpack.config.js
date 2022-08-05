@@ -136,8 +136,7 @@ module.exports = function (webpackEnv) {
             assetModuleFilename: 'static/media/[name].[hash][ext]',
             publicPath: paths.publicUrlOrPath,
             devtoolModuleFilenameTemplate: isEnvProduction
-                ? (info) =>
-                    path.relative(paths.appSrc, info.absoluteResourcePath).replace(/\\/g, '/')
+                ? (info) => path.relative(paths.appSrc, info.absoluteResourcePath).replace(/\\/g, '/')
                 : isEnvDevelopment &&
           ((info) => path.resolve(info.absoluteResourcePath).replace(/\\/g, '/')),
         },
@@ -260,7 +259,21 @@ module.exports = function (webpackEnv) {
                             include: paths.appSrc,
                             loader: require.resolve('babel-loader'),
                             options: {
-                                plugins: [].filter(Boolean),
+                                plugins: [
+                                    require.resolve('babel-plugin-transform-typescript-metadata'),
+                                    [
+                                        require.resolve('@babel/plugin-proposal-decorators'),
+                                        {
+                                            'legacy': true,
+                                        },
+                                    ],
+                                    [
+                                        require.resolve('@babel/plugin-proposal-class-properties'),
+                                        {
+                                            'loose': true,
+                                        },
+                                    ],
+                                ].filter(Boolean),
                                 cacheDirectory: true,
                                 cacheCompression: false,
                                 compact: isEnvProduction,
@@ -321,7 +334,7 @@ module.exports = function (webpackEnv) {
                                         mode: 'icss',
                                     },
                                 },
-                                'sass-loader',
+                                require.resolve('sass-loader'),
                             ),
                             sideEffects: true,
                         },
@@ -338,7 +351,7 @@ module.exports = function (webpackEnv) {
                                         getLocalIdent: getCSSModuleLocalIdent,
                                     },
                                 },
-                                'sass-loader',
+                                require.resolve('sass-loader'),
                             ),
                         },
                         {
@@ -354,7 +367,7 @@ module.exports = function (webpackEnv) {
                                         mode: 'icss',
                                     },
                                 },
-                                'less-loader',
+                                require.resolve('less-loader'),
                             ),
                             sideEffects: true,
                         },
@@ -371,7 +384,7 @@ module.exports = function (webpackEnv) {
                                         getLocalIdent: getCSSModuleLocalIdent,
                                     },
                                 },
-                                'less-loader',
+                                require.resolve('less-loader'),
                             ),
                         },
                         {
@@ -379,6 +392,10 @@ module.exports = function (webpackEnv) {
                             type: 'asset/resource',
                         },
                     ],
+                },
+                {
+                    test: /\.(js|jsx|ts|tsx)/,
+                    use: require.resolve('@agros/loader'),
                 },
             ].filter(Boolean),
         },

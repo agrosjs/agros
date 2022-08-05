@@ -154,7 +154,7 @@ export const transformComponentDecorator = createLoaderAOP(
 
         const componentDecoratorFactoryName = 'Agros$$ComponentWithFactory';
         const componentFactoryStr = `
-            const ${componentDecoratorFactoryName} = (options): ClassDecorator => {
+            const ${componentDecoratorFactoryName} = (options) => {
                 const {
                     declarations = [],
                     ...metadataValue

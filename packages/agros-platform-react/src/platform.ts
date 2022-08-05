@@ -93,7 +93,7 @@ const platform: Platform = {
                 module: Module,
                 routerProps = {},
                 RouterComponent = ${ensuredImportsMap['BrowserRouter'] || 'BrowserRouter'},
-            }: any) => {
+            }) => {
                 const elements = useRouteElements(Module);
 
                 return ${reactIdentifier}.createElement(
