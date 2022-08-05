@@ -406,20 +406,24 @@ importers:
       '@agros/platforms': workspace:^0.0.0
       '@agros/utils': workspace:^0.0.3
       '@babel/core': ^7.18.5
-      '@babel/generator': ^7.18.0
+      '@babel/generator': ^7.18.10
       '@babel/plugin-proposal-class-properties': ^7.17.12
       '@babel/plugin-proposal-decorators': ^7.18.2
-      '@babel/types': ^7.18.0
+      '@babel/types': ^7.18.10
       '@pmmmwh/react-refresh-webpack-plugin': ^0.5.7
+      '@types/babel__generator': ^7.6.4
       '@types/customize-cra': ^1.0.2
       '@types/jest': ^28.1.1
       '@types/lodash': ^4.14.182
       '@types/node': ^15.12.2
+      '@types/qs': ^6.9.7
       '@types/react': ^17.0.0
       '@types/react-dom': ^17.0.0
+      '@types/webpack': ^5.28.0
       babel-plugin-transform-typescript-metadata: ^0.3.2
       babel-preset-react-app: ^10.0.1
       customize-cra: ^1.0.0
+      qs: ^6.11.0
       react: ^17.0.0
       react-app-rewired: ^2.2.1
       react-dom: ^17.0.0
@@ -428,6 +432,7 @@ importers:
       rimraf: ^3.0.2
       typescript: ^4.5.5
       use-async-effect: ^2.2.6
+      webpack: ^5.28.0
     dependencies:
       '@agros/common': link:../agros-common
       '@agros/config': link:../agros-config
@@ -440,23 +445,28 @@ importers:
       '@babel/plugin-proposal-class-properties': 7.18.6_@babel+core@7.18.10
       '@babel/plugin-proposal-decorators': 7.18.10_@babel+core@7.18.10
       '@babel/types': 7.18.10
-      '@pmmmwh/react-refresh-webpack-plugin': 0.5.7
+      '@pmmmwh/react-refresh-webpack-plugin': 0.5.7_zmg6la7uh7lsenjxcelvamej64
       babel-plugin-transform-typescript-metadata: 0.3.2
       babel-preset-react-app: 10.0.1
       customize-cra: 1.0.0
+      qs: 6.11.0
       react: 17.0.2
       react-app-rewired: 2.2.1
       react-dom: 17.0.2_react@17.0.2
       react-router-dom: 6.3.0_sfoxds7t5ydpegc3knd667wn6m
       reflect-metadata: 0.1.13
       use-async-effect: 2.2.6_react@17.0.2
+      webpack: 5.74.0
     devDependencies:
+      '@types/babel__generator': 7.6.4
       '@types/customize-cra': 1.0.2
       '@types/jest': 28.1.6
       '@types/lodash': 4.14.182
       '@types/node': 15.14.9
+      '@types/qs': 6.9.7
       '@types/react': 17.0.48
       '@types/react-dom': 17.0.17
+      '@types/webpack': 5.28.0
       rimraf: 3.0.2
       typescript: 4.7.4
 
@@ -2111,7 +2121,7 @@ packages:
       fastq: 1.13.0
     dev: false
 
-  /@pmmmwh/react-refresh-webpack-plugin/0.5.7:
+  /@pmmmwh/react-refresh-webpack-plugin/0.5.7_zmg6la7uh7lsenjxcelvamej64:
     resolution: {integrity: sha512-bcKCAzF0DV2IIROp9ZHkRJa6O4jy7NlnHdWL3GmcUxYWNjLXkK5kfELELwEfSP5hXPfVL/qOGMAROuMQb9GG8Q==}
     engines: {node: '>= 10.13'}
     peerDependencies:
@@ -2137,6 +2147,7 @@ packages:
       webpack-plugin-serve:
         optional: true
     dependencies:
+      '@types/webpack': 5.28.0
       ansi-html-community: 0.0.8
       common-path-prefix: 3.0.0
       core-js-pure: 3.24.1
@@ -2146,6 +2157,7 @@ packages:
       loader-utils: 2.0.2
       schema-utils: 3.1.1
       source-map: 0.7.4
+      webpack: 5.74.0
     dev: false
 
   /@rollup/plugin-babel/5.3.1_tui6liyexu3zy4m5r2rytc7ixu:
@@ -2463,7 +2475,7 @@ packages:
     resolution: {integrity: sha512-9K4zoImiZc3HlIp6AVUDE4CWYx22a+lhSZMYNpbjW04+YF0KWj4pJXnEMjdnFTiQibFFmElcsasJXDbdI/EPhA==}
     dependencies:
       '@types/eslint': 8.4.5
-      '@types/estree': 0.0.51
+      '@types/estree': 1.0.0
 
   /@types/eslint/8.4.5:
     resolution: {integrity: sha512-dhsC09y1gpJWnK+Ff4SGvCuSnk9DaU0BJZSzOwa6GVSg65XtTugLBITDAAzRU5duGBoXBHpdR/9jHGxJjNflJQ==}
@@ -2753,7 +2765,6 @@ packages:
       - esbuild
       - uglify-js
       - webpack-cli
-    dev: true
 
   /@types/workbox-webpack-plugin/5.1.8:
     resolution: {integrity: sha512-1RKsHinzZMDmMNS0OouyMQPEfL2oJr4oXPTGI3YwEuCOsIKDSce+l3KW1qY5IufXs3W2g/ZFlWD2X9SkmaSiZA==}
