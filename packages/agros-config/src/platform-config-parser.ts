@@ -13,8 +13,8 @@ export class PlatformConfigParser {
         this.platformName = this.projectConfigParser.getConfig<string>('platform');
         this.platformDir = path.resolve(process.cwd(), 'node_modules', this.platformName);
         const configFactory = cosmiconfigSync('agros-platform').search(this.platformDir);
-        if (typeof configFactory === 'function') {
-            this.configFactory = configFactory;
+        if (!configFactory || typeof configFactory.config === 'function') {
+            this.configFactory = configFactory.config;
         }
     }
 
