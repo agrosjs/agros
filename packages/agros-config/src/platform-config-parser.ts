@@ -16,6 +16,7 @@ export class PlatformConfigParser {
             paths: [process.cwd()].concat(module.paths),
         });
         const platformIndexPathSegments = path.dirname(platformIndexPath).split(path.sep);
+
         for (let i = platformIndexPathSegments.length; i >= 0; i -= 1) {
             const currentPath = platformIndexPathSegments.slice(0, i).join(path.sep);
 
@@ -27,10 +28,12 @@ export class PlatformConfigParser {
 
             if (packageJson.name === this.platformName) {
                 this.platformDir = platformIndexPath.replace(new RegExp((packageJson.main || 'lib/index.js') + '$'), '');
+                break;
             }
         }
         this.platformDir = this.platformDir.replace(new RegExp(path.sep + '+$', 'gi'), '');
         const configFactory = cosmiconfigSync('agros-platform').search(this.platformDir);
+
         if (!configFactory || typeof configFactory.config === 'function') {
             this.configFactory = configFactory.config;
         }
