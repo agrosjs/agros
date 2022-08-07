@@ -2,8 +2,19 @@ const path = require('path');
 const fs = require('fs');
 const { URL } = require('url');
 
-const appDirectory = fs.realpathSync(process.cwd());
-const resolveApp = (relativePath) => path.resolve(appDirectory, relativePath);
+const resolveApp = (relativePath, startPath = fs.realpathSync(process.cwd())) => {
+    if (!startPath || path.dirname(startPath) === startPath) {
+        return null;
+    }
+
+    const absoluteFilePath = path.resolve(startPath, relativePath);
+
+    if (!fs.existsSync(absoluteFilePath)) {
+        return resolveApp(relativePath, path.dirname(startPath));
+    } else {
+        return absoluteFilePath;
+    }
+};
 const publicUrlOrPath = getPublicUrlOrPath(
     process.env.NODE_ENV === 'development',
     require(resolveApp('package.json')).homepage,

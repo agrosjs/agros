@@ -5,7 +5,7 @@
     },
     "scripts": {
         "build": "exit 0",
-        "start": "agros-scripts start",
+        "start:react": "cd demos/react && agros-scripts start",
         "test": "exit 0"
     },
     "author": "Lenconda <i@lenconda.top>",
