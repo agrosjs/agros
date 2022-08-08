@@ -470,6 +470,27 @@ importers:
       rimraf: 3.0.2
       typescript: 4.7.4
 
+  ../../packages/agros-platform-vue:
+    specifiers:
+      '@agros/common': workspace:^0.1.1
+      '@agros/platforms': workspace:^0.0.0
+      '@agros/utils': workspace:^0.0.3
+      '@types/jest': ^28.1.1
+      '@types/lodash': ^4.14.182
+      '@types/node': ^15.12.2
+      rimraf: ^3.0.2
+      typescript: ^4.5.5
+    dependencies:
+      '@agros/common': link:../agros-common
+      '@agros/platforms': link:../agros-platforms
+      '@agros/utils': link:../agros-utils
+    devDependencies:
+      '@types/jest': 28.1.6
+      '@types/lodash': 4.14.182
+      '@types/node': 15.14.9
+      rimraf: 3.0.2
+      typescript: 4.7.4
+
   ../../packages/agros-platforms:
     specifiers:
       '@agros/common': workspace:^0.1.1
