@@ -4,10 +4,7 @@ import {
     FactoryForwardRef,
     Type,
 } from '@agros/common/lib/types';
-import {
-    DEPS_PROPERTY_NAME,
-    DI_METADATA_USE_INTERCEPTORS_SYMBOL,
-} from '@agros/common/lib/constants';
+import { DI_METADATA_USE_INTERCEPTORS_SYMBOL } from '@agros/common/lib/constants';
 import { ComponentInstance } from '@agros/common/lib/component-instance.class';
 import { Platform } from '@agros/platforms/lib/platform.interface';
 import { EnsureImportOptions } from '@agros/utils/lib/ensure-import';
@@ -23,6 +20,7 @@ import {
     useSearchParams,
 } from 'react-router-dom';
 import { useAsyncEffect } from 'use-async-effect';
+import { defineContainer } from '@agros/common/lib/define-container';
 
 const platform: Platform = {
     getDefaultConfig() {
@@ -149,12 +147,6 @@ const platform: Platform = {
          */
         componentInstance.setComponent((props: any) => {
             const dependencyMap = context.generateDependencyMap(componentInstance);
-            const definePropertyData = {
-                value: dependencyMap,
-                configurable: false,
-                writable: false,
-                enumerable: false,
-            };
             let component: FC<any> | ExoticComponent<any>;
             const interceptorClasses: Type[] = Reflect.getMetadata(
                 DI_METADATA_USE_INTERCEPTORS_SYMBOL,
@@ -166,16 +158,7 @@ const platform: Platform = {
 
             const forwardRef: FactoryForwardRef = (promise) => {
                 return promise.then((result) => {
-                    if (Object.getOwnPropertyDescriptor(result.default, DEPS_PROPERTY_NAME)) {
-                        return result;
-                    }
-
-                    Object.defineProperty(
-                        result.default,
-                        DEPS_PROPERTY_NAME,
-                        definePropertyData,
-                    );
-
+                    defineContainer(result.default || result, dependencyMap);
                     return result;
                 });
             };
@@ -184,12 +167,8 @@ const platform: Platform = {
                 component = componentInstance.metadata.factory(forwardRef);
             }
 
-            if (!Object.getOwnPropertyDescriptor(component, DEPS_PROPERTY_NAME)) {
-                Object.defineProperty(
-                    component,
-                    DEPS_PROPERTY_NAME,
-                    definePropertyData,
-                );
+            if (!componentInstance.metadata.lazy) {
+                defineContainer(component, dependencyMap);
             }
 
             return createElement(() => {
@@ -203,7 +182,8 @@ const platform: Platform = {
                     try {
                         if (routeLocation && routeParams && routeSearchParams) {
                             for (const interceptorInstance of interceptorInstances) {
-                                await interceptorInstance.intercept(props, {
+                                await interceptorInstance.intercept({
+                                    props,
                                     route: {
                                         location: routeLocation,
                                         params: routeParams,

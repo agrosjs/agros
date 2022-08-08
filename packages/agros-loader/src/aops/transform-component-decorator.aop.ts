@@ -194,8 +194,6 @@ export const transformComponentDecorator = createLoaderAOP(
                             ),
                             ...(((legacyDecorator.expression as CallExpression)?.arguments[0] as ObjectExpression).properties || []).filter((property: ObjectProperty) => {
                                 return property.key.type === 'Identifier' && [
-                                    'file',
-                                    'lazy',
                                     'styles',
                                 ].indexOf(property.key.name) === -1;
                             }),

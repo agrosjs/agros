@@ -43,6 +43,9 @@
     "dependencies": {
         "@agros/common": "workspace:^0.1.1",
         "@agros/platforms": "workspace:^0.0.0",
-        "@agros/utils": "workspace:^0.0.3"
+        "@agros/utils": "workspace:^0.0.3",
+        "reflect-metadata": "^0.1.13",
+        "vue": "^3.2.37",
+        "vue-router": "^4.0.0"
     }
 }

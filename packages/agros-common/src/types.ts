@@ -37,7 +37,7 @@ export interface ComponentDecoratorOptions<T = any> {
 
 export type FactoryForwardRef = <T = any>(promise: Promise<{ default: T }>) => Promise<{ default: T }>;
 
-export type ComponentMetadata = Omit<ComponentDecoratorOptions, 'declarations' | 'file' | 'lazy'> & {
+export type ComponentMetadata = Omit<ComponentDecoratorOptions, 'declarations'> & {
     factory?: (forwardRef: FactoryForwardRef) => any;
 };
 
@@ -114,6 +114,6 @@ export interface Factory {
     generateDependencyMap: (componentInstance: ComponentInstance) => ImmutableMap<Type<any>, any>;
 }
 
-export interface Interceptor<P = any, C = any, R = any> {
-    intercept: (props: P, context: C) => Promise<R> | R;
+export interface Interceptor {
+    intercept: <T = any, R = any>(context?: T, ...args: any[]) => Promise<R> | R;
 }
