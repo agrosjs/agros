@@ -5,6 +5,7 @@ const ignoredFiles = require('react-dev-utils/ignoredFiles');
 const redirectServedPath = require('react-dev-utils/redirectServedPathMiddleware');
 const paths = require('./paths');
 const getHttpsConfig = require('./utils/get-https-config');
+const { ProjectConfigParser } = require('@agros/config');
 
 const host = process.env.HOST || '0.0.0.0';
 const sockHost = process.env.WDS_SOCKET_HOST;
@@ -13,7 +14,9 @@ const sockPort = process.env.WDS_SOCKET_PORT;
 
 module.exports = function (proxy, allowedHost) {
     const disableFirewall = !proxy || process.env.DANGEROUSLY_DISABLE_HOST_CHECK === 'true';
-    return {
+    const configParser = new ProjectConfigParser();
+    const configWebpackDevServer = configParser.getConfig('configWebpackDevServer');
+    let devServerConfig = {
         allowedHosts: disableFirewall ? 'all' : [allowedHost],
         headers: {
             'Access-Control-Allow-Origin': '*',
@@ -60,4 +63,15 @@ module.exports = function (proxy, allowedHost) {
             devServer.app.use(noopServiceWorkerMiddleware(paths.publicUrlOrPath));
         },
     };
+
+    try {
+        if (typeof configWebpackDevServer === 'function') {
+            const currentConfig = configWebpackDevServer(devServerConfig);
+            if (currentConfig) {
+                devServerConfig = currentConfig;
+            }
+        }
+    } catch (e) {}
+
+    return devServerConfig;
 };

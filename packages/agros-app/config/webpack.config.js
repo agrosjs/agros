@@ -523,5 +523,16 @@ module.exports = function (webpackEnv) {
         logger.warning(`Build config error: ${e.message || e.toString()}`);
     }
 
+    try {
+        const configWebpack = configParser.getConfig('configWebpack');
+
+        if (typeof configWebpack === 'function') {
+            const currentConfig = configWebpack(config);
+            if (currentConfig) {
+                config = currentConfig;
+            }
+        }
+    } catch (e) {}
+
     return config;
 };

@@ -1,13 +1,14 @@
 import _ from 'lodash';
 import { cosmiconfigSync } from 'cosmiconfig';
 import * as path from 'path';
+import { Configuration } from 'webpack';
 
 export type ScopeMap = Record<string, string>;
 export type AliasMap = Record<string, string>;
 export type CollectionMap = Record<string, string[]>;
 export type CollectionType = 'module' | 'service' | 'component' | 'interceptor';
 
-export interface ProjectConfig<P = any> {
+export interface ProjectConfig {
     platform?: string;
     npmClient?: string;
     alias?: AliasMap;
@@ -15,7 +16,8 @@ export interface ProjectConfig<P = any> {
     baseDir?: string;
     collection?: CollectionMap;
     modulesDir?: string;
-    platformConfig?: Record<string, P>;
+    configWebpack?: (config: Configuration) => Configuration;
+    configWebpackDevServer?: (devServerConfig: Record<string, any>) => Record<string, any>;
 }
 
 export class ProjectConfigParser {
@@ -35,12 +37,8 @@ export class ProjectConfigParser {
             component: ['*.component.ts', '*.component.tsx'],
             interceptor: ['*.interceptor.ts'],
         },
-        platformConfig: {
-            '@agros/platform-react': {
-                builder: [],
-                devServer: (config) => config,
-            },
-        },
+        configWebpack: (config) => config,
+        configWebpackDevServer: (config) => config,
     };
     private projectConfig: ProjectConfig = _.clone(this.defaultProjectConfig);
 
@@ -111,15 +109,5 @@ export class ProjectConfigParser {
             );
             return result;
         }, {});
-    }
-
-    public getPlatformConfig<T>(pathname?: string): T {
-        const platformConfig = _.cloneDeep(_.get(this.projectConfig, `platform["${this.projectConfig.platform}"]`) || {});
-
-        if (!pathname) {
-            return platformConfig as T;
-        }
-
-        return _.get(platformConfig, pathname) as T;
     }
 }
