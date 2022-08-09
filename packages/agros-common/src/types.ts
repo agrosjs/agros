@@ -115,5 +115,5 @@ export interface Factory {
 }
 
 export interface Interceptor {
-    intercept: <T = any, R = any>(context?: T, ...args: any[]) => Promise<R> | R;
+    intercept: <T = any, R = undefined>(context?: T, ...args: any[]) => Promise<R> | R | null | undefined;
 }

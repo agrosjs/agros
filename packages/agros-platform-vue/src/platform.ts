@@ -41,7 +41,7 @@ const platform: Platform = {
         const vueIdentifier = ensuredImportsMap['Vue'] || 'Vue';
         const vueRouterIdentifier = ensuredImportsMap['VueRouter'] || 'VueRouter';
         return `
-            const bootstrap = (configList) => {
+            function bootstrap(configList) {
                 if (!Array.isArray(configList)) {
                     return;
                 }
