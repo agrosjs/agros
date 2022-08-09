@@ -49,10 +49,5 @@ module.exports = defineBuilderConfig((config) => {
         overlay: false,
     }))(config);
 
-    config.module?.rules?.push({
-        test: /\.(js|jsx|ts|tsx)/,
-        use: require.resolve('./lib/loaders/component-file.loader.js'),
-    });
-
     return config;
 });
