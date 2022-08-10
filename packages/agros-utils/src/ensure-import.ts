@@ -67,7 +67,7 @@ export const ensureImport = (options: EnsureImportOptions): EnsureImportResult =
 
             switch (importType) {
                 case 'default': {
-                    importDeclaration.specifiers.push(
+                    importDeclaration.specifiers.unshift(
                         t.importDefaultSpecifier(t.identifier(identifierName)),
                     );
                     break;
@@ -82,8 +82,10 @@ export const ensureImport = (options: EnsureImportOptions): EnsureImportResult =
                     break;
                 }
                 case 'namespace': {
-                    importDeclaration.specifiers.push(
-                        t.importNamespaceSpecifier(t.identifier(identifierName)),
+                    body.splice(
+                        0,
+                        0,
+                        template.ast(`import * as ${identifierName} from '${options.libName}';`) as ImportDeclaration,
                     );
                     break;
                 }
