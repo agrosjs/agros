@@ -9,6 +9,7 @@ import {
     ComponentMetadata,
     RouterItem,
     Factory as IFactory,
+    Interceptor,
 } from '@agros/common/lib/types';
 import {
     DI_DEPS_SYMBOL,
@@ -371,6 +372,17 @@ export class Factory implements IFactory {
     private generateComponentForInstances() {
         for (const [, componentInstance] of this.componentInstanceMap.entries()) {
             this.platform.generateComponent(componentInstance, this);
+
+            const dependencyMap = this.generateDependencyMap(componentInstance);
+            const interceptorClasses: Type[] = Reflect.getMetadata(
+                DI_METADATA_USE_INTERCEPTORS_SYMBOL,
+                componentInstance.metadata.Class,
+            ) || [];
+            const interceptorInstances: Interceptor[] = interceptorClasses.map((InterceptorClass) => {
+                return dependencyMap.get(InterceptorClass);
+            }).filter((instance) => !!instance && typeof instance.intercept === 'function');
+
+            componentInstance.metadata.interceptorInstances = interceptorInstances;
         }
     }
 

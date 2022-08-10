@@ -65,6 +65,7 @@ export interface RouterItem extends Omit<RouteOptionItem, 'useModuleClass' | 'us
 
 export interface ComponentInstanceMetadata extends ComponentMetadata {
     Class: Type;
+    interceptorInstances?: Interceptor[];
 }
 
 export interface RootContainerProps {

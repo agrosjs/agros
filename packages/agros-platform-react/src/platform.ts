@@ -4,7 +4,6 @@ import {
     FactoryForwardRef,
     Type,
 } from '@agros/common/lib/types';
-import { DI_METADATA_USE_INTERCEPTORS_SYMBOL } from '@agros/common/lib/constants';
 import { ComponentInstance } from '@agros/common/lib/component-instance.class';
 import { Platform } from '@agros/platforms/lib/platform.interface';
 import { EnsureImportOptions } from '@agros/utils/lib/ensure-import';
@@ -148,13 +147,6 @@ const platform: Platform = {
         componentInstance.setComponent((props: any) => {
             const dependencyMap = context.generateDependencyMap(componentInstance);
             let component: FC<any> | ExoticComponent<any>;
-            const interceptorClasses: Type[] = Reflect.getMetadata(
-                DI_METADATA_USE_INTERCEPTORS_SYMBOL,
-                componentInstance.metadata.Class,
-            ) || [];
-            const interceptorInstances = interceptorClasses.map((InterceptorClass) => {
-                return dependencyMap.get(InterceptorClass);
-            }).filter((instance) => !!instance && typeof instance.intercept === 'function');
 
             const forwardRef: FactoryForwardRef = (promise) => {
                 return promise.then((result) => {
@@ -181,15 +173,17 @@ const platform: Platform = {
                 useAsyncEffect(async () => {
                     try {
                         if (routeLocation && routeParams && routeSearchParams) {
-                            for (const interceptorInstance of interceptorInstances) {
-                                await interceptorInstance.intercept({
-                                    props,
-                                    route: {
-                                        location: routeLocation,
-                                        params: routeParams,
-                                        searchParams: routeSearchParams,
-                                    },
-                                });
+                            if (Array.isArray(componentInstance.metadata.interceptorInstances)) {
+                                for (const interceptorInstance of componentInstance.metadata.interceptorInstances) {
+                                    await interceptorInstance.intercept({
+                                        props,
+                                        route: {
+                                            location: routeLocation,
+                                            params: routeParams,
+                                            searchParams: routeSearchParams,
+                                        },
+                                    });
+                                }
                             }
                         }
                     } finally {

@@ -1,5 +1,10 @@
-import { RouterItem } from '@agros/common/lib/types';
+import 'reflect-metadata';
+import {
+    RouterItem,
+    // Type,
+} from '@agros/common/lib/types';
 import { defineAsyncComponent } from 'vue';
+// import { DI_METADATA_USE_INTERCEPTORS_SYMBOL } from '@agros/common/lib/constants';
 
 export const createRoutes = (routerItems: RouterItem[], level = 0) => {
     return routerItems.map((routerItem) => {
@@ -12,7 +17,12 @@ export const createRoutes = (routerItems: RouterItem[], level = 0) => {
         const {
             lazy,
             suspenseFallback,
+            // interceptorsFallback,
         } = componentInstance.metadata;
+        // const interceptorClasses: Type[] = Reflect.getMetadata(
+        //     DI_METADATA_USE_INTERCEPTORS_SYMBOL,
+        //     componentInstance.metadata.Class,
+        // ) || [];
 
         return {
             path: routeProps.path,
