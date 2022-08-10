@@ -396,7 +396,7 @@ module.exports = function (webpackEnv) {
                     ],
                 },
                 {
-                    test: /\.(js|jsx|ts|tsx)/,
+                    test: /\.(js|jsx|ts|tsx)$/,
                     use: require.resolve('@agros/loader'),
                 },
             ].filter(Boolean),

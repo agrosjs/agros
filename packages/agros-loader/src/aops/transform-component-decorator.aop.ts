@@ -2,8 +2,8 @@ import {
     detectExports,
     detectDecorators,
     getCollectionType,
-    // getPathDescriptorWithAlias,
-    // matchAlias,
+    getPathDescriptorWithAlias,
+    matchAlias,
     detectNamedImports,
 } from '@agros/common';
 import { ensureImport } from '@agros/utils/lib/ensure-import';
@@ -24,7 +24,7 @@ import { createLoaderAOP } from '../utils';
 import * as t from '@babel/types';
 import template from '@babel/template';
 import _ from 'lodash';
-// import qs from 'qs';
+import qs from 'qs';
 import { ProjectConfigParser } from '@agros/config';
 import { Platform } from '@agros/platforms/lib/platform.interface';
 
@@ -104,30 +104,30 @@ export const transformComponentDecorator = createLoaderAOP(
             componentMetadataConfig.file = './' + _.startCase(basename).split(/\s+/).join('');
         }
 
-        // const styles = (componentMetadataConfig.styles || [])
-        //     .filter((styleUrl) => typeof styleUrl === 'string')
-        //     .map((styleUrl) => {
-        //         if (matchAlias(styleUrl)) {
-        //             return getPathDescriptorWithAlias(styleUrl)?.absolutePath;
-        //         } else {
-        //             return getPathDescriptorWithAlias(path.resolve(
-        //                 path.dirname(context.resourcePath),
-        //                 styleUrl,
-        //             ))?.absolutePath;
-        //         }
-        //     })
-        //     .filter((styleUrl) => !!styleUrl);
+        const styles = (componentMetadataConfig.styles || [])
+            .filter((styleUrl) => typeof styleUrl === 'string')
+            .map((styleUrl) => {
+                if (matchAlias(styleUrl)) {
+                    return getPathDescriptorWithAlias(styleUrl)?.absolutePath;
+                } else {
+                    return getPathDescriptorWithAlias(path.resolve(
+                        path.dirname(context.resourcePath),
+                        styleUrl,
+                    ))?.absolutePath;
+                }
+            })
+            .filter((styleUrl) => !!styleUrl);
 
-        // componentMetadataConfig.file = componentMetadataConfig.file + '?' + qs.stringify({
-        //     component: true,
-        //     ...(
-        //         (componentMetadataConfig.styles || []).length > 0
-        //             ? {
-        //                 styles: styles.map((styleUrl) => encodeURI(styleUrl)).join(','),
-        //             }
-        //             : {}
-        //     ),
-        // });
+        componentMetadataConfig.file = componentMetadataConfig.file + '?' + qs.stringify({
+            component: true,
+            ...(
+                (componentMetadataConfig.styles || []).length > 0
+                    ? {
+                        styles: styles.map((styleUrl) => encodeURI(styleUrl)).join(','),
+                    }
+                    : {}
+            ),
+        });
 
         const imports = [
             {

@@ -31,10 +31,13 @@
     },
     "homepage": "https://github.com/lenconda/agros#readme",
     "devDependencies": {
+        "@types/hash-sum": "^1.0.0",
         "@types/jest": "^28.1.1",
+        "@types/loader-utils": "^2.0.3",
         "@types/lodash": "^4.14.182",
         "@types/node": "^15.12.2",
         "@types/qs": "^6.9.7",
+        "@types/webpack": "^5.28.0",
         "rimraf": "^3.0.2",
         "typescript": "^4.5.5"
     },
@@ -56,10 +59,13 @@
         "@vue/babel-preset-app": "^5.0.8",
         "awesome-typescript-loader": "^5.2.1",
         "babel-loader": "^8.2.5",
+        "hash-sum": "^2.0.0",
+        "loader-utils": "^2.0.0",
         "qs": "^6.11.0",
         "reflect-metadata": "^0.1.13",
         "vue": "^3.2.37",
         "vue-loader": "^17.0.0",
-        "vue-router": "^4.0.0"
+        "vue-router": "^4.0.0",
+        "webpack": "^5.28.0"
     }
 }

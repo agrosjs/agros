@@ -16,7 +16,7 @@ module.exports = defineBuilderConfig((config) => {
         test: /\.vue$/,
         use: [
             {
-                loader: require.resolve('vue-loader'),
+                loader: require.resolve('./lib/loaders/vue-loader.js'),
                 options: {
                     loaders: {
                         js: require.resolve('awesome-typescript-loader'),
