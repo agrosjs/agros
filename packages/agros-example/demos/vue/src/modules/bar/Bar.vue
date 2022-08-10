@@ -2,7 +2,7 @@
     <pre>Greet from BarComponent, used by {{ used }}</pre>
 </template>
 
-<script lang="ts">
+<script>
 export default {
     props: ['used'],
 };

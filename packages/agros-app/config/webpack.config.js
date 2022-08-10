@@ -1,7 +1,6 @@
 const fs = require('fs');
 const path = require('path');
 const webpack = require('webpack');
-const resolve = require('resolve');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
 const InlineChunkHtmlPlugin = require('react-dev-utils/InlineChunkHtmlPlugin');
@@ -16,9 +15,6 @@ const createEnvironmentHash = require('./utils/create-environment-hash');
 const paths = require('./paths');
 const modules = require('./modules');
 const getClientEnvironment = require('./env');
-const ForkTsCheckerWebpackPlugin = process.env.TSC_COMPILE_ON_ERROR === 'true'
-    ? require('react-dev-utils/ForkTsCheckerWarningWebpackPlugin')
-    : require('react-dev-utils/ForkTsCheckerWebpackPlugin');
 const {
     ProjectConfigParser,
     PlatformConfigParser,
@@ -463,47 +459,6 @@ module.exports = function (webpackEnv) {
                 dontCacheBustURLsMatching: /\.[0-9a-f]{8}\./,
                 exclude: [/\.map$/, /asset-manifest\.json$/, /LICENSE/],
                 maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
-            }),
-            useTypeScript && new ForkTsCheckerWebpackPlugin({
-                async: isEnvDevelopment,
-                typescript: {
-                    typescriptPath: resolve.sync('typescript', {
-                        basedir: paths.appNodeModules,
-                    }),
-                    configOverwrite: {
-                        compilerOptions: {
-                            sourceMap: isEnvProduction
-                                ? shouldUseSourceMap
-                                : isEnvDevelopment,
-                            skipLibCheck: true,
-                            inlineSourceMap: false,
-                            declarationMap: false,
-                            noEmit: true,
-                            incremental: true,
-                            tsBuildInfoFile: paths.appTsBuildInfoFile,
-                        },
-                    },
-                    context: paths.appPath,
-                    diagnosticOptions: {
-                        syntactic: true,
-                    },
-                    mode: 'write-references',
-                },
-                issue: {
-                    include: [
-                        { file: '../**/src/**/*.{ts,tsx}' },
-                        { file: '**/src/**/*.{ts,tsx}' },
-                    ],
-                    exclude: [
-                        { file: '**/src/**/__tests__/**' },
-                        { file: '**/src/**/?(*.){spec|test}.*' },
-                        { file: '**/src/setupProxy.*' },
-                        { file: '**/src/setupTests.*' },
-                    ],
-                },
-                logger: {
-                    infrastructure: 'silent',
-                },
             }),
         ].filter(Boolean),
         performance: false,

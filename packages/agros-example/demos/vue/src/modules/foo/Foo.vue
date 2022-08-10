@@ -1,10 +1,10 @@
 <template>
     <div>Agros is working!</div>
-    <Bar used="foo.module.ts" />
+    <Bar used="foo.module.ts"></Bar>
     <router-view></router-view>
 </template>
 
-<script lang="ts">
+<script>
 import { getContainer } from "@agros/app";
 import { BarComponent } from "../bar/bar.component";
 import { BarService } from "../bar/bar.service";
@@ -18,7 +18,7 @@ const Foo = {
         fooService.logHello();
         barService.sayHello();
     },
-} as any;
+};
 
 const container = getContainer(Foo);
 const Bar = container.get<any>(BarComponent);

@@ -19,18 +19,18 @@ const platform: Platform = {
     getLoaderImports(): Omit<EnsureImportOptions, 'statements'>[] {
         return [
             {
-                libName: '@agros/platform-vue/lib/vue-router',
+                libName: 'vue-router',
                 identifierName: 'VueRouter',
-                type: 'default',
+                type: 'namespace',
             },
             {
                 libName: '@agros/app/lib/factory',
                 identifierName: 'Factory',
             },
             {
-                libName: '@agros/platform-vue/lib/vue',
+                libName: 'vue',
                 identifierName: 'Vue',
-                type: 'default',
+                type: 'namespace',
             },
         ];
     },
@@ -56,7 +56,7 @@ const platform: Platform = {
 
                     const factory = new ${ensuredImportsMap['Factory'] || 'Factory'}(${ensuredImportsMap['platform'] || 'platform'});
 
-                    factory.create(RootModule).then((items) => {
+                    factory.create(Module).then((items) => {
                         const routes = ${ensuredImportsMap['createRoutes'] || 'createRoutes'}(items);
                         const router = ${vueRouterIdentifier}.createRouter({
                             history: RouterComponent,

@@ -2,7 +2,7 @@
     <div>Welcome to Lorem page!</div>
 </template>
 
-<script lang="ts">
+<script>
 import { getContainer } from '@agros/app';
 import { LoremService } from './lorem.service';
 
