@@ -15,7 +15,14 @@ module.exports = defineBuilderConfig((config) => {
     config.module?.rules?.unshift({
         test: /\.vue$/,
         use: [
-            require.resolve('vue-loader'),
+            {
+                loader: require.resolve('vue-loader'),
+                options: {
+                    loaders: {
+                        js: require.resolve('awesome-typescript-loader'),
+                    },
+                },
+            },
             require.resolve('./lib/loaders/component-file.loader.js'),
         ],
     });

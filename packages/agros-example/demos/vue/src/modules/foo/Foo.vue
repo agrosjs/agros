@@ -4,7 +4,7 @@
     <router-view></router-view>
 </template>
 
-<script>
+<script lang="ts">
 import { getContainer } from "@agros/app";
 import { BarComponent } from "../bar/bar.component";
 import { BarService } from "../bar/bar.service";
@@ -17,6 +17,10 @@ const Foo = {
         // const barService = container.get<BarService>(BarService);
         // fooService.logHello();
         // barService.sayHello();
+        let a: number = 1;
+        const b = { message: 'hello' } as { message: string };
+        console.log(a);
+        console.log(b.message);
     },
 };
 
