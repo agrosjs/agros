@@ -3,13 +3,9 @@ import { ComponentInstance } from '@agros/common/lib/component-instance.class';
 import {
     Factory,
     FactoryForwardRef,
-    Interceptor,
-    Type,
 } from '@agros/common/lib/types';
 import { Platform } from '@agros/platforms/lib/platform.interface';
 import { EnsureImportOptions } from '@agros/utils/lib/ensure-import';
-import { DI_METADATA_USE_INTERCEPTORS_SYMBOL } from '@agros/common/lib/constants';
-import { defineAsyncComponent } from 'vue';
 import { defineContainer } from '@agros/common/lib/define-container';
 
 const platform: Platform = {
@@ -57,12 +53,19 @@ const platform: Platform = {
                     const factory = new ${ensuredImportsMap['Factory'] || 'Factory'}(${ensuredImportsMap['platform'] || 'platform'});
 
                     factory.create(Module).then((items) => {
-                        const routes = ${ensuredImportsMap['createRoutes'] || 'createRoutes'}(items);
+                        const routes = ${ensuredImportsMap['createRoutes'] || 'createRoutes'}(items).map((route) => {
+                            return {
+                                ...route,
+                                path: '/' + route.path,
+                            };
+                        });
                         const router = ${vueRouterIdentifier}.createRouter({
                             history: RouterComponent,
                             routes,
                         });
-                        const app = ${vueIdentifier}.createApp({});
+                        const app = ${vueIdentifier}.createApp({
+                            template: '<router-view></router-view>',
+                        });
                         app.use(router);
                         app.mount(container);
                     });
@@ -87,14 +90,6 @@ const platform: Platform = {
         }
 
         const dependencyMap = context.generateDependencyMap(componentInstance);
-        const interceptorClasses: Type[] = Reflect.getMetadata(
-            DI_METADATA_USE_INTERCEPTORS_SYMBOL,
-            componentInstance.metadata.Class,
-        ) || [];
-
-        const interceptorInstances: Interceptor[] = interceptorClasses.map((InterceptorClass) => {
-            return dependencyMap.get(InterceptorClass);
-        }).filter((instance) => !!instance && typeof instance.intercept === 'function');
 
         const forwardRef: FactoryForwardRef = (promise) => {
             return promise.then((result) => {
@@ -111,20 +106,7 @@ const platform: Platform = {
             defineContainer(component, dependencyMap);
         }
 
-        if (interceptorInstances.length > 0) {
-            const interceptorsFallback = componentInstance.metadata.interceptorsFallback;
-            componentInstance.setComponent(defineAsyncComponent({
-                loader: async () => {
-                    for (const interceptorInstance of interceptorInstances) {
-                        await interceptorInstance.intercept();
-                    }
-                    return component;
-                },
-                loadingComponent: interceptorsFallback,
-            }));
-        } else {
-            componentInstance.setComponent(component);
-        }
+        componentInstance.setComponent(component);
     },
 };
 
