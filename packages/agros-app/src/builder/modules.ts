@@ -1,15 +1,15 @@
 
-const fs = require('fs');
-const path = require('path');
-const paths = require('./paths');
-const resolve = require('resolve');
+import * as fs from 'fs';
+import * as path from 'path';
+import paths from './paths';
+import resolve from 'resolve';
 
 /**
  * Get additional module paths based on the baseUrl of a compilerOptions object.
  *
  * @param {Object} options
  */
-function getAdditionalModulePaths(options = {}) {
+const getAdditionalModulePaths = (options: any = {}) => {
     const baseUrl = options.baseUrl;
 
     if (!baseUrl) {
@@ -43,14 +43,14 @@ function getAdditionalModulePaths(options = {}) {
         'Your project\'s `baseUrl` can only be set to `src` or `node_modules`.' +
         ' Agros does not support other values at this time.',
     );
-}
+};
 
 /**
  * Get webpack aliases based on the baseUrl of a compilerOptions object.
  *
  * @param {*} options
  */
-function getWebpackAliases(options = {}) {
+const getWebpackAliases = (options: any = {}) => {
     const baseUrl = options.baseUrl;
 
     if (!baseUrl) {
@@ -64,14 +64,14 @@ function getWebpackAliases(options = {}) {
             src: paths.appSrc,
         };
     }
-}
+};
 
 /**
  * Get jest aliases based on the baseUrl of a compilerOptions object.
  *
  * @param {*} options
  */
-function getJestAliases(options = {}) {
+const getJestAliases = (options: any = {}) => {
     const baseUrl = options.baseUrl;
 
     if (!baseUrl) {
@@ -85,9 +85,9 @@ function getJestAliases(options = {}) {
             '^src/(.*)$': '<rootDir>/src/$1',
         };
     }
-}
+};
 
-function getModules() {
+const getModules = () => {
     // Check if TypeScript is setup
     const hasTsConfig = fs.existsSync(paths.appTsConfig);
     const hasJsConfig = fs.existsSync(paths.appJsConfig);
@@ -125,6 +125,6 @@ function getModules() {
         jestAliases: getJestAliases(options),
         hasTsConfig,
     };
-}
+};
 
-module.exports = getModules();
+export default getModules();

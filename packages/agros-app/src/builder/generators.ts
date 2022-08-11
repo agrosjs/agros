@@ -1,25 +1,33 @@
-const fs = require('fs');
-const path = require('path');
-const webpack = require('webpack');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
-const InlineChunkHtmlPlugin = require('react-dev-utils/InlineChunkHtmlPlugin');
-const TerserPlugin = require('terser-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
-const { WebpackManifestPlugin } = require('webpack-manifest-plugin');
-const getCSSModuleLocalIdent = require('react-dev-utils/getCSSModuleLocalIdent');
-const InterpolateHtmlPlugin = require('react-dev-utils/InterpolateHtmlPlugin');
-const WorkboxWebpackPlugin = require('workbox-webpack-plugin');
-const createEnvironmentHash = require('./utils/create-environment-hash');
-const paths = require('./paths');
-const modules = require('./modules');
-const getClientEnvironment = require('./env');
-const {
+import * as fs from 'fs';
+import * as path from 'path';
+import webpack, {
+    Configuration,
+    RuleSetRule,
+} from 'webpack';
+import HtmlWebpackPlugin from 'html-webpack-plugin';
+import CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin';
+import WorkboxWebpackPlugin from 'workbox-webpack-plugin';
+import createEnvironmentHash from './create-environment-hash';
+import paths, { moduleFileExtensions } from './paths';
+import modules from './modules';
+import { getClientEnvironment } from './env';
+import {
     ProjectConfigParser,
     PlatformConfigParser,
-} = require('@agros/config');
-const { Logger } = require('@agros/logger');
+} from '@agros/config';
+import { Logger } from '@agros/logger';
+import TerserPlugin from 'terser-webpack-plugin';
+import MiniCssExtractPlugin from 'mini-css-extract-plugin';
+import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
+import { WebpackManifestPlugin } from 'webpack-manifest-plugin';
+import InlineChunkHtmlPlugin from 'react-dev-utils/InlineChunkHtmlPlugin';
+import getCSSModuleLocalIdent from 'react-dev-utils/getCSSModuleLocalIdent';
+import InterpolateHtmlPlugin from 'react-dev-utils/InterpolateHtmlPlugin';
+import getHttpsConfig from './get-https-config';
+import evalSourceMapMiddleware from 'react-dev-utils/evalSourceMapMiddleware';
+import noopServiceWorkerMiddleware from 'react-dev-utils/noopServiceWorkerMiddleware';
+import ignoredFiles from 'react-dev-utils/ignoredFiles';
+import redirectServedPath from 'react-dev-utils/redirectServedPathMiddleware';
 
 const configParser = new ProjectConfigParser();
 const shouldUseSourceMap = process.env.GENERATE_SOURCEMAP !== 'false';
@@ -37,13 +45,13 @@ const sassModuleRegex = /\.module\.(scss|sass)$/;
 const lessRegex = /\.less$/;
 const lessModuleRegex = /\.module\.less$/;
 
-module.exports = function (webpackEnv) {
+export const generateBuildConfig = (webpackEnv) => {
     const logger = new Logger();
     const isEnvDevelopment = webpackEnv === 'development';
     const isEnvProduction = webpackEnv === 'production';
     const isEnvProductionProfile = isEnvProduction && process.argv.includes('--profile');
     const env = getClientEnvironment(paths.publicUrlOrPath.slice(0, -1));
-    const getStyleLoaders = (cssOptions, preProcessor) => {
+    const getStyleLoaders = (cssOptions, preProcessor = '') => {
         const loaders = [
             isEnvDevelopment && require.resolve('style-loader'),
             isEnvProduction && {
@@ -116,10 +124,10 @@ module.exports = function (webpackEnv) {
         return loaders;
     };
 
-    let config = {
+    let config: Configuration = {
         target: ['browserslist'],
         stats: 'errors-warnings',
-        mode: isEnvProduction ? 'production' : isEnvDevelopment && 'development',
+        mode: isEnvProduction ? 'production' : isEnvDevelopment ? 'development' : 'none',
         bail: isEnvProduction,
         devtool: isEnvProduction
             ? shouldUseSourceMap ? 'source-map' : false
@@ -163,7 +171,7 @@ module.exports = function (webpackEnv) {
                 new TerserPlugin({
                     terserOptions: {
                         parse: {
-                            ecma: 8,
+                            ecma: 2017,
                         },
                         compress: {
                             ecma: 5,
@@ -190,7 +198,7 @@ module.exports = function (webpackEnv) {
             modules: ['node_modules', paths.appNodeModules].concat(
                 modules.additionalModulePaths || [],
             ),
-            extensions: paths.moduleFileExtensions
+            extensions: moduleFileExtensions
                 .map((ext) => `.${ext}`)
                 .filter((ext) => useTypeScript || !ext.includes('ts')),
             alias: {
@@ -399,7 +407,7 @@ module.exports = function (webpackEnv) {
                     test: /\.(js|jsx|ts|tsx)$/,
                     use: require.resolve('@agros/loader'),
                 },
-            ].filter(Boolean),
+            ].filter(Boolean) as RuleSetRule[],
         },
         plugins: [
             new HtmlWebpackPlugin(
@@ -424,8 +432,8 @@ module.exports = function (webpackEnv) {
                         : undefined),
                 },
             ),
-            isEnvProduction && shouldInlineRuntimeChunk && new InlineChunkHtmlPlugin(HtmlWebpackPlugin, [/runtime-.+[.]js/]),
-            new InterpolateHtmlPlugin(HtmlWebpackPlugin, env.raw),
+            isEnvProduction && shouldInlineRuntimeChunk && new InlineChunkHtmlPlugin(HtmlWebpackPlugin as any, [/runtime-.+[.]js/]),
+            new InterpolateHtmlPlugin(HtmlWebpackPlugin as any, env.raw as any),
             new webpack.DefinePlugin(env.stringified),
             isEnvDevelopment && new CaseSensitivePathsPlugin(),
             isEnvProduction && new MiniCssExtractPlugin({
@@ -490,4 +498,72 @@ module.exports = function (webpackEnv) {
     } catch (e) {}
 
     return config;
+};
+
+export const generateDevServerConfig = (proxy, allowedHost) => {
+    const host = process.env.HOST || '0.0.0.0';
+    const sockHost = process.env.WDS_SOCKET_HOST;
+    const sockPath = process.env.WDS_SOCKET_PATH;
+    const sockPort = process.env.WDS_SOCKET_PORT;
+    const disableFirewall = !proxy || process.env.DANGEROUSLY_DISABLE_HOST_CHECK === 'true';
+    const configParser = new ProjectConfigParser();
+    const configWebpackDevServer = configParser.getConfig('configWebpackDevServer');
+    let devServerConfig = {
+        allowedHosts: disableFirewall ? 'all' : [allowedHost],
+        headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': '*',
+            'Access-Control-Allow-Headers': '*',
+        },
+        compress: true,
+        static: {
+            directory: paths.appPublic,
+            publicPath: [paths.publicUrlOrPath],
+            watch: {
+                ignored: ignoredFiles(paths.appSrc),
+            },
+        },
+        client: {
+            webSocketURL: {
+                hostname: sockHost,
+                pathname: sockPath,
+                port: sockPort,
+            },
+            overlay: {
+                errors: true,
+                warnings: false,
+            },
+        },
+        devMiddleware: {
+            publicPath: paths.publicUrlOrPath.slice(0, -1),
+        },
+        https: getHttpsConfig(),
+        host,
+        historyApiFallback: {
+            disableDotRule: true,
+            index: paths.publicUrlOrPath,
+        },
+        proxy,
+        onBeforeSetupMiddleware(devServer) {
+            devServer.app.use(evalSourceMapMiddleware(devServer));
+            if (fs.existsSync(paths.proxySetup)) {
+                require(paths.proxySetup)(devServer.app);
+            }
+        },
+        onAfterSetupMiddleware(devServer) {
+            devServer.app.use(redirectServedPath(paths.publicUrlOrPath));
+            devServer.app.use(noopServiceWorkerMiddleware(paths.publicUrlOrPath));
+        },
+    };
+
+    try {
+        if (typeof configWebpackDevServer === 'function') {
+            const currentConfig = configWebpackDevServer(devServerConfig);
+            if (currentConfig) {
+                devServerConfig = currentConfig;
+            }
+        }
+    } catch (e) {}
+
+    return devServerConfig;
 };

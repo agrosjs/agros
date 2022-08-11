@@ -9,15 +9,16 @@ import FileSizeReporter from 'react-dev-utils/FileSizeReporter';
 import printBuildError from 'react-dev-utils/printBuildError';
 import { checkBrowsers } from 'react-dev-utils/browsersHelper';
 import { Logger } from '@agros/logger';
+import { generateBuildConfig } from '../builder/generators';
+import paths from '../builder/paths';
+// Ensure environment variables are read.
+import '../builder/env';
 
 // Do this as the first thing so that any code reading it knows the right env.
 process.env.BABEL_ENV = 'production';
 process.env.NODE_ENV = 'production';
 
 export default () => {
-    const configFactory = require('../../config/webpack.config');
-    const paths = require('../../config/paths');
-
     const logger = new Logger();
 
     // Makes the script crash on unhandled rejections instead of silently
@@ -26,9 +27,6 @@ export default () => {
     process.on('unhandledRejection', (err) => {
         throw err;
     });
-
-    // Ensure environment variables are read.
-    require('../../config/env');
 
     const measureFileSizesBeforeBuild = FileSizeReporter.measureFileSizesBeforeBuild;
     const printFileSizesAfterBuild = FileSizeReporter.printFileSizesAfterBuild;
@@ -48,7 +46,7 @@ export default () => {
     const argv = process.argv.slice(2);
     const writeStatsJson = argv.indexOf('--stats') !== -1;
     // Generate configuration
-    const config = configFactory('production');
+    const config = generateBuildConfig('production');
 
     // We require that you explicitly set browsers and do not fall back to
     // browserslist defaults.
@@ -95,7 +93,7 @@ export default () => {
                 printHostingInstructions(
                     appPackage,
                     publicUrl,
-                    publicPath,
+                    publicPath as string,
                     buildFolder,
                     useYarn,
                 );

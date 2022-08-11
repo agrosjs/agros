@@ -1,27 +1,40 @@
-const path = require('path');
-const fs = require('fs');
-const { URL } = require('url');
+import * as fs from 'fs';
+import * as path from 'path';
+import { URL } from 'url';
 
-const resolveApp = (relativePath, startPath = fs.realpathSync(process.cwd())) => {
-    if (!startPath || path.dirname(startPath) === startPath) {
-        return null;
-    }
+const resolveModules = (() => {
+    const getNodeModulesDir = (startPath = fs.realpathSync(process.cwd())) => {
+        if (!startPath || path.dirname(startPath) === startPath) {
+            return null;
+        }
 
-    const absoluteFilePath = path.resolve(startPath, relativePath);
+        const absoluteFilePath = path.resolve(startPath, 'node_modules');
 
-    if (!fs.existsSync(absoluteFilePath)) {
-        return resolveApp(relativePath, path.dirname(startPath));
-    } else {
-        return absoluteFilePath;
-    }
-};
+        if (!fs.existsSync(absoluteFilePath)) {
+            return getNodeModulesDir(path.dirname(startPath));
+        } else {
+            return path.dirname(absoluteFilePath);
+        }
+    };
+
+    const nodeModulesDir = getNodeModulesDir();
+
+    return (relativePath = '') => {
+        return path.resolve(nodeModulesDir, relativePath);
+    };
+})();
+const resolveApp = (() => {
+    const appDir = process.cwd();
+    return (relativePath: string) => path.resolve(appDir, relativePath);
+})();
 const publicUrlOrPath = getPublicUrlOrPath(
     process.env.NODE_ENV === 'development',
-    require(resolveApp('package.json')).homepage,
+    require(resolveModules('package.json')).homepage,
     process.env.PUBLIC_URL,
 );
 const buildPath = process.env.BUILD_PATH || 'build';
-const moduleFileExtensions = [
+
+export const moduleFileExtensions = [
     'web.mjs',
     'mjs',
     'web.js',
@@ -95,25 +108,25 @@ function getPublicUrlOrPath(isEnvDevelopment, pathHomepage, publicUrl) {
     return '/';
 }
 
-module.exports = {
+const paths = {
     dotenv: resolveApp('.env'),
     appPath: resolveApp('.'),
     appBuild: resolveApp(buildPath),
     appPublic: resolveApp('public'),
     appHtml: resolveApp('public/index.html'),
     appIndexJs: resolveModule(resolveApp, 'src/index'),
-    appPackageJson: resolveApp('package.json'),
+    appPackageJson: resolveModules('package.json'),
     appSrc: resolveApp('src'),
     appTsConfig: resolveApp('tsconfig.json'),
     appJsConfig: resolveApp('jsconfig.json'),
     yarnLockFile: resolveApp('yarn.lock'),
     testsSetup: resolveModule(resolveApp, 'src/setupTests'),
     proxySetup: resolveApp('src/setupProxy.js'),
-    appNodeModules: resolveApp('node_modules'),
-    appWebpackCache: path.resolve(resolveApp('node_modules'), '.cache'),
-    appTsBuildInfoFile: resolveApp('node_modules/.cache/tsconfig.tsbuildinfo'),
+    appNodeModules: resolveModules(),
+    appWebpackCache: resolveModules('.cache'),
+    appTsBuildInfoFile: resolveModules() + '.cache/tsconfig.tsbuildinfo',
     swSrc: resolveModule(resolveApp, 'src/service-worker'),
     publicUrlOrPath,
 };
 
-module.exports.moduleFileExtensions = moduleFileExtensions;
+export default paths;

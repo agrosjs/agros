@@ -64,6 +64,8 @@
         "crypto": "^1.0.1",
         "css-loader": "^6.7.1",
         "css-minimizer-webpack-plugin": "^4.0.0",
+        "dotenv": "^16.0.1",
+        "dotenv-expand": "^8.0.3",
         "escape-string-regexp": "^5.0.0",
         "figlet": "^1.5.2",
         "file-loader": "^6.2.0",

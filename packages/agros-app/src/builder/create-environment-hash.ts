@@ -1,8 +1,7 @@
-const { createHash } = require('crypto');
+import { createHash } from 'crypto';
 
-module.exports = (env) => {
+export default (env) => {
     const hash = createHash('md5');
     hash.update(JSON.stringify(env));
-
     return hash.digest('hex');
 };

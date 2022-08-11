@@ -32,6 +32,8 @@ importers:
       crypto: ^1.0.1
       css-loader: ^6.7.1
       css-minimizer-webpack-plugin: ^4.0.0
+      dotenv: ^16.0.1
+      dotenv-expand: ^8.0.3
       escape-string-regexp: ^5.0.0
       figlet: ^1.5.2
       file-loader: ^6.2.0
@@ -82,6 +84,8 @@ importers:
       crypto: 1.0.1
       css-loader: 6.7.1_webpack@5.74.0
       css-minimizer-webpack-plugin: 4.0.0_webpack@5.74.0
+      dotenv: 16.0.1
+      dotenv-expand: 8.0.3
       escape-string-regexp: 5.0.0
       figlet: 1.5.2
       file-loader: 6.2.0_webpack@5.74.0
@@ -5982,6 +5986,16 @@ packages:
     dependencies:
       no-case: 3.0.4
       tslib: 2.4.0
+    dev: false
+
+  /dotenv-expand/8.0.3:
+    resolution: {integrity: sha512-SErOMvge0ZUyWd5B0NXMQlDkN+8r+HhVUsxgOO7IoPDOdDRD2JjExpN6y3KnFR66jsJMwSn1pqIivhU5rcJiNg==}
+    engines: {node: '>=12'}
+    dev: false
+
+  /dotenv/16.0.1:
+    resolution: {integrity: sha512-1K6hR6wtk2FviQ4kEiSjFiH5rpzEVi8WW0x96aztHVMhEspNpc4DVOUTEHtEva5VThQ8IaBX1Pe4gSzpVVUsKQ==}
+    engines: {node: '>=12'}
     dev: false
 
   /duplexer/0.1.2:
