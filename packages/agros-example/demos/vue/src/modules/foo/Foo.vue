@@ -1,7 +1,9 @@
 <template>
-    <div>Agros is working!</div>
-    <!-- <Bar used="foo.module.ts"></Bar> -->
-    <router-view></router-view>
+    <div>
+        <div>Agros is working!</div>
+        <Bar used="foo.module.ts" />
+        <router-view></router-view>
+    </div>
 </template>
 
 <script lang="ts">
@@ -11,25 +13,17 @@ import { BarService } from "../bar/bar.service";
 import { FooService } from "./foo.service";
 
 const Foo = {
-    mounted() {
-        // const container = getContainer(Foo);
-        // const fooService = container.get<FooService>(FooService);
-        // const barService = container.get<BarService>(BarService);
-        // fooService.logHello();
-        // barService.sayHello();
-        let a: number = 1;
-        const b = { message: 'hello' } as { message: string };
-        console.log(a);
-        console.log(b.message);
+    created() {
+        const container = getContainer(Foo);
+        const fooService = container.get<FooService>(FooService);
+        const barService = container.get<BarService>(BarService);
+        fooService.logHello();
+        barService.sayHello();
+        this.$options.components = {
+            Bar: container.get(BarComponent),
+        };
     },
 };
-
-// const container = getContainer(Foo);
-// const Bar = container.get<any>(BarComponent);
-
-// Foo.components = {
-//     Bar,
-// };
 
 export default Foo;
 </script>

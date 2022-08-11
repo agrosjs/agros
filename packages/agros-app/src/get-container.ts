@@ -11,7 +11,7 @@ export const getContainer = (component: any) => {
         component,
         DEPS_PROPERTY_NAME,
     );
-    let dependencyMap = descriptor.value || new Map();
+    let dependencyMap = descriptor?.value || component[DEPS_PROPERTY_NAME] || new Map();
 
     return {
         get: <T>(Class: Type) => dependencyMap.get(Class) as T,

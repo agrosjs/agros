@@ -107,6 +107,8 @@ const platform: Platform = {
         }
 
         componentInstance.setComponent(component);
+
+        return component;
     },
 };
 
