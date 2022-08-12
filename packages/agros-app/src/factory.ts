@@ -1,37 +1,28 @@
 import 'reflect-metadata';
-import React from 'react';
+import isPromise from 'is-promise';
+import { Map as ImmutableMap } from 'immutable';
 import {
-    ModuleInstance,
-    ComponentInstance,
-} from './classes';
+    AsyncModuleClass,
+    ModuleMetadata,
+    RouteOptionItem,
+    Type,
+    ComponentMetadata,
+    RouterItem,
+    Factory as IFactory,
+    Interceptor,
+} from '@agros/common/lib/types';
 import {
-    DEPS_PROPERTY_NAME,
     DI_DEPS_SYMBOL,
     DI_GLOBAL_MODULE_SYMBOL,
     DI_METADATA_COMPONENT_SYMBOL,
     DI_METADATA_MODULE_SYMBOL,
     DI_METADATA_USE_INTERCEPTORS_SYMBOL,
-} from './constants';
-import {
-    AsyncModuleClass,
-    ComponentMetadata,
-    FactoryForwardRef,
-    ModuleMetadata,
-    RouteOptionItem,
-    RouterItem,
-    Type,
-} from './types';
-import isPromise from 'is-promise';
-import { Map as ImmutableMap } from 'immutable';
-import { Interceptor } from './interfaces';
-import {
-    useLocation,
-    useParams,
-    useSearchParams,
-} from 'react-router-dom';
-import { useAsyncEffect } from 'use-async-effect';
+} from '@agros/common/lib/constants';
+import { ComponentInstance } from '@agros/common/lib/component-instance.class';
+import { ModuleInstance } from '@agros/common/lib/module-instance.class';
+import { Platform } from '@agros/platforms/lib/platform.interface';
 
-export class Factory {
+export class Factory implements IFactory {
     /**
      * @private
      * the flattened map for all module instances created from module classes
@@ -68,6 +59,8 @@ export class Factory {
      */
     private globalModuleInstances = new Set<ModuleInstance>();
 
+    public constructor(protected readonly platform: Platform) {}
+
     /**
      * @public
      * @async
@@ -83,10 +76,75 @@ export class Factory {
         this.createProviderClassToModuleClassMap();
         await this.createProviderInstances(rootModuleInstance);
         this.createComponentInstances(rootModuleInstance);
-        this.generateReactComponentForInstances();
-        this.routerItems = await this.createRoutes(Array.from(rootModuleInstance.metadata.routes));
+        this.generateComponentForInstances();
+        this.routerItems = await this.createRouterItems(Array.from(rootModuleInstance.metadata.routes));
         return Array.from(this.routerItems);
     }
+
+    /**
+     * generate dependency map that can be used by `declarations.get` method
+     *
+     * @returns {Map<ClassType, any>} a map for storing relationships between provider class
+     * and provider instance, when the provider class infers to a component class, its value
+     * would be a component
+     */
+    public generateDependencyMap(componentInstance: ComponentInstance) {
+        const ComponentClass = componentInstance.metadata.Class;
+        const dependedClasses: Type[] = [
+            DI_DEPS_SYMBOL,
+            DI_METADATA_USE_INTERCEPTORS_SYMBOL,
+        ].reduce((result, symbol) => {
+            const classes = Reflect.getMetadata(symbol, componentInstance.metadata.Class) || [];
+            return result.concat(classes);
+        }, [] as Type[]);
+        const moduleInstance = this.moduleInstanceMap.get(
+            this.componentClassToModuleClassMap.get(ComponentClass),
+        );
+        let dependencyMap = ImmutableMap<Type, any>();
+
+        for (const ProviderClass of dependedClasses) {
+            if (this.componentInstanceMap.get(ProviderClass)) {
+                /**
+                 * if provider class is a component class, that set the map value
+                 * to a component
+                 */
+                const dependedComponentInstance = this.componentInstanceMap.get(ProviderClass);
+                let dependedComponent = dependedComponentInstance.getComponent();
+
+                /**
+                 * if current depended component class is not initialized, then create
+                 * the component recursively
+                 */
+                if (!dependedComponent) {
+                    dependedComponent = this.platform.generateComponent(dependedComponentInstance, this);
+                }
+
+                /**
+                 * get the component from depended component class
+                 */
+                dependencyMap = dependencyMap.set(ProviderClass, dependedComponent);
+            } else {
+                /**
+                 * if provider class is a normal provider class, than get the provider
+                 * instance by provider class and set it to the map value
+                 */
+                if (moduleInstance.hasDependedProviderClass(ProviderClass)) {
+                    dependencyMap = dependencyMap.set(
+                        ProviderClass,
+                        this.providerInstanceMap.get(ProviderClass),
+                    );
+
+                    if (!dependencyMap.get(ProviderClass)) {
+                        throw new Error(`Cannot find provider ${ProviderClass.name} that can be injected`);
+                    }
+                } else {
+                    throw new Error(`Cannot inject provider ${ProviderClass.name} into component ${ComponentClass.name}`);
+                }
+            }
+        }
+
+        return dependencyMap;
+    };
 
     /**
      * @param {AsyncModuleClass} ModuleClassOrPromise
@@ -292,7 +350,7 @@ export class Factory {
             );
 
             /**
-             * create a component instance, but not real React component yet
+             * create a component instance, but not real component yet
              */
             const componentInstance = new ComponentInstance({
                 ...metadataValue,
@@ -311,178 +369,20 @@ export class Factory {
         }
     }
 
-    private generateReactComponent(componentInstance: ComponentInstance) {
-        const component = componentInstance.getComponent();
+    private generateComponentForInstances() {
+        for (const [, componentInstance] of this.componentInstanceMap.entries()) {
+            this.platform.generateComponent(componentInstance, this);
 
-        if (component) {
-            return component;
-        }
-
-        /**
-         * generate dependency map that can be used by `declarations.get` method
-         *
-         * @returns {Map<ClassType, any>} a map for storing relationships between provider class
-         * and provider instance, when the provider class infers to a component class, its value
-         * would be a React component
-         */
-        const generateDependencyMap = () => {
-            const ComponentClass = componentInstance.metadata.Class;
-            const dependedClasses: Type[] = [
-                DI_DEPS_SYMBOL,
-                DI_METADATA_USE_INTERCEPTORS_SYMBOL,
-            ].reduce((result, symbol) => {
-                const classes = Reflect.getMetadata(symbol, componentInstance.metadata.Class) || [];
-                return result.concat(classes);
-            }, [] as Type[]);
-            const moduleInstance = this.moduleInstanceMap.get(
-                this.componentClassToModuleClassMap.get(ComponentClass),
-            );
-            let dependencyMap = ImmutableMap<Type, any>();
-
-            for (const ProviderClass of dependedClasses) {
-                if (this.componentInstanceMap.get(ProviderClass)) {
-                    /**
-                     * if provider class is a component class, that set the map value
-                     * to a React component
-                     */
-                    const dependedComponentInstance = this.componentInstanceMap.get(ProviderClass);
-                    let dependedComponent = dependedComponentInstance.getComponent();
-
-                    /**
-                     * if current depended component class is not initialized, then create
-                     * the React component recursively
-                     */
-                    if (!dependedComponent) {
-                        dependedComponent = this.generateReactComponent(dependedComponentInstance);
-                    }
-
-                    /**
-                     * get the React component from depended component class
-                     */
-                    dependencyMap = dependencyMap.set(
-                        ProviderClass,
-                        (props) => React.createElement(dependedComponent, props),
-                    );
-                } else {
-                    /**
-                     * if provider class is a normal provider class, than get the provider
-                     * instance by provider class and set it to the map value
-                     */
-                    if (moduleInstance.hasDependedProviderClass(ProviderClass)) {
-                        dependencyMap = dependencyMap.set(
-                            ProviderClass,
-                            this.providerInstanceMap.get(ProviderClass),
-                        );
-
-                        if (!dependencyMap.get(ProviderClass)) {
-                            throw new Error(`Cannot find provider ${ProviderClass.name} that can be injected`);
-                        }
-                    } else {
-                        throw new Error(`Cannot inject provider ${ProviderClass.name} into component ${ComponentClass.name}`);
-                    }
-                }
-            }
-
-            return dependencyMap;
-        };
-
-        /**
-         * set component directly so that it can prevent unlimited creating tasks
-         */
-        componentInstance.setComponent((props: any) => {
-            const dependencyMap = generateDependencyMap();
-            const definePropertyData = {
-                value: dependencyMap,
-                configurable: false,
-                writable: false,
-                enumerable: false,
-            };
-            let component: React.FC<any> | React.ExoticComponent<any>;
+            const dependencyMap = this.generateDependencyMap(componentInstance);
             const interceptorClasses: Type[] = Reflect.getMetadata(
                 DI_METADATA_USE_INTERCEPTORS_SYMBOL,
                 componentInstance.metadata.Class,
             ) || [];
-            const interceptorInstances = interceptorClasses.map((InterceptorClass) => {
+            const interceptorInstances: Interceptor[] = interceptorClasses.map((InterceptorClass) => {
                 return dependencyMap.get(InterceptorClass);
-            }).filter((instance: Interceptor) => !!instance && typeof instance.intercept === 'function') as Interceptor[];
+            }).filter((instance) => !!instance && typeof instance.intercept === 'function');
 
-            const forwardRef: FactoryForwardRef = (promise) => {
-                return promise.then((result) => {
-                    if (Object.getOwnPropertyDescriptor(result.default, DEPS_PROPERTY_NAME)) {
-                        return result;
-                    }
-
-                    Object.defineProperty(
-                        result.default,
-                        DEPS_PROPERTY_NAME,
-                        definePropertyData,
-                    );
-
-                    return result;
-                });
-            };
-
-            if (typeof componentInstance.metadata.factory === 'function') {
-                component = componentInstance.metadata.factory(forwardRef);
-            }
-
-            if (!Object.getOwnPropertyDescriptor(component, DEPS_PROPERTY_NAME)) {
-                Object.defineProperty(
-                    component,
-                    DEPS_PROPERTY_NAME,
-                    definePropertyData,
-                );
-            }
-
-            return React.createElement(() => {
-                const fallback = componentInstance.metadata.interceptorsFallback = null;
-                const [interceptorEnd, setInterceptorEnd] = React.useState<boolean>(false);
-                const routeLocation = useLocation();
-                const routeParams = useParams();
-                const routeSearchParams = useSearchParams();
-
-                useAsyncEffect(async () => {
-                    try {
-                        if (routeLocation && routeParams && routeSearchParams) {
-                            for (const interceptorInstance of interceptorInstances) {
-                                await interceptorInstance.intercept(props, {
-                                    route: {
-                                        location: routeLocation,
-                                        params: routeParams,
-                                        searchParams: routeSearchParams,
-                                    },
-                                });
-                            }
-                        }
-                    } finally {
-                        setInterceptorEnd(true);
-                    }
-                }, [
-                    routeLocation,
-                    routeParams,
-                    routeSearchParams,
-                ]);
-
-                return interceptorEnd
-                    ? React.createElement(
-                        component,
-                        {
-                            ...props,
-                            $container: {
-                                get: <T>(ProviderClass: Type): T => {
-                                    return dependencyMap.get(ProviderClass);
-                                },
-                            },
-                        },
-                    )
-                    : fallback;
-            });
-        });
-    }
-
-    private generateReactComponentForInstances() {
-        for (const [, componentInstance] of this.componentInstanceMap.entries()) {
-            this.generateReactComponent(componentInstance);
+            componentInstance.metadata.interceptorInstances = interceptorInstances;
         }
     }
 
@@ -503,7 +403,7 @@ export class Factory {
      * @param {RouteOptionItem[]} routes route config items from modules
      * @param {string} prefixPathname prefix pathname of current level routes
      */
-    private async createRoutes(routes: RouteOptionItem[], prefixPathname = ''): Promise<RouterItem[]> {
+    private async createRouterItems(routes: RouteOptionItem[], prefixPathname = ''): Promise<RouterItem[]> {
         let result: RouterItem[] = [];
 
         for (const routeItem of Array.from(routes)) {
@@ -538,7 +438,7 @@ export class Factory {
                 } as RouterItem;
 
                 if (Array.isArray(children)) {
-                    currentRouterItem.children = await this.createRoutes(routeItem.children);
+                    currentRouterItem.children = await this.createRouterItems(routeItem.children);
                 }
 
                 result = result.concat(currentRouterItem);
@@ -549,14 +449,14 @@ export class Factory {
                 const ModuleClass = await this.getModuleClass(useModuleClass);
                 const moduleInstance = this.moduleInstanceMap.get(ModuleClass);
                 const currentRouteOptionItems = Array.from(moduleInstance.metadata.routes);
-                const currentRouterItems = await this.createRoutes(
+                const currentRouterItems = await this.createRouterItems(
                     currentRouteOptionItems,
                     this.normalizePath(pathname) || '',
                 );
 
                 for (const currentRouterItem of currentRouterItems) {
                     if (Array.isArray(routeItem.children)) {
-                        currentRouterItem.children = await this.createRoutes(currentRouterItem.children);
+                        currentRouterItem.children = await this.createRouterItems(currentRouterItem.children);
                     }
                 }
 

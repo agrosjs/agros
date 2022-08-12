@@ -1,4 +1,4 @@
-import { HashRouter } from '@agros/app/lib/router';
+import { HashRouter } from '@agros/platform-react/lib/react-router-dom';
 import { AppModule } from '@/app.module';
 
 export default [

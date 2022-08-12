@@ -1,0 +1,10 @@
+{
+  "changes": [
+    {
+      "packageName": "@agros/loader",
+      "comment": "Support platforms and provide loaders",
+      "type": "minor"
+    }
+  ],
+  "packageName": "@agros/loader"
+}

@@ -5,7 +5,8 @@
     },
     "scripts": {
         "build": "exit 0",
-        "start": "agros-scripts start",
+        "start:react": "cd demos/react && agros-scripts start",
+        "start:vue": "cd demos/vue && agros-scripts start",
         "test": "exit 0"
     },
     "author": "Lenconda <i@lenconda.top>",
@@ -27,8 +28,13 @@
     "description": "Agros example",
     "dependencies": {
         "@agros/app": "workspace:^0.3.4",
+        "@agros/platform-react": "workspace:^0.0.0",
+        "@agros/platform-vue": "workspace:^0.0.0",
+        "core-js": "^3.24.1",
         "react": "^17.0.0",
-        "react-error-boundary": "^3.1.4"
+        "react-error-boundary": "^3.1.4",
+        "vue": "^3.2.37",
+        "vue-router": "^4.0.0"
     },
     "browserslist": {
         "production": [

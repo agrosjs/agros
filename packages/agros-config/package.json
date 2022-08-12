@@ -54,6 +54,7 @@
         "cosmiconfig": "^7.0.1",
         "eslint-config-alloy": "^4.6.2",
         "fs-extra": "^10.1.0",
-        "lodash": "^4.17.21"
+        "lodash": "^4.17.21",
+        "webpack": "^5.28.0"
     }
 }

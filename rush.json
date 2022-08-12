@@ -522,6 +522,21 @@
             "packageName": "@agros/create-app",
             "projectFolder": "packages/create-agros-app",
             "shouldPublish": true
+        },
+        {
+            "packageName": "@agros/platform-react",
+            "projectFolder": "packages/agros-platform-react",
+            "shouldPublish": true
+        },
+        {
+            "packageName": "@agros/platforms",
+            "projectFolder": "packages/agros-platforms",
+            "shouldPublish": true
+        },
+        {
+            "packageName": "@agros/platform-vue",
+            "projectFolder": "packages/agros-platform-vue",
+            "shouldPublish": true
         }
     ]
 }

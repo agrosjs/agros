@@ -1,0 +1,10 @@
+{
+  "changes": [
+    {
+      "packageName": "@agros/platform-vue",
+      "comment": "Initialization",
+      "type": "patch"
+    }
+  ],
+  "packageName": "@agros/platform-vue"
+}
