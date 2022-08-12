@@ -210,11 +210,13 @@ export class AppCollectionFactory extends AbstractCollection implements Abstract
         const paths = glob.sync(templateAbsolutePath + '/**/{.*,*}._');
 
         for (const pathname of paths) {
+            const relativePath = path.relative(templateAbsolutePath, pathname).replace(/\.\_$/g, '');
             this.writeTemplateFile(
                 pathname,
-                path.resolve(targetAbsolutePath, path.relative(templateAbsolutePath, pathname)).replace(/\.\_$/g, ''),
+                path.resolve(targetAbsolutePath, relativePath),
                 templateConfig,
             );
+            result.create.push(relativePath);
         }
 
         if (props.license) {
@@ -226,18 +228,19 @@ export class AppCollectionFactory extends AbstractCollection implements Abstract
                     year: new Date().getFullYear().toString(),
                 }),
             );
+            result.create.push('LICENSE');
         }
 
-        if (installCommand && installCommand.length > 0) {
+        if (Array.isArray(installCommand) && installCommand.length > 0) {
             const logger = new Logger();
-            const loadingLog = logger.loadingLog('Installing dependencies...');
+            const installationLoadingLog = logger.loadingLog('Installing dependencies...');
             const result = await runCommand(installCommand[0], installCommand.slice(1), {
                 cwd: targetAbsolutePath,
             });
             if (result instanceof Error) {
-                loadingLog('warning', 'Failed to install dependencies');
+                installationLoadingLog('warning', 'Failed to install dependencies');
             } else {
-                loadingLog('success', 'Dependencies installed');
+                installationLoadingLog('success', 'Dependencies installed');
             }
         }
 

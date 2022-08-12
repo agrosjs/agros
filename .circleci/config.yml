@@ -52,6 +52,7 @@ jobs:
             - v1-dependencies-{{ checksum "checksum.txt" }}
       - run: rush update
       - run: rush build
+      - run: npm run sync-readme
       - run: rush publish --apply
       - run: rush publish --publish --include-all
       - run: echo -e "$GPG_SECRET_KEY" | gpg --import
