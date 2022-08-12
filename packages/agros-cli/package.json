@@ -42,14 +42,14 @@
         "typescript": "^4.5.5"
     },
     "name": "@agros/cli",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "description": "Agros CLI",
     "dependencies": {
-        "@agros/collections": "workspace:^0.0.2",
-        "@agros/common": "workspace:^0.1.1",
-        "@agros/config": "workspace:^0.1.1",
-        "@agros/logger": "workspace:^0.0.3",
-        "@agros/utils": "workspace:^0.0.3",
+        "@agros/collections": "workspace:^0.0.3",
+        "@agros/common": "workspace:^0.2.0",
+        "@agros/config": "workspace:^0.2.0",
+        "@agros/logger": "workspace:^0.0.4",
+        "@agros/utils": "workspace:^0.1.0",
         "commander": "^9.3.0",
         "fs-extra": "^10.1.0",
         "inquirer": "~8.1.1"
