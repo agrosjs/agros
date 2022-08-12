@@ -1,6 +1,6 @@
 import './index.css';
 import { AppModule } from '@/app.module';
-import * as VueRouter from 'vue-router';
+import VueRouter from '@agros/platform-vue/lib/vue-router';
 
 export default [
     {

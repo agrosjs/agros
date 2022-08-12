@@ -398,7 +398,13 @@ export const generateBuildConfig = (webpackEnv) => {
                             ),
                         },
                         {
-                            exclude: [/^$/, /\.(js|mjs|jsx|ts|tsx)$/, /\.html$/, /\.json$/],
+                            exclude: [
+                                /^$/,
+                                /\.(js|cjs|mjs|jsx|ts|tsx)$/,
+                                /\.html$/,
+                                /\.json$/,
+                                /@agros/,
+                            ],
                             type: 'asset/resource',
                         },
                     ],

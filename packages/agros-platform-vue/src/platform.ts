@@ -15,7 +15,7 @@ const platform: Platform = {
     getLoaderImports(): Omit<EnsureImportOptions, 'statements'>[] {
         return [
             {
-                libName: 'vue-router',
+                libName: '@agros/platform-vue/lib/vue-router',
                 identifierName: 'VueRouter',
                 type: 'namespace',
             },
@@ -24,7 +24,7 @@ const platform: Platform = {
                 identifierName: 'Factory',
             },
             {
-                libName: 'vue',
+                libName: '@agros/platform-vue/lib/vue',
                 identifierName: 'Vue',
                 type: 'namespace',
             },
