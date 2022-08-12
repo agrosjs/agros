@@ -73,6 +73,9 @@ workflows:
       - build:
           requires:
             - install
+          filters:
+            tags:
+              only: /.*/
       - publish_packages:
           requires:
             - build
