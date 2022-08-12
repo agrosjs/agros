@@ -78,7 +78,6 @@ workflows:
             - build
           filters:
             branches:
-              only:
-                - /^publish$/
+              ignore: /.*/
             tags:
               only: /^publish\@.+$/
