@@ -61,7 +61,7 @@ jobs:
       - run: git config --global user.signingkey $GPG_KEY_ID
       - run: git config --global commit.gpgsign true
       - run: ssh-keyscan github.com >> ~/.ssh/known_hosts
-      - run: git add -A && git commit -S -m "publish packages" && git push origin publish
+      - run: git add -A && git commit -S -m "publish packages" && git push origin master
 workflows:
   version: 2
   npm_workflow:
