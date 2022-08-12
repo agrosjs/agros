@@ -1,0 +1,10 @@
+{
+  "changes": [
+    {
+      "packageName": "@agros/app",
+      "comment": "Support platforms and remove react deps",
+      "type": "minor"
+    }
+  ],
+  "packageName": "@agros/app"
+}

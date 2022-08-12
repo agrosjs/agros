@@ -1,0 +1,10 @@
+{
+  "changes": [
+    {
+      "packageName": "@agros/platforms",
+      "comment": "Initialization",
+      "type": "patch"
+    }
+  ],
+  "packageName": "@agros/platforms"
+}

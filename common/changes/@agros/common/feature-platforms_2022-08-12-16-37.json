@@ -1,0 +1,10 @@
+{
+  "changes": [
+    {
+      "packageName": "@agros/common",
+      "comment": "Support platforms and provide builder utils",
+      "type": "minor"
+    }
+  ],
+  "packageName": "@agros/common"
+}
