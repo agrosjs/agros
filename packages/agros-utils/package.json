@@ -31,6 +31,7 @@
     "homepage": "https://github.com/agrosjs/agros#readme",
     "devDependencies": {
         "@types/babel__template": "^7.4.1",
+        "@types/customize-cra": "^1.0.2",
         "@types/fs-extra": "^9.0.13",
         "@types/jest": "^28.1.1",
         "@types/lodash": "^4.14.182",
@@ -45,6 +46,7 @@
         "@babel/parser": "^7.18.5",
         "@babel/template": "^7.16.7",
         "@babel/types": "^7.18.4",
+        "customize-cra": "^1.0.0",
         "fs-extra": "^10.1.0",
         "lodash": "^4.17.21"
     }

@@ -1,0 +1,10 @@
+{
+  "changes": [
+    {
+      "packageName": "@agros/cli",
+      "comment": "Update docs",
+      "type": "patch"
+    }
+  ],
+  "packageName": "@agros/cli"
+}

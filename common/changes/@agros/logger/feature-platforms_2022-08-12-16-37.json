@@ -1,0 +1,10 @@
+{
+  "changes": [
+    {
+      "packageName": "@agros/logger",
+      "comment": "Update docs and optimize display",
+      "type": "patch"
+    }
+  ],
+  "packageName": "@agros/logger"
+}

@@ -1,4 +1,4 @@
-import { DI_DEPS_SYMBOL } from '../constants';
+import { DI_DEPS_SYMBOL } from '@agros/common/lib/constants';
 
 export function Injectable(): ClassDecorator {
     return (target) => {

@@ -10,6 +10,7 @@
   <a href="https://github.com/agrosjs/agros/blob/master/LICENSE"><img src="https://img.shields.io/github/license/agrosjs/agros"></a>
   <a href="https://www.npmjs.com/package/@agros/app"><img src="https://img.shields.io/npm/v/@agros/app.svg"></a>
   <a href="https://www.npmjs.com/package/@agros/app"><img src="https://img.shields.io/npm/dm/@agros/app.svg"></a>
+  <a href="https://app.circleci.com/pipelines/github/agrosjs/agros"><img src="https://img.shields.io/circleci/build/github/agrosjs/agros" /></a>
 </p>
 
 ---
@@ -20,23 +21,19 @@ Agros is a framework for building robust, clean and scalable web applications. I
 
 ## Motivation
 
-[React.js](https://reactjs.org) has greatly helped developers build fast and responsive web applications, while its simplicity has also allowed it to accumulate a large number of users in a short period of time, and some large websites have started to be built entirely using React.js. All of this speaks volumes about the success of React.js. However, there are a number of architectural problems with building large web applications using React.js that add up to additional and increasingly large expenses for maintaining and iterating on the project, and Agros was created to solve these problems.
+Web front-end frameworks (such as React.js, Vue.js and so on) has greatly helped developers build fast and responsive web applications, while its simplicity has also allowed it to accumulate a large number of users in a short period of time, and some large websites have started to be built entirely using them. All of this speaks volumes about the success of them. However, there are a number of architectural problems with building large web applications using front-end frameworks that add up to additional and increasingly large expenses for maintaining and iterating on the project, and Agros was created to solve these problems.
 
-Inspired by [Angular](https://angular.io) and [Nest.js](https://nestjs.com/) and based on React.js and [React Router](https://reactrouter.com/), Agros provides an out-of-the-box experience to help developers create highly available, highly maintainable, stable, and low-coupling React applications.
+Inspired by [Angular](https://angular.io) and [Nest.js](https://nestjs.com/) and based on multiple platforms support, Agros provides an out-of-the-box experience to help developers create highly available, highly maintainable, stable, and low-coupling web applications.
 
 ## Features
 
-- React.js compatible
+- Framework irrelevant. It would be OK to use different frameworks to build web applications with Agros, It has a core factory function that governs everything Agros needs and is implemented by the platform to support different front-end frameworks
 - Full CLI supported to help standardize workflow and project structure
-- Built-in modules includes React Router v6, React Error Boundary and others
 
 ## Requirements
 
 - ✅ Use TypeScript to write project
-- ✅ React v16.8.0 or later
-- ✅ React Router DOM v6.2.0 or later
-- ✅ Webpack v5 or later
-- ❇️ Node.js v10.10.0 or later
+- ❇️ Node.js v16.0.0 or later
 
 ## Quick Start
 
@@ -122,7 +119,7 @@ npx agros-app build
 
 Getting involved in the development of Agros is welcomed. But before that, please read the [Code of Conduct](CODE_OF_CONDUCT.md) of Agros. You can also read [this doc](.github/CONTRIBUTING.md) to get more information about contribute your code into this repository.
 
-> Before starting working on the project, please upgrade your Node.js version to v14.15.0 or later.
+> Before starting working on the project, please upgrade your Node.js version to v16.0.0 or later.
 
 # Sponsorship
 

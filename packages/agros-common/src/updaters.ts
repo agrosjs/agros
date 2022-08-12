@@ -7,7 +7,7 @@ import {
     detectImportedClass,
     detectLastImportLine,
 } from './detectors';
-import { parseAST } from '@agros/utils';
+import { parseAST } from '@agros/utils/lib/parse-ast';
 import * as t from '@babel/types';
 import {
     generateConstructorCode,

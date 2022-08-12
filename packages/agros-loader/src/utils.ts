@@ -4,7 +4,7 @@ import {
 } from './types';
 import qs from 'qs';
 import { LoaderContext } from 'webpack';
-import { parseAST } from '@agros/utils';
+import { parseAST } from '@agros/utils/lib/parse-ast';
 import {
     normalizeModulesPath,
     normalizeSrcPath,

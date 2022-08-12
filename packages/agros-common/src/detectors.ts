@@ -1,4 +1,4 @@
-import { parseAST } from '@agros/utils';
+import { parseAST } from '@agros/utils/lib/parse-ast';
 import { ParseResult } from '@babel/parser';
 import {
     CallExpression as BabelCallExpression,

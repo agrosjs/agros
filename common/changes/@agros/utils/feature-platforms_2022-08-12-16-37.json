@@ -1,0 +1,10 @@
+{
+  "changes": [
+    {
+      "packageName": "@agros/utils",
+      "comment": "Add some utilities",
+      "type": "minor"
+    }
+  ],
+  "packageName": "@agros/utils"
+}
