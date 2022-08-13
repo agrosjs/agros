@@ -2,6 +2,38 @@
   "name": "@agros/app",
   "entries": [
     {
+      "version": "0.4.0",
+      "tag": "@agros/app_v0.4.0",
+      "date": "Fri, 12 Aug 2022 17:12:54 GMT",
+      "comments": {
+        "minor": [
+          {
+            "comment": "Support platforms and remove react deps"
+          }
+        ],
+        "dependency": [
+          {
+            "comment": "Updating dependency \"@agros/common\" from `^0.1.1` to `^0.2.0`"
+          },
+          {
+            "comment": "Updating dependency \"@agros/config\" from `^0.1.1` to `^0.2.0`"
+          },
+          {
+            "comment": "Updating dependency \"@agros/loader\" from `^0.0.2` to `^0.1.0`"
+          },
+          {
+            "comment": "Updating dependency \"@agros/logger\" from `^0.0.3` to `^0.0.4`"
+          },
+          {
+            "comment": "Updating dependency \"@agros/platforms\" from `^0.0.0` to `^0.0.1`"
+          },
+          {
+            "comment": "Updating dependency \"@agros/utils\" from `^0.0.3` to `^0.1.0`"
+          }
+        ]
+      }
+    },
+    {
       "version": "0.3.4",
       "tag": "@agros/app_v0.3.4",
       "date": "Fri, 29 Jul 2022 08:55:34 GMT",

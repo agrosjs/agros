@@ -38,7 +38,7 @@
         "typescript": "^4.5.5"
     },
     "name": "@agros/logger",
-    "version": "0.0.3",
+    "version": "0.0.4",
     "description": "Agros logger",
     "dependencies": {
         "cli-spinners": "^2.6.1",
