@@ -2,6 +2,23 @@
   "name": "@agros/config",
   "entries": [
     {
+      "version": "0.2.0",
+      "tag": "@agros/config_v0.2.0",
+      "date": "Fri, 12 Aug 2022 17:12:54 GMT",
+      "comments": {
+        "minor": [
+          {
+            "comment": "Add platforms config"
+          }
+        ],
+        "dependency": [
+          {
+            "comment": "Updating dependency \"@agros/utils\" from `^0.0.3` to `^0.1.0`"
+          }
+        ]
+      }
+    },
+    {
       "version": "0.1.1",
       "tag": "@agros/config_v0.1.1",
       "date": "Fri, 29 Jul 2022 08:55:34 GMT",
