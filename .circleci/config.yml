@@ -4,6 +4,7 @@ aliases: [
     "node_modules",
     "packages",
     "checksum.txt",
+    "common",
     "~/.ssh",
   ],
   &output-paths [
@@ -14,7 +15,7 @@ aliases: [
 defaults: &defaults
   working_directory: ~/repo
   docker:
-    - image: lenconda/rushstack:0.0.2
+    - image: lenconda/rushstack:0.0.3
 jobs:
   install:
     <<: *defaults
@@ -50,6 +51,8 @@ jobs:
           keys:
             - v1-dist-{{ checksum "checksum.txt" }}
             - v1-dependencies-{{ checksum "checksum.txt" }}
+      - run: ls -al packages/agros-app
+      - run: ls -al common/temp
       - run: rush update
       - run: rush build
       - run: npm run sync-readme
@@ -61,7 +64,8 @@ jobs:
       - run: git config --global user.signingkey $GPG_KEY_ID
       - run: git config --global commit.gpgsign true
       - run: ssh-keyscan github.com >> ~/.ssh/known_hosts
-      - run: git add -A && git commit -S -m "publish packages" && git push origin master
+      - run: git add -A && git commit -S -m "publish packages"
+      - run: rgu agrosjs agros --source publish_$(date +%s)
 workflows:
   version: 2
   npm_workflow:
@@ -70,17 +74,19 @@ workflows:
           filters:
             tags:
               only: /.*/
+            branches:
+              ignore: /^publish_\d+$/
       - build:
           requires:
             - install
           filters:
             tags:
               only: /.*/
+            branches:
+              ignore: /^publish_\d+$/
       - publish_packages:
           requires:
             - build
           filters:
             branches:
-              ignore: /.*/
-            tags:
-              only: /^publish\@.+$/
+              only: /^publish$/
