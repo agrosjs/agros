@@ -1,0 +1,10 @@
+{
+  "changes": [
+    {
+      "packageName": "@agros/logger",
+      "comment": "Add success logger",
+      "type": "minor"
+    }
+  ],
+  "packageName": "@agros/logger"
+}
