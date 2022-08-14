@@ -50,7 +50,7 @@
         "@agros/common": "workspace:^0.2.0",
         "@agros/config": "workspace:^0.2.0",
         "@agros/loader": "workspace:^0.1.0",
-        "@agros/logger": "workspace:^0.0.4",
+        "@agros/logger": "workspace:^0.1.0",
         "@agros/platforms": "workspace:^0.0.1",
         "@agros/utils": "workspace:^0.1.0",
         "@babel/core": "^7.18.5",
@@ -98,6 +98,6 @@
         "workbox-webpack-plugin": "^6.5.4"
     },
     "name": "@agros/app",
-    "version": "0.4.0",
+    "version": "0.4.1",
     "description": "Agros app"
 }
