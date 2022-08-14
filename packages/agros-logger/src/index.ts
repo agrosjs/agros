@@ -15,6 +15,10 @@ export class Logger {
         process.stdout.write('\x1b[33m' + 'Warning: ' + message + '\x1b[0m\n');
     }
 
+    public success(message: string) {
+        process.stdout.write('\x1b[32m' + message + '\x1b[0m\n');
+    }
+
     public error(message: string, error?: Error) {
         process.stdout.write('\x1b[31m' + 'Error: ' + message + '\x1b[0m\n');
         if (error) {

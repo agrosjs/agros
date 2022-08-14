@@ -15,7 +15,7 @@ aliases: [
 defaults: &defaults
   working_directory: ~/repo
   docker:
-    - image: lenconda/rushstack:0.0.3
+    - image: lenconda/rushstack:0.0.4
 jobs:
   install:
     <<: *defaults
@@ -53,8 +53,6 @@ jobs:
             - v1-dependencies-{{ checksum "checksum.txt" }}
       - run: ls -al packages/agros-app
       - run: ls -al common/temp
-      - run: rush update
-      - run: rush build
       - run: npm run sync-readme
       - run: rush publish --apply
       - run: rush publish --publish --include-all
