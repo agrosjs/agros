@@ -1,6 +1,13 @@
 # Change Log - @agros/logger
 
-This log was last generated on Fri, 12 Aug 2022 17:12:54 GMT and should not be manually modified.
+This log was last generated on Sun, 14 Aug 2022 13:00:51 GMT and should not be manually modified.
+
+## 0.1.0
+Sun, 14 Aug 2022 13:00:51 GMT
+
+### Minor changes
+
+- Add success logger
 
 ## 0.0.4
 Fri, 12 Aug 2022 17:12:54 GMT
