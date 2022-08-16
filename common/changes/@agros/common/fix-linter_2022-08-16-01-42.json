@@ -1,0 +1,10 @@
+{
+  "changes": [
+    {
+      "packageName": "@agros/common",
+      "comment": "Fix null checks for linter config path",
+      "type": "patch"
+    }
+  ],
+  "packageName": "@agros/common"
+}
