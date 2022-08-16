@@ -36,6 +36,10 @@ export const lintCode = async (
             : eslintConfigPaths.find((pathname) => fs.existsSync(pathname));
     }
 
+    if (!eslintConfigFilePath) {
+        return code;
+    }
+
     const eslint = new ESLint({
         ...otherESLintConfig,
         allowInlineConfig: true,
