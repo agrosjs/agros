@@ -1,6 +1,13 @@
 # Change Log - @agros/common
 
-This log was last generated on Fri, 12 Aug 2022 17:12:54 GMT and should not be manually modified.
+This log was last generated on Tue, 16 Aug 2022 02:23:23 GMT and should not be manually modified.
+
+## 0.2.1
+Tue, 16 Aug 2022 02:23:23 GMT
+
+### Patches
+
+- Fix null checks for linter config path
 
 ## 0.2.0
 Fri, 12 Aug 2022 17:12:54 GMT

@@ -46,7 +46,7 @@
     "version": "0.1.0",
     "description": "Agros loader for Webpack",
     "dependencies": {
-        "@agros/common": "workspace:^0.2.0",
+        "@agros/common": "workspace:^0.2.1",
         "@agros/config": "workspace:^0.2.0",
         "@agros/platforms": "workspace:^0.0.1",
         "@agros/utils": "workspace:^0.1.0",
