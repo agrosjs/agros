@@ -1,0 +1,10 @@
+{
+  "changes": [
+    {
+      "packageName": "@agros/create-app",
+      "comment": "Upgrade package versions in template",
+      "type": "patch"
+    }
+  ],
+  "packageName": "@agros/create-app"
+}
