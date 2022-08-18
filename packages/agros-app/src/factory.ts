@@ -144,7 +144,15 @@ export class Factory implements IFactory {
         }
 
         return dependencyMap;
-    };
+    }
+
+    public generateComponentInstanceDependencyMap() {
+        const map = new Map<ComponentInstance, ImmutableMap<Type, any>>();
+        for (const componentInstance of this.componentInstanceMap.values()) {
+            map.set(componentInstance, this.generateDependencyMap(componentInstance));
+        }
+        return map;
+    }
 
     /**
      * @param {AsyncModuleClass} ModuleClassOrPromise

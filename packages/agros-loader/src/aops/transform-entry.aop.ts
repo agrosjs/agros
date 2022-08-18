@@ -37,6 +37,10 @@ export const transformEntry = createLoaderAOP<ParseResult<File>>(
                 type: 'default',
             },
             {
+                libName: '@agros/app/lib/factory',
+                identifierName: 'Factory',
+            },
+            {
                 libName: platformName,
                 identifierName: 'createRoutes',
             },
@@ -71,9 +75,49 @@ export const transformEntry = createLoaderAOP<ParseResult<File>>(
         tree.program.body.splice(
             lastImportDeclarationIndex + 1,
             0,
-            ...bootstrapDeclarations,
+            ...[
+                t.variableDeclaration(
+                    'const',
+                    [
+                        t.variableDeclarator(
+                            t.identifier('factory'),
+                            t.newExpression(
+                                t.identifier(ensureIdentifierNameMap['Factory'] || 'Factory'),
+                                [
+                                    t.identifier(ensureIdentifierNameMap['platform'] || 'platform'),
+                                ],
+                            ),
+                        ),
+                    ],
+                ),
+                ...bootstrapDeclarations,
+            ],
         );
         tree.program.body.splice(exportDefaultDeclarationIndex + bootstrapDeclarations.length, 1);
+        // TODO
+        // tree.program.body.push(
+        //     t.exportNamedDeclaration(
+        //         t.variableDeclaration(
+        //             'const',
+        //             [
+        //                 t.variableDeclarator(
+        //                     t.identifier('dependencyMap'),
+        //                 ),
+        //             ],
+        //         ),
+        //     ),
+        // );
+        tree.program.body.push(
+            t.exportNamedDeclaration(
+                null,
+                [
+                    t.exportSpecifier(
+                        t.identifier('factory'),
+                        t.identifier('factory'),
+                    ),
+                ],
+            ),
+        );
         tree.program.body.push(...parseAST('bootstrap(' + generate(exportDefaultDeclaration.declaration).code + ');').program.body);
 
         return tree;

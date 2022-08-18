@@ -20,10 +20,6 @@ const platform: Platform = {
                 type: 'namespace',
             },
             {
-                libName: '@agros/app/lib/factory',
-                identifierName: 'Factory',
-            },
-            {
                 libName: '@agros/platform-vue/lib/vue',
                 identifierName: 'Vue',
                 type: 'namespace',
@@ -49,8 +45,6 @@ const platform: Platform = {
                         routerProps,
                         container = document.getElementById('root'),
                     } = configItem;
-
-                    const factory = new ${ensuredImportsMap['Factory'] || 'Factory'}(${ensuredImportsMap['platform'] || 'platform'});
 
                     factory.create(Module).then((items) => {
                         const routes = ${ensuredImportsMap['createRoutes'] || 'createRoutes'}(items).map((route) => {

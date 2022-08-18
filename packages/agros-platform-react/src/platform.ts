@@ -40,10 +40,6 @@ const platform: Platform = {
                 identifierName: 'BrowserRouter',
             },
             {
-                libName: '@agros/app/lib/factory',
-                identifierName: 'Factory',
-            },
-            {
                 libName: '@agros/platform-react/lib/react',
                 identifierName: 'React',
                 type: 'default',
@@ -72,7 +68,6 @@ const platform: Platform = {
 
                 ${reactIdentifier}.useEffect(() => {
                     const RootModule = Module;
-                    const factory = new ${ensuredImportsMap['Factory'] || 'Factory'}(${ensuredImportsMap['platform'] || 'platform'});
                     factory.create(RootModule).then((items) => {
                         setRouterItems(items);
                     });
