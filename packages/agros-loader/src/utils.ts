@@ -25,7 +25,7 @@ export const createLoaderAOP = <R = any>(
     };
 };
 
-export const check = (source: string, context: LoaderContext<{}>, ...checkers: LoaderAOPFunction[]) => {
+export const check = async (source: string, context: LoaderContext<{}>, ...checkers: LoaderAOPFunction[]) => {
     const tree = parseAST(source);
     const parsedQuery = qs.parse((context.resourceQuery || '').replace(/^\?/, '')) || {};
     const aopData: LoaderAOPData = {
@@ -36,10 +36,16 @@ export const check = (source: string, context: LoaderContext<{}>, ...checkers: L
         tree,
     };
 
-    checkers.forEach((checker) => checker(aopData));
+    for (const checker of checkers) {
+        await checker(aopData);
+    }
 };
 
-export const transform = (source: string, context: LoaderContext<{}>, ...transformers: LoaderAOPFunction<ParseResult<File>>[]) => {
+export const transform = async (
+    source: string,
+    context: LoaderContext<{}>,
+    ...transformers: LoaderAOPFunction<ParseResult<File>>[]
+) => {
     const tree = parseAST(source);
     const parsedQuery = qs.parse((context.resourceQuery || '').replace(/^\?/, '')) || {};
     const partialAOPData: Omit<LoaderAOPData, 'tree'> = {
@@ -52,7 +58,7 @@ export const transform = (source: string, context: LoaderContext<{}>, ...transfo
     let result: ParseResult<File>;
 
     for (const transformer of transformers) {
-        const currentTransformResult = transformer({
+        const currentTransformResult = await transformer({
             ...partialAOPData,
             tree: result || tree,
         });
