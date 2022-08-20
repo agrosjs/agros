@@ -13,6 +13,7 @@ import {
 import { ParseResult } from '@babel/parser';
 import { File } from '@babel/types';
 import generate from '@babel/generator';
+import { CodeLocation } from '@agros/platforms';
 
 export const createLoaderAOP = <R = any>(
     aop: (data: LoaderAOPData) => R,
@@ -75,4 +76,15 @@ export const transform = async (
     }
 
     return result;
+};
+
+export const splitCode = (source: string, location?: CodeLocation): [string, string] => {
+    if (!location) {
+        return [source, ''];
+    }
+
+    return [
+        source.slice(0, location.start),
+        source.slice(location.end),
+    ];
 };
