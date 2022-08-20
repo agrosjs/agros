@@ -1,4 +1,5 @@
 import {
+    LoaderAOPBaseData,
     LoaderAOPData,
     LoaderAOPFunction,
 } from './types';
@@ -11,29 +12,34 @@ import {
 } from '@agros/common';
 import { ParseResult } from '@babel/parser';
 import { File } from '@babel/types';
+import generate from '@babel/generator';
 
 export const createLoaderAOP = <R = any>(
     aop: (data: LoaderAOPData) => R,
-    active: (data: LoaderAOPData) => boolean = () => true,
+    active: (data: LoaderAOPBaseData) => boolean = () => true,
 ): LoaderAOPFunction<R> => {
     return (data) => {
         if (!active(data)) {
             return 'NOOP';
         }
 
-        return aop(data);
+        const tree = parseAST(data.source);
+
+        return aop({
+            ...data,
+            tree,
+        });
     };
 };
 
 export const check = async (source: string, context: LoaderContext<{}>, ...checkers: LoaderAOPFunction[]) => {
-    const tree = parseAST(source);
     const parsedQuery = qs.parse((context.resourceQuery || '').replace(/^\?/, '')) || {};
-    const aopData: LoaderAOPData = {
+    const aopData: LoaderAOPBaseData = {
         context,
         parsedQuery,
         srcPath: normalizeSrcPath(),
         modulesPath: normalizeModulesPath(),
-        tree,
+        source,
     };
 
     for (const checker of checkers) {
@@ -46,9 +52,8 @@ export const transform = async (
     context: LoaderContext<{}>,
     ...transformers: LoaderAOPFunction<ParseResult<File>>[]
 ) => {
-    const tree = parseAST(source);
     const parsedQuery = qs.parse((context.resourceQuery || '').replace(/^\?/, '')) || {};
-    const partialAOPData: Omit<LoaderAOPData, 'tree'> = {
+    const partialAOPData: Omit<LoaderAOPBaseData, 'source'> = {
         context,
         parsedQuery,
         srcPath: normalizeSrcPath(),
@@ -58,14 +63,15 @@ export const transform = async (
     let result: ParseResult<File>;
 
     for (const transformer of transformers) {
-        const currentTransformResult = await transformer({
-            ...partialAOPData,
-            tree: result || tree,
-        });
-
-        if (currentTransformResult && currentTransformResult !== 'NOOP') {
-            result = currentTransformResult;
-        }
+        try {
+            const currentTransformResult = await transformer({
+                ...partialAOPData,
+                source: result ? generate(result).code : source,
+            });
+            if (currentTransformResult && currentTransformResult !== 'NOOP') {
+                result = currentTransformResult;
+            }
+        } catch (e) {}
     }
 
     return result;

@@ -34,7 +34,7 @@ export default function(source) {
             transformEntry,
             transformComponentDecorator,
             transformComponentFile,
-        );
+        ).catch((e) => Promise.resolve(null));
     }).then((newAST) => {
         if (!newAST) {
             return source;
