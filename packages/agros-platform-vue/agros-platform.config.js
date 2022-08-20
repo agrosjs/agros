@@ -40,6 +40,20 @@ module.exports = defineBuilderConfig((config) => {
     }
 
     config.plugins?.push(new VueLoaderPlugin());
+    config.module.rules = config.module?.rules?.map((rule) => {
+        if (
+            typeof rule.use === 'string' && (
+                rule.use.indexOf('@agros/loader') !== -1 ||
+                /packages\/agros-loader/.test(rule.use)
+            )
+        ) {
+            return {
+                ...rule,
+                test: /\.(js|jsx|ts|tsx|vue)$/,
+            };
+        }
+        return rule;
+    });
 
     return config;
 });
