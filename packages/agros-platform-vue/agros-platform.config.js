@@ -23,7 +23,6 @@ module.exports = defineBuilderConfig((config) => {
                     },
                 },
             },
-            require.resolve('./lib/loaders/component-file.loader.js'),
         ],
     });
 

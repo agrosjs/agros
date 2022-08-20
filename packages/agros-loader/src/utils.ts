@@ -10,21 +10,22 @@ import {
     normalizeModulesPath,
     normalizeSrcPath,
 } from '@agros/common';
-import { ParseResult } from '@babel/parser';
-import { File } from '@babel/types';
-import generate from '@babel/generator';
-import { CodeLocation } from '@agros/platforms';
+import { CodeLocation } from '@agros/utils/lib/platform-loader';
 
-export const createLoaderAOP = <R = any>(
-    aop: (data: LoaderAOPData) => R,
+export const createLoaderAOP = <T = string>(
+    aop: (data: LoaderAOPData) => T,
     active: (data: LoaderAOPBaseData) => boolean = () => true,
-): LoaderAOPFunction<R> => {
+): LoaderAOPFunction<T> => {
     return (data) => {
         if (!active(data)) {
             return 'NOOP';
         }
 
-        const tree = parseAST(data.source);
+        let tree;
+
+        try {
+            tree = parseAST(data.source);
+        } catch (e) {}
 
         return aop({
             ...data,
@@ -51,7 +52,7 @@ export const check = async (source: string, context: LoaderContext<{}>, ...check
 export const transform = async (
     source: string,
     context: LoaderContext<{}>,
-    ...transformers: LoaderAOPFunction<ParseResult<File>>[]
+    ...transformers: LoaderAOPFunction[]
 ) => {
     const parsedQuery = qs.parse((context.resourceQuery || '').replace(/^\?/, '')) || {};
     const partialAOPData: Omit<LoaderAOPBaseData, 'source'> = {
@@ -61,13 +62,13 @@ export const transform = async (
         modulesPath: normalizeModulesPath(),
     };
 
-    let result: ParseResult<File>;
+    let result: string;
 
     for (const transformer of transformers) {
         try {
             const currentTransformResult = await transformer({
                 ...partialAOPData,
-                source: result ? generate(result).code : source,
+                source: result || source,
             });
             if (currentTransformResult && currentTransformResult !== 'NOOP') {
                 result = currentTransformResult;
@@ -80,7 +81,7 @@ export const transform = async (
 
 export const splitCode = (source: string, location?: CodeLocation): [string, string] => {
     if (!location) {
-        return [source, ''];
+        return ['', ''];
     }
 
     return [

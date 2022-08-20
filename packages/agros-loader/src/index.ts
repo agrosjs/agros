@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-this-alias */
 /* eslint-disable @typescript-eslint/no-invalid-this */
-import generate from '@babel/generator';
 import {
     check,
     transform,
@@ -34,14 +33,15 @@ export default function(source) {
             transformEntry,
             transformComponentDecorator,
             transformComponentFile,
-        ).catch((e) => Promise.resolve(null));
-    }).then((newAST) => {
-        if (!newAST) {
+        );
+    }).then((newCode) => {
+        if (!newCode) {
             return source;
-        } else {
-            return generate(newAST).code;
         }
+        return newCode;
     }).then((code) => {
         return callback(null, code);
-    }).catch((e) => callback(e, source));
+    }).catch((e) => {
+        callback(e, source);
+    });
 }

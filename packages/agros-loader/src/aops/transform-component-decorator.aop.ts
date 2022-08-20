@@ -27,6 +27,7 @@ import _ from 'lodash';
 import qs from 'qs';
 import { ProjectConfigParser } from '@agros/config';
 import { Platform } from '@agros/platforms/lib/platform.interface';
+import generate from '@babel/generator';
 
 export const transformComponentDecorator = createLoaderAOP(
     ({
@@ -247,7 +248,7 @@ export const transformComponentDecorator = createLoaderAOP(
             tree.program.body.push(template.ast(`export default ${componentClassDeclaration.id.name}`) as Statement);
         }
 
-        return tree;
+        return generate(tree).code;
     },
     ({ context }) => getCollectionType(context.resourcePath) === 'component',
 );

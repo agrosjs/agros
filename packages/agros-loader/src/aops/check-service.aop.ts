@@ -6,7 +6,7 @@ import {
     getCollectionType,
 } from '@agros/common';
 
-export const checkService = createLoaderAOP(
+export const checkService = createLoaderAOP<null>(
     ({ tree }) => {
         const declaredClasses = detectExports<t.ClassDeclaration>(tree, 'ClassDeclaration');
 
@@ -23,6 +23,8 @@ export const checkService = createLoaderAOP(
         } else if (decorators.length > 1) {
             throw new Error('A service should only call `Injectable` function once');
         }
+
+        return null;
     },
     ({ context }) => getCollectionType(context.resourcePath) === 'service',
 );

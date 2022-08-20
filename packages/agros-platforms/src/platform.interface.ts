@@ -7,16 +7,6 @@ export interface FactoryCodeConfig {
     factoryCode?: string;
 }
 
-export interface CodeLocation {
-    start: number;
-    end: number;
-}
-
-export interface ComponentScript {
-    content: string;
-    location?: CodeLocation;
-}
-
 export interface Platform {
     getLoaderImports: () => Omit<EnsureImportOptions, 'statements'>[];
     getDecoratorImports: () => Omit<EnsureImportOptions, 'statements'>[];
@@ -28,5 +18,4 @@ export interface Platform {
         lazy: boolean,
     ) => FactoryCodeConfig;
     generateComponent: <T = any>(componentInstance: ComponentInstance, context: Factory) => T;
-    getComponentScript?: (source: string) => ComponentScript;
 }

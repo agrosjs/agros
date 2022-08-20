@@ -5,8 +5,6 @@ import {
 } from '@agros/utils/lib/ensure-import';
 import { parseAST } from '@agros/utils/lib/parse-ast';
 import { PlatformLoader } from '@agros/utils/lib/platform-loader';
-import { ParseResult } from '@babel/parser';
-import { File } from '@babel/types';
 import * as path from 'path';
 import generate from '@babel/generator';
 import { createLoaderAOP } from '../utils';
@@ -14,7 +12,7 @@ import * as t from '@babel/types';
 import { ProjectConfigParser } from '@agros/config';
 import { Platform } from '@agros/platforms/lib/platform.interface';
 
-export const transformEntry = createLoaderAOP<ParseResult<File>>(
+export const transformEntry = createLoaderAOP(
     ({ tree }) => {
         let exportDefaultDeclarationIndex: number;
         let lastImportDeclarationIndex: number;
@@ -120,7 +118,7 @@ export const transformEntry = createLoaderAOP<ParseResult<File>>(
         );
         tree.program.body.push(...parseAST('bootstrap(' + generate(exportDefaultDeclaration.declaration).code + ');').program.body);
 
-        return tree;
+        return generate(tree).code;
     },
     ({
         srcPath,
