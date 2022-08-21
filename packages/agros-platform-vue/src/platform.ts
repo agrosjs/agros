@@ -46,7 +46,7 @@ const platform: Platform = {
                         container = document.getElementById('root'),
                     } = configItem;
 
-                    factory.create(Module).then((items) => {
+                    ${ensuredImportsMap['factory'] || 'factory'}.create(Module).then((items) => {
                         const routes = ${ensuredImportsMap['createRoutes'] || 'createRoutes'}(items).map((route) => {
                             return {
                                 ...route,

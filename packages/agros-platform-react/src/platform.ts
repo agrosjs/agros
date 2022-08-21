@@ -68,7 +68,7 @@ const platform: Platform = {
 
                 ${reactIdentifier}.useEffect(() => {
                     const RootModule = Module;
-                    factory.create(RootModule).then((items) => {
+                    ${ensuredImportsMap['factory'] || 'factory'}.create(RootModule).then((items) => {
                         setRouterItems(items);
                     });
                 }, [Module]);

@@ -49,7 +49,7 @@ export const transformComponentFile = createLoaderAOP(
 
         const newScriptCode = generate(tree).code;
         const [headCode, tailCode] = splitCode(source, codeScript?.location);
-        const newCode = [headCode, newScriptCode, tailCode].join('\n');
+        let newCode = [headCode, newScriptCode, tailCode].join('\n');
 
         return newCode;
     },

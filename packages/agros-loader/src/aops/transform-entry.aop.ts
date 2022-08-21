@@ -11,9 +11,13 @@ import { createLoaderAOP } from '../utils';
 import * as t from '@babel/types';
 import { ProjectConfigParser } from '@agros/config';
 import { Platform } from '@agros/platforms/lib/platform.interface';
+import * as fsPatch from '../fs-patch';
 
 export const transformEntry = createLoaderAOP(
-    async ({ tree }) => {
+    async ({
+        tree,
+        context,
+    }) => {
         let exportDefaultDeclarationIndex: number;
         let lastImportDeclarationIndex: number;
         const ensureIdentifierNameMap: Record<string, string> = {};
@@ -21,6 +25,16 @@ export const transformEntry = createLoaderAOP(
         const platformName = configParser.getConfig<string>('platform');
         const platformLoader = new PlatformLoader(platformName);
         const platform = platformLoader.getPlatform<Platform>();
+
+        fsPatch.add(context.fs, {
+            path: 'src/agros-factory-definition.ts',
+            content: [
+                'import { Factory } from "@agros/app/lib/factory";',
+                `import platform from '${platformName}';`,
+                'const factory = new Factory(platform);',
+                'export default factory;',
+            ].join('\n'),
+        });
 
         const [exportDefaultDeclaration] = detectExports<t.ArrayExpression>(tree, 'ArrayExpression');
 
@@ -35,12 +49,13 @@ export const transformEntry = createLoaderAOP(
                 type: 'default',
             },
             {
-                libName: '@agros/app/lib/factory',
-                identifierName: 'Factory',
-            },
-            {
                 libName: platformName,
                 identifierName: 'createRoutes',
+            },
+            {
+                libName: './agros-factory-definition',
+                identifierName: 'factory',
+                type: 'default',
             },
         ] as Omit<EnsureImportOptions, 'statements'>[]).concat(platform.getLoaderImports());
 
@@ -73,52 +88,13 @@ export const transformEntry = createLoaderAOP(
         tree.program.body.splice(
             lastImportDeclarationIndex + 1,
             0,
-            ...[
-                t.variableDeclaration(
-                    'const',
-                    [
-                        t.variableDeclarator(
-                            t.identifier('factory'),
-                            t.newExpression(
-                                t.identifier(ensureIdentifierNameMap['Factory'] || 'Factory'),
-                                [
-                                    t.identifier(ensureIdentifierNameMap['platform'] || 'platform'),
-                                ],
-                            ),
-                        ),
-                    ],
-                ),
-                ...bootstrapDeclarations,
-            ],
+            ...bootstrapDeclarations,
         );
         tree.program.body.splice(exportDefaultDeclarationIndex + bootstrapDeclarations.length, 1);
-        // TODO
-        // tree.program.body.push(
-        //     t.exportNamedDeclaration(
-        //         t.variableDeclaration(
-        //             'const',
-        //             [
-        //                 t.variableDeclarator(
-        //                     t.identifier('dependencyMap'),
-        //                 ),
-        //             ],
-        //         ),
-        //     ),
-        // );
-        tree.program.body.push(
-            t.exportNamedDeclaration(
-                null,
-                [
-                    t.exportSpecifier(
-                        t.identifier('factory'),
-                        t.identifier('factory'),
-                    ),
-                ],
-            ),
-        );
         tree.program.body.push(...parseAST('bootstrap(' + generate(exportDefaultDeclaration.declaration).code + ');').program.body);
+        const newCode = generate(tree).code;
 
-        return generate(tree).code;
+        return newCode;
     },
     async ({
         srcPath,
