@@ -9,7 +9,7 @@ import generate from '@babel/generator';
 import { parseAST } from '@agros/utils';
 
 export const transformComponentFile = createLoaderAOP(
-    ({
+    async ({
         parsedQuery,
         source,
         tree: astTree,
@@ -53,5 +53,5 @@ export const transformComponentFile = createLoaderAOP(
 
         return newCode;
     },
-    ({ parsedQuery }) => parsedQuery.component && parsedQuery.component === 'true',
+    async ({ parsedQuery }) => parsedQuery.component && parsedQuery.component === 'true',
 );

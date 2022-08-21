@@ -7,7 +7,7 @@ import {
 } from '@agros/common';
 
 export const checkService = createLoaderAOP<null>(
-    ({ tree }) => {
+    async ({ tree }) => {
         const declaredClasses = detectExports<t.ClassDeclaration>(tree, 'ClassDeclaration');
 
         if (declaredClasses.length > 1) {
@@ -26,5 +26,5 @@ export const checkService = createLoaderAOP<null>(
 
         return null;
     },
-    ({ context }) => getCollectionType(context.resourcePath) === 'service',
+    async ({ context }) => getCollectionType(context.resourcePath) === 'service',
 );

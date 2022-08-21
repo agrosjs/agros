@@ -9,7 +9,7 @@ import {
 } from '@agros/common';
 
 export const checkModule = createLoaderAOP<null>(
-    ({
+    async ({
         tree,
         context,
         modulesPath,
@@ -38,5 +38,5 @@ export const checkModule = createLoaderAOP<null>(
 
         return null;
     },
-    ({ context }) => getCollectionType(context.resourcePath) === 'module',
+    async ({ context }) => getCollectionType(context.resourcePath) === 'module',
 );

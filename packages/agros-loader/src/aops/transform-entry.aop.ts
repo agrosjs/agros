@@ -13,7 +13,7 @@ import { ProjectConfigParser } from '@agros/config';
 import { Platform } from '@agros/platforms/lib/platform.interface';
 
 export const transformEntry = createLoaderAOP(
-    ({ tree }) => {
+    async ({ tree }) => {
         let exportDefaultDeclarationIndex: number;
         let lastImportDeclarationIndex: number;
         const ensureIdentifierNameMap: Record<string, string> = {};
@@ -120,7 +120,7 @@ export const transformEntry = createLoaderAOP(
 
         return generate(tree).code;
     },
-    ({
+    async ({
         srcPath,
         context,
     }) => {

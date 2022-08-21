@@ -30,7 +30,7 @@ import { Platform } from '@agros/platforms/lib/platform.interface';
 import generate from '@babel/generator';
 
 export const transformComponentDecorator = createLoaderAOP(
-    ({
+    async ({
         context,
         tree,
     }) => {
@@ -250,5 +250,5 @@ export const transformComponentDecorator = createLoaderAOP(
 
         return generate(tree).code;
     },
-    ({ context }) => getCollectionType(context.resourcePath) === 'component',
+    async ({ context }) => getCollectionType(context.resourcePath) === 'component',
 );

@@ -14,4 +14,4 @@ export interface LoaderAOPData extends LoaderAOPBaseData {
     tree?: ParseResult<File>;
 }
 
-export type LoaderAOPFunction<T = string> = (data: LoaderAOPBaseData) => T | 'NOOP';
+export type LoaderAOPFunction<T = string> = (data: LoaderAOPBaseData) => Promise<T | 'NOOP'>;

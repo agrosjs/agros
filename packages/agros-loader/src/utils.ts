@@ -13,11 +13,11 @@ import {
 import { CodeLocation } from '@agros/utils/lib/platform-loader';
 
 export const createLoaderAOP = <T = string>(
-    aop: (data: LoaderAOPData) => T,
-    active: (data: LoaderAOPBaseData) => boolean = () => true,
+    aop: (data: LoaderAOPData) => Promise<T>,
+    active: (data: LoaderAOPBaseData) => Promise<boolean> = () => Promise.resolve(true),
 ): LoaderAOPFunction<T> => {
-    return (data) => {
-        if (!active(data)) {
+    return async (data) => {
+        if (!(await active(data))) {
             return 'NOOP';
         }
 
@@ -27,7 +27,7 @@ export const createLoaderAOP = <T = string>(
             tree = parseAST(data.source);
         } catch (e) {}
 
-        return aop({
+        return await aop({
             ...data,
             tree,
         });
