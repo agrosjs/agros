@@ -95,28 +95,26 @@ const platform: Platform = {
                 );
             };
 
-            const bootstrap = (configList) => {
-                if (!Array.isArray(configList)) {
+            const bootstrap = (config) => {
+                if (!config) {
                     return;
                 }
 
-                for (const configItem of configList) {
-                    const {
+                const {
+                    module: Module,
+                    RouterComponent,
+                    routerProps,
+                    container = document.getElementById('root'),
+                } = config;
+
+                ${ensuredImportsMap['render'] || 'render'}(
+                    ${reactIdentifier}.createElement(RootContainer, {
                         module: Module,
                         RouterComponent,
                         routerProps,
-                        container = document.getElementById('root'),
-                    } = configItem;
-
-                    ${ensuredImportsMap['render'] || 'render'}(
-                        ${reactIdentifier}.createElement(RootContainer, {
-                            module: Module,
-                            RouterComponent,
-                            routerProps,
-                        }),
-                        container,
-                    );
-                }
+                    }),
+                    container,
+                );
             };
         `;
     },

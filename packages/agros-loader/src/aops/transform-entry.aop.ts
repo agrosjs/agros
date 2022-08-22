@@ -28,18 +28,19 @@ export const transformEntry = createLoaderAOP(
 
         fsPatch.add(context.fs, {
             path: 'src/agros-factory-definition.ts',
-            content: [
-                'import { Factory } from "@agros/app/lib/factory";',
-                `import platform from '${platformName}';`,
-                'const factory = new Factory(platform);',
-                'export default factory;',
-            ].join('\n'),
+            content: `
+                import { Factory } from '@agros/app/lib/factory';
+                import platform from '${platformName}';
+                // import config from '${configParser.getEntry()}';
+                const factory = new Factory(platform);
+                export default factory;
+            `,
         });
 
-        const [exportDefaultDeclaration] = detectExports<t.ArrayExpression>(tree, 'ArrayExpression');
+        const [exportDefaultDeclaration] = detectExports<t.ObjectExpression>(tree, 'ObjectExpression');
 
         if (!exportDefaultDeclaration) {
-            throw new Error('The entry of an project should export an array of config');
+            throw new Error('The entry of an project should export an object of config');
         }
 
         const imports = ([

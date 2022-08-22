@@ -33,37 +33,31 @@ const platform: Platform = {
         const vueIdentifier = ensuredImportsMap['Vue'] || 'Vue';
         const vueRouterIdentifier = ensuredImportsMap['VueRouter'] || 'VueRouter';
         return `
-            function bootstrap(configList) {
-                if (!Array.isArray(configList)) {
-                    return;
-                }
+            function bootstrap(config) {
+                const {
+                    module: Module,
+                    RouterComponent = ${vueRouterIdentifier}.createWebHashHistory(),
+                    routerProps,
+                    container = document.getElementById('root'),
+                } = config;
 
-                for (const configItem of configList) {
-                    const {
-                        module: Module,
-                        RouterComponent = ${vueRouterIdentifier}.createWebHashHistory(),
-                        routerProps,
-                        container = document.getElementById('root'),
-                    } = configItem;
-
-                    ${ensuredImportsMap['factory'] || 'factory'}.create(Module).then((items) => {
-                        const routes = ${ensuredImportsMap['createRoutes'] || 'createRoutes'}(items).map((route) => {
-                            return {
-                                ...route,
-                                path: '/' + route.path,
-                            };
-                        });
-                        const router = ${vueRouterIdentifier}.createRouter({
-                            history: RouterComponent,
-                            routes,
-                        });
-                        const app = ${vueIdentifier}.createApp({
-                            template: '<router-view></router-view>',
-                        });
-                        app.use(router);
-                        app.mount(container);
+                ${ensuredImportsMap['factory'] || 'factory'}.create(Module).then((items) => {
+                    const routes = ${ensuredImportsMap['createRoutes'] || 'createRoutes'}(items).map((route) => {
+                        return {
+                            ...route,
+                            path: '/' + route.path,
+                        };
                     });
-                }
+                    const router = ${vueRouterIdentifier}.createRouter({
+                        history: RouterComponent,
+                        routes,
+                    });
+                    const app = ${vueIdentifier}.createApp({
+                        template: '<router-view></router-view>',
+                    });
+                    app.use(router);
+                    app.mount(container);
+                });
             };
         `;
     },
