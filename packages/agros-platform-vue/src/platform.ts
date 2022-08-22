@@ -40,24 +40,22 @@ const platform: Platform = {
                     routerProps,
                     container = document.getElementById('root'),
                 } = config;
-
-                ${ensuredImportsMap['factory'] || 'factory'}.create(Module).then((items) => {
-                    const routes = ${ensuredImportsMap['createRoutes'] || 'createRoutes'}(items).map((route) => {
-                        return {
-                            ...route,
-                            path: '/' + route.path,
-                        };
-                    });
-                    const router = ${vueRouterIdentifier}.createRouter({
-                        history: RouterComponent,
-                        routes,
-                    });
-                    const app = ${vueIdentifier}.createApp({
-                        template: '<router-view></router-view>',
-                    });
-                    app.use(router);
-                    app.mount(container);
+                const routeItems = ${ensuredImportsMap['factory'] || 'factory'}.create(Module);
+                const routes = ${ensuredImportsMap['createRoutes'] || 'createRoutes'}(routeItems).map((route) => {
+                    return {
+                        ...route,
+                        path: '/' + route.path,
+                    };
                 });
+                const router = ${vueRouterIdentifier}.createRouter({
+                    history: RouterComponent,
+                    routes,
+                });
+                const app = ${vueIdentifier}.createApp({
+                    template: '<router-view></router-view>',
+                });
+                app.use(router);
+                app.mount(container);
             };
         `;
     },

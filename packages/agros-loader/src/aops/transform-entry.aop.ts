@@ -33,6 +33,7 @@ export const transformEntry = createLoaderAOP(
                 import platform from '${platformName}';
                 // import config from '${configParser.getEntry()}';
                 const factory = new Factory(platform);
+                // export const elements = factory.create(config.Module);
                 export default factory;
             `,
         });

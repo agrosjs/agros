@@ -42,7 +42,7 @@ export type ComponentMetadata = Omit<ComponentDecoratorOptions, 'declarations'> 
 };
 
 export type Type<T = any> = new (...args: Array<any>) => T;
-export type AsyncModuleClass<T = any> = Type<T> | Promise<Type>;
+// export type AsyncModuleClass<T = any> = Type<T> | Promise<Type>;
 
 export interface RouteProps<C = any, R = any> {
     caseSensitive?: boolean;
@@ -53,7 +53,7 @@ export interface RouteProps<C = any, R = any> {
 }
 
 export interface RouteOptionItem<T = any> extends Omit<RouteProps, 'element' | 'children'> {
-    useModuleClass?: AsyncModuleClass;
+    useModuleClass?: Type;
     useComponentClass?: Type;
     children?: RouteOptionItem<T>[];
 }
@@ -79,7 +79,7 @@ export interface BootstrapConfigItem extends RootContainerProps {
 }
 
 export interface ModuleDecoratorOptions {
-    imports?: Array<AsyncModuleClass>;
+    imports?: Array<Type>;
     providers?: Array<Type>;
     components?: Array<Type>;
     routes?: Array<RouteOptionItem>;
@@ -87,7 +87,7 @@ export interface ModuleDecoratorOptions {
 }
 
 export interface ModuleMetadata {
-    imports: Set<AsyncModuleClass>;
+    imports: Set<Type>;
     providers: Set<Type<any>>;
     exports: Set<Type<any>>;
     components: Set<Type<any>>;
@@ -111,7 +111,7 @@ export interface ContainerForwardedComponentProps<Props> {
 export type UseInterceptorsDecoratorOptions = Type[];
 
 export interface Factory {
-    create: <T = any>(ModuleClass: Type<T>) => Promise<RouterItem[]>;
+    create: <T = any>(ModuleClass: Type<T>) => RouterItem[];
     generateDependencyMap: (componentInstance: ComponentInstance) => ImmutableMap<Type<any>, any>;
 }
 

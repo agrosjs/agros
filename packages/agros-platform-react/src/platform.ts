@@ -68,9 +68,8 @@ const platform: Platform = {
 
                 ${reactIdentifier}.useEffect(() => {
                     const RootModule = Module;
-                    ${ensuredImportsMap['factory'] || 'factory'}.create(RootModule).then((items) => {
-                        setRouterItems(items);
-                    });
+                    const routeItems = ${ensuredImportsMap['factory'] || 'factory'}.create(RootModule);
+                    setRouterItems(routeItems);
                 }, [Module]);
 
                 ${reactIdentifier}.useEffect(() => {
