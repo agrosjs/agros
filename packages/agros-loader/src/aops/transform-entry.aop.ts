@@ -18,7 +18,6 @@ export const transformEntry = createLoaderAOP(
         tree,
         context,
     }) => {
-        let exportDefaultDeclarationIndex: number;
         let lastImportDeclarationIndex: number;
         const ensureIdentifierNameMap: Record<string, string> = {};
         const configParser = new ProjectConfigParser();
@@ -31,9 +30,7 @@ export const transformEntry = createLoaderAOP(
             content: `
                 import { Factory } from '@agros/app/lib/factory';
                 import platform from '${platformName}';
-                // import config from '${configParser.getEntry()}';
                 const factory = new Factory(platform);
-                // export const elements = factory.create(config.Module);
                 export default factory;
             `,
         });
@@ -80,9 +77,6 @@ export const transformEntry = createLoaderAOP(
             if (statement.type === 'ImportDeclaration') {
                 lastImportDeclarationIndex = index;
             }
-            if (statement.type === 'ExportDefaultDeclaration') {
-                exportDefaultDeclarationIndex = index;
-            }
         }
 
         const bootstrapDeclarations = parseAST(bootstrapDeclarationStr).program.body;
@@ -90,10 +84,16 @@ export const transformEntry = createLoaderAOP(
         tree.program.body.splice(
             lastImportDeclarationIndex + 1,
             0,
-            ...bootstrapDeclarations,
+            t.functionDeclaration(
+                t.identifier('Agros$$bootstrap'),
+                [
+                    t.identifier('config'),
+                ],
+                t.blockStatement(bootstrapDeclarations),
+            ),
         );
-        tree.program.body.splice(exportDefaultDeclarationIndex + bootstrapDeclarations.length, 1);
-        tree.program.body.push(...parseAST('bootstrap(' + generate(exportDefaultDeclaration.declaration).code + ');').program.body);
+        tree.program.body.splice(lastImportDeclarationIndex + 2, 1);
+        tree.program.body.push(...parseAST('Agros$$bootstrap(' + generate(exportDefaultDeclaration.declaration).code + ');').program.body);
         const newCode = generate(tree).code;
 
         return newCode;

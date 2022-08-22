@@ -61,31 +61,15 @@ const platform: Platform = {
     },
     getBootstrapCode(ensuredImportsMap: Record<string, string>): string {
         const reactIdentifier = ensuredImportsMap['React'] || 'React';
+        const factoryIdentifier = ensuredImportsMap['factory'] || 'factory';
         return `
-            const useRouteElements = (Module) => {
-                const [routerItems, setRouterItems] = ${reactIdentifier}.useState([]);
-                const [elements, setElements] = ${reactIdentifier}.useState(null);
-
-                ${reactIdentifier}.useEffect(() => {
-                    const RootModule = Module;
-                    const routeItems = ${ensuredImportsMap['factory'] || 'factory'}.create(RootModule);
-                    setRouterItems(routeItems);
-                }, [Module]);
-
-                ${reactIdentifier}.useEffect(() => {
-                    const elements = ${ensuredImportsMap['createRoutes'] || 'createRoutes'}(routerItems);
-                    setElements(elements);
-                }, [routerItems]);
-
-                return elements;
-            };
-
             const RootContainer = ({
-                module: Module,
+                Module,
                 routerProps = {},
                 RouterComponent = ${ensuredImportsMap['BrowserRouter'] || 'BrowserRouter'},
             }) => {
-                const elements = useRouteElements(Module);
+                const routeItems = ${factoryIdentifier}.create(Module);
+                const elements = ${ensuredImportsMap['createRoutes'] || 'createRoutes'}(routeItems);
 
                 return ${reactIdentifier}.createElement(
                     RouterComponent,
@@ -94,27 +78,21 @@ const platform: Platform = {
                 );
             };
 
-            const bootstrap = (config) => {
-                if (!config) {
-                    return;
-                }
+            const {
+                module: Module,
+                RouterComponent,
+                routerProps,
+                container = document.getElementById('root'),
+            } = config;
 
-                const {
-                    module: Module,
+            ${ensuredImportsMap['render'] || 'render'}(
+                ${reactIdentifier}.createElement(RootContainer, {
+                    Module,
                     RouterComponent,
                     routerProps,
-                    container = document.getElementById('root'),
-                } = config;
-
-                ${ensuredImportsMap['render'] || 'render'}(
-                    ${reactIdentifier}.createElement(RootContainer, {
-                        module: Module,
-                        RouterComponent,
-                        routerProps,
-                    }),
-                    container,
-                );
-            };
+                }),
+                container,
+            );
         `;
     },
     getComponentFactoryCode(map: Record<string, string>, filePath: string, lazy = false) {

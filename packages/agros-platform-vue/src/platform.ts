@@ -33,30 +33,28 @@ const platform: Platform = {
         const vueIdentifier = ensuredImportsMap['Vue'] || 'Vue';
         const vueRouterIdentifier = ensuredImportsMap['VueRouter'] || 'VueRouter';
         return `
-            function bootstrap(config) {
-                const {
-                    module: Module,
-                    RouterComponent = ${vueRouterIdentifier}.createWebHashHistory(),
-                    routerProps,
-                    container = document.getElementById('root'),
-                } = config;
-                const routeItems = ${ensuredImportsMap['factory'] || 'factory'}.create(Module);
-                const routes = ${ensuredImportsMap['createRoutes'] || 'createRoutes'}(routeItems).map((route) => {
-                    return {
-                        ...route,
-                        path: '/' + route.path,
-                    };
-                });
-                const router = ${vueRouterIdentifier}.createRouter({
-                    history: RouterComponent,
-                    routes,
-                });
-                const app = ${vueIdentifier}.createApp({
-                    template: '<router-view></router-view>',
-                });
-                app.use(router);
-                app.mount(container);
-            };
+            const {
+                module: Module,
+                RouterComponent = ${vueRouterIdentifier}.createWebHashHistory(),
+                routerProps,
+                container = document.getElementById('root'),
+            } = config;
+            const routeItems = ${ensuredImportsMap['factory'] || 'factory'}.create(Module);
+            const routes = ${ensuredImportsMap['createRoutes'] || 'createRoutes'}(routeItems).map((route) => {
+                return {
+                    ...route,
+                    path: '/' + route.path,
+                };
+            });
+            const router = ${vueRouterIdentifier}.createRouter({
+                history: RouterComponent,
+                routes,
+            });
+            const app = ${vueIdentifier}.createApp({
+                template: '<router-view></router-view>',
+            });
+            app.use(router);
+            app.mount(container);
         `;
     },
     getComponentFactoryCode(map: Record<string, string>, filePath: string, lazy = false) {
