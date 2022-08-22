@@ -1,10 +1,10 @@
 lockfileVersion: 5.4
 
 specifiers:
-  '@agros/common': workspace:^0.1.1
-  '@agros/config': workspace:^0.1.1
-  '@agros/platforms': workspace:^0.0.0
-  '@agros/utils': workspace:^0.0.3
+  '@agros/common': workspace:^0.2.1
+  '@agros/config': workspace:^0.2.0
+  '@agros/platforms': workspace:^0.0.1
+  '@agros/utils': workspace:^0.1.0
   '@babel/generator': ^7.18.2
   '@babel/parser': ^7.18.5
   '@babel/template': ^7.16.7
@@ -14,11 +14,13 @@ specifiers:
   '@types/ejs': ^3.1.1
   '@types/loader-utils': ^2.0.3
   '@types/qs': ^6.9.7
+  '@types/uuid': ^8.3.4
   '@types/webpack': ^5.28.0
   ejs: ^3.1.8
   loader-utils: ^3.2.0
   lodash: ^4.17.21
   qs: ^6.11.0
+  uuid: ^8.3.2
 
 dependencies:
   '@agros/common': link:../agros-common
@@ -33,6 +35,7 @@ dependencies:
   loader-utils: 3.2.0
   lodash: 4.17.21
   qs: 6.11.0
+  uuid: 8.3.2
 
 devDependencies:
   '@types/babel__generator': 7.6.4
@@ -40,6 +43,7 @@ devDependencies:
   '@types/ejs': 3.1.1
   '@types/loader-utils': 2.0.3
   '@types/qs': 6.9.7
+  '@types/uuid': 8.3.4
   '@types/webpack': 5.28.0
 
 packages:
@@ -194,6 +198,10 @@ packages:
     resolution: {integrity: sha512-0yeUr92L3r0GLRnBOvtYK1v2SjqMIqQDHMl7GLb+l2L8+6LSFWEEWEIgVsPdMn5ImLM8qzWT8xFPtQYpp8co0g==}
     dependencies:
       source-map: 0.6.1
+    dev: true
+
+  /@types/uuid/8.3.4:
+    resolution: {integrity: sha512-c/I8ZRb51j+pYGAu5CrFMRxqZ2ke4y2grEBO5AUjgSkSk+qT2Ea+OdWElz/OiMf5MNpn2b17kuVBwZLQJXzihw==}
     dev: true
 
   /@types/webpack-sources/3.2.0:
@@ -862,6 +870,11 @@ packages:
     dependencies:
       punycode: 2.1.1
     dev: true
+
+  /uuid/8.3.2:
+    resolution: {integrity: sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==}
+    hasBin: true
+    dev: false
 
   /watchpack/2.4.0:
     resolution: {integrity: sha512-Lcvm7MGST/4fup+ifyKi2hjyIAwcdI4HRgtvTpIUxBRhB+RFtUh8XtDOxUfctVCnhVi+QQj49i91OyvzkJl6cg==}

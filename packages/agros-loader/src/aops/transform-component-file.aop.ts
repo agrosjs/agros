@@ -51,6 +51,8 @@ export const transformComponentFile = createLoaderAOP(
         const [headCode, tailCode] = splitCode(source, codeScript?.location);
         let newCode = [headCode, newScriptCode, tailCode].join('\n');
 
+        // TODO
+        // return 'import(\'@/agros-factory-definition\').then((factory) => console.log(factory));\n' + newCode;
         return newCode;
     },
     async ({ parsedQuery }) => parsedQuery.component && parsedQuery.component === 'true',

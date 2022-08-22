@@ -28,12 +28,14 @@ import qs from 'qs';
 import { ProjectConfigParser } from '@agros/config';
 import { Platform } from '@agros/platforms/lib/platform.interface';
 import generate from '@babel/generator';
+import { v4 as uuidV4 } from 'uuid';
 
 export const transformComponentDecorator = createLoaderAOP(
     async ({
         context,
         tree,
     }) => {
+        const uuid = uuidV4();
         const ensureIdentifierNameMap: Record<string, string> = {};
         const declaredClasses = detectExports<t.ClassDeclaration>(tree, 'ClassDeclaration');
         const configParser = new ProjectConfigParser();
@@ -93,11 +95,14 @@ export const transformComponentDecorator = createLoaderAOP(
             }
 
             return result;
-        }, {} as Partial<{
+        }, {
+            uuid,
+        } as {
+            uuid: string;
             file?: string;
             lazy?: boolean;
             styles?: string[];
-        }>);
+        });
 
         const basename = path.basename(context.resourcePath);
 
@@ -121,6 +126,7 @@ export const transformComponentDecorator = createLoaderAOP(
 
         componentMetadataConfig.file = componentMetadataConfig.file + '?' + qs.stringify({
             component: true,
+            component_uuid: uuid,
             ...(
                 (componentMetadataConfig.styles || []).length > 0
                     ? {
@@ -192,6 +198,10 @@ export const transformComponentDecorator = createLoaderAOP(
                             t.objectProperty(
                                 t.identifier('factory'),
                                 (template.ast(factoryCode) as ExpressionStatement).expression,
+                            ),
+                            t.objectProperty(
+                                t.identifier('uuid'),
+                                t.stringLiteral(uuid),
                             ),
                             ...(((legacyDecorator.expression as CallExpression)?.arguments[0] as ObjectExpression).properties || []).filter((property: ObjectProperty) => {
                                 return property.key.type === 'Identifier' && [
