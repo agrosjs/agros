@@ -61,36 +61,35 @@ const platform: Platform = {
         const reactIdentifier = ensuredImportsMap['React'] || 'React';
         const factoryIdentifier = ensuredImportsMap['factory'] || 'factory';
         return `
-            const RootContainer = ({
-                Module,
-                routerProps = {},
-                RouterComponent = ${ensuredImportsMap['BrowserRouter'] || 'BrowserRouter'},
-            }) => {
-                const routeItems = ${factoryIdentifier}.create(Module);
-                const elements = ${ensuredImportsMap['createRoutes'] || 'createRoutes'}(routeItems);
-
-                return ${reactIdentifier}.createElement(
-                    RouterComponent,
-                    routerProps,
-                    ${reactIdentifier}.createElement(${ensuredImportsMap['Routes'] || 'Routes'}, {}, elements),
-                );
-            };
-
             const {
                 module: Module,
                 RouterComponent,
                 routerProps,
                 container = document.getElementById('root'),
             } = config;
-
-            ${ensuredImportsMap['render'] || 'render'}(
-                ${reactIdentifier}.createElement(RootContainer, {
+            ${factoryIdentifier}.create(Module).then((routeItems) => {
+                const RootContainer = ({
                     Module,
-                    RouterComponent,
-                    routerProps,
-                }),
-                container,
-            );
+                    routerProps = {},
+                    RouterComponent = ${ensuredImportsMap['BrowserRouter'] || 'BrowserRouter'},
+                }) => {
+                    const elements = ${ensuredImportsMap['createRoutes'] || 'createRoutes'}(routeItems);
+
+                    return ${reactIdentifier}.createElement(
+                        RouterComponent,
+                        routerProps,
+                        ${reactIdentifier}.createElement(${ensuredImportsMap['Routes'] || 'Routes'}, {}, elements),
+                    );
+                };
+                ${ensuredImportsMap['render'] || 'render'}(
+                    ${reactIdentifier}.createElement(RootContainer, {
+                        Module,
+                        RouterComponent,
+                        routerProps,
+                    }),
+                    container,
+                );
+            });
         `;
     },
     getComponentFactoryCode(map: Record<string, string>, filePath: string, lazy = false) {
@@ -109,6 +108,23 @@ const platform: Platform = {
             return component as T;
         }
 
+        const dependencyMap = context.generateDependencyMap(componentInstance);
+        const forwardRef: FactoryForwardRef = (promise) => {
+            return promise.then((result) => {
+                defineContainer(result.default || result, dependencyMap);
+                return result;
+            });
+        };
+
+        if (typeof componentInstance.metadata.factory === 'function') {
+            component = componentInstance.metadata.factory(forwardRef);
+        }
+
+        if (!componentInstance.metadata.lazy) {
+            component = await component.then((result) => result.default || result);
+            defineContainer(component, dependencyMap);
+        }
+
         /**
          * set component directly so that it can prevent unlimited creating tasks
          */
@@ -118,21 +134,6 @@ const platform: Platform = {
             const routeLocation = useLocation();
             const routeParams = useParams();
             const routeSearchParams = useSearchParams();
-            const dependencyMap = context.generateDependencyMap(componentInstance);
-            const forwardRef: FactoryForwardRef = (promise) => {
-                return promise.then((result) => {
-                    defineContainer(result.default || result, dependencyMap);
-                    return result;
-                });
-            };
-
-            if (typeof componentInstance.metadata.factory === 'function') {
-                component = componentInstance.metadata.factory(forwardRef);
-            }
-
-            if (!componentInstance.metadata.lazy) {
-                defineContainer(component, dependencyMap);
-            }
 
             useAsyncEffect(async () => {
                 try {

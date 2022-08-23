@@ -368,7 +368,7 @@ export class Factory implements IFactory {
     }
 
     private async generateComponentForInstances() {
-        for (const [, componentInstance] of this.componentInstanceMap.entries()) {
+        for (const [, componentInstance] of Array.from(this.componentInstanceMap.entries()).reverse()) {
             await this.platform.generateComponent(componentInstance, this);
 
             const dependencyMap = this.generateDependencyMap(componentInstance);

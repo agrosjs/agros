@@ -39,22 +39,23 @@ const platform: Platform = {
                 routerProps,
                 container = document.getElementById('root'),
             } = config;
-            const routeItems = ${ensuredImportsMap['factory'] || 'factory'}.create(Module);
-            const routes = ${ensuredImportsMap['createRoutes'] || 'createRoutes'}(routeItems).map((route) => {
-                return {
-                    ...route,
-                    path: '/' + route.path,
-                };
+            ${ensuredImportsMap['factory'] || 'factory'}.create(Module).then((routeItems) => {
+                const routes = ${ensuredImportsMap['createRoutes'] || 'createRoutes'}(routeItems).map((route) => {
+                    return {
+                        ...route,
+                        path: '/' + route.path,
+                    };
+                });
+                const router = ${vueRouterIdentifier}.createRouter({
+                    history: RouterComponent,
+                    routes,
+                });
+                const app = ${vueIdentifier}.createApp({
+                    template: '<router-view></router-view>',
+                });
+                app.use(router);
+                app.mount(container);
             });
-            const router = ${vueRouterIdentifier}.createRouter({
-                history: RouterComponent,
-                routes,
-            });
-            const app = ${vueIdentifier}.createApp({
-                template: '<router-view></router-view>',
-            });
-            app.use(router);
-            app.mount(container);
         `;
     },
     getComponentFactoryCode(map: Record<string, string>, filePath: string, lazy = false) {
@@ -66,7 +67,7 @@ const platform: Platform = {
                 : [`const ${componentIdentifierName} = import('${filePath}');`],
         };
     },
-    generateComponent<T = any>(componentInstance: ComponentInstance, context: Factory): T {
+    async generateComponent<T = any>(componentInstance: ComponentInstance, context: Factory): Promise<T> {
         let component = componentInstance.getComponent();
 
         if (component) {
@@ -87,6 +88,7 @@ const platform: Platform = {
         }
 
         if (!componentInstance.metadata.lazy) {
+            component = await component.then((result) => result.default || result);
             defineContainer(component, dependencyMap);
         }
 
