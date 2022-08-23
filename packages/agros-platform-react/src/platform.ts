@@ -9,8 +9,6 @@ import { Platform } from '@agros/platforms/lib/platform.interface';
 import { EnsureImportOptions } from '@agros/utils/lib/ensure-import';
 import {
     createElement,
-    ExoticComponent,
-    FC,
     useState,
 } from 'react';
 import {
@@ -101,11 +99,11 @@ const platform: Platform = {
             factoryCode: `forwardRef => ${lazy ? `${map['React'] || 'React'}.lazy(() => forwardRef(import('${filePath}')))` : componentIdentifierName}`,
             importCodeLines: lazy
                 ? []
-                : [`import ${componentIdentifierName} from '${filePath}';`],
+                : [`const ${componentIdentifierName} = import('${filePath}');`],
         };
     },
-    generateComponent<T = any>(componentInstance: ComponentInstance, context: Factory): T {
-        const component = componentInstance.getComponent();
+    async generateComponent<T = any>(componentInstance: ComponentInstance, context: Factory): Promise<T> {
+        let component = componentInstance.getComponent();
 
         if (component) {
             return component as T;
@@ -115,9 +113,12 @@ const platform: Platform = {
          * set component directly so that it can prevent unlimited creating tasks
          */
         componentInstance.setComponent((props: any) => {
+            const fallback = componentInstance.metadata.interceptorsFallback = null;
+            const [interceptorEnd, setInterceptorEnd] = useState<boolean>(false);
+            const routeLocation = useLocation();
+            const routeParams = useParams();
+            const routeSearchParams = useSearchParams();
             const dependencyMap = context.generateDependencyMap(componentInstance);
-            let component: FC<any> | ExoticComponent<any>;
-
             const forwardRef: FactoryForwardRef = (promise) => {
                 return promise.then((result) => {
                     defineContainer(result.default || result, dependencyMap);
@@ -133,52 +134,44 @@ const platform: Platform = {
                 defineContainer(component, dependencyMap);
             }
 
-            return createElement(() => {
-                const fallback = componentInstance.metadata.interceptorsFallback = null;
-                const [interceptorEnd, setInterceptorEnd] = useState<boolean>(false);
-                const routeLocation = useLocation();
-                const routeParams = useParams();
-                const routeSearchParams = useSearchParams();
-
-                useAsyncEffect(async () => {
-                    try {
-                        if (routeLocation && routeParams && routeSearchParams) {
-                            if (Array.isArray(componentInstance.metadata.interceptorInstances)) {
-                                for (const interceptorInstance of componentInstance.metadata.interceptorInstances) {
-                                    await interceptorInstance.intercept({
-                                        props,
-                                        route: {
-                                            location: routeLocation,
-                                            params: routeParams,
-                                            searchParams: routeSearchParams,
-                                        },
-                                    });
-                                }
+            useAsyncEffect(async () => {
+                try {
+                    if (routeLocation && routeParams && routeSearchParams) {
+                        if (Array.isArray(componentInstance.metadata.interceptorInstances)) {
+                            for (const interceptorInstance of componentInstance.metadata.interceptorInstances) {
+                                await interceptorInstance.intercept({
+                                    props,
+                                    route: {
+                                        location: routeLocation,
+                                        params: routeParams,
+                                        searchParams: routeSearchParams,
+                                    },
+                                });
                             }
                         }
-                    } finally {
-                        setInterceptorEnd(true);
                     }
-                }, [
-                    routeLocation,
-                    routeParams,
-                    routeSearchParams,
-                ]);
+                } finally {
+                    setInterceptorEnd(true);
+                }
+            }, [
+                routeLocation,
+                routeParams,
+                routeSearchParams,
+            ]);
 
-                return interceptorEnd
-                    ? createElement(
-                        component,
-                        {
-                            ...props,
-                            $container: {
-                                get: <T>(ProviderClass: Type): T => {
-                                    return dependencyMap.get(ProviderClass);
-                                },
+            return interceptorEnd
+                ? createElement(
+                    component,
+                    {
+                        ...props,
+                        $container: {
+                            get: <T>(ProviderClass: Type): T => {
+                                return dependencyMap.get(ProviderClass);
                             },
                         },
-                    )
-                    : fallback;
-            });
+                    },
+                )
+                : fallback;
         });
     },
 };

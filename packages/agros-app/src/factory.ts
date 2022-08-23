@@ -67,13 +67,13 @@ export class Factory implements IFactory {
      *
      * create a route config with the root module
      */
-    public create<T = any>(ModuleClass: Type<T>): RouterItem[] {
+    public async create<T = any>(ModuleClass: Type<T>): Promise<RouterItem[]> {
         const rootModuleInstance = this.createModuleInstance(ModuleClass);
         this.setImportedModuleInstances();
         this.createProviderClassToModuleClassMap();
         this.createProviderInstances(rootModuleInstance);
         this.createComponentInstances(rootModuleInstance);
-        this.generateComponentForInstances();
+        await this.generateComponentForInstances();
         this.routerItems = this.createRouterItems(Array.from(rootModuleInstance.metadata.routes));
         return Array.from(this.routerItems);
     }
@@ -367,9 +367,9 @@ export class Factory implements IFactory {
         }
     }
 
-    private generateComponentForInstances() {
+    private async generateComponentForInstances() {
         for (const [, componentInstance] of this.componentInstanceMap.entries()) {
-            this.platform.generateComponent(componentInstance, this);
+            await this.platform.generateComponent(componentInstance, this);
 
             const dependencyMap = this.generateDependencyMap(componentInstance);
             const interceptorClasses: Type[] = Reflect.getMetadata(

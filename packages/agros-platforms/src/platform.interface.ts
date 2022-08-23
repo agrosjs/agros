@@ -17,5 +17,5 @@ export interface Platform {
         filePath: string,
         lazy: boolean,
     ) => FactoryCodeConfig;
-    generateComponent: <T = any>(componentInstance: ComponentInstance, context: Factory) => T;
+    generateComponent: <T = any>(componentInstance: ComponentInstance, context: Factory) => Promise<T>;
 }

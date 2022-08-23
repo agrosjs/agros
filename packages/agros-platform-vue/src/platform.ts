@@ -63,7 +63,7 @@ const platform: Platform = {
             factoryCode: `forwardRef => ${lazy ? `() => forwardRef(import('${filePath}'))` : componentIdentifierName}`,
             importCodeLines: lazy
                 ? []
-                : [`import ${componentIdentifierName} from '${filePath}';`],
+                : [`const ${componentIdentifierName} = import('${filePath}');`],
         };
     },
     generateComponent<T = any>(componentInstance: ComponentInstance, context: Factory): T {
