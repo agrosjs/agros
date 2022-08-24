@@ -1,0 +1,10 @@
+{
+  "changes": [
+    {
+      "packageName": "@agros/platform-react",
+      "comment": "Refactor code to be suitable for new platform logic",
+      "type": "minor"
+    }
+  ],
+  "packageName": "@agros/platform-react"
+}

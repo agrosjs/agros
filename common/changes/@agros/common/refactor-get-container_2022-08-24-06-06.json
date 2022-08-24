@@ -1,0 +1,10 @@
+{
+  "changes": [
+    {
+      "packageName": "@agros/common",
+      "comment": "Add some useful constants and refactor component instance class",
+      "type": "minor"
+    }
+  ],
+  "packageName": "@agros/common"
+}

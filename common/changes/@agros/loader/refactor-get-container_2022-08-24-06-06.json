@@ -1,0 +1,10 @@
+{
+  "changes": [
+    {
+      "packageName": "@agros/loader",
+      "comment": "Refactor all code transformers to be suitable for get-container",
+      "type": "minor"
+    }
+  ],
+  "packageName": "@agros/loader"
+}
