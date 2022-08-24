@@ -46,11 +46,11 @@
         "typescript": "^4.5.5"
     },
     "name": "@agros/common",
-    "version": "0.2.1",
+    "version": "0.3.0",
     "description": "Common functions for Agros.js",
     "dependencies": {
-        "@agros/config": "workspace:^0.2.0",
-        "@agros/utils": "workspace:^0.1.0",
+        "@agros/config": "workspace:^0.2.1",
+        "@agros/utils": "workspace:^0.2.0",
         "@babel/generator": "^7.18.2",
         "@babel/parser": "^7.18.5",
         "@babel/traverse": "^7.18.8",

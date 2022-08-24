@@ -2,6 +2,26 @@
   "name": "@agros/platforms",
   "entries": [
     {
+      "version": "0.1.0",
+      "tag": "@agros/platforms_v0.1.0",
+      "date": "Wed, 24 Aug 2022 06:21:27 GMT",
+      "comments": {
+        "minor": [
+          {
+            "comment": "Refactor code to be suitable for new platform logic"
+          }
+        ],
+        "dependency": [
+          {
+            "comment": "Updating dependency \"@agros/common\" from `^0.2.1` to `^0.3.0`"
+          },
+          {
+            "comment": "Updating dependency \"@agros/utils\" from `^0.1.0` to `^0.2.0`"
+          }
+        ]
+      }
+    },
+    {
       "version": "0.0.1",
       "tag": "@agros/platforms_v0.0.1",
       "date": "Fri, 12 Aug 2022 17:12:54 GMT",
