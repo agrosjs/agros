@@ -1,5 +1,5 @@
+/* eslint-disable @typescript-eslint/no-this-alias */
 /* eslint-disable @typescript-eslint/no-invalid-this */
-import generate from '@babel/generator';
 import {
     check,
     transform,
@@ -13,36 +13,35 @@ import {
 } from './aops';
 
 export default function(source) {
-    try {
-        const resourceAbsolutePath: string = this.resourcePath;
+    const context = this;
+    const callback = this.async();
+    const resourceAbsolutePath: string = this.resourcePath;
 
-        if (!resourceAbsolutePath) {
-            return source;
-        }
+    if (!resourceAbsolutePath) {
+        return callback(null, source);
+    }
 
-        check(
+    check(
+        source,
+        context,
+        checkModule,
+        checkService,
+    ).then(() => {
+        return transform(
             source,
-            this,
-            checkModule,
-            checkService,
-        );
-
-        const newAST = transform(
-            source,
-            this,
+            context,
             transformEntry,
             transformComponentDecorator,
             transformComponentFile,
         );
-
-        if (!newAST) {
+    }).then((newCode) => {
+        if (!newCode) {
             return source;
         }
-
-        const newCode = generate(newAST).code;
-
         return newCode;
-    } catch (e) {
-        return source;
-    }
+    }).then((code) => {
+        return callback(null, code);
+    }).catch((e) => {
+        callback(e, source);
+    });
 }

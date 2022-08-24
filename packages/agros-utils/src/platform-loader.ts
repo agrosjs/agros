@@ -1,5 +1,15 @@
 import * as path from 'path';
 
+export interface CodeLocation {
+    start: number;
+    end: number;
+}
+
+export interface ComponentScript {
+    content: string;
+    location?: CodeLocation;
+}
+
 export class PlatformLoader {
     protected platformIndexFile: string;
     protected platformIndexDir: string;
@@ -19,10 +29,13 @@ export class PlatformLoader {
         return platform;
     }
 
-    public runCommands(command: string) {
-        const required = require(path.join(this.platformIndexDir, 'run-commands'));
-        if (typeof required?.runCommands === 'function') {
-            required.runCommands(command);
-        }
+    public getComponentScript(source: string): ComponentScript {
+        try {
+            const required = require(path.join(this.platformIndexDir, 'get-component-script'));
+            if (typeof required?.getComponentScript === 'function') {
+                return required.getComponentScript(source) as ComponentScript;
+            }
+        } catch (e) {}
+        return null;
     }
 }

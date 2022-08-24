@@ -12,9 +12,9 @@ import { BarComponent } from "../bar/bar.component";
 import { BarService } from "../bar/bar.service";
 import { FooService } from "./foo.service";
 
-const Foo = {
+export default {
     created() {
-        const container = getContainer(Foo);
+        const container = getContainer();
         const fooService = container.get<FooService>(FooService);
         const barService = container.get<BarService>(BarService);
         fooService.logHello();
@@ -24,6 +24,4 @@ const Foo = {
         };
     },
 };
-
-export default Foo;
 </script>

@@ -1,0 +1,10 @@
+{
+  "changes": [
+    {
+      "packageName": "@agros/utils",
+      "comment": "Refactor platform loader",
+      "type": "minor"
+    }
+  ],
+  "packageName": "@agros/utils"
+}

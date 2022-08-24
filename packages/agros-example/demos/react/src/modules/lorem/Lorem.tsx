@@ -1,8 +1,9 @@
+import { getContainer } from '@agros/app';
 import React from '@agros/platform-react/lib/react';
 import { LoremService } from './lorem.service';
-import { forwardContainer } from '@agros/platform-react';
 
-const Lorem: React.FC = forwardContainer(({ container }) => {
+const Lorem: React.FC = () => {
+    const container = getContainer();
     const loremService = container.get<LoremService>(LoremService);
 
     React.useEffect(() => {
@@ -12,6 +13,6 @@ const Lorem: React.FC = forwardContainer(({ container }) => {
     return (
         <div>Welcome to Lorem page!</div>
     );
-});
+};
 
 export default React.memo(Lorem);

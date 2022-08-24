@@ -1,25 +1,20 @@
 import 'reflect-metadata';
-import {
-    Factory,
-    FactoryForwardRef,
-    Type,
-} from '@agros/common/lib/types';
 import { ComponentInstance } from '@agros/common/lib/component-instance.class';
 import { Platform } from '@agros/platforms/lib/platform.interface';
 import { EnsureImportOptions } from '@agros/utils/lib/ensure-import';
 import {
     createElement,
-    ExoticComponent,
-    FC,
     useState,
+    Suspense,
 } from 'react';
 import {
     useLocation,
     useParams,
     useSearchParams,
+    Route,
 } from 'react-router-dom';
 import { useAsyncEffect } from 'use-async-effect';
-import { defineContainer } from '@agros/common/lib/define-container';
+import { RouterItem } from '@agros/common/lib/types';
 
 const platform: Platform = {
     getDefaultConfig() {
@@ -38,10 +33,6 @@ const platform: Platform = {
             {
                 libName: '@agros/platform-react/lib/react-router-dom',
                 identifierName: 'BrowserRouter',
-            },
-            {
-                libName: '@agros/app/lib/factory',
-                identifierName: 'Factory',
             },
             {
                 libName: '@agros/platform-react/lib/react',
@@ -65,150 +56,135 @@ const platform: Platform = {
     },
     getBootstrapCode(ensuredImportsMap: Record<string, string>): string {
         const reactIdentifier = ensuredImportsMap['React'] || 'React';
+        const factoryIdentifier = ensuredImportsMap['factory'] || 'factory';
+        const platformIdentifier = ensuredImportsMap['platform'] || 'platform';
         return `
-            const useRouteElements = (Module) => {
-                const [routerItems, setRouterItems] = ${reactIdentifier}.useState([]);
-                const [elements, setElements] = ${reactIdentifier}.useState(null);
-
-                ${reactIdentifier}.useEffect(() => {
-                    const RootModule = Module;
-                    const factory = new ${ensuredImportsMap['Factory'] || 'Factory'}(${ensuredImportsMap['platform'] || 'platform'});
-                    factory.create(RootModule).then((items) => {
-                        setRouterItems(items);
-                    });
-                }, [Module]);
-
-                ${reactIdentifier}.useEffect(() => {
-                    const elements = ${ensuredImportsMap['createRoutes'] || 'createRoutes'}(routerItems);
-                    setElements(elements);
-                }, [routerItems]);
-
-                return elements;
-            };
-
-            const RootContainer = ({
+            const {
                 module: Module,
-                routerProps = {},
-                RouterComponent = ${ensuredImportsMap['BrowserRouter'] || 'BrowserRouter'},
-            }) => {
-                const elements = useRouteElements(Module);
+                RouterComponent,
+                routerProps,
+                container = document.getElementById('root'),
+            } = config;
+            ${factoryIdentifier}.create(Module).then((routeItems) => {
+                const RootContainer = ({
+                    Module,
+                    routerProps = {},
+                    RouterComponent = ${ensuredImportsMap['BrowserRouter'] || 'BrowserRouter'},
+                }) => {
+                    const elements = ${platformIdentifier}.createRoutes(routeItems);
 
-                return ${reactIdentifier}.createElement(
-                    RouterComponent,
-                    routerProps,
-                    ${reactIdentifier}.createElement(${ensuredImportsMap['Routes'] || 'Routes'}, {}, elements),
-                );
-            };
-
-            const bootstrap = (configList) => {
-                if (!Array.isArray(configList)) {
-                    return;
-                }
-
-                for (const configItem of configList) {
-                    const {
-                        module: Module,
+                    return ${reactIdentifier}.createElement(
                         RouterComponent,
                         routerProps,
-                        container = document.getElementById('root'),
-                    } = configItem;
-
-                    ${ensuredImportsMap['render'] || 'render'}(
-                        ${reactIdentifier}.createElement(RootContainer, {
-                            module: Module,
-                            RouterComponent,
-                            routerProps,
-                        }),
-                        container,
+                        ${reactIdentifier}.createElement(${ensuredImportsMap['Routes'] || 'Routes'}, {}, elements),
                     );
-                }
-            };
+                };
+                ${ensuredImportsMap['render'] || 'render'}(
+                    ${reactIdentifier}.createElement(RootContainer, {
+                        Module,
+                        RouterComponent,
+                        routerProps,
+                    }),
+                    container,
+                );
+            });
         `;
     },
     getComponentFactoryCode(map: Record<string, string>, filePath: string, lazy = false) {
         const componentIdentifierName = 'Agros$$CurrentComponent';
         return {
-            factoryCode: `forwardRef => ${lazy ? `${map['React'] || 'React'}.lazy(() => forwardRef(import('${filePath}')))` : componentIdentifierName}`,
+            factoryCode: `() => ${lazy ? `${map['React'] || 'React'}.lazy(() => import('${filePath}'))` : componentIdentifierName};`,
             importCodeLines: lazy
                 ? []
-                : [`import ${componentIdentifierName} from '${filePath}';`],
+                : [`const ${componentIdentifierName} = import('${filePath}');`],
         };
     },
-    generateComponent<T = any>(componentInstance: ComponentInstance, context: Factory): T {
-        const component = componentInstance.getComponent();
-
-        if (component) {
-            return component as T;
-        }
-
+    async generateComponent<T = any>(componentInstance: ComponentInstance, component: any): Promise<T> {
         /**
          * set component directly so that it can prevent unlimited creating tasks
          */
         componentInstance.setComponent((props: any) => {
-            const dependencyMap = context.generateDependencyMap(componentInstance);
-            let component: FC<any> | ExoticComponent<any>;
+            const fallback = componentInstance.metadata.interceptorsFallback = null;
+            const [interceptorEnd, setInterceptorEnd] = useState<boolean>(false);
+            const routeLocation = useLocation();
+            const routeParams = useParams();
+            const routeSearchParams = useSearchParams();
 
-            const forwardRef: FactoryForwardRef = (promise) => {
-                return promise.then((result) => {
-                    defineContainer(result.default || result, dependencyMap);
-                    return result;
-                });
-            };
-
-            if (typeof componentInstance.metadata.factory === 'function') {
-                component = componentInstance.metadata.factory(forwardRef);
-            }
-
-            if (!componentInstance.metadata.lazy) {
-                defineContainer(component, dependencyMap);
-            }
-
-            return createElement(() => {
-                const fallback = componentInstance.metadata.interceptorsFallback = null;
-                const [interceptorEnd, setInterceptorEnd] = useState<boolean>(false);
-                const routeLocation = useLocation();
-                const routeParams = useParams();
-                const routeSearchParams = useSearchParams();
-
-                useAsyncEffect(async () => {
-                    try {
-                        if (routeLocation && routeParams && routeSearchParams) {
-                            if (Array.isArray(componentInstance.metadata.interceptorInstances)) {
-                                for (const interceptorInstance of componentInstance.metadata.interceptorInstances) {
-                                    await interceptorInstance.intercept({
-                                        props,
-                                        route: {
-                                            location: routeLocation,
-                                            params: routeParams,
-                                            searchParams: routeSearchParams,
-                                        },
-                                    });
-                                }
+            useAsyncEffect(async () => {
+                try {
+                    if (routeLocation && routeParams && routeSearchParams) {
+                        if (Array.isArray(componentInstance.metadata.interceptorInstances)) {
+                            for (const interceptorInstance of componentInstance.metadata.interceptorInstances) {
+                                await interceptorInstance.intercept({
+                                    props,
+                                    route: {
+                                        location: routeLocation,
+                                        params: routeParams,
+                                        searchParams: routeSearchParams,
+                                    },
+                                });
                             }
                         }
-                    } finally {
-                        setInterceptorEnd(true);
                     }
-                }, [
-                    routeLocation,
-                    routeParams,
-                    routeSearchParams,
-                ]);
+                } finally {
+                    setInterceptorEnd(true);
+                }
+            }, [
+                routeLocation,
+                routeParams,
+                routeSearchParams,
+            ]);
 
-                return interceptorEnd
-                    ? createElement(
-                        component,
-                        {
-                            ...props,
-                            $container: {
-                                get: <T>(ProviderClass: Type): T => {
-                                    return dependencyMap.get(ProviderClass);
-                                },
-                            },
-                        },
-                    )
-                    : fallback;
-            });
+            return interceptorEnd
+                ? createElement(
+                    component,
+                    props,
+                )
+                : fallback;
+        });
+
+        return component;
+    },
+    createRoutes(routerItems: RouterItem[], level = 0) {
+        return routerItems.map((routerItem, index) => {
+            const {
+                componentInstance,
+                children,
+                ...routeProps
+            } = routerItem;
+
+            const {
+                suspenseFallback = null,
+                elementProps = {},
+            } = componentInstance.metadata;
+
+            const Component = componentInstance.getComponent();
+
+            const createAppRouterElement = (Component) => {
+                return createElement(
+                    Suspense,
+                    {
+                        fallback: suspenseFallback,
+                    },
+                    createElement(Component, elementProps),
+                );
+            };
+
+            return createElement(
+                Route,
+                {
+                    key: `level${level}_${index}`,
+                    ...routeProps,
+                    ...(
+                        Component
+                            ? {
+                                element: createAppRouterElement(Component),
+                            }
+                            : {}
+                    ),
+                },
+                (Array.isArray(children) && children.length > 0) ? platform.createRoutes(children, level + 1) : [],
+            );
         });
     },
 };

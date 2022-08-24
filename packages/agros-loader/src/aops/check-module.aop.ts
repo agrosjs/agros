@@ -8,8 +8,8 @@ import {
     getFileEntityIdentifier,
 } from '@agros/common';
 
-export const checkModule = createLoaderAOP(
-    ({
+export const checkModule = createLoaderAOP<null>(
+    async ({
         tree,
         context,
         modulesPath,
@@ -35,6 +35,8 @@ export const checkModule = createLoaderAOP(
         } else if (decorators.length > 1) {
             throw new Error('A module should only call `Module` function once');
         }
+
+        return null;
     },
-    ({ context }) => getCollectionType(context.resourcePath) === 'module',
+    async ({ context }) => getCollectionType(context.resourcePath) === 'module',
 );

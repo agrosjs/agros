@@ -35,14 +35,12 @@ export interface ComponentDecoratorOptions<T = any> {
     interceptorsFallback?: any;
 }
 
-export type FactoryForwardRef = <T = any>(promise: Promise<{ default: T }>) => Promise<{ default: T }>;
-
 export type ComponentMetadata = Omit<ComponentDecoratorOptions, 'declarations'> & {
-    factory?: (forwardRef: FactoryForwardRef) => any;
+    uuid: string;
+    factory?: () => any;
 };
 
 export type Type<T = any> = new (...args: Array<any>) => T;
-export type AsyncModuleClass<T = any> = Type<T> | Promise<Type>;
 
 export interface RouteProps<C = any, R = any> {
     caseSensitive?: boolean;
@@ -53,7 +51,7 @@ export interface RouteProps<C = any, R = any> {
 }
 
 export interface RouteOptionItem<T = any> extends Omit<RouteProps, 'element' | 'children'> {
-    useModuleClass?: AsyncModuleClass;
+    useModuleClass?: Type;
     useComponentClass?: Type;
     children?: RouteOptionItem<T>[];
 }
@@ -79,7 +77,7 @@ export interface BootstrapConfigItem extends RootContainerProps {
 }
 
 export interface ModuleDecoratorOptions {
-    imports?: Array<AsyncModuleClass>;
+    imports?: Array<Type>;
     providers?: Array<Type>;
     components?: Array<Type>;
     routes?: Array<RouteOptionItem>;
@@ -87,7 +85,7 @@ export interface ModuleDecoratorOptions {
 }
 
 export interface ModuleMetadata {
-    imports: Set<AsyncModuleClass>;
+    imports: Set<Type>;
     providers: Set<Type<any>>;
     exports: Set<Type<any>>;
     components: Set<Type<any>>;
@@ -112,7 +110,7 @@ export type UseInterceptorsDecoratorOptions = Type[];
 
 export interface Factory {
     create: <T = any>(ModuleClass: Type<T>) => Promise<RouterItem[]>;
-    generateDependencyMap: (componentInstance: ComponentInstance) => ImmutableMap<Type<any>, any>;
+    generateDependencyMap: (componentInstanceOrId: ComponentInstance | string) => ImmutableMap<Type<any>, any>;
 }
 
 export interface Interceptor {

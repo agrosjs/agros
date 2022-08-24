@@ -2,8 +2,8 @@
   "changes": [
     {
       "packageName": "@agros/common",
-      "comment": "Fix null checks for linter config path",
-      "type": "patch"
+      "comment": "Add some useful constants and refactor component instance class",
+      "type": "minor"
     }
   ],
   "packageName": "@agros/common"

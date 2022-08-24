@@ -1,4 +1,5 @@
 import {
+    LoaderAOPBaseData,
     LoaderAOPData,
     LoaderAOPFunction,
 } from './types';
@@ -8,59 +9,85 @@ import { parseAST } from '@agros/utils/lib/parse-ast';
 import {
     normalizeModulesPath,
     normalizeSrcPath,
+    LOADER_FACTORY_DEFINITION,
 } from '@agros/common';
-import { ParseResult } from '@babel/parser';
-import { File } from '@babel/types';
+import { CodeLocation } from '@agros/utils/lib/platform-loader';
 
-export const createLoaderAOP = <R = any>(
-    aop: (data: LoaderAOPData) => R,
-    active: (data: LoaderAOPData) => boolean = () => true,
-): LoaderAOPFunction<R> => {
-    return (data) => {
-        if (!active(data)) {
+export const createLoaderAOP = <T = string, E = { factoryFilename: string }>(
+    aop: (data: LoaderAOPData<E>) => Promise<T>,
+    active: (data: LoaderAOPBaseData<E>) => Promise<boolean> = () => Promise.resolve(true),
+): LoaderAOPFunction<T, E> => {
+    return async (data) => {
+        if (!(await active(data))) {
             return 'NOOP';
         }
 
-        return aop(data);
+        let tree;
+
+        try {
+            tree = parseAST(data.source);
+        } catch (e) {}
+
+        return await aop({
+            ...data,
+            tree,
+        });
     };
 };
 
-export const check = (source: string, context: LoaderContext<{}>, ...checkers: LoaderAOPFunction[]) => {
-    const tree = parseAST(source);
+export const check = async (source: string, context: LoaderContext<{}>, ...checkers: LoaderAOPFunction[]) => {
     const parsedQuery = qs.parse((context.resourceQuery || '').replace(/^\?/, '')) || {};
-    const aopData: LoaderAOPData = {
+    const aopData: LoaderAOPBaseData = {
         context,
         parsedQuery,
         srcPath: normalizeSrcPath(),
         modulesPath: normalizeModulesPath(),
-        tree,
+        source,
     };
 
-    checkers.forEach((checker) => checker(aopData));
+    for (const checker of checkers) {
+        await checker(aopData);
+    }
 };
 
-export const transform = (source: string, context: LoaderContext<{}>, ...transformers: LoaderAOPFunction<ParseResult<File>>[]) => {
-    const tree = parseAST(source);
+export const transform = async (
+    source: string,
+    context: LoaderContext<{}>,
+    ...transformers: LoaderAOPFunction<string, { factoryFilename: string }>[]
+) => {
     const parsedQuery = qs.parse((context.resourceQuery || '').replace(/^\?/, '')) || {};
-    const partialAOPData: Omit<LoaderAOPData, 'tree'> = {
+    const partialAOPData: Omit<LoaderAOPBaseData, 'source'> & { factoryFilename: string } = {
         context,
         parsedQuery,
         srcPath: normalizeSrcPath(),
         modulesPath: normalizeModulesPath(),
+        factoryFilename: LOADER_FACTORY_DEFINITION,
     };
 
-    let result: ParseResult<File>;
+    let result: string;
 
     for (const transformer of transformers) {
-        const currentTransformResult = transformer({
-            ...partialAOPData,
-            tree: result || tree,
-        });
-
-        if (currentTransformResult && currentTransformResult !== 'NOOP') {
-            result = currentTransformResult;
-        }
+        try {
+            const currentTransformResult = await transformer({
+                ...partialAOPData,
+                source: result || source,
+            });
+            if (currentTransformResult && currentTransformResult !== 'NOOP') {
+                result = currentTransformResult;
+            }
+        } catch (e) {}
     }
 
     return result;
+};
+
+export const splitCode = (source: string, location?: CodeLocation): [string, string] => {
+    if (!location) {
+        return ['', ''];
+    }
+
+    return [
+        source.slice(0, location.start),
+        source.slice(location.end),
+    ];
 };

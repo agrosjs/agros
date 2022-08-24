@@ -1,4 +1,4 @@
-import { Factory } from '@agros/common/lib/types';
+import { RouterItem } from '@agros/common/lib/types';
 import { ComponentInstance } from '@agros/common/lib/component-instance.class';
 import { EnsureImportOptions } from '@agros/utils/lib/ensure-import';
 
@@ -17,5 +17,6 @@ export interface Platform {
         filePath: string,
         lazy: boolean,
     ) => FactoryCodeConfig;
-    generateComponent: <T = any>(componentInstance: ComponentInstance, context: Factory) => T;
+    generateComponent: <T = any>(componentInstance: ComponentInstance, component: any) => Promise<T>;
+    createRoutes: (routerItems: RouterItem[], level?: number) => any;
 }
