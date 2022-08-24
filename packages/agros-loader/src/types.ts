@@ -2,16 +2,16 @@ import { ParseResult } from '@babel/parser';
 import { File } from '@babel/types';
 import { LoaderContext } from 'webpack';
 
-export interface LoaderAOPBaseData {
+export type LoaderAOPBaseData<E = {}> = {
     srcPath: string;
     parsedQuery: Record<string, any>;
     context: LoaderContext<{}>;
     modulesPath: string;
     source: string;
-}
+} & E;
 
-export interface LoaderAOPData extends LoaderAOPBaseData {
+export type LoaderAOPData<T = {}> = LoaderAOPBaseData<T> & {
     tree?: ParseResult<File>;
-}
+};
 
-export type LoaderAOPFunction<T = string> = (data: LoaderAOPBaseData) => Promise<T | 'NOOP'>;
+export type LoaderAOPFunction<T = string, E = {}> = (data: LoaderAOPBaseData<E>) => Promise<T | 'NOOP'>;

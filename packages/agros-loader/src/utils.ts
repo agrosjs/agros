@@ -9,13 +9,14 @@ import { parseAST } from '@agros/utils/lib/parse-ast';
 import {
     normalizeModulesPath,
     normalizeSrcPath,
+    LOADER_FACTORY_DEFINITION,
 } from '@agros/common';
 import { CodeLocation } from '@agros/utils/lib/platform-loader';
 
-export const createLoaderAOP = <T = string>(
-    aop: (data: LoaderAOPData) => Promise<T>,
-    active: (data: LoaderAOPBaseData) => Promise<boolean> = () => Promise.resolve(true),
-): LoaderAOPFunction<T> => {
+export const createLoaderAOP = <T = string, E = { factoryFilename: string }>(
+    aop: (data: LoaderAOPData<E>) => Promise<T>,
+    active: (data: LoaderAOPBaseData<E>) => Promise<boolean> = () => Promise.resolve(true),
+): LoaderAOPFunction<T, E> => {
     return async (data) => {
         if (!(await active(data))) {
             return 'NOOP';
@@ -52,14 +53,15 @@ export const check = async (source: string, context: LoaderContext<{}>, ...check
 export const transform = async (
     source: string,
     context: LoaderContext<{}>,
-    ...transformers: LoaderAOPFunction[]
+    ...transformers: LoaderAOPFunction<string, { factoryFilename: string }>[]
 ) => {
     const parsedQuery = qs.parse((context.resourceQuery || '').replace(/^\?/, '')) || {};
-    const partialAOPData: Omit<LoaderAOPBaseData, 'source'> = {
+    const partialAOPData: Omit<LoaderAOPBaseData, 'source'> & { factoryFilename: string } = {
         context,
         parsedQuery,
         srcPath: normalizeSrcPath(),
         modulesPath: normalizeModulesPath(),
+        factoryFilename: LOADER_FACTORY_DEFINITION,
     };
 
     let result: string;

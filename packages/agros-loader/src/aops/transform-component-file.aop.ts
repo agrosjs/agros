@@ -16,6 +16,7 @@ export const transformComponentFile = createLoaderAOP(
         parsedQuery,
         source,
         tree: astTree,
+        factoryFilename,
     }) => {
         let tree = astTree;
         const configParser = new ProjectConfigParser();
@@ -81,7 +82,14 @@ export const transformComponentFile = createLoaderAOP(
         let newScriptCode = generate(tree).code;
 
         newScriptCode = [
-            `import __AGROS_FACTORY__ from '${path.resolve(path.dirname(path.resolve(process.cwd(), configParser.getEntry())), 'agros-factory-definition')}';`,
+            'import __AGROS_FACTORY__ from \'' +
+            path.resolve(
+                path.dirname(
+                    path.resolve(process.cwd(), configParser.getEntry()),
+                ),
+                factoryFilename,
+            ) +
+            '\';',
             `const __AGROS_DEPS_MAP__ = __AGROS_FACTORY__.generateDependencyMap('${parsedQuery['component_uuid']}');`,
         ].join('\n') + newScriptCode;
 

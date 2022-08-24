@@ -17,6 +17,7 @@ export const transformEntry = createLoaderAOP(
     async ({
         tree,
         context,
+        factoryFilename,
     }) => {
         let lastImportDeclarationIndex: number;
         const ensureIdentifierNameMap: Record<string, string> = {};
@@ -26,7 +27,7 @@ export const transformEntry = createLoaderAOP(
         const platform = platformLoader.getPlatform<Platform>();
 
         fsPatch.add(context.fs, {
-            path: 'src/agros-factory-definition.ts',
+            path: `src/${factoryFilename}.ts`,
             content: `
                 import { Factory } from '@agros/app/lib/factory';
                 import platform from '${platformName}';
@@ -48,7 +49,7 @@ export const transformEntry = createLoaderAOP(
                 type: 'default',
             },
             {
-                libName: './agros-factory-definition',
+                libName: `./${factoryFilename}`,
                 identifierName: 'factory',
                 type: 'default',
             },

@@ -4,3 +4,5 @@ export const DI_GLOBAL_MODULE_SYMBOL = Symbol('di:global_module');
 export const DI_METADATA_MODULE_SYMBOL = Symbol('di:metadata:module');
 export const DI_METADATA_COMPONENT_SYMBOL = Symbol('di:metadata:component');
 export const DI_METADATA_USE_INTERCEPTORS_SYMBOL = Symbol('di:metadata:use_interceptors');
+
+export const LOADER_FACTORY_DEFINITION = '__AGROS_FACTORY_DEFINITION__';
