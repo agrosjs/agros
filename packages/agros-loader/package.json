@@ -32,12 +32,14 @@
     "devDependencies": {
         "@types/babel__generator": "^7.6.4",
         "@types/babel__template": "^7.4.1",
+        "@types/babel__traverse": "^7.17.1",
         "@types/ejs": "^3.1.1",
         "@types/jest": "^28.1.1",
         "@types/loader-utils": "^2.0.3",
         "@types/lodash": "^4.14.182",
         "@types/node": "^15.12.2",
         "@types/qs": "^6.9.7",
+        "@types/uuid": "^8.3.4",
         "@types/webpack": "^5.28.0",
         "rimraf": "^3.0.2",
         "typescript": "^4.5.5"
@@ -53,10 +55,12 @@
         "@babel/generator": "^7.18.2",
         "@babel/parser": "^7.18.5",
         "@babel/template": "^7.16.7",
+        "@babel/traverse": "^7.18.8",
         "@babel/types": "^7.18.4",
         "ejs": "^3.1.8",
         "loader-utils": "^3.2.0",
         "lodash": "^4.17.21",
-        "qs": "^6.11.0"
+        "qs": "^6.11.0",
+        "uuid": "^8.3.2"
     }
 }

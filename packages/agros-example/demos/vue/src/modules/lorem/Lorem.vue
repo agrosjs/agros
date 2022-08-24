@@ -6,13 +6,11 @@
 import { getContainer } from '@agros/app';
 import { LoremService } from './lorem.service';
 
-const Lorem = {
+export default {
     mounted() {
-        const container = getContainer(Lorem);
+        const container = getContainer();
         const loremService = container.get<LoremService>(LoremService);
         loremService.sayHello();
     }
 };
-
-export default Lorem;
 </script>
