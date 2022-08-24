@@ -1,20 +1,13 @@
 import { Type } from '@agros/common/lib/types';
-import { DEPS_PROPERTY_NAME } from '@agros/common/lib/constants';
 import { Map as ImmutableMap } from 'immutable';
 
 /**
  * get container dependencies
- * @param {any} component
+ * @param {ImmutableMap} map
  * @returns {Object}
  */
-export const getContainer = (component: any) => {
-    const descriptor = Object.getOwnPropertyDescriptor(
-        component,
-        DEPS_PROPERTY_NAME,
-    );
-    let dependencyMap = descriptor?.value || component[DEPS_PROPERTY_NAME] || ImmutableMap();
-
+export const getContainer = (map: ImmutableMap<Type<any>, any> = ImmutableMap()) => {
     return {
-        get: <T>(Class: Type) => dependencyMap.get(Class) as T,
+        get: <T>(Class: Type) => map.get(Class) as T,
     };
 };

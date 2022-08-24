@@ -81,8 +81,8 @@ export const transformComponentFile = createLoaderAOP(
         let newScriptCode = generate(tree).code;
 
         newScriptCode = [
-            `import __AGROS_FACTORY__ from '${path.resolve(process.cwd(), configParser.getEntry())}';`,
-            `const __AGROS_DEPS_MAP__ = __AGROS_FACTORY__.generateComponentInstanceDependencyMap('${parsedQuery['component_id']}');`,
+            `import __AGROS_FACTORY__ from '${path.resolve(path.dirname(path.resolve(process.cwd(), configParser.getEntry())), 'agros-factory-definition')}';`,
+            `const __AGROS_DEPS_MAP__ = __AGROS_FACTORY__.generateDependencyMap('${parsedQuery['component_uuid']}');`,
         ].join('\n') + newScriptCode;
 
         const [headCode, tailCode] = splitCode(source, codeScript?.location);

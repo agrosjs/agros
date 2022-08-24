@@ -85,7 +85,21 @@ export class Factory implements IFactory {
      * and provider instance, when the provider class infers to a component class, its value
      * would be a component
      */
-    public generateDependencyMap(componentInstance: ComponentInstance) {
+    public generateDependencyMap(componentInstanceOrId: ComponentInstance | string): ImmutableMap<Type<any>, any> {
+        let componentInstance: ComponentInstance;
+
+        if (typeof componentInstanceOrId === 'string') {
+            componentInstance = Array.from(this.componentInstanceMap.values()).find((instance) => {
+                return instance.metadata.uuid === componentInstanceOrId;
+            });
+        } else {
+            componentInstance = componentInstanceOrId;
+        }
+
+        if (!componentInstance) {
+            return ImmutableMap();
+        }
+
         const ComponentClass = componentInstance.metadata.Class;
         const dependedClasses: Type[] = [
             DI_DEPS_SYMBOL,
@@ -141,14 +155,6 @@ export class Factory implements IFactory {
         }
 
         return dependencyMap;
-    }
-
-    public generateComponentInstanceDependencyMap() {
-        const map = new Map<ComponentInstance, ImmutableMap<Type, any>>();
-        for (const componentInstance of this.componentInstanceMap.values()) {
-            map.set(componentInstance, this.generateDependencyMap(componentInstance));
-        }
-        return map;
     }
 
     /**

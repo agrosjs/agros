@@ -38,6 +38,7 @@ export interface ComponentDecoratorOptions<T = any> {
 export type FactoryForwardRef = <T = any>(promise: Promise<{ default: T }>) => Promise<{ default: T }>;
 
 export type ComponentMetadata = Omit<ComponentDecoratorOptions, 'declarations'> & {
+    uuid: string;
     factory?: (forwardRef: FactoryForwardRef) => any;
 };
 
@@ -112,7 +113,7 @@ export type UseInterceptorsDecoratorOptions = Type[];
 
 export interface Factory {
     create: <T = any>(ModuleClass: Type<T>) => Promise<RouterItem[]>;
-    generateDependencyMap: (componentInstance: ComponentInstance) => ImmutableMap<Type<any>, any>;
+    generateDependencyMap: (componentInstanceOrId: ComponentInstance | string) => ImmutableMap<Type<any>, any>;
 }
 
 export interface Interceptor {
