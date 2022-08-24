@@ -5,13 +5,16 @@ import { EnsureImportOptions } from '@agros/utils/lib/ensure-import';
 import {
     createElement,
     useState,
+    Suspense,
 } from 'react';
 import {
     useLocation,
     useParams,
     useSearchParams,
+    Route,
 } from 'react-router-dom';
 import { useAsyncEffect } from 'use-async-effect';
+import { RouterItem } from '@agros/common/lib/types';
 
 const platform: Platform = {
     getDefaultConfig() {
@@ -54,6 +57,7 @@ const platform: Platform = {
     getBootstrapCode(ensuredImportsMap: Record<string, string>): string {
         const reactIdentifier = ensuredImportsMap['React'] || 'React';
         const factoryIdentifier = ensuredImportsMap['factory'] || 'factory';
+        const platformIdentifier = ensuredImportsMap['platform'] || 'platform';
         return `
             const {
                 module: Module,
@@ -67,7 +71,7 @@ const platform: Platform = {
                     routerProps = {},
                     RouterComponent = ${ensuredImportsMap['BrowserRouter'] || 'BrowserRouter'},
                 }) => {
-                    const elements = ${ensuredImportsMap['createRoutes'] || 'createRoutes'}(routeItems);
+                    const elements = ${platformIdentifier}.createRoutes(routeItems);
 
                     return ${reactIdentifier}.createElement(
                         RouterComponent,
@@ -140,6 +144,48 @@ const platform: Platform = {
         });
 
         return component;
+    },
+    createRoutes(routerItems: RouterItem[], level = 0) {
+        return routerItems.map((routerItem, index) => {
+            const {
+                componentInstance,
+                children,
+                ...routeProps
+            } = routerItem;
+
+            const {
+                suspenseFallback = null,
+                elementProps = {},
+            } = componentInstance.metadata;
+
+            const Component = componentInstance.getComponent();
+
+            const createAppRouterElement = (Component) => {
+                return createElement(
+                    Suspense,
+                    {
+                        fallback: suspenseFallback,
+                    },
+                    createElement(Component, elementProps),
+                );
+            };
+
+            return createElement(
+                Route,
+                {
+                    key: `level${level}_${index}`,
+                    ...routeProps,
+                    ...(
+                        Component
+                            ? {
+                                element: createAppRouterElement(Component),
+                            }
+                            : {}
+                    ),
+                },
+                (Array.isArray(children) && children.length > 0) ? platform.createRoutes(children, level + 1) : [],
+            );
+        });
     },
 };
 

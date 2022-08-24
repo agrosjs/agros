@@ -2,6 +2,8 @@ import 'reflect-metadata';
 import { ComponentInstance } from '@agros/common/lib/component-instance.class';
 import { Platform } from '@agros/platforms/lib/platform.interface';
 import { EnsureImportOptions } from '@agros/utils/lib/ensure-import';
+import { defineAsyncComponent } from 'vue';
+import { RouterItem } from '@agros/common/lib/types';
 
 const platform: Platform = {
     getDefaultConfig() {
@@ -27,6 +29,7 @@ const platform: Platform = {
     getBootstrapCode(ensuredImportsMap: Record<string, string>): string {
         const vueIdentifier = ensuredImportsMap['Vue'] || 'Vue';
         const vueRouterIdentifier = ensuredImportsMap['VueRouter'] || 'VueRouter';
+        const platformIdentifier = ensuredImportsMap['platform'] || 'platform';
         return `
             const {
                 module: Module,
@@ -35,7 +38,7 @@ const platform: Platform = {
                 container = document.getElementById('root'),
             } = config;
             ${ensuredImportsMap['factory'] || 'factory'}.create(Module).then((routeItems) => {
-                const routes = ${ensuredImportsMap['createRoutes'] || 'createRoutes'}(routeItems).map((route) => {
+                const routes = ${platformIdentifier}.createRoutes(routeItems).map((route) => {
                     return {
                         ...route,
                         path: '/' + route.path,
@@ -65,6 +68,55 @@ const platform: Platform = {
     async generateComponent<T = any>(componentInstance: ComponentInstance, component: any): Promise<T> {
         componentInstance.setComponent(component);
         return component;
+    },
+    createRoutes(routerItems: RouterItem[], level = 0) {
+        return routerItems.map((routerItem) => {
+            const {
+                componentInstance,
+                children,
+                ...routeProps
+            } = routerItem;
+            const component = componentInstance.getComponent();
+            const {
+                lazy,
+                suspenseFallback,
+                interceptorsFallback,
+                interceptorInstances = [],
+            } = componentInstance.metadata;
+
+            return {
+                path: routeProps.path,
+                component: !lazy
+                    ? interceptorInstances.length === 0
+                        ? component
+                        : defineAsyncComponent({
+                            loader: async () => {
+                                for (const interceptorInstance of interceptorInstances) {
+                                    await interceptorInstance.intercept();
+                                }
+                                return component;
+                            },
+                        })
+                    : defineAsyncComponent({
+                        loader: interceptorInstances.length === 0
+                            ? component
+                            : async () => {
+                                for (const interceptorInstance of interceptorInstances) {
+                                    await interceptorInstance.intercept();
+                                }
+                                return component();
+                            },
+                        loadingComponent: interceptorsFallback || suspenseFallback,
+                    }),
+                ...(
+                    (Array.isArray(children) && children.length > 0)
+                        ? {
+                            children: platform.createRoutes(children, level + 1) || [],
+                        }
+                        : {}
+                ),
+            };
+        });
     },
 };
 

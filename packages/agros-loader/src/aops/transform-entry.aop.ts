@@ -48,10 +48,6 @@ export const transformEntry = createLoaderAOP(
                 type: 'default',
             },
             {
-                libName: platformName,
-                identifierName: 'createRoutes',
-            },
-            {
                 libName: './agros-factory-definition',
                 identifierName: 'factory',
                 type: 'default',
