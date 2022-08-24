@@ -2,6 +2,18 @@
   "name": "@agros/utils",
   "entries": [
     {
+      "version": "0.2.0",
+      "tag": "@agros/utils_v0.2.0",
+      "date": "Wed, 24 Aug 2022 06:21:27 GMT",
+      "comments": {
+        "minor": [
+          {
+            "comment": "Refactor platform loader"
+          }
+        ]
+      }
+    },
+    {
       "version": "0.1.0",
       "tag": "@agros/utils_v0.1.0",
       "date": "Fri, 12 Aug 2022 17:12:54 GMT",

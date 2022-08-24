@@ -2,6 +2,35 @@
   "name": "@agros/app",
   "entries": [
     {
+      "version": "0.5.0",
+      "tag": "@agros/app_v0.5.0",
+      "date": "Wed, 24 Aug 2022 06:21:27 GMT",
+      "comments": {
+        "minor": [
+          {
+            "comment": "Optimize factory and get-container make them getting container more precisely"
+          }
+        ],
+        "dependency": [
+          {
+            "comment": "Updating dependency \"@agros/common\" from `^0.2.1` to `^0.3.0`"
+          },
+          {
+            "comment": "Updating dependency \"@agros/config\" from `^0.2.0` to `^0.2.1`"
+          },
+          {
+            "comment": "Updating dependency \"@agros/loader\" from `^0.1.0` to `^0.2.0`"
+          },
+          {
+            "comment": "Updating dependency \"@agros/platforms\" from `^0.0.1` to `^0.1.0`"
+          },
+          {
+            "comment": "Updating dependency \"@agros/utils\" from `^0.1.0` to `^0.2.0`"
+          }
+        ]
+      }
+    },
+    {
       "version": "0.4.1",
       "tag": "@agros/app_v0.4.1",
       "date": "Sun, 14 Aug 2022 13:00:51 GMT",

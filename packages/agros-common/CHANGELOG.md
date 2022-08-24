@@ -1,6 +1,13 @@
 # Change Log - @agros/common
 
-This log was last generated on Tue, 16 Aug 2022 02:23:23 GMT and should not be manually modified.
+This log was last generated on Wed, 24 Aug 2022 06:21:27 GMT and should not be manually modified.
+
+## 0.3.0
+Wed, 24 Aug 2022 06:21:27 GMT
+
+### Minor changes
+
+- Add some useful constants and refactor component instance class
 
 ## 0.2.1
 Tue, 16 Aug 2022 02:23:23 GMT
