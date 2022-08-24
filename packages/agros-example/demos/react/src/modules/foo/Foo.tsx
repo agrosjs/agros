@@ -6,7 +6,7 @@ import { BarService } from '../bar/bar.service';
 import { FooService } from './foo.service';
 
 const Foo: React.FC = () => {
-    const container = getContainer(Foo);
+    const container = getContainer();
     const Bar = container.get<React.FC<React.PropsWithChildren<{ used: string }>>>(BarComponent);
     const fooService = container.get<FooService>(FooService);
     const barService = container.get<BarService>(BarService);

@@ -35,15 +35,12 @@ export interface ComponentDecoratorOptions<T = any> {
     interceptorsFallback?: any;
 }
 
-export type FactoryForwardRef = <T = any>(promise: Promise<{ default: T }>) => Promise<{ default: T }>;
-
 export type ComponentMetadata = Omit<ComponentDecoratorOptions, 'declarations'> & {
     uuid: string;
-    factory?: (forwardRef: FactoryForwardRef) => any;
+    factory?: () => any;
 };
 
 export type Type<T = any> = new (...args: Array<any>) => T;
-// export type AsyncModuleClass<T = any> = Type<T> | Promise<Type>;
 
 export interface RouteProps<C = any, R = any> {
     caseSensitive?: boolean;

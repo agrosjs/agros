@@ -1,9 +1,4 @@
 import 'reflect-metadata';
-import {
-    Factory,
-    FactoryForwardRef,
-    Type,
-} from '@agros/common/lib/types';
 import { ComponentInstance } from '@agros/common/lib/component-instance.class';
 import { Platform } from '@agros/platforms/lib/platform.interface';
 import { EnsureImportOptions } from '@agros/utils/lib/ensure-import';
@@ -17,7 +12,6 @@ import {
     useSearchParams,
 } from 'react-router-dom';
 import { useAsyncEffect } from 'use-async-effect';
-import { defineContainer } from '@agros/common/lib/define-container';
 
 const platform: Platform = {
     getDefaultConfig() {
@@ -95,36 +89,13 @@ const platform: Platform = {
     getComponentFactoryCode(map: Record<string, string>, filePath: string, lazy = false) {
         const componentIdentifierName = 'Agros$$CurrentComponent';
         return {
-            factoryCode: `forwardRef => ${lazy ? `${map['React'] || 'React'}.lazy(() => forwardRef(import('${filePath}')))` : componentIdentifierName}`,
+            factoryCode: `() => ${lazy ? `${map['React'] || 'React'}.lazy(() => import('${filePath}'))` : componentIdentifierName};`,
             importCodeLines: lazy
                 ? []
                 : [`const ${componentIdentifierName} = import('${filePath}');`],
         };
     },
-    async generateComponent<T = any>(componentInstance: ComponentInstance, context: Factory): Promise<T> {
-        let component = componentInstance.getComponent();
-
-        if (component) {
-            return component as T;
-        }
-
-        const dependencyMap = context.generateDependencyMap(componentInstance);
-        const forwardRef: FactoryForwardRef = (promise) => {
-            return promise.then((result) => {
-                defineContainer(result.default || result, dependencyMap);
-                return result;
-            });
-        };
-
-        if (typeof componentInstance.metadata.factory === 'function') {
-            component = componentInstance.metadata.factory(forwardRef);
-        }
-
-        if (!componentInstance.metadata.lazy) {
-            component = await component.then((result) => result.default || result);
-            defineContainer(component, dependencyMap);
-        }
-
+    async generateComponent<T = any>(componentInstance: ComponentInstance, component: any): Promise<T> {
         /**
          * set component directly so that it can prevent unlimited creating tasks
          */
@@ -163,17 +134,12 @@ const platform: Platform = {
             return interceptorEnd
                 ? createElement(
                     component,
-                    {
-                        ...props,
-                        $container: {
-                            get: <T>(ProviderClass: Type): T => {
-                                return dependencyMap.get(ProviderClass);
-                            },
-                        },
-                    },
+                    props,
                 )
                 : fallback;
         });
+
+        return component;
     },
 };
 

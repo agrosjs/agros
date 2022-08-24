@@ -375,7 +375,17 @@ export class Factory implements IFactory {
 
     private async generateComponentForInstances() {
         for (const [, componentInstance] of Array.from(this.componentInstanceMap.entries()).reverse()) {
-            await this.platform.generateComponent(componentInstance, this);
+            let component = componentInstance.getComponent();
+
+            if (!component) {
+                if (typeof componentInstance.metadata.factory === 'function') {
+                    component = componentInstance.metadata.factory();
+                }
+                if (!componentInstance.metadata.lazy) {
+                    component = await component.then((result) => result.default || result);
+                }
+                await this.platform.generateComponent(componentInstance, component);
+            }
 
             const dependencyMap = this.generateDependencyMap(componentInstance);
             const interceptorClasses: Type[] = Reflect.getMetadata(
