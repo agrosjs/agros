@@ -9,7 +9,6 @@ import { parseAST } from '@agros/utils/lib/parse-ast';
 import {
     normalizeModulesPath,
     normalizeSrcPath,
-    LOADER_FACTORY_DEFINITION,
 } from '@agros/common';
 import { CodeLocation } from '@agros/utils/lib/platform-loader';
 
@@ -56,12 +55,18 @@ export const transform = async (
     ...transformers: LoaderAOPFunction<string, { factoryFilename: string }>[]
 ) => {
     const parsedQuery = qs.parse((context.resourceQuery || '').replace(/^\?/, '')) || {};
+    let loaderQuery = context.query || '';
+
+    if (typeof loaderQuery === 'string') {
+        loaderQuery = qs.parse(loaderQuery.replace(/^\?/, ''));
+    }
+
     const partialAOPData: Omit<LoaderAOPBaseData, 'source'> & { factoryFilename: string } = {
         context,
         parsedQuery,
         srcPath: normalizeSrcPath(),
         modulesPath: normalizeModulesPath(),
-        factoryFilename: LOADER_FACTORY_DEFINITION,
+        factoryFilename: loaderQuery['factory_file'],
     };
 
     let result: string;
