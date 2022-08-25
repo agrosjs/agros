@@ -1,0 +1,10 @@
+{
+  "changes": [
+    {
+      "packageName": "@agros/common",
+      "comment": "Remove static factory file name constant",
+      "type": "patch"
+    }
+  ],
+  "packageName": "@agros/common"
+}

@@ -412,7 +412,7 @@ export const generateBuildConfig = (webpackEnv) => {
                 {
                     test: /\.(js|jsx|ts|tsx)$/,
                     include: [paths.appPath],
-                    use: require.resolve('@agros/loader'),
+                    use: require.resolve('@agros/loader') + '?factory_file=__AGROS_FACTORY_FILE_' + Math.random().toString(32).slice(2) + '__',
                 },
             ].filter(Boolean) as RuleSetRule[],
         },
