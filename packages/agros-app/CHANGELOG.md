@@ -1,6 +1,13 @@
 # Change Log - @agros/app
 
-This log was last generated on Wed, 24 Aug 2022 06:21:27 GMT and should not be manually modified.
+This log was last generated on Thu, 25 Aug 2022 07:45:29 GMT and should not be manually modified.
+
+## 0.5.1
+Thu, 25 Aug 2022 07:45:29 GMT
+
+### Patches
+
+- Add loader query to specify factory file name
 
 ## 0.5.0
 Wed, 24 Aug 2022 06:21:27 GMT
