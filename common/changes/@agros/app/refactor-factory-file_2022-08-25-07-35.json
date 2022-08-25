@@ -1,0 +1,10 @@
+{
+  "changes": [
+    {
+      "packageName": "@agros/app",
+      "comment": "Add loader query to specify factory file name",
+      "type": "patch"
+    }
+  ],
+  "packageName": "@agros/app"
+}
