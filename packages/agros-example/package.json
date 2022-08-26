@@ -29,7 +29,7 @@
     "dependencies": {
         "@agros/app": "workspace:^0.5.1",
         "@agros/platform-react": "workspace:^0.1.0",
-        "@agros/platform-vue": "workspace:^0.1.0",
+        "@agros/platform-vue": "workspace:^0.1.1",
         "core-js": "^3.24.1",
         "react": "^17.0.0",
         "react-error-boundary": "^3.1.4",

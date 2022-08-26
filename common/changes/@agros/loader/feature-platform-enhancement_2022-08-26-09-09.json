@@ -1,0 +1,10 @@
+{
+  "changes": [
+    {
+      "packageName": "@agros/loader",
+      "comment": "add addVirtualFile function in getBootstrapCode",
+      "type": "minor"
+    }
+  ],
+  "packageName": "@agros/loader"
+}

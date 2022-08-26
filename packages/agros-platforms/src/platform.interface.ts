@@ -7,11 +7,13 @@ export interface FactoryCodeConfig {
     factoryCode?: string;
 }
 
+export type AddVirtualFile = (pathname: string, content: string) => void;
+
 export interface Platform {
     getLoaderImports: () => Omit<EnsureImportOptions, 'statements'>[];
     getDecoratorImports: () => Omit<EnsureImportOptions, 'statements'>[];
     getDefaultConfig: () => Record<string, any>;
-    getBootstrapCode: (ensuredImportsMap: Record<string, string>) => string;
+    getBootstrapCode: (ensuredImportsMap: Record<string, string>, addVirtualFile: AddVirtualFile) => string;
     getComponentFactoryCode: (
         ensuredImportsMap: Record<string, string>,
         filePath: string,

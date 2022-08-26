@@ -1,0 +1,10 @@
+{
+  "changes": [
+    {
+      "packageName": "@agros/loader",
+      "comment": "use addVirtualFile",
+      "type": "patch"
+    }
+  ],
+  "packageName": "@agros/loader"
+}
