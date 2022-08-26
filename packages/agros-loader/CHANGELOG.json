@@ -2,6 +2,28 @@
   "name": "@agros/loader",
   "entries": [
     {
+      "version": "0.3.0",
+      "tag": "@agros/loader_v0.3.0",
+      "date": "Fri, 26 Aug 2022 09:27:53 GMT",
+      "comments": {
+        "minor": [
+          {
+            "comment": "add addVirtualFile function in getBootstrapCode"
+          }
+        ],
+        "patch": [
+          {
+            "comment": "use addVirtualFile"
+          }
+        ],
+        "dependency": [
+          {
+            "comment": "Updating dependency \"@agros/platforms\" from `^0.1.0` to `^0.2.0`"
+          }
+        ]
+      }
+    },
+    {
       "version": "0.2.1",
       "tag": "@agros/loader_v0.2.1",
       "date": "Thu, 25 Aug 2022 07:45:29 GMT",
