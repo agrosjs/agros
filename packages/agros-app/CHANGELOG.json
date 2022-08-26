@@ -2,6 +2,26 @@
   "name": "@agros/app",
   "entries": [
     {
+      "version": "0.5.1",
+      "tag": "@agros/app_v0.5.1",
+      "date": "Thu, 25 Aug 2022 07:45:29 GMT",
+      "comments": {
+        "patch": [
+          {
+            "comment": "Add loader query to specify factory file name"
+          }
+        ],
+        "dependency": [
+          {
+            "comment": "Updating dependency \"@agros/common\" from `^0.3.0` to `^0.3.1`"
+          },
+          {
+            "comment": "Updating dependency \"@agros/loader\" from `^0.2.0` to `^0.2.1`"
+          }
+        ]
+      }
+    },
+    {
       "version": "0.5.0",
       "tag": "@agros/app_v0.5.0",
       "date": "Wed, 24 Aug 2022 06:21:27 GMT",

@@ -2,6 +2,18 @@
   "name": "@agros/common",
   "entries": [
     {
+      "version": "0.3.1",
+      "tag": "@agros/common_v0.3.1",
+      "date": "Thu, 25 Aug 2022 07:45:29 GMT",
+      "comments": {
+        "patch": [
+          {
+            "comment": "Remove static factory file name constant"
+          }
+        ]
+      }
+    },
+    {
       "version": "0.3.0",
       "tag": "@agros/common_v0.3.0",
       "date": "Wed, 24 Aug 2022 06:21:27 GMT",
