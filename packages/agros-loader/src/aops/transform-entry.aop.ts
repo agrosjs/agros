@@ -10,7 +10,10 @@ import generate from '@babel/generator';
 import { createLoaderAOP } from '../utils';
 import * as t from '@babel/types';
 import { ProjectConfigParser } from '@agros/config';
-import { Platform } from '@agros/platforms/lib/platform.interface';
+import {
+    AddVirtualFile,
+    Platform,
+} from '@agros/platforms/lib/platform.interface';
 import * as fsPatch from '../fs-patch';
 
 export const transformEntry = createLoaderAOP(
@@ -25,6 +28,15 @@ export const transformEntry = createLoaderAOP(
         const platformName = configParser.getConfig<string>('platform');
         const platformLoader = new PlatformLoader(platformName);
         const platform = platformLoader.getPlatform<Platform>();
+        const addVirtualFile: AddVirtualFile = (pathname: string, content: string) => {
+            if (!pathname || !content) {
+                return;
+            }
+            fsPatch.add(context.fs, {
+                path: pathname,
+                content,
+            });
+        };
 
         fsPatch.add(context.fs, {
             path: `src/${factoryFilename}.ts`,
@@ -68,7 +80,7 @@ export const transformEntry = createLoaderAOP(
             ensureIdentifierNameMap[importItem.identifierName] = ensuredIdentifierName;
         }
 
-        const bootstrapDeclarationStr = platform.getBootstrapCode(ensureIdentifierNameMap);
+        const bootstrapDeclarationStr = platform.getBootstrapCode(ensureIdentifierNameMap, addVirtualFile);
 
         for (const [index, statement] of tree.program.body.entries()) {
             if (statement.type === 'ImportDeclaration') {
