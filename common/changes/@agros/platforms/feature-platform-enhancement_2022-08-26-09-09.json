@@ -1,0 +1,10 @@
+{
+  "changes": [
+    {
+      "packageName": "@agros/platforms",
+      "comment": "pass addVirtualFile to getBootstrapCode",
+      "type": "minor"
+    }
+  ],
+  "packageName": "@agros/platforms"
+}
