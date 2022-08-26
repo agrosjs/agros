@@ -2,6 +2,18 @@
   "name": "@agros/platforms",
   "entries": [
     {
+      "version": "0.2.0",
+      "tag": "@agros/platforms_v0.2.0",
+      "date": "Fri, 26 Aug 2022 09:27:53 GMT",
+      "comments": {
+        "minor": [
+          {
+            "comment": "pass addVirtualFile to getBootstrapCode"
+          }
+        ]
+      }
+    },
+    {
       "version": "0.1.0",
       "tag": "@agros/platforms_v0.1.0",
       "date": "Wed, 24 Aug 2022 06:21:27 GMT",

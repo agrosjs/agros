@@ -298,7 +298,7 @@ importers:
     specifiers:
       '@agros/app': workspace:^0.5.1
       '@agros/platform-react': workspace:^0.1.0
-      '@agros/platform-vue': workspace:^0.1.0
+      '@agros/platform-vue': workspace:^0.1.1
       '@babel/core': ^7.18.5
       '@types/jest': ^28.1.1
       '@types/lodash': ^4.14.182
