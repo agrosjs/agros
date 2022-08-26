@@ -1,0 +1,10 @@
+{
+  "changes": [
+    {
+      "packageName": "@agros/platform-vue",
+      "comment": "Fix invalid string loading component in Vue platform",
+      "type": "patch"
+    }
+  ],
+  "packageName": "@agros/platform-vue"
+}

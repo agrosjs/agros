@@ -2,7 +2,10 @@ import 'reflect-metadata';
 import { ComponentInstance } from '@agros/common/lib/component-instance.class';
 import { Platform } from '@agros/platforms/lib/platform.interface';
 import { EnsureImportOptions } from '@agros/utils/lib/ensure-import';
-import { defineAsyncComponent } from 'vue';
+import {
+    defineAsyncComponent,
+    defineComponent,
+} from 'vue';
 import { RouterItem } from '@agros/common/lib/types';
 
 const platform: Platform = {
@@ -84,6 +87,14 @@ const platform: Platform = {
                 interceptorInstances = [],
             } = componentInstance.metadata;
 
+            let loadingComponent = interceptorsFallback || suspenseFallback;
+
+            if (typeof loadingComponent === 'string') {
+                loadingComponent = defineComponent({
+                    template: loadingComponent,
+                });
+            }
+
             return {
                 path: routeProps.path,
                 component: !lazy
@@ -106,7 +117,7 @@ const platform: Platform = {
                                 }
                                 return component();
                             },
-                        loadingComponent: interceptorsFallback || suspenseFallback,
+                        loadingComponent,
                     }),
                 ...(
                     (Array.isArray(children) && children.length > 0)
