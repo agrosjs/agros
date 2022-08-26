@@ -37,22 +37,21 @@ export const transformEntry = createLoaderAOP(
                 content,
             });
         };
-
-        fsPatch.add(context.fs, {
-            path: `src/${factoryFilename}.ts`,
-            content: `
-                import { Factory } from '@agros/app/lib/factory';
-                import platform from '${platformName}';
-                const factory = new Factory(platform);
-                export default factory;
-            `,
-        });
-
         const [exportDefaultDeclaration] = detectExports<t.ObjectExpression>(tree, 'ObjectExpression');
 
         if (!exportDefaultDeclaration) {
             throw new Error('The entry of an project should export an object of config');
         }
+
+        addVirtualFile(
+            `src/${factoryFilename}.ts`,
+            `
+                import { Factory } from '@agros/app/lib/factory';
+                import platform from '${platformName}';
+                const factory = new Factory(platform);
+                export default factory;
+            `,
+        );
 
         const imports = ([
             {
