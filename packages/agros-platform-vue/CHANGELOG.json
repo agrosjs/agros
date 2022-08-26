@@ -2,6 +2,18 @@
   "name": "@agros/platform-vue",
   "entries": [
     {
+      "version": "0.1.1",
+      "tag": "@agros/platform-vue_v0.1.1",
+      "date": "Fri, 26 Aug 2022 02:19:30 GMT",
+      "comments": {
+        "patch": [
+          {
+            "comment": "Fix invalid string loading component in Vue platform"
+          }
+        ]
+      }
+    },
+    {
       "version": "0.1.0",
       "tag": "@agros/platform-vue_v0.1.0",
       "date": "Wed, 24 Aug 2022 06:21:27 GMT",
