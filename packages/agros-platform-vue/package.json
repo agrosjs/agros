@@ -42,7 +42,7 @@
         "typescript": "^4.5.5"
     },
     "name": "@agros/platform-vue",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "description": "Vue.js platform for Agros.js",
     "dependencies": {
         "@agros/common": "workspace:^0.3.1",
