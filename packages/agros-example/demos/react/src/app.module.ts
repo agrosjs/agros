@@ -19,7 +19,7 @@ import { LoremModule } from './modules/lorem/lorem.module';
     ],
     routes: [
         {
-            path: 'app',
+            path: '',
             useComponentClass: AppComponent,
             children: [
                 {
