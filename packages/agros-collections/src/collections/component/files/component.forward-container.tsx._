@@ -1,8 +1,0 @@
-import { FC } from 'react';
-import { forwardContainer } from '@agros/app';
-
-const <%= name %>: FC = forwardContainer(({ container }) => {
-    return (<div><%= name %> Component is working!</div>);
-});
-
-export default <%= name %>;

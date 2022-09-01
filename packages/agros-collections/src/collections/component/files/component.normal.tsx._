@@ -1,9 +1,9 @@
-import { FC } from 'react';
+import React from '@agros/platform-react/lib/react';
 import { getContainer } from '@agros/app';
 
-const <%= name %>: FC = () => {
-    const container = getContainer(<%= name %>);
-
+const <%= name %>: React.FC = () => {
+    // TODO use container
+    // const container = getContainer();
     return (<div><%= name %> Component is working!</div>);
 };
 

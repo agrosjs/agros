@@ -14,7 +14,6 @@ import {
     Statement,
     ClassDeclaration,
     Expression,
-    ArrayExpression,
     StringLiteral,
 } from '@babel/types';
 import * as fs from 'fs-extra';
@@ -366,7 +365,7 @@ export const detectEOLCharacter = (code: string): string => {
     }
 };
 
-export const detectRootPoints = (): RootPointDescriptor[] => {
+export const detectRootPoint = (): RootPointDescriptor => {
     const projectConfigParser = new ProjectConfigParser();
     const content = fs.readFileSync(
         path.resolve(
@@ -376,13 +375,13 @@ export const detectRootPoints = (): RootPointDescriptor[] => {
     ).toString();
     const ast = parseAST(content);
     const body = ast.program.body;
-    const [configDeclaration] = detectExports<ArrayExpression>(ast, 'ArrayExpression');
+    const [configDeclaration] = detectExports<ObjectExpression>(ast, 'ObjectExpression');
 
     if (!configDeclaration) {
-        return [];
+        return null;
     }
 
-    const moduleNames: string[] = (configDeclaration.declaration.elements as any[] || [])
+    const moduleNames: string[] = ([configDeclaration.declaration] as ObjectExpression[] || [])
         .filter((element) => element.type === 'ObjectExpression')
         .map((element: ObjectExpression) => {
             const moduleProperty: ObjectProperty = (element?.properties || []).find((property: ObjectProperty) => {
@@ -397,7 +396,7 @@ export const detectRootPoints = (): RootPointDescriptor[] => {
         })
         .filter((moduleName) => !!moduleName);
 
-    const importedItems: ImportedItem[] = body.filter((statement) => {
+    const [importedItem]: ImportedItem[] = body.filter((statement) => {
         return statement.type === 'ImportDeclaration';
     }).reduce((result, currentStatement: ImportDeclaration) => {
         return result.concat(currentStatement.specifiers.map((specifier) => {
@@ -411,41 +410,39 @@ export const detectRootPoints = (): RootPointDescriptor[] => {
         return moduleNames.indexOf(importedItem.localName) !== -1;
     });
 
-    return importedItems.map((importedItem) => {
-        const {
-            source,
-            localName,
-            exportName,
-        } = importedItem;
+    const {
+        source,
+        localName,
+        exportName,
+    } = importedItem;
 
-        const entityDescriptor = getEntityDescriptorWithAlias(
-            normalizeAbsolutePath(transformAliasedPathToPath(source) + '.ts'),
-        );
+    const entityDescriptor = getEntityDescriptorWithAlias(
+        normalizeAbsolutePath(transformAliasedPathToPath(source) + '.ts'),
+    );
 
-        if (!entityDescriptor) {
-            return null;
-        }
+    if (!entityDescriptor) {
+        return null;
+    }
 
-        const collectionType = getCollectionType(entityDescriptor.absolutePath);
+    const collectionType = getCollectionType(entityDescriptor.absolutePath);
 
-        if (!collectionType) {
-            return null;
-        }
+    if (!collectionType) {
+        return null;
+    }
 
-        const baseFilename = path.basename(entityDescriptor.absolutePath);
-        const absoluteDirname = path.dirname(entityDescriptor.absolutePath);
-        const relativeDirname = path.relative(normalizeSrcPath(), absoluteDirname);
+    const baseFilename = path.basename(entityDescriptor.absolutePath);
+    const absoluteDirname = path.dirname(entityDescriptor.absolutePath);
+    const relativeDirname = path.relative(normalizeSrcPath(), absoluteDirname);
 
-        return {
-            ...entityDescriptor,
-            localName,
-            collectionType,
-            exportName,
-            name: relativeDirname
-                .split(path.sep)
-                .concat(getFileEntityIdentifier(baseFilename))
-                .filter((segment) => !!segment)
-                .join('/'),
-        };
-    }).filter((importedItem) => !!importedItem);
+    return {
+        ...entityDescriptor,
+        localName,
+        collectionType,
+        exportName,
+        name: relativeDirname
+            .split(path.sep)
+            .concat(getFileEntityIdentifier(baseFilename))
+            .filter((segment) => !!segment)
+            .join('/'),
+    };
 };

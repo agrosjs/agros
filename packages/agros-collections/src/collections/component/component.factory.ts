@@ -18,7 +18,6 @@ import * as fs from 'fs';
 interface ComponentCollectionGenerateOptions {
     name: string;
     moduleName?: string;
-    forwardMode?: boolean;
     lazy?: boolean;
     skipExport?: boolean;
 }
@@ -27,7 +26,6 @@ export class ComponentCollectionGenerateFactory extends AbstractCollection imple
     public async generate({
         name,
         moduleName,
-        forwardMode,
         lazy,
         skipExport,
     }: ComponentCollectionGenerateOptions) {
@@ -44,28 +42,28 @@ export class ComponentCollectionGenerateFactory extends AbstractCollection imple
         const declarationName = _.startCase(componentName).replace(/\s+/g, '');
         const serviceModuleName = moduleName ? _.kebabCase(moduleName) : componentName;
         const componentFilename = normalizeEntityFileName('component', componentName, '*.component.ts');
-        const componentTargetPath = this.modulesPath(`${serviceModuleName}/${componentFilename}`);
-        const declarationTargetPath = this.modulesPath(`${serviceModuleName}/${declarationName}.tsx`);
+        const componentDeclarationTargetPath = this.modulesPath(`${serviceModuleName}/${componentFilename}`);
+        const componentDescriptionTargetPath = this.modulesPath(`${serviceModuleName}/${declarationName}.tsx`);
 
         await this.writeTemplateFile(
             path.resolve(__dirname, 'files/component.ts._'),
-            componentTargetPath,
+            componentDeclarationTargetPath,
             {
                 name: declarationName,
-                file: transformPathToAliasedPath(normalizeNoExtensionPath(declarationTargetPath)),
+                file: transformPathToAliasedPath(normalizeNoExtensionPath(componentDescriptionTargetPath)),
                 ...(lazy ? { lazy: true } : {}),
             },
         );
-        result.create.push(componentTargetPath);
+        result.create.push(componentDeclarationTargetPath);
 
         await this.writeTemplateFile(
-            path.resolve(__dirname, `files/component.${forwardMode ? 'forward-container' : 'normal'}.tsx._`),
-            declarationTargetPath,
+            path.resolve(__dirname, 'files/component.normal.tsx._'),
+            componentDescriptionTargetPath,
             {
                 name: declarationName,
             },
         );
-        result.create.push(componentTargetPath);
+        result.create.push(componentDescriptionTargetPath);
         this.updateEntities();
 
         const moduleEntityDescriptor = this.entities.find((entity) => {
@@ -74,7 +72,7 @@ export class ComponentCollectionGenerateFactory extends AbstractCollection imple
 
         if (moduleEntityDescriptor) {
             const updates = await updateImportedEntityToModule(
-                getEntityDescriptorWithAlias(componentTargetPath),
+                getEntityDescriptorWithAlias(componentDeclarationTargetPath),
                 moduleEntityDescriptor,
                 {
                     skipExport,

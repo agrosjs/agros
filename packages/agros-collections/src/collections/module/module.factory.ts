@@ -2,7 +2,7 @@ import {
     AbstractCollection,
     applyUpdates,
     CollectionGenerateResult,
-    detectRootPoints,
+    detectRootPoint,
     getEntityDescriptorWithAlias,
     normalizeCLIPath,
     normalizeEntityFileName,
@@ -16,7 +16,6 @@ import * as fs from 'fs';
 interface ModuleCollectionGenerateOptions {
     name: string;
     async?: boolean;
-    rootPoint?: number;
     global?: boolean;
     skipDeclareCollections?: boolean;
     skipExportDeclaredCollections?: boolean;
@@ -26,7 +25,6 @@ export class ModuleCollectionGenerateFactory extends AbstractCollection implemen
     public async generate({
         name,
         async: asyncModule,
-        rootPoint: rootPointIndex,
         global: globalModule = false,
         skipDeclareCollections,
         skipExportDeclaredCollections,
@@ -79,23 +77,21 @@ export class ModuleCollectionGenerateFactory extends AbstractCollection implemen
             );
         }
 
-        if (_.isNumber(rootPointIndex)) {
-            const rootPointDescriptor = (detectRootPoints() || [])[rootPointIndex];
+        const rootPointDescriptor = detectRootPoint();
 
-            if (rootPointDescriptor) {
-                const updates = await updateImportedEntityToModule(
-                    getEntityDescriptorWithAlias(targetPath),
-                    rootPointDescriptor,
-                    {
-                        asyncModule,
-                    },
-                );
-                await this.writeFile(
-                    rootPointDescriptor.absolutePath,
-                    applyUpdates(updates, fs.readFileSync(rootPointDescriptor.absolutePath).toString()),
-                );
-                result.update.push(rootPointDescriptor.absolutePath);
-            }
+        if (rootPointDescriptor) {
+            const updates = await updateImportedEntityToModule(
+                getEntityDescriptorWithAlias(targetPath),
+                rootPointDescriptor,
+                {
+                    asyncModule,
+                },
+            );
+            await this.writeFile(
+                rootPointDescriptor.absolutePath,
+                applyUpdates(updates, fs.readFileSync(rootPointDescriptor.absolutePath).toString()),
+            );
+            result.update.push(rootPointDescriptor.absolutePath);
         }
 
         return result;

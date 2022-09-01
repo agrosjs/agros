@@ -2,8 +2,8 @@
   "changes": [
     {
       "packageName": "@agros/common",
-      "comment": "Support async modules",
-      "type": "patch"
+      "comment": "Refactor detectors",
+      "type": "minor"
     }
   ],
   "packageName": "@agros/common"
