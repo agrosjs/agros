@@ -4,6 +4,8 @@ import {
 } from '@agros/app';
 
 @Injectable()
-export class <%= name %>Interceptor implements Interceptor<any, any, any> {
-    public intercept(props, context) {}
+export class <%= name %>Interceptor implements Interceptor {
+    public intercept(props, context): undefined {
+        return;
+    }
 }

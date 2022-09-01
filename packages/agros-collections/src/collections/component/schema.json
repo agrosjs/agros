@@ -14,12 +14,6 @@
                     "default": "$context$name",
                     "cliType": "argument"
                 },
-                "forwardMode": {
-                    "type": "confirm",
-                    "message": "Use `forwardContainer` to declare component",
-                    "default": false,
-                    "cliType": "option"
-                },
                 "lazy": {
                     "type": "confirm",
                     "message": "Lazy-load component",

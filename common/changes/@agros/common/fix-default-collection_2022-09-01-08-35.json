@@ -1,0 +1,10 @@
+{
+  "changes": [
+    {
+      "packageName": "@agros/common",
+      "comment": "Refactor detectors",
+      "type": "minor"
+    }
+  ],
+  "packageName": "@agros/common"
+}
