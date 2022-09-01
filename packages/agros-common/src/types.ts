@@ -41,6 +41,7 @@ export type ComponentMetadata = Omit<ComponentDecoratorOptions, 'declarations'> 
 };
 
 export type Type<T = any> = new (...args: Array<any>) => T;
+export type AsyncModuleClass<T = any> = Type<T> | Promise<Type>;
 
 export interface RouteProps<C = any, R = any> {
     caseSensitive?: boolean;
@@ -51,7 +52,7 @@ export interface RouteProps<C = any, R = any> {
 }
 
 export interface RouteOptionItem<T = any> extends Omit<RouteProps, 'element' | 'children'> {
-    useModuleClass?: Type;
+    useModuleClass?: AsyncModuleClass;
     useComponentClass?: Type;
     children?: RouteOptionItem<T>[];
 }
@@ -77,7 +78,7 @@ export interface BootstrapConfigItem extends RootContainerProps {
 }
 
 export interface ModuleDecoratorOptions {
-    imports?: Array<Type>;
+    imports?: Array<AsyncModuleClass>;
     providers?: Array<Type>;
     components?: Array<Type>;
     routes?: Array<RouteOptionItem>;
@@ -85,7 +86,7 @@ export interface ModuleDecoratorOptions {
 }
 
 export interface ModuleMetadata {
-    imports: Set<Type>;
+    imports: Set<AsyncModuleClass>;
     providers: Set<Type<any>>;
     exports: Set<Type<any>>;
     components: Set<Type<any>>;
