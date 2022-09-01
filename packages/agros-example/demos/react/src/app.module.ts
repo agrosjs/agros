@@ -3,8 +3,9 @@ import { AppNavigateComponent } from './app-navigate.component';
 import { AppComponent } from './app.component';
 import { BarModule } from './modules/bar/bar.module';
 import { BazModule } from './modules/baz/baz.module';
-import { FooModule } from './modules/foo/foo.module';
 import { LoremModule } from './modules/lorem/lorem.module';
+
+const FooModule = import('./modules/foo/foo.module').then((({ FooModule }) => FooModule));
 
 @Module({
     components: [

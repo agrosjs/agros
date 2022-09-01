@@ -8,7 +8,9 @@ import {
     RouterItem,
     Factory as IFactory,
     Interceptor,
+    AsyncModuleClass,
 } from '@agros/common/lib/types';
+import isPromise from 'is-promise';
 import {
     DI_DEPS_SYMBOL,
     DI_GLOBAL_MODULE_SYMBOL,
@@ -60,21 +62,22 @@ export class Factory implements IFactory {
     public constructor(protected readonly platform: Platform) {}
 
     /**
+     * @async
      * @public
      * @method
      * @param {Type<T>} ModuleClass
-     * @returns {RouteItem[]>}
+     * @returns {Promise<RouteItem[]>}
      *
      * create a route config with the root module
      */
     public async create<T = any>(ModuleClass: Type<T>): Promise<RouterItem[]> {
-        const rootModuleInstance = this.createModuleInstance(ModuleClass);
-        this.setImportedModuleInstances();
+        const rootModuleInstance = await this.createModuleInstance(ModuleClass);
+        await this.setImportedModuleInstances();
         this.createProviderClassToModuleClassMap();
-        this.createProviderInstances(rootModuleInstance);
+        await this.createProviderInstances(rootModuleInstance);
         this.createComponentInstances(rootModuleInstance);
         await this.generateComponentForInstances();
-        this.routerItems = this.createRouterItems(Array.from(rootModuleInstance.metadata.routes));
+        this.routerItems = await this.createRouterItems(Array.from(rootModuleInstance.metadata.routes));
         return Array.from(this.routerItems);
     }
 
@@ -158,13 +161,15 @@ export class Factory implements IFactory {
     }
 
     /**
+     * @async
      * @param {Type} ModuleClassOrPromise
-     * @returns {void}
+     * @returns {Promise<void>}
      *
      * create flattened module instances using a root module class
      * this is a recursive function
      */
-    private createModuleInstance<T>(ModuleClass: Type<T>) {
+    private async createModuleInstance<T>(ModuleClassOrPromise: AsyncModuleClass<T>) {
+        const ModuleClass = await this.getModuleClass(ModuleClassOrPromise);
         if (!this.moduleInstanceMap.get(ModuleClass)) {
             const metadataValue: ModuleMetadata = Reflect.getMetadata(
                 DI_METADATA_MODULE_SYMBOL,
@@ -204,22 +209,25 @@ export class Factory implements IFactory {
         /**
          * get all imported module classes and create them recursively
          */
-        for (const ImportedModuleClass of currentModuleInstance.metadata.imports) {
-            this.createModuleInstance(ImportedModuleClass);
+        for (const ImportedModuleClassOrPromise of currentModuleInstance.metadata.imports) {
+            await this.createModuleInstance(ImportedModuleClassOrPromise);
         }
 
         return currentModuleInstance;
     }
 
     /**
+     * @async
      * @private
-     * @returns {void}
+     * @returns {Promise<void>}
      *
      * add imported module instances into every instance
      */
-    private setImportedModuleInstances() {
+    private async setImportedModuleInstances() {
         for (const [ModuleClass, moduleInstance] of this.moduleInstanceMap.entries()) {
-            for (const ImportedModuleClass of Array.from(moduleInstance.metadata.imports)) {
+            for (const ImportedModuleClassOrPromise of Array.from(moduleInstance.metadata.imports)) {
+                const ImportedModuleClass = await this.getModuleClass(ImportedModuleClassOrPromise);
+
                 if (ModuleClass === ImportedModuleClass) {
                     throw new Error(`Module ${ModuleClass.name} cannot import itself`);
                 }
@@ -260,12 +268,13 @@ export class Factory implements IFactory {
     }
 
     /**
+     * @async
      * @private
-     * @returns {void}
+     * @returns {Promise<void>}
      *
      * create a single provider instance use provider class
      */
-    private createProviderInstance(ProviderClass: Type) {
+    private async createProviderInstance(ProviderClass: Type) {
         if (this.providerInstanceMap.get(ProviderClass)) {
             return this.providerInstanceMap.get(ProviderClass);
         }
@@ -287,7 +296,7 @@ export class Factory implements IFactory {
         this.providerInstanceMap.set(
             ProviderClass,
             new ProviderClass(
-                ...dependedProviderClasses.map((DependedProviderClass) => {
+                ...await Promise.all(dependedProviderClasses.map((DependedProviderClass) => {
                     if (DependedProviderClass === ProviderClass) {
                         throw new Error(`Provider ${ProviderClass.name} cannot depend on itself`);
                     }
@@ -312,7 +321,7 @@ export class Factory implements IFactory {
                     }
 
                     return this.createProviderInstance(DependedProviderClass);
-                }),
+                })),
             ),
         );
 
@@ -320,19 +329,20 @@ export class Factory implements IFactory {
     }
 
     /**
+     * @async
      * @private
      * @param {ModuleInstance} moduleInstance
-     * @returns {void}
+     * @returns {Promise<void>}
      *
      * create provider instances from root module's providers
      */
-    private createProviderInstances(moduleInstance: ModuleInstance) {
+    private async createProviderInstances(moduleInstance: ModuleInstance) {
         for (const ProviderClass of Array.from(moduleInstance.metadata.providers)) {
-            this.createProviderInstance(ProviderClass);
+            await this.createProviderInstance(ProviderClass);
         }
 
         for (const importedModuleInstance of Array.from(moduleInstance.getImportedModuleInstances())) {
-            this.createProviderInstances(importedModuleInstance);
+            await this.createProviderInstances(importedModuleInstance);
         }
     }
 
@@ -413,11 +423,12 @@ export class Factory implements IFactory {
     }
 
     /**
+     * @async
      * @private
      * @param {RouteOptionItem[]} routes route config items from modules
      * @param {string} prefixPathname prefix pathname of current level routes
      */
-    private createRouterItems(routes: RouteOptionItem[], prefixPathname = ''): RouterItem[] {
+    private async createRouterItems(routes: RouteOptionItem[], prefixPathname = ''): Promise<RouterItem[]> {
         let result: RouterItem[] = [];
 
         for (const routeItem of Array.from(routes)) {
@@ -452,7 +463,7 @@ export class Factory implements IFactory {
                 } as RouterItem;
 
                 if (Array.isArray(children)) {
-                    currentRouterItem.children = this.createRouterItems(routeItem.children);
+                    currentRouterItem.children = await this.createRouterItems(routeItem.children);
                 }
 
                 result = result.concat(currentRouterItem);
@@ -460,17 +471,17 @@ export class Factory implements IFactory {
                 /**
                  * if `useModuleClass` is specified, then flatten it to current level child routes
                  */
-                const ModuleClass = useModuleClass;
+                const ModuleClass = await this.getModuleClass(useModuleClass);
                 const moduleInstance = this.moduleInstanceMap.get(ModuleClass);
                 const currentRouteOptionItems = Array.from(moduleInstance.metadata.routes);
-                const currentRouterItems = this.createRouterItems(
+                const currentRouterItems = await this.createRouterItems(
                     currentRouteOptionItems,
                     this.normalizePath(pathname) || '',
                 );
 
                 for (const currentRouterItem of currentRouterItems) {
                     if (Array.isArray(routeItem.children)) {
-                        currentRouterItem.children = this.createRouterItems(currentRouterItem.children);
+                        currentRouterItem.children = await this.createRouterItems(currentRouterItem.children);
                     }
                 }
 
@@ -481,5 +492,13 @@ export class Factory implements IFactory {
         }
 
         return result;
+    }
+
+    private async getModuleClass(asyncModuleClass: AsyncModuleClass): Promise<Type<any>> {
+        if (isPromise(asyncModuleClass)) {
+            return await asyncModuleClass;
+        }
+
+        return asyncModuleClass;
     }
 }
