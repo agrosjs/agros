@@ -9,9 +9,9 @@ importers:
     specifiers:
       '@agros/common': workspace:^0.3.1
       '@agros/config': workspace:^0.2.1
-      '@agros/loader': workspace:^0.2.1
+      '@agros/loader': workspace:^0.3.0
       '@agros/logger': workspace:^0.1.0
-      '@agros/platforms': workspace:^0.1.0
+      '@agros/platforms': workspace:^0.2.0
       '@agros/utils': workspace:^0.2.0
       '@babel/core': ^7.18.5
       '@babel/plugin-proposal-class-properties': ^7.17.12
@@ -296,9 +296,9 @@ importers:
 
   ../../packages/agros-example:
     specifiers:
-      '@agros/app': workspace:^0.5.1
-      '@agros/platform-react': workspace:^0.1.0
-      '@agros/platform-vue': workspace:^0.1.1
+      '@agros/app': workspace:^0.5.2
+      '@agros/platform-react': workspace:^0.1.1
+      '@agros/platform-vue': workspace:^0.1.2
       '@babel/core': ^7.18.5
       '@types/jest': ^28.1.1
       '@types/lodash': ^4.14.182
@@ -341,7 +341,7 @@ importers:
     specifiers:
       '@agros/common': workspace:^0.3.1
       '@agros/config': workspace:^0.2.1
-      '@agros/platforms': workspace:^0.1.0
+      '@agros/platforms': workspace:^0.2.0
       '@agros/utils': workspace:^0.2.0
       '@babel/generator': ^7.18.2
       '@babel/parser': ^7.18.5
@@ -421,9 +421,9 @@ importers:
     specifiers:
       '@agros/common': workspace:^0.3.1
       '@agros/config': workspace:^0.2.1
-      '@agros/loader': workspace:^0.2.1
+      '@agros/loader': workspace:^0.3.0
       '@agros/logger': workspace:^0.1.0
-      '@agros/platforms': workspace:^0.1.0
+      '@agros/platforms': workspace:^0.2.0
       '@agros/utils': workspace:^0.2.0
       '@babel/core': ^7.18.5
       '@babel/generator': ^7.18.10
@@ -494,8 +494,8 @@ importers:
     specifiers:
       '@agros/common': workspace:^0.3.1
       '@agros/config': workspace:^0.2.1
-      '@agros/loader': workspace:^0.2.1
-      '@agros/platforms': workspace:^0.1.0
+      '@agros/loader': workspace:^0.3.0
+      '@agros/platforms': workspace:^0.2.0
       '@agros/utils': workspace:^0.2.0
       '@babel/plugin-transform-parameters': ^7.18.8
       '@babel/plugin-transform-runtime': ^7.18.10
