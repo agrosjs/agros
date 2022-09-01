@@ -1,6 +1,13 @@
 # Change Log - @agros/platforms
 
-This log was last generated on Wed, 24 Aug 2022 06:21:27 GMT and should not be manually modified.
+This log was last generated on Fri, 26 Aug 2022 09:27:53 GMT and should not be manually modified.
+
+## 0.2.0
+Fri, 26 Aug 2022 09:27:53 GMT
+
+### Minor changes
+
+- pass addVirtualFile to getBootstrapCode
 
 ## 0.1.0
 Wed, 24 Aug 2022 06:21:27 GMT

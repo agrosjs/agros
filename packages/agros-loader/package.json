@@ -45,12 +45,12 @@
         "typescript": "^4.5.5"
     },
     "name": "@agros/loader",
-    "version": "0.2.1",
+    "version": "0.3.0",
     "description": "Agros loader for Webpack",
     "dependencies": {
         "@agros/common": "workspace:^0.3.1",
         "@agros/config": "workspace:^0.2.1",
-        "@agros/platforms": "workspace:^0.1.0",
+        "@agros/platforms": "workspace:^0.2.0",
         "@agros/utils": "workspace:^0.2.0",
         "@babel/generator": "^7.18.2",
         "@babel/parser": "^7.18.5",

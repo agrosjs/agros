@@ -1,0 +1,10 @@
+{
+  "changes": [
+    {
+      "packageName": "@agros/common",
+      "comment": "Support async modules",
+      "type": "patch"
+    }
+  ],
+  "packageName": "@agros/common"
+}
