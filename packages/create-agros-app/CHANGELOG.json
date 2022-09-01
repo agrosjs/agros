@@ -2,6 +2,23 @@
   "name": "@agros/create-app",
   "entries": [
     {
+      "version": "0.1.5",
+      "tag": "@agros/create-app_v0.1.5",
+      "date": "Thu, 01 Sep 2022 09:22:19 GMT",
+      "comments": {
+        "patch": [
+          {
+            "comment": "Refactor src/index.ts of template files"
+          }
+        ],
+        "dependency": [
+          {
+            "comment": "Updating dependency \"@agros/common\" from `^0.3.2` to `^0.4.0`"
+          }
+        ]
+      }
+    },
+    {
       "version": "0.1.4",
       "tag": "@agros/create-app_v0.1.4",
       "date": "Wed, 24 Aug 2022 06:21:27 GMT",

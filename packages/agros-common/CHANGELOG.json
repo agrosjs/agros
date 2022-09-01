@@ -2,6 +2,18 @@
   "name": "@agros/common",
   "entries": [
     {
+      "version": "0.4.0",
+      "tag": "@agros/common_v0.4.0",
+      "date": "Thu, 01 Sep 2022 09:22:19 GMT",
+      "comments": {
+        "minor": [
+          {
+            "comment": "Refactor detectors"
+          }
+        ]
+      }
+    },
+    {
       "version": "0.3.2",
       "tag": "@agros/common_v0.3.2",
       "date": "Thu, 01 Sep 2022 01:57:03 GMT",
