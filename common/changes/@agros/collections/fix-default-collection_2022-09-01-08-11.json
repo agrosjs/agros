@@ -1,0 +1,10 @@
+{
+  "changes": [
+    {
+      "packageName": "@agros/collections",
+      "comment": "Optimize interceptor template files",
+      "type": "patch"
+    }
+  ],
+  "packageName": "@agros/collections"
+}
