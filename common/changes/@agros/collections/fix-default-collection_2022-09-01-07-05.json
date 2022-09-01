@@ -1,0 +1,10 @@
+{
+  "changes": [
+    {
+      "packageName": "@agros/collections",
+      "comment": "Default collection generate result display issues",
+      "type": "patch"
+    }
+  ],
+  "packageName": "@agros/collections"
+}
