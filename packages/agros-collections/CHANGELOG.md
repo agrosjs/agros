@@ -1,6 +1,15 @@
 # Change Log - @agros/collections
 
-This log was last generated on Wed, 24 Aug 2022 06:21:27 GMT and should not be manually modified.
+This log was last generated on Thu, 01 Sep 2022 09:22:19 GMT and should not be manually modified.
+
+## 0.0.5
+Thu, 01 Sep 2022 09:22:19 GMT
+
+### Patches
+
+- Default collection generate result display issues
+- Optimize interceptor template files
+- Refactor src/index.ts of template files
 
 ## 0.0.4
 Wed, 24 Aug 2022 06:21:27 GMT

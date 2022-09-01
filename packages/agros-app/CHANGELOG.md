@@ -1,6 +1,11 @@
 # Change Log - @agros/app
 
-This log was last generated on Thu, 01 Sep 2022 01:57:03 GMT and should not be manually modified.
+This log was last generated on Thu, 01 Sep 2022 09:22:19 GMT and should not be manually modified.
+
+## 0.5.4
+Thu, 01 Sep 2022 09:22:19 GMT
+
+_Version update only_
 
 ## 0.5.3
 Thu, 01 Sep 2022 01:57:03 GMT

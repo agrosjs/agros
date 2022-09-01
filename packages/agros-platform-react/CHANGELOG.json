@@ -2,6 +2,24 @@
   "name": "@agros/platform-react",
   "entries": [
     {
+      "version": "0.1.2",
+      "tag": "@agros/platform-react_v0.1.2",
+      "date": "Thu, 01 Sep 2022 09:22:19 GMT",
+      "comments": {
+        "dependency": [
+          {
+            "comment": "Updating dependency \"@agros/common\" from `^0.3.2` to `^0.4.0`"
+          },
+          {
+            "comment": "Updating dependency \"@agros/loader\" from `^0.3.0` to `^0.3.1`"
+          },
+          {
+            "comment": "Updating dependency \"@agros/platforms\" from `^0.2.0` to `^0.2.1`"
+          }
+        ]
+      }
+    },
+    {
       "version": "0.1.1",
       "tag": "@agros/platform-react_v0.1.1",
       "date": "Fri, 26 Aug 2022 09:27:53 GMT",
