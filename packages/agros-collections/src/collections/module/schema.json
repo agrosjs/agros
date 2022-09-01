@@ -8,12 +8,6 @@
                     "message": "The name of the module",
                     "cliType": "argument"
                 },
-                "rootPoint": {
-                    "type": "number",
-                    "message": "Root point to manage this module",
-                    "cliType": "option",
-                    "default": 0
-                },
                 "global": {
                     "type": "confirm",
                     "message": "Set this module as a global module",
