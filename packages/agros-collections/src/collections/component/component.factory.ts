@@ -122,7 +122,28 @@ export class ComponentCollectionUpdateFactory extends AbstractCollection impleme
             result.update.push(targetDescriptor.absolutePath);
         }
 
-        updateCorrespondingTargetModule(sourceDescriptor, targetDescriptor);
+        const [
+            sourceModuleUpdates,
+            targetModuleUpdates,
+        ] = await updateCorrespondingTargetModule(sourceDescriptor, targetDescriptor);
+
+        if (sourceModuleUpdates.length > 0) {
+            const absolutePath = sourceDescriptor.modules[0]?.absolutePath;
+            this.writeFile(
+                absolutePath,
+                applyUpdates(sourceModuleUpdates, fs.readFileSync(absolutePath).toString()),
+            );
+            result.update.push(source);
+        }
+
+        if (targetModuleUpdates.length > 0) {
+            const absolutePath = targetDescriptor.modules[0]?.absolutePath;
+            this.writeFile(
+                absolutePath,
+                applyUpdates(targetModuleUpdates, fs.readFileSync(absolutePath).toString()),
+            );
+            result.update.push(source);
+        }
 
         return result;
     }

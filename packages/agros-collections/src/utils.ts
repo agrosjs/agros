@@ -1,13 +1,14 @@
 import {
     EntityDescriptor,
     updateImportedEntityToModule,
+    UpdateItem,
 } from '@agros/common';
 
 export const updateCorrespondingTargetModule = async (
     sourceDescriptor: EntityDescriptor,
     targetDescriptor: EntityDescriptor,
 ) => {
-    const result = [];
+    const result = [] as UpdateItem[][];
 
     if (sourceDescriptor.modules[0]) {
         const sourceModuleDescriptor = sourceDescriptor.modules[0];
@@ -26,4 +27,6 @@ export const updateCorrespondingTargetModule = async (
             result[1] = targetModuleUpdates;
         }
     }
+
+    return result;
 };
