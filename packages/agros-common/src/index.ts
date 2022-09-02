@@ -9,3 +9,4 @@ export * from './transformers';
 export * from './linters';
 export * from './constants';
 export * from './scanner';
+export * from './check-entities';

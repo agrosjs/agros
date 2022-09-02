@@ -14,6 +14,8 @@ import {
     LinterOptions,
 } from './linters';
 import { isBinaryFileSync } from 'isbinaryfile';
+import { checkEntities } from './check-entities';
+import { EntityDescriptor } from './types';
 
 export interface Collection {
     name: string;
@@ -33,7 +35,12 @@ export interface CollectionWriteFileOptions {
 
 export abstract class AbstractCollection {
     protected readonly projectConfig = new ProjectConfigParser();
-    protected entities = scanProjectEntities();
+    protected entities: EntityDescriptor[] = [];
+
+    public constructor() {
+        this.entities = scanProjectEntities();
+        checkEntities(this.entities);
+    }
 
     protected updateEntities() {
         this.entities = scanProjectEntities();
