@@ -1,0 +1,10 @@
+{
+  "changes": [
+    {
+      "packageName": "@agros/common",
+      "comment": "Add curLine feature for update item",
+      "type": "patch"
+    }
+  ],
+  "packageName": "@agros/common"
+}
