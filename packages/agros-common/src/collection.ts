@@ -3,7 +3,7 @@ import {
     normalizeModulesPath,
     normalizeSrcPath,
 } from './normalizers';
-import { scanProjectEntities } from './utils';
+import { scanProjectEntities } from './scanner';
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import ejs from 'ejs';

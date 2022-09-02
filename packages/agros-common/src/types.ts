@@ -4,6 +4,7 @@ import { ComponentInstance } from './component-instance.class';
 import { Map as ImmutableMap } from 'immutable';
 
 export interface PathDescriptor extends Omit<Dirent, 'name'> {
+    id: string;
     relativePath: string;
     absolutePath: string;
     aliasPath: string;

@@ -8,3 +8,4 @@ export * from './apply-updates';
 export * from './transformers';
 export * from './linters';
 export * from './constants';
+export * from './scanner';
