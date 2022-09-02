@@ -2,6 +2,40 @@
   "name": "@agros/collections",
   "entries": [
     {
+      "version": "0.1.0",
+      "tag": "@agros/collections_v0.1.0",
+      "date": "Fri, 02 Sep 2022 09:12:43 GMT",
+      "comments": {
+        "patch": [
+          {
+            "comment": "Fix collection factory get entity descriptor"
+          },
+          {
+            "comment": "Fix updater issues when an injectable class' body only have one line"
+          },
+          {
+            "comment": "Update corresponding modules when updating injectables"
+          },
+          {
+            "comment": "Add checkEntities"
+          }
+        ],
+        "minor": [
+          {
+            "comment": "Refactor factories"
+          }
+        ],
+        "dependency": [
+          {
+            "comment": "Updating dependency \"@agros/common\" from `^0.4.0` to `^0.5.0`"
+          },
+          {
+            "comment": "Updating dependency \"@agros/create-app\" from `^0.1.5` to `^0.1.6`"
+          }
+        ]
+      }
+    },
+    {
       "version": "0.0.5",
       "tag": "@agros/collections_v0.0.5",
       "date": "Thu, 01 Sep 2022 09:22:19 GMT",

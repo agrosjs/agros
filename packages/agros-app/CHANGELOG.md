@@ -1,6 +1,13 @@
 # Change Log - @agros/app
 
-This log was last generated on Thu, 01 Sep 2022 09:22:19 GMT and should not be manually modified.
+This log was last generated on Fri, 02 Sep 2022 09:12:43 GMT and should not be manually modified.
+
+## 0.5.5
+Fri, 02 Sep 2022 09:12:43 GMT
+
+### Patches
+
+- Add entities checking when start and build project
 
 ## 0.5.4
 Thu, 01 Sep 2022 09:22:19 GMT

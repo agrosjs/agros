@@ -1,6 +1,21 @@
 # Change Log - @agros/common
 
-This log was last generated on Thu, 01 Sep 2022 09:22:19 GMT and should not be manually modified.
+This log was last generated on Fri, 02 Sep 2022 09:12:43 GMT and should not be manually modified.
+
+## 0.5.0
+Fri, 02 Sep 2022 09:12:43 GMT
+
+### Minor changes
+
+- Add module collection map detector
+
+### Patches
+
+- Add a new method for collections factory
+- Optimize some utilities
+- Add curLine feature for update item
+- update corresponding modules when updating injectables
+- Add checkEntities
 
 ## 0.4.0
 Thu, 01 Sep 2022 09:22:19 GMT

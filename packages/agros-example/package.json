@@ -27,9 +27,9 @@
     "version": "0.0.0",
     "description": "Agros example",
     "dependencies": {
-        "@agros/app": "workspace:^0.5.4",
-        "@agros/platform-react": "workspace:^0.1.2",
-        "@agros/platform-vue": "workspace:^0.1.3",
+        "@agros/app": "workspace:^0.5.5",
+        "@agros/platform-react": "workspace:^0.1.3",
+        "@agros/platform-vue": "workspace:^0.1.4",
         "core-js": "^3.24.1",
         "react": "^17.0.0",
         "react-error-boundary": "^3.1.4",
