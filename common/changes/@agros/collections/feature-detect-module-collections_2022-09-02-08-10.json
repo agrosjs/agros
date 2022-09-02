@@ -2,7 +2,7 @@
   "changes": [
     {
       "packageName": "@agros/collections",
-      "comment": "Optimize interceptor template files",
+      "comment": "Add checkEntities",
       "type": "patch"
     }
   ],

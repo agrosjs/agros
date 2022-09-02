@@ -1,13 +1,15 @@
 lockfileVersion: 5.4
 
 specifiers:
-  '@agros/common': workspace:^0.0.0
-  '@agros/create-app': workspace:^0.0.0
+  '@agros/common': workspace:^0.4.0
+  '@agros/config': workspace:^0.2.1
+  '@agros/create-app': workspace:^0.1.5
   copyfiles: ^2.4.1
   lodash: ^4.17.21
 
 dependencies:
   '@agros/common': link:../agros-common
+  '@agros/config': link:../agros-config
   '@agros/create-app': link:../create-agros-app
   lodash: 4.17.21
 

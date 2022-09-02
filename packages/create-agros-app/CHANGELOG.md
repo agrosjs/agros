@@ -1,6 +1,13 @@
 # Change Log - @agros/create-app
 
-This log was last generated on Wed, 24 Aug 2022 06:21:27 GMT and should not be manually modified.
+This log was last generated on Thu, 01 Sep 2022 09:22:19 GMT and should not be manually modified.
+
+## 0.1.5
+Thu, 01 Sep 2022 09:22:19 GMT
+
+### Patches
+
+- Refactor src/index.ts of template files
 
 ## 0.1.4
 Wed, 24 Aug 2022 06:21:27 GMT

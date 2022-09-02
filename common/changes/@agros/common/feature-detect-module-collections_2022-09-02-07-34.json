@@ -2,8 +2,8 @@
   "changes": [
     {
       "packageName": "@agros/common",
-      "comment": "Refactor detectors",
-      "type": "minor"
+      "comment": "Add curLine feature for update item",
+      "type": "patch"
     }
   ],
   "packageName": "@agros/common"

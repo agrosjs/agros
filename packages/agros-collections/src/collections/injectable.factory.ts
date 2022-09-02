@@ -4,31 +4,35 @@ import {
     CollectionGenerateResult,
     normalizeCLIPath,
     normalizeEntityFileName,
-    normalizeNoExtensionPath,
-    transformPathToAliasedPath,
     UpdateBaseOptions,
-    updateImportedEntityToComponent,
     updateImportedEntityToModule,
+    updateImportedInjectableToInjectable,
 } from '@agros/common';
-import * as path from 'path';
 import _ from 'lodash';
 import * as fs from 'fs';
-import { updateCorrespondingTargetModule } from '../../utils';
+import { CollectionType } from '@agros/config';
+import { updateCorrespondingTargetModule } from '../utils';
 
-interface ComponentCollectionGenerateOptions {
+interface InjectableCollectionGenerateOptions {
     name: string;
     moduleName?: string;
-    lazy?: boolean;
     skipExport?: boolean;
 }
 
-export class ComponentCollectionGenerateFactory extends AbstractCollection implements AbstractCollection {
+export class InjectableCollectionGenerateFactory extends AbstractCollection implements AbstractCollection {
+    public constructor(
+        protected readonly collectionType: CollectionType,
+        protected readonly templateFilePath: string,
+        protected readonly fallbackSchema: string,
+    ) {
+        super();
+    }
+
     public async generate({
         name,
         moduleName,
-        lazy,
         skipExport,
-    }: ComponentCollectionGenerateOptions) {
+    }: InjectableCollectionGenerateOptions) {
         if (!name) {
             throw new Error('Expect `name` to be of type `string`');
         }
@@ -37,42 +41,29 @@ export class ComponentCollectionGenerateFactory extends AbstractCollection imple
             create: [],
             update: [],
         };
-
-        const componentName = _.kebabCase(name);
-        const declarationName = _.startCase(componentName).replace(/\s+/g, '');
-        const serviceModuleName = moduleName ? _.kebabCase(moduleName) : componentName;
-        const componentFilename = normalizeEntityFileName('component', componentName, '*.component.ts');
-        const componentDeclarationTargetPath = this.modulesPath(`${serviceModuleName}/${componentFilename}`);
-        const componentDescriptionTargetPath = this.modulesPath(`${serviceModuleName}/${declarationName}.tsx`);
+        const entityName = _.kebabCase(name);
+        const entityModuleName = moduleName ? _.kebabCase(moduleName) : entityName;
+        const filename = normalizeEntityFileName(this.collectionType, entityName, this.fallbackSchema);
+        const targetPath = this.modulesPath(`${entityModuleName}/${filename}`);
 
         await this.writeTemplateFile(
-            path.resolve(__dirname, 'files/component.ts._'),
-            componentDeclarationTargetPath,
+            this.templateFilePath,
+            targetPath,
             {
-                name: declarationName,
-                file: transformPathToAliasedPath(normalizeNoExtensionPath(componentDescriptionTargetPath)),
-                ...(lazy ? { lazy: true } : {}),
+                name: _.startCase(entityName.toLowerCase()).replace(/\s+/g, ''),
             },
         );
-        result.create.push(componentDeclarationTargetPath);
 
-        await this.writeTemplateFile(
-            path.resolve(__dirname, 'files/component.normal.tsx._'),
-            componentDescriptionTargetPath,
-            {
-                name: declarationName,
-            },
-        );
-        result.create.push(componentDescriptionTargetPath);
+        result.create.push(targetPath);
         this.updateEntities();
 
         const moduleEntityDescriptor = this.entities.find((entity) => {
-            return entity.collectionType === 'module' && entity.moduleName === serviceModuleName;
+            return entity.collectionType === 'module' && entity.moduleName === entityModuleName;
         });
 
         if (moduleEntityDescriptor) {
             const updates = await updateImportedEntityToModule(
-                this.getEntityDescriptor(componentDeclarationTargetPath),
+                this.getEntityDescriptor(targetPath),
                 moduleEntityDescriptor,
                 {
                     skipExport,
@@ -89,20 +80,31 @@ export class ComponentCollectionGenerateFactory extends AbstractCollection imple
     }
 }
 
-type ComponentCollectionUpdateOptions = UpdateBaseOptions;
+interface InjectableCollectionUpdateOptions extends UpdateBaseOptions {
+    accessibility?: 'private' | 'protected' | 'public';
+    skipReadonly?: boolean;
+}
 
-export class ComponentCollectionUpdateFactory extends AbstractCollection implements AbstractCollection {
+export class InjectableCollectionUpdateFactory extends AbstractCollection implements AbstractCollection {
+    public constructor(
+        protected readonly collectionType: CollectionType,
+    ) {
+        super();
+    }
+
     public async generate({
         source,
         target,
-    }: ComponentCollectionUpdateOptions) {
+        accessibility,
+        skipReadonly,
+    }: InjectableCollectionUpdateOptions) {
         const result: CollectionGenerateResult = {
             create: [],
             update: [],
         };
 
         const sourceDescriptor = normalizeCLIPath(source, this.entities);
-        const targetDescriptor = normalizeCLIPath(target, this.entities, 'component');
+        const targetDescriptor = normalizeCLIPath(target, this.entities, this.collectionType);
 
         if (!sourceDescriptor) {
             throw new Error(`Cannot find source entity with identifier: ${source}`);
@@ -112,7 +114,10 @@ export class ComponentCollectionUpdateFactory extends AbstractCollection impleme
             throw new Error(`Cannot find target entity with identifier: ${target}`);
         }
 
-        const updates = await updateImportedEntityToComponent(sourceDescriptor, targetDescriptor, {});
+        const updates = await updateImportedInjectableToInjectable(sourceDescriptor, targetDescriptor, {
+            skipReadonly,
+            accessibility,
+        });
 
         if (updates.length > 0) {
             this.writeFile(

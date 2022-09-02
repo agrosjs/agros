@@ -1,9 +1,11 @@
 import { ProjectConfigParser } from '@agros/config';
 import {
     normalizeModulesPath,
+    normalizeNoExtensionPath,
+    normalizeRelativePath,
     normalizeSrcPath,
 } from './normalizers';
-import { scanProjectEntities } from './utils';
+import { scanProjectEntities } from './scanner';
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import ejs from 'ejs';
@@ -12,6 +14,8 @@ import {
     LinterOptions,
 } from './linters';
 import { isBinaryFileSync } from 'isbinaryfile';
+import { checkEntities } from './check-entities';
+import { EntityDescriptor } from './types';
 
 export interface Collection {
     name: string;
@@ -31,7 +35,12 @@ export interface CollectionWriteFileOptions {
 
 export abstract class AbstractCollection {
     protected readonly projectConfig = new ProjectConfigParser();
-    protected entities = scanProjectEntities();
+    protected entities: EntityDescriptor[] = [];
+
+    public constructor() {
+        this.entities = scanProjectEntities();
+        checkEntities(this.entities);
+    }
 
     protected updateEntities() {
         this.entities = scanProjectEntities();
@@ -105,6 +114,15 @@ export abstract class AbstractCollection {
                 },
             );
         }
+    }
+
+    protected getEntityDescriptor(pathname: string) {
+        const absolutePath = path.resolve(process.cwd(), pathname);
+        const id = normalizeNoExtensionPath(normalizeRelativePath(absolutePath));
+        const entityDescriptor = this.entities.find((entity) => {
+            return entity.id === id || entity.absolutePath === absolutePath;
+        });
+        return entityDescriptor;
     }
 
     private writeBinaryFile(pathname: string, buffer: Buffer) {

@@ -1,0 +1,10 @@
+{
+  "changes": [
+    {
+      "packageName": "@agros/common",
+      "comment": "Add module collection map detector",
+      "type": "minor"
+    }
+  ],
+  "packageName": "@agros/common"
+}

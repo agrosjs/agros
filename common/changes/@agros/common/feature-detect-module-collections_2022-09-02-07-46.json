@@ -1,0 +1,10 @@
+{
+  "changes": [
+    {
+      "packageName": "@agros/common",
+      "comment": "update corresponding modules when updating injectables",
+      "type": "patch"
+    }
+  ],
+  "packageName": "@agros/common"
+}

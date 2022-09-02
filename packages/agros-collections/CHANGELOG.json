@@ -2,6 +2,32 @@
   "name": "@agros/collections",
   "entries": [
     {
+      "version": "0.0.5",
+      "tag": "@agros/collections_v0.0.5",
+      "date": "Thu, 01 Sep 2022 09:22:19 GMT",
+      "comments": {
+        "patch": [
+          {
+            "comment": "Default collection generate result display issues"
+          },
+          {
+            "comment": "Optimize interceptor template files"
+          },
+          {
+            "comment": "Refactor src/index.ts of template files"
+          }
+        ],
+        "dependency": [
+          {
+            "comment": "Updating dependency \"@agros/common\" from `^0.3.2` to `^0.4.0`"
+          },
+          {
+            "comment": "Updating dependency \"@agros/create-app\" from `^0.1.4` to `^0.1.5`"
+          }
+        ]
+      }
+    },
+    {
       "version": "0.0.4",
       "tag": "@agros/collections_v0.0.4",
       "date": "Wed, 24 Aug 2022 06:21:27 GMT",

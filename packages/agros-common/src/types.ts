@@ -4,6 +4,7 @@ import { ComponentInstance } from './component-instance.class';
 import { Map as ImmutableMap } from 'immutable';
 
 export interface PathDescriptor extends Omit<Dirent, 'name'> {
+    id: string;
     relativePath: string;
     absolutePath: string;
     aliasPath: string;
@@ -17,6 +18,7 @@ export interface CollectionDescriptor extends PathDescriptor {
 export interface EntityDescriptor extends CollectionDescriptor {
     entityName: string;
     moduleName: string;
+    modules: EntityDescriptor[];
 }
 
 export interface RootPointDescriptor extends EntityDescriptor {

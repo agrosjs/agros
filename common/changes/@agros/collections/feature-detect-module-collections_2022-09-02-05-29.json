@@ -2,8 +2,8 @@
   "changes": [
     {
       "packageName": "@agros/collections",
-      "comment": "Default collection generate result display issues",
-      "type": "patch"
+      "comment": "Refactor factories",
+      "type": "minor"
     }
   ],
   "packageName": "@agros/collections"

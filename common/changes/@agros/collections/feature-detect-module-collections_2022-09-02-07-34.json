@@ -2,7 +2,7 @@
   "changes": [
     {
       "packageName": "@agros/collections",
-      "comment": "Refactor src/index.ts of template files",
+      "comment": "Fix updater issues when an injectable class' body only have one line",
       "type": "patch"
     }
   ],
