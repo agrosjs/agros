@@ -1,0 +1,10 @@
+{
+  "changes": [
+    {
+      "packageName": "@agros/collections",
+      "comment": "Fix updater issues when an injectable class' body only have one line",
+      "type": "patch"
+    }
+  ],
+  "packageName": "@agros/collections"
+}

@@ -3,7 +3,6 @@ import {
     applyUpdates,
     CollectionGenerateResult,
     detectRootPoint,
-    getEntityDescriptorWithAlias,
     normalizeCLIPath,
     normalizeEntityFileName,
     UpdateBaseOptions,
@@ -66,7 +65,7 @@ export class ModuleCollectionGenerateFactory extends AbstractCollection implemen
         for (const collectionDescriptor of collectionDescriptors) {
             const updates = await updateImportedEntityToModule(
                 collectionDescriptor,
-                getEntityDescriptorWithAlias(targetPath),
+                this.getEntityDescriptor(targetPath),
                 {
                     skipExport: skipExportDeclaredCollections,
                 },
@@ -81,7 +80,7 @@ export class ModuleCollectionGenerateFactory extends AbstractCollection implemen
 
         if (rootPointDescriptor) {
             const updates = await updateImportedEntityToModule(
-                getEntityDescriptorWithAlias(targetPath),
+                this.getEntityDescriptor(targetPath),
                 rootPointDescriptor,
                 {
                     asyncModule,

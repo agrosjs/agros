@@ -1,0 +1,10 @@
+{
+  "changes": [
+    {
+      "packageName": "@agros/collections",
+      "comment": "Fix collection factory get entity descriptor",
+      "type": "patch"
+    }
+  ],
+  "packageName": "@agros/collections"
+}

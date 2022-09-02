@@ -1,5 +1,9 @@
 #!/usr/bin/env node
 const { Logger } = require('@agros/logger');
+const {
+    scanProjectEntities,
+    checkEntities,
+} = require('@agros/common');
 
 const scripts = {
     start: require('../lib/scripts/start').default,
@@ -18,6 +22,12 @@ const runScript = scripts[type];
 if (typeof runScript !== 'function') {
     logger.error(`Cannot load command '${type}'`);
     process.exit(2);
+}
+
+try {
+    checkEntities(scanProjectEntities());
+} catch (e) {
+    logger.error(e.message);
 }
 
 runScript();

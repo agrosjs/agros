@@ -1,0 +1,10 @@
+{
+  "changes": [
+    {
+      "packageName": "@agros/common",
+      "comment": "Add a new method for collections factory",
+      "type": "patch"
+    }
+  ],
+  "packageName": "@agros/common"
+}

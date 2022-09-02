@@ -20,6 +20,7 @@ export interface UpdateItem {
     line: number;
     content: string[];
     deleteLines: number;
+    cutLine?: t.SourceLocation;
 };
 
 export type Updater<T> = (data: {
@@ -34,7 +35,7 @@ export type Updater<T> = (data: {
 export type UpdaterWithChecker<T = any> = (
     sourceDescriptor: EntityDescriptor,
     targetDescriptor: EntityDescriptor,
-    options: T,
+    options?: T,
 ) => Promise<UpdateItem[]>;
 
 const createUpdater = <T = Record<string, any>>(
@@ -300,11 +301,20 @@ export const updateImportedInjectableToInjectable = createUpdater<UpdateImported
 
         const code = await generateConstructorCode(constructorDeclaration);
 
-        result.push({
+        const constructorUpdateItem: UpdateItem = {
             deleteLines,
             content: code.split(/\r|\n|\r\n/),
             line: constructorDeclaration?.loc?.start?.line || (declaration.body.loc?.start.line + 1),
-        });
+        };
+        const {
+            loc,
+        } = declaration.body;
+
+        if (loc && loc?.start?.line === loc?.end?.line) {
+            constructorUpdateItem.cutLine = declaration.body.loc;
+        }
+
+        result.push(constructorUpdateItem);
 
         return result;
     },

@@ -160,6 +160,43 @@ export const detectNamedImports = (
     }, [] as ImportSpecifier[]);
 };
 
+export type ImportSpecifierMap = Record<string, string>;
+
+export const detectImportSpecifierMap = (ast: ParseResult<File>): ImportSpecifierMap => {
+    const result: ImportSpecifierMap = {};
+
+    traverse(
+        ast,
+        {
+            ImportDeclaration(path) {
+                const node = path.node;
+                for (const specifier of node.specifiers) {
+                    const pathname = transformAliasedPathToPath(node.source.value);
+                    if (!pathname) {
+                        continue;
+                    }
+                    result[specifier.local.name] = pathname;
+                }
+            },
+            CallExpression(path) {
+                if (
+                    path.node.callee.type === 'Import' &&
+                    path.parent.type === 'VariableDeclarator' &&
+                    path.parent.id.type === 'Identifier' &&
+                    path.node.arguments[0].type === 'StringLiteral'
+                ) {
+                    const pathname = transformAliasedPathToPath(path.node.arguments[0].value);
+                    if (pathname) {
+                        result[path.parent.id.name] = pathname;
+                    }
+                }
+            },
+        },
+    );
+
+    return result;
+};
+
 export const detectDecorators = (tree: ParseResult<File>, name: string) => {
     const [exportedClass] = detectExports<ClassDeclaration>(tree, 'ClassDeclaration');
     const decoratorImports = detectNamedImports(

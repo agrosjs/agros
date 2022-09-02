@@ -41,6 +41,7 @@
     "description": "Collections for Agros.js",
     "dependencies": {
         "@agros/common": "workspace:^0.4.0",
+        "@agros/config": "workspace:^0.2.1",
         "@agros/create-app": "workspace:^0.1.5",
         "lodash": "^4.17.21"
     }
