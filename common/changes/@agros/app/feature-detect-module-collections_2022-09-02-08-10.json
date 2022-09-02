@@ -1,0 +1,10 @@
+{
+  "changes": [
+    {
+      "packageName": "@agros/app",
+      "comment": "Add entities checking when start and build project",
+      "type": "patch"
+    }
+  ],
+  "packageName": "@agros/app"
+}

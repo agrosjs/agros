@@ -1,0 +1,10 @@
+{
+  "changes": [
+    {
+      "packageName": "@agros/common",
+      "comment": "Add checkEntities",
+      "type": "patch"
+    }
+  ],
+  "packageName": "@agros/common"
+}
