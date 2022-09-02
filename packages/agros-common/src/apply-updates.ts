@@ -35,9 +35,28 @@ export const applyUpdates = (updates: UpdateItem[], code: string): string => {
         }
     }
 
-    const newCodeLines: string[] = mergedCodeBlocks.reduce((result: string[], block) => {
+    const newCodeLines: string[] = mergedCodeBlocks.reduce((rawResult: string[], block, index) => {
+        const result = Array.from(rawResult);
         if (!Array.isArray(block)) {
-            return result.concat(block.content);
+            let lines = [];
+            /**
+             * process update lines
+             */
+            const {
+                content = [],
+                cutLine,
+            } = block as UpdateItem;
+
+            if (cutLine && index > 0) {
+                const previousLine = result.pop();
+                lines.push(previousLine.slice(0, cutLine.start.column + 1));
+                lines = lines.concat(content);
+                lines.push(previousLine.slice(cutLine.start.column + 1));
+            } else {
+                lines = block.content;
+            }
+
+            return result.concat(lines);
         } else {
             return result.concat(block);
         }
