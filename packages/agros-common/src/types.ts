@@ -18,6 +18,7 @@ export interface CollectionDescriptor extends PathDescriptor {
 export interface EntityDescriptor extends CollectionDescriptor {
     entityName: string;
     moduleName: string;
+    modules: EntityDescriptor[];
 }
 
 export interface RootPointDescriptor extends EntityDescriptor {

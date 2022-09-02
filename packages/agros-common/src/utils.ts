@@ -81,6 +81,7 @@ export const getEntityDescriptorWithAlias = (pathname: string): EntityDescriptor
         entityName,
         collectionType,
         moduleName: `${modulePrefixName ? modulePrefixName + '.' : ''}${moduleName}`,
+        modules: [],
     };
 };
 

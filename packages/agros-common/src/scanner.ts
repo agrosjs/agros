@@ -88,51 +88,80 @@ export const scanModuleCollectionMap = (entityDescriptor: EntityDescriptor): Mod
 };
 
 export const scanProjectEntities = (startPath = normalizeModulesPath()): EntityDescriptor[] => {
-    if (!fs.existsSync(startPath) || !fs.statSync(startPath).isDirectory()) {
-        return [];
-    }
+    const scanner = (startPath = normalizeModulesPath()): EntityDescriptor[] => {
+        if (!fs.existsSync(startPath) || !fs.statSync(startPath).isDirectory()) {
+            return [];
+        }
 
-    let moduleName: string;
-    let currentResult: EntityDescriptor[] = [];
-    const rawDirEntityNames: string[] = fs.readdirSync(startPath) || [];
-    const moduleEntityNames = rawDirEntityNames.filter((rawDirEntityName) => {
-        return getCollectionType(rawDirEntityName) === 'module';
+        let moduleName: string;
+        let currentResult: EntityDescriptor[] = [];
+        const rawDirEntityNames: string[] = fs.readdirSync(startPath) || [];
+        const moduleEntityNames = rawDirEntityNames.filter((rawDirEntityName) => {
+            return getCollectionType(rawDirEntityName) === 'module';
+        });
+
+        if (moduleEntityNames.length === 1) {
+            moduleName = getFileEntityIdentifier(moduleEntityNames[0]);
+        } else {
+            const moduleEntityName = moduleEntityNames.find((moduleEntityName) => {
+                return getFileEntityIdentifier(moduleEntityName) === path.basename(startPath);
+            });
+            if (moduleEntityName) {
+                moduleName = getFileEntityIdentifier(moduleEntityName);
+            }
+        }
+
+        if (!moduleName && path.relative(normalizeModulesPath(), startPath)) {
+            return currentResult;
+        }
+
+        for (const rawDirEntityName of rawDirEntityNames) {
+            const absolutePath = path.resolve(startPath, rawDirEntityName);
+            const entityDescriptor = getEntityDescriptorWithAlias(absolutePath);
+
+            if (fs.statSync(absolutePath).isDirectory()) {
+                currentResult = currentResult.concat(scanner(path.resolve(startPath, rawDirEntityName)));
+                continue;
+            }
+
+            if (!entityDescriptor) {
+                continue;
+            }
+
+            currentResult = currentResult.concat(entityDescriptor);
+        }
+
+        return currentResult;
+    };
+
+    let entities = scanner(startPath);
+    const moduleCollectionMap: Record<string, ModuleCollectionMap> = entities.reduce((result, entity) => {
+        if (entity.collectionType === 'module') {
+            result[entity.id] = scanModuleCollectionMap(entity);
+        }
+        return result;
+    }, {} as Record<string, ModuleCollectionMap>);
+
+    entities = entities.map((entity) => {
+        if (entity.collectionType !== 'module') {
+            entity.modules = entities.filter((moduleEntity) => {
+                if (moduleEntity.collectionType !== 'module') {
+                    return false;
+                }
+                const collectionMap = moduleCollectionMap[moduleEntity.id];
+                if (!collectionMap) {
+                    return false;
+                }
+                const {
+                    providers = [],
+                    components = [],
+                } = collectionMap;
+
+                return [].concat(providers).concat(components).indexOf(entity.id) !== -1;
+            });
+        }
+        return entity;
     });
 
-    if (moduleEntityNames.length === 1) {
-        moduleName = getFileEntityIdentifier(moduleEntityNames[0]);
-    } else {
-        const moduleEntityName = moduleEntityNames.find((moduleEntityName) => {
-            return getFileEntityIdentifier(moduleEntityName) === path.basename(startPath);
-        });
-        if (moduleEntityName) {
-            moduleName = getFileEntityIdentifier(moduleEntityName);
-        }
-    }
-
-    if (!moduleName && path.relative(normalizeModulesPath(), startPath)) {
-        return currentResult;
-    }
-
-    for (const rawDirEntityName of rawDirEntityNames) {
-        const absolutePath = path.resolve(startPath, rawDirEntityName);
-        const entityDescriptor = getEntityDescriptorWithAlias(absolutePath);
-
-        if (fs.statSync(absolutePath).isDirectory()) {
-            currentResult = currentResult.concat(scanProjectEntities(path.resolve(startPath, rawDirEntityName)));
-            continue;
-        }
-
-        if (!entityDescriptor) {
-            continue;
-        }
-
-        currentResult = currentResult.concat(entityDescriptor);
-    }
-
-    return currentResult;
+    return entities;
 };
-
-console.log(
-    getEntityDescriptorWithAlias(path.resolve(process.cwd(), './src/modules/foo/foo.module.ts')),
-);
