@@ -2,7 +2,6 @@ import {
     AbstractCollection,
     applyUpdates,
     CollectionGenerateResult,
-    getEntityDescriptorWithAlias,
     normalizeCLIPath,
     normalizeEntityFileName,
     normalizeNoExtensionPath,
@@ -72,7 +71,7 @@ export class ComponentCollectionGenerateFactory extends AbstractCollection imple
 
         if (moduleEntityDescriptor) {
             const updates = await updateImportedEntityToModule(
-                getEntityDescriptorWithAlias(componentDeclarationTargetPath),
+                this.getEntityDescriptor(componentDeclarationTargetPath),
                 moduleEntityDescriptor,
                 {
                     skipExport,

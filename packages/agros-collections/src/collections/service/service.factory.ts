@@ -2,7 +2,6 @@ import {
     AbstractCollection,
     applyUpdates,
     CollectionGenerateResult,
-    getEntityDescriptorWithAlias,
     normalizeCLIPath,
     normalizeEntityFileName,
     UpdateBaseOptions,
@@ -55,7 +54,7 @@ export class ServiceCollectionGenerateFactory extends AbstractCollection impleme
 
         if (moduleEntityDescriptor) {
             const updates = await updateImportedEntityToModule(
-                getEntityDescriptorWithAlias(targetPath),
+                this.getEntityDescriptor(targetPath),
                 moduleEntityDescriptor,
                 {
                     skipExport,

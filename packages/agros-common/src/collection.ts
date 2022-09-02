@@ -1,6 +1,8 @@
 import { ProjectConfigParser } from '@agros/config';
 import {
     normalizeModulesPath,
+    normalizeNoExtensionPath,
+    normalizeRelativePath,
     normalizeSrcPath,
 } from './normalizers';
 import { scanProjectEntities } from './scanner';
@@ -105,6 +107,15 @@ export abstract class AbstractCollection {
                 },
             );
         }
+    }
+
+    protected getEntityDescriptor(pathname: string) {
+        const absolutePath = path.resolve(process.cwd(), pathname);
+        const id = normalizeNoExtensionPath(normalizeRelativePath(absolutePath));
+        const entityDescriptor = this.entities.find((entity) => {
+            return entity.id === id || entity.absolutePath === absolutePath;
+        });
+        return entityDescriptor;
     }
 
     private writeBinaryFile(pathname: string, buffer: Buffer) {
