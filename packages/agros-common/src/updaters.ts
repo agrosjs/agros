@@ -34,7 +34,7 @@ export type Updater<T> = (data: {
 export type UpdaterWithChecker<T = any> = (
     sourceDescriptor: EntityDescriptor,
     targetDescriptor: EntityDescriptor,
-    options: T,
+    options?: T,
 ) => Promise<UpdateItem[]>;
 
 const createUpdater = <T = Record<string, any>>(
