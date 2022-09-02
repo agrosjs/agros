@@ -2,6 +2,35 @@
   "name": "@agros/common",
   "entries": [
     {
+      "version": "0.5.0",
+      "tag": "@agros/common_v0.5.0",
+      "date": "Fri, 02 Sep 2022 09:12:43 GMT",
+      "comments": {
+        "minor": [
+          {
+            "comment": "Add module collection map detector"
+          }
+        ],
+        "patch": [
+          {
+            "comment": "Add a new method for collections factory"
+          },
+          {
+            "comment": "Optimize some utilities"
+          },
+          {
+            "comment": "Add curLine feature for update item"
+          },
+          {
+            "comment": "update corresponding modules when updating injectables"
+          },
+          {
+            "comment": "Add checkEntities"
+          }
+        ]
+      }
+    },
+    {
       "version": "0.4.0",
       "tag": "@agros/common_v0.4.0",
       "date": "Thu, 01 Sep 2022 09:22:19 GMT",
