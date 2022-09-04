@@ -47,7 +47,7 @@
     "version": "0.1.3",
     "description": "Official React.js platform adapter for Agros.js",
     "dependencies": {
-        "@agros/common": "workspace:^0.5.0",
+        "@agros/common": "workspace:^0.5.1",
         "@agros/config": "workspace:^0.2.1",
         "@agros/loader": "workspace:^0.3.2",
         "@agros/logger": "workspace:^0.1.0",

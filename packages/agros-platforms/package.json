@@ -40,7 +40,7 @@
     "version": "0.2.2",
     "description": "Platform utilities and class for Agros.js",
     "dependencies": {
-        "@agros/common": "workspace:^0.5.0",
+        "@agros/common": "workspace:^0.5.1",
         "@agros/utils": "workspace:^0.2.0"
     }
 }

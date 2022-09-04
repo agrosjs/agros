@@ -2,6 +2,18 @@
   "name": "@agros/common",
   "entries": [
     {
+      "version": "0.5.1",
+      "tag": "@agros/common_v0.5.1",
+      "date": "Sun, 04 Sep 2022 14:11:10 GMT",
+      "comments": {
+        "patch": [
+          {
+            "comment": "Fix unlimited insertion of routes with the same pathname"
+          }
+        ]
+      }
+    },
+    {
       "version": "0.5.0",
       "tag": "@agros/common_v0.5.0",
       "date": "Fri, 02 Sep 2022 09:12:43 GMT",
