@@ -480,6 +480,10 @@ export const updateRouteToModule = createUpdater<UpdateRouteToModuleOptions>(
             }) as t.ObjectExpression;
 
             if (matchedRouteConfigExpression) {
+                if (pathname.split('/').length <= 1) {
+                    return;
+                }
+
                 const childrenPropertyDeclaration: t.ObjectProperty = matchedRouteConfigExpression.properties.find((property) => {
                     return property.type === 'ObjectProperty' && (
                         (property.key.type === 'Identifier' && property.key.name === 'children') ||

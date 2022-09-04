@@ -1,6 +1,20 @@
 # Change Log - @agros/collections
 
-This log was last generated on Thu, 01 Sep 2022 09:22:19 GMT and should not be manually modified.
+This log was last generated on Fri, 02 Sep 2022 09:12:43 GMT and should not be manually modified.
+
+## 0.1.0
+Fri, 02 Sep 2022 09:12:43 GMT
+
+### Minor changes
+
+- Refactor factories
+
+### Patches
+
+- Fix collection factory get entity descriptor
+- Fix updater issues when an injectable class' body only have one line
+- Update corresponding modules when updating injectables
+- Add checkEntities
 
 ## 0.0.5
 Thu, 01 Sep 2022 09:22:19 GMT

@@ -2,7 +2,7 @@
   "changes": [
     {
       "packageName": "@agros/common",
-      "comment": "Add curLine feature for update item",
+      "comment": "Fix unlimited insertion of routes with the same pathname",
       "type": "patch"
     }
   ],
