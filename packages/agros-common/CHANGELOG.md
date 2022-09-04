@@ -1,6 +1,13 @@
 # Change Log - @agros/common
 
-This log was last generated on Fri, 02 Sep 2022 09:12:43 GMT and should not be manually modified.
+This log was last generated on Sun, 04 Sep 2022 14:11:10 GMT and should not be manually modified.
+
+## 0.5.1
+Sun, 04 Sep 2022 14:11:10 GMT
+
+### Patches
+
+- Fix unlimited insertion of routes with the same pathname
 
 ## 0.5.0
 Fri, 02 Sep 2022 09:12:43 GMT
