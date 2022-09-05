@@ -8,7 +8,9 @@
         "eslint-config-alloy": "^4.5.1",
         "gitignore-parser": "^0.0.2",
         "md5-file": "^5.0.0",
+        "octokat": "^0.10.0",
         "typedoc": "^0.23.14",
+        "typedoc-plugin-markdown": "^3.13.6",
         "typescript": "^4.5.5"
     },
     "config": {
@@ -19,7 +21,8 @@
     "scripts": {
         "checksum": "node scripts/checksum.js",
         "validate-publish": "node scripts/checksum.js",
-        "sync-readme": "node scripts/sync-readme.js"
+        "sync-readme": "node scripts/sync-readme.js",
+        "api-docs": "node scripts/api-docs.js"
     },
     "dependencies": {
         "fs-extra": "^10.1.0",
