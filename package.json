@@ -7,6 +7,7 @@
         "eslint": "^7.28.0",
         "eslint-config-alloy": "^4.5.1",
         "gitignore-parser": "^0.0.2",
+        "glob": "^8.0.3",
         "md5-file": "^5.0.0",
         "octokat": "^0.10.0",
         "typedoc": "^0.23.14",
