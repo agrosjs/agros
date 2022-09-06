@@ -3,73 +3,118 @@ const fs = require('fs-extra');
 const _ = require('lodash');
 const { spawn } = require('child_process');
 const glob = require('glob');
-const Octokat = require('octokat');
+const { Octokit } = require('octokit');
 
-function init(userOptions) {
-    const defaults = {
-        branchName: 'master',
+const uploadFiles = async (options) => {
+    const defaultOptions = {
+        branch: 'master',
         token: '',
         username: '',
-        reponame: '',
+        repo: '',
+        directory: '',
+        basePath: '',
+        message: 'Update files',
     };
-    const options = _.extend({}, defaults, userOptions);
-    let head;
-    let octo = new Octokat({
-        token: options.token,
+    const {
+        branch: branchName,
+        token,
+        username,
+        repo: repoName,
+        directory,
+        message,
+        basePath,
+    } = _.extend({}, defaultOptions, options);
+
+    if (!fs.existsSync(directory)) {
+        return;
+    }
+
+    const octokit = new Octokit({
+        auth: token,
     });
-    let repo = octo.repos(options.username, options.reponame);
+    const files = glob.sync(
+        path.resolve(__dirname, '../api-docs/**/*'),
+        {
+            nodir: true,
+        },
+    );
 
-    function fetchHead() {
-        return repo.git.refs.heads(options.branchName).fetch();
-    }
-
-    function fetchTree() {
-        return fetchHead().then((commit) => {
-            head = commit;
-            return repo.git.trees(commit.object.sha).fetch();
-        });
-    }
-
-    function commit(files, message) {
-        return Promise.all(files.map((file) => {
-            return repo.git.blobs.create({
-                content: file.content,
+    const newTree = await Promise.all(
+        files.map((absolutePathname) => {
+            return octokit.request('POST https://api.github.com/repos/{user}/{repo}/git/blobs', {
+                user: username,
+                repo: repoName,
+                content: fs.readFileSync(absolutePathname).toString(),
                 encoding: 'utf-8',
             });
-        })).then((blobs) => {
-            return fetchTree().then((tree) => {
-                return repo.git.trees.create({
-                    tree: files.map((file, index) => {
-                        return {
-                            path: file.path,
-                            mode: '100644',
-                            type: 'blob',
-                            sha: blobs[index].sha,
-                        };
-                    }),
-                    basetree: tree.sha,
-                });
-            });
-        }).then((tree) => {
-            return repo.git.commits.create({
-                message: message,
-                tree: tree.sha,
-                parents: [
-                    head.object.sha,
-                ],
-            });
-        }).then((commit) => {
-            return repo.git.refs.heads(options.branchName).update({
-                sha: commit.sha,
-            });
+        }),
+    ).then((blobs) => {
+        return blobs.map((blob, index) => {
+            return {
+                mode: '100644',
+                type: 'blob',
+                path: path.join(
+                    basePath,
+                    path.relative(
+                        path.resolve(__dirname, '../api-docs'),
+                        files[index],
+                    ),
+                ),
+                sha: _.get(blob, 'data.sha'),
+            };
         });
+    });
 
+    const baseTreeInfo = await octokit.request('GET https://api.github.com/repos/{user}/{repo}/git/trees/{branch}', {
+        user: username,
+        repo: repoName,
+        branch: branchName,
+    });
+
+    const baseTreeSha = _.get(baseTreeInfo, 'data.sha');
+
+    if (!baseTreeSha) {
+        return;
     }
 
-    return {
-        commit: commit,
-    };
-}
+    const createTreeResponse = await octokit.request('POST https://api.github.com/repos/{user}/{repo}/git/trees', {
+        user: username,
+        repo: repoName,
+        tree: (_.get(baseTreeInfo, 'data.tree') || []).filter((tree) => {
+            return !newTree.some((newTreeItem) => newTreeItem.path === tree.path);
+        }).concat(newTree),
+        baseTree: baseTreeSha,
+    });
+    const newTreeSha = _.get(createTreeResponse, 'data.sha');
+    const parentTreeResponse = await octokit.request('GET https://api.github.com/repos/{user}/{repo}/git/refs/heads/{branch}', {
+        user: username,
+        repo: repoName,
+        branch: branchName,
+    });
+    const parentSha = _.get(parentTreeResponse, 'data.object.sha');
+
+    if (!parentSha) {
+        return;
+    }
+
+    const commitResponse = await octokit.request('POST https://api.github.com/repos/{user}/{repo}/git/commits', {
+        user: username,
+        repo: repoName,
+        tree: newTreeSha,
+        message,
+        parents: [
+            parentSha,
+        ],
+    });
+    const commitSha = _.get(commitResponse, 'data.sha');
+
+    await octokit.request('PATCH https://api.github.com/repos/{user}/{repo}/git/refs/heads/{branch}', {
+        user: username,
+        repo: repoName,
+        branch: branchName,
+        sha: commitSha,
+    });
+};
 
 const generateApiDocs = async (currentVersion) => {
     if (!_.isString(currentVersion)) {
@@ -150,8 +195,6 @@ const generateApiDocs = async (currentVersion) => {
                     );
                     resolve();
                 });
-                childProcess.stdout.on('data', (data) => console.log(data.toString()));
-                childProcess.stderr.on('data', (error) => reject(error));
             });
         } catch (e) {
             continue;
@@ -165,34 +208,24 @@ const generateApiDocs = async (currentVersion) => {
         }, null, 4),
     );
 
-    console.log('Generate api docs done');
+    console.log('Generate api docs successfully');
 };
 
 try {
     const version = fs.readJsonSync(path.resolve(__dirname, '../packages/agros-app/package.json')).version;
     const [majorVersion] = version.split('.');
-    const ghApi = init({
-        username: 'agrosjs',
-        token: process.env.GH_PERSONAL_TOKEN,
-        reponame: 'agrosjs.github.io',
-        branchName: 'gh-pages',
-    });
     const docVersion = `${majorVersion}.x`;
     generateApiDocs(docVersion).then(() => {
         console.log('Uploading built docs ...');
-        ghApi.commit(
-            glob
-                .sync(path.resolve(__dirname, '../api-docs/**/*'), { nodir: true })
-                .map((absolutePathname) => {
-                    const relativePathname = path.relative(path.resolve(__dirname, '../api-docs'), absolutePathname);
-                    const entityPathname = path.join(`versioned_docs/version-${docVersion}/api`, relativePathname);
-                    return {
-                        path: entityPathname,
-                        content: fs.readFileSync(absolutePathname).toString(),
-                    };
-                }),
-            'Update API docs',
-        ).then(() => console.log('Docs updated successfully'));
+        uploadFiles({
+            username: 'agrosjs',
+            token: process.env.GITHUB_ACCESS_TOKEN,
+            repo: 'agrosjs.github.io',
+            branch: 'test',
+            directory: path.resolve(__dirname, '../api-docs'),
+            basePath: `versioned_docs/version-${docVersion}/api`,
+            message: 'Update API docs',
+        }).then(() => console.log('Docs updated successfully'));
     });
 } catch (e) {
     console.log(e);

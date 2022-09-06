@@ -65,6 +65,7 @@ jobs:
       - run: ssh-keyscan github.com >> ~/.ssh/known_hosts
       - run: git add -A && git commit -S -m "publish packages"
       - run: rgu agrosjs agros --source publish_$(date +%s)
+      - run: npm run api-docs
 workflows:
   version: 2
   npm_workflow:
