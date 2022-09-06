@@ -46,6 +46,9 @@ const uploadFiles = async (options) => {
                 repo: repoName,
                 content: fs.readFileSync(absolutePathname).toString(),
                 encoding: 'utf-8',
+            }).then((res) => {
+                console.log('Uploaded: ' + absolutePathname);
+                return res;
             });
         }),
     ).then((blobs) => {
@@ -65,7 +68,7 @@ const uploadFiles = async (options) => {
         });
     });
 
-    const baseTreeInfo = await octokit.request('GET https://api.github.com/repos/{user}/{repo}/git/trees/{branch}', {
+    const baseTreeInfo = await octokit.request('GET https://api.github.com/repos/{user}/{repo}/git/trees/{branch}?recursive=1', {
         user: username,
         repo: repoName,
         branch: branchName,
@@ -81,7 +84,7 @@ const uploadFiles = async (options) => {
         user: username,
         repo: repoName,
         tree: (_.get(baseTreeInfo, 'data.tree') || []).filter((tree) => {
-            return !newTree.some((newTreeItem) => newTreeItem.path === tree.path);
+            return !newTree.some((newTreeItem) => newTreeItem.path === tree.path) && tree.type !== 'tree';
         }).concat(newTree),
         baseTree: baseTreeSha,
     });
@@ -221,7 +224,7 @@ try {
             username: 'agrosjs',
             token: process.env.GITHUB_ACCESS_TOKEN,
             repo: 'agrosjs.github.io',
-            branch: 'test',
+            branch: 'master',
             directory: path.resolve(__dirname, '../api-docs'),
             basePath: `versioned_docs/version-${docVersion}/api`,
             message: 'Update API docs',
