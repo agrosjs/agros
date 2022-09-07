@@ -79,3 +79,6 @@ checksum.txt
 # Tests
 test.ts
 test
+
+# API Docs
+api-docs

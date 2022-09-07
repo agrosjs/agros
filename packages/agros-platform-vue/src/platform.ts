@@ -59,14 +59,13 @@ const platform: Platform = {
             });
         `;
     },
-    getComponentFactoryCode(map: Record<string, string>, filePath: string, lazy = false) {
-        const componentIdentifierName = 'Agros$$CurrentComponent';
-        return {
-            factoryCode: `() => ${lazy ? `() => import('${filePath}')` : componentIdentifierName};`,
-            importCodeLines: lazy
-                ? []
-                : [`const ${componentIdentifierName} = import('${filePath}');`],
-        };
+    getComponentFactoryCode(
+        map: Record<string, string>,
+        filePath: string,
+        componentIdentifierName: string,
+        lazy = false,
+    ) {
+        return `() => ${lazy ? `() => import('${filePath}')` : componentIdentifierName};`;
     },
     async generateComponent<T = any>(componentInstance: ComponentInstance, component: any): Promise<T> {
         componentInstance.setComponent(component);
