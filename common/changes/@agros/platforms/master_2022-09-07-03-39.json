@@ -1,0 +1,10 @@
+{
+  "changes": [
+    {
+      "packageName": "@agros/platforms",
+      "comment": "Refactor component code generator",
+      "type": "minor"
+    }
+  ],
+  "packageName": "@agros/platforms"
+}
