@@ -1,5 +1,3 @@
-import { ComponentInstance } from '@agros/common/lib/component-instance.class';
-import { ModuleInstance } from '@agros/common/lib/module-instance.class';
 import {
     RouterItem,
     RouteOptionItem,
@@ -47,11 +45,12 @@ export class RouterModule {
         };
 
         const createRouterItems = async (
-            componentInstanceMap: Map<Type<any>, ComponentInstance>,
-            moduleInstanceMap: Map<Type<any>, ModuleInstance>,
+            context: Factory,
             routes: RouteOptionItem[],
             prefixPathname = '',
         ) => {
+            const moduleInstanceMap = context.getModuleInstanceMap();
+            const componentInstanceMap = context.getComponentInstanceMap();
             let result: RouterItem[] = [];
 
             for (const routeItem of Array.from(routes)) {
@@ -87,8 +86,7 @@ export class RouterModule {
 
                     if (Array.isArray(children)) {
                         currentRouterItem.children = await createRouterItems(
-                            componentInstanceMap,
-                            moduleInstanceMap,
+                            context,
                             routeItem.children,
                         );
                     }
@@ -100,10 +98,14 @@ export class RouterModule {
                      */
                     const ModuleClass = (await getModuleClass(useModuleClass)) as Type;
                     const moduleInstance = moduleInstanceMap.get(ModuleClass);
-                    const currentRouteOptionItems = Array.from(moduleInstance.metadata.routes);
+                    let currentRouteOptionItems = moduleInstance.getProviderValue<RouteOptionItem[]>(ROUTES_FEATURE) || [];
+
+                    if (typeof currentRouteOptionItems === 'function') {
+                        currentRouteOptionItems = await (currentRouteOptionItems as Function)(context);
+                    }
+
                     const currentRouterItems = await createRouterItems(
-                        componentInstanceMap,
-                        moduleInstanceMap,
+                        context,
                         currentRouteOptionItems,
                         normalizePath(pathname) || '',
                     );
@@ -111,8 +113,7 @@ export class RouterModule {
                     for (const currentRouterItem of currentRouterItems) {
                         if (Array.isArray(routeItem.children)) {
                             currentRouterItem.children = await createRouterItems(
-                                componentInstanceMap,
-                                moduleInstanceMap,
+                                context,
                                 currentRouterItem.children,
                             );
                         }
@@ -130,11 +131,8 @@ export class RouterModule {
         return {
             provide: ROUTES_ROOT,
             useValue: async (context: Factory) => {
-                const moduleInstanceMap = context.getModuleInstanceMap();
-                const componentInstanceMap = context.getComponentInstanceMap();
                 return await createRouterItems(
-                    componentInstanceMap,
-                    moduleInstanceMap,
+                    context,
                     routes,
                     prefixPathname,
                 );

@@ -4,7 +4,6 @@ import {
     ModuleMetadata,
     Type,
     ComponentMetadata,
-    RouterItem,
     Factory as IFactory,
     Interceptor,
     AsyncModuleClass,
@@ -50,11 +49,6 @@ export class Factory implements IFactory {
      private componentClassToModuleClassMap = new Map<Type, Type>();
     /**
      * @private
-     * nested router items which would export from `create` method
-     */
-    private routerItems: RouterItem[] = [];
-    /**
-     * @private
      * global module instances
      */
     private globalModuleInstances = new Set<ModuleInstance>();
@@ -93,6 +87,10 @@ export class Factory implements IFactory {
         this.createComponentInstances(rootModuleInstance);
         await this.generateComponentForInstances();
         this.rootModuleInstance = rootModuleInstance;
+
+        for (const [, moduleInstance] of this.moduleInstanceMap.entries()) {
+            await moduleInstance.generateProviderValues(this);
+        }
 
         const [RootComponentClass] = rootModuleExportedComponentClasses;
 
@@ -257,7 +255,7 @@ export class Factory implements IFactory {
                     provide,
                     useValue,
                 } = ImportedModuleClassOrPromise as ValueProvider;
-                currentModuleInstance.setValueProviderItem(provide, await useValue(this));
+                currentModuleInstance.setValueProviderItem(provide, useValue);
             } else {
                 await this.createModuleInstance(ImportedModuleClassOrPromise);
             }
@@ -285,7 +283,7 @@ export class Factory implements IFactory {
                 const importedModuleInstance = this.moduleInstanceMap.get(ImportedModuleClass);
 
                 if (!importedModuleInstance) {
-                    throw new Error(`Module ${ImportedModuleClass.name} cannot be imported into ${ModuleClass.name}`);
+                    continue;
                 }
 
                 if (importedModuleInstance.getImportedModuleInstances().has(moduleInstance)) {
@@ -459,90 +457,6 @@ export class Factory implements IFactory {
             componentInstance.metadata.interceptorInstances = interceptorInstances;
         }
     }
-
-    // private normalizePath(path: string, topLeveled = false) {
-    //     let newPath: string = path;
-
-    //     newPath = newPath.replace(/^.+\/+$/g, '');
-
-    //     if (!topLeveled) {
-    //         newPath = newPath.replace(/^\/+/g, '');
-    //     }
-
-    //     return newPath;
-    // }
-
-    /**
-     * @async
-     * @private
-     * @param {RouteOptionItem[]} routes route config items from modules
-     * @param {string} prefixPathname prefix pathname of current level routes
-     */
-    // private async createRouterItems(routes: RouteOptionItem[], prefixPathname = ''): Promise<RouterItem[]> {
-    //     let result: RouterItem[] = [];
-
-    //     for (const routeItem of Array.from(routes)) {
-    //         const {
-    //             useComponentClass,
-    //             useModuleClass,
-    //             children,
-    //             path: pathname = '',
-    //             ...options
-    //         } = routeItem;
-
-    //         let currentPathname = '';
-
-    //         if (!this.normalizePath(prefixPathname)) {
-    //             currentPathname = this.normalizePath(pathname);
-    //         } else if (!this.normalizePath(pathname)) {
-    //             currentPathname = this.normalizePath(prefixPathname);
-    //         } else {
-    //             currentPathname = `${this.normalizePath(prefixPathname)}/${this.normalizePath(pathname)}`;
-    //         }
-
-    //         if (useComponentClass && useModuleClass) {
-    //             throw new Error('\'useComponentClass\' and \'useModuleClass\' are not permitted to be specified at one time');
-    //         }
-
-    //         if (useComponentClass) {
-    //             const ComponentClass = useComponentClass;
-    //             const currentRouterItem = {
-    //                 ...options,
-    //                 path: currentPathname,
-    //                 componentInstance: this.componentInstanceMap.get(ComponentClass),
-    //             } as RouterItem;
-
-    //             if (Array.isArray(children)) {
-    //                 currentRouterItem.children = await this.createRouterItems(routeItem.children);
-    //             }
-
-    //             result = result.concat(currentRouterItem);
-    //         } else if (useModuleClass) {
-    //             /**
-    //              * if `useModuleClass` is specified, then flatten it to current level child routes
-    //              */
-    //             const ModuleClass = await this.getModuleClass(useModuleClass);
-    //             const moduleInstance = this.moduleInstanceMap.get(ModuleClass);
-    //             const currentRouteOptionItems = Array.from(moduleInstance.metadata.routes);
-    //             const currentRouterItems = await this.createRouterItems(
-    //                 currentRouteOptionItems,
-    //                 this.normalizePath(pathname) || '',
-    //             );
-
-    //             for (const currentRouterItem of currentRouterItems) {
-    //                 if (Array.isArray(routeItem.children)) {
-    //                     currentRouterItem.children = await this.createRouterItems(currentRouterItem.children);
-    //                 }
-    //             }
-
-    //             result = result.concat(currentRouterItems);
-    //         } else {
-    //             throw new Error('\'useComponentClass\' or \'useModuleClass\' should be specified');
-    //         }
-    //     }
-
-    //     return result;
-    // }
 
     private async getModuleClass(asyncModuleClass: AsyncModuleClass): Promise<Type<any> | ValueProvider> {
         if (isPromise(asyncModuleClass)) {

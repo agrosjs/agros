@@ -2,7 +2,6 @@ import {
     Module,
     RouterModule,
 } from '@agros/app';
-import { AppNavigateComponent } from './app-navigate.component';
 import { AppComponent } from './app.component';
 import { BarModule } from './modules/bar/bar.module';
 import { BazModule } from './modules/baz/baz.module';
@@ -13,7 +12,6 @@ const FooModule = import('./modules/foo/foo.module').then((({ FooModule }) => Fo
 @Module({
     components: [
         AppComponent,
-        AppNavigateComponent,
     ],
     imports: [
         FooModule,
@@ -33,10 +31,6 @@ const FooModule = import('./modules/foo/foo.module').then((({ FooModule }) => Fo
                             useModuleClass: LoremModule,
                         },
                     ],
-                },
-                {
-                    path: '*',
-                    useComponentClass: AppNavigateComponent,
                 },
             ],
         }),

@@ -68,15 +68,13 @@ const platform: Platform = {
                 const rootModuleInstance = ${factoryIdentifier}.getRootModuleInstance();
                 const routes = rootModuleInstance.getProviderValue(${ensuredImportsMap['ROUTES_ROOT']});
 
-                console.log(rootModuleInstance, routes);
-
                 if (routes && Array.isArray(routes) && routes.length > 0) {
                     const RootContainer = ({
                         Module,
                         routerProps = {},
                         RouterComponent = ${ensuredImportsMap['BrowserRouter'] || 'BrowserRouter'},
                     }) => {
-                        const elements = ${platformIdentifier}.createRoutes(routeItems);
+                        const elements = ${platformIdentifier}.createRoutes(routes);
                         return ${reactIdentifier}.createElement(
                             RouterComponent,
                             routerProps,

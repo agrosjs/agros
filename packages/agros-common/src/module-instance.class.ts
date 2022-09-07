@@ -1,4 +1,5 @@
 import {
+    Factory,
     ModuleInstanceMetadata,
     Type,
 } from './types';
@@ -66,6 +67,14 @@ export class ModuleInstance {
 
     public setValueProviderItem(key: string, value) {
         this.valueProviderMap.set(key, value);
+    }
+
+    public async generateProviderValues(context: Factory) {
+        for (const [key, value] of Array.from(this.valueProviderMap.entries())) {
+            if (typeof value === 'function') {
+                this.valueProviderMap.set(key, await value(context));
+            }
+        }
     }
 
     public getProviderValue<T = any>(key: string) {
