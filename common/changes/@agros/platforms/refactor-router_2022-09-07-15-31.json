@@ -1,0 +1,10 @@
+{
+  "changes": [
+    {
+      "packageName": "@agros/platforms",
+      "comment": "Refactor platform for removing routes",
+      "type": "minor"
+    }
+  ],
+  "packageName": "@agros/platforms"
+}
