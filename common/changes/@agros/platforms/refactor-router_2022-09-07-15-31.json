@@ -2,7 +2,7 @@
   "changes": [
     {
       "packageName": "@agros/platforms",
-      "comment": "Refactor component code generator",
+      "comment": "Refactor platform for removing routes",
       "type": "minor"
     }
   ],

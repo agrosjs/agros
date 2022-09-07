@@ -1,4 +1,5 @@
 import {
+    Factory,
     ModuleInstanceMetadata,
     Type,
 } from './types';
@@ -9,6 +10,7 @@ import {
  */
 export class ModuleInstance {
     private importedModuleInstances = new Set<ModuleInstance>();
+    private valueProviderMap = new Map<string, any>();
 
     /**
      * @constructor
@@ -61,5 +63,21 @@ export class ModuleInstance {
 
     public hasDependedProviderClass(ProviderClass: Type) {
         return this.getProviderClasses().has(ProviderClass);
+    }
+
+    public setValueProviderItem(key: string, value) {
+        this.valueProviderMap.set(key, value);
+    }
+
+    public async generateProviderValues(context: Factory) {
+        for (const [key, value] of Array.from(this.valueProviderMap.entries())) {
+            if (typeof value === 'function') {
+                this.valueProviderMap.set(key, await value(context));
+            }
+        }
+    }
+
+    public getProviderValue<T = any>(key: string) {
+        return this.valueProviderMap.get(key) as T;
     }
 }

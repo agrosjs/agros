@@ -1,0 +1,10 @@
+{
+  "changes": [
+    {
+      "packageName": "@agros/cli",
+      "comment": "Remove `agros routes` command",
+      "type": "minor"
+    }
+  ],
+  "packageName": "@agros/cli"
+}

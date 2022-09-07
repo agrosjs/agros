@@ -2,8 +2,8 @@
   "changes": [
     {
       "packageName": "@agros/platform-vue",
-      "comment": "Refactor component code generator",
-      "type": "minor"
+      "comment": "Refactor bootstrap code and createRoutes function",
+      "type": "patch"
     }
   ],
   "packageName": "@agros/platform-vue"

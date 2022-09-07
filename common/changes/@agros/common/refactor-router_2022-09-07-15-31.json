@@ -1,0 +1,10 @@
+{
+  "changes": [
+    {
+      "packageName": "@agros/common",
+      "comment": "Refactor platform, remove `createRoutes`",
+      "type": "minor"
+    }
+  ],
+  "packageName": "@agros/common"
+}
