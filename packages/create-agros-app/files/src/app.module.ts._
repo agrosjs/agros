@@ -1,21 +1,28 @@
-import { Module } from '@agros/app';
+import {
+    Module,
+    RouterModule,
+} from '@agros/app';
 import { AppComponent } from '@/app.component';
 import { AppService } from '@/app.service';
 import { AppInterceptor } from '@/app.interceptor';
 
 @Module({
+    imports: [
+        RouterModule.forRoot({
+            routes: [
+                {
+                    path: '',
+                    useComponentClass: AppComponent,
+                },
+            ],
+        }),
+    ],
     providers: [
         AppInterceptor,
         AppService,
     ],
     components: [
         AppComponent,
-    ],
-    routes: [
-        {
-            path: '',
-            useComponentClass: AppComponent,
-        },
     ],
     exports: [
         AppComponent,
