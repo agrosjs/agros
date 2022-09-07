@@ -1,6 +1,13 @@
 # Change Log - @agros/platforms
 
-This log was last generated on Wed, 07 Sep 2022 04:00:16 GMT and should not be manually modified.
+This log was last generated on Wed, 07 Sep 2022 15:52:33 GMT and should not be manually modified.
+
+## 0.4.0
+Wed, 07 Sep 2022 15:52:33 GMT
+
+### Minor changes
+
+- Refactor platform for removing routes
 
 ## 0.3.0
 Wed, 07 Sep 2022 04:00:16 GMT
