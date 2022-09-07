@@ -39,6 +39,10 @@ const platform: Platform = {
                 identifierName: 'ROUTES_ROOT',
             },
             {
+                libName: '@agros/app/lib/modules/router.module',
+                identifierName: 'RouterModule',
+            },
+            {
                 libName: '@agros/platform-react/lib/react-dom',
                 identifierName: 'render',
             },
@@ -66,35 +70,36 @@ const platform: Platform = {
             } = config;
             ${factoryIdentifier}.create(Module).then((componentInstance) => {
                 const rootModuleInstance = ${factoryIdentifier}.getRootModuleInstance();
-                const routes = rootModuleInstance.getProviderValue(${ensuredImportsMap['ROUTES_ROOT']});
-
-                if (routes && Array.isArray(routes) && routes.length > 0) {
-                    const RootContainer = ({
-                        Module,
-                        routerProps = {},
-                        RouterComponent = ${ensuredImportsMap['BrowserRouter'] || 'BrowserRouter'},
-                    }) => {
-                        const elements = ${platformIdentifier}.createRoutes(routes);
-                        return ${reactIdentifier}.createElement(
-                            RouterComponent,
-                            routerProps,
-                            ${reactIdentifier}.createElement(${ensuredImportsMap['Routes'] || 'Routes'}, {}, elements),
-                        );
-                    };
-                    ${ensuredImportsMap['render'] || 'render'}(
-                        ${reactIdentifier}.createElement(RootContainer, {
+                const rootRoutes = rootModuleInstance.getProviderValue(${ensuredImportsMap['ROUTES_ROOT']});
+                ${ensuredImportsMap['RouterModule']}.createRouterItems(${factoryIdentifier}, rootRoutes).then((routes) => {
+                    if (routes && Array.isArray(routes) && routes.length > 0) {
+                        const RootContainer = ({
                             Module,
-                            RouterComponent,
-                            routerProps,
-                        }),
-                        container,
-                    );
-                } else {
-                    ${ensuredImportsMap['render'] || 'render'}(
-                        ${reactIdentifier}.createElement(componentInstance.getComponent()),
-                        container,
-                    );
-                }
+                            routerProps = {},
+                            RouterComponent = ${ensuredImportsMap['BrowserRouter'] || 'BrowserRouter'},
+                        }) => {
+                            const elements = ${platformIdentifier}.createRoutes(routes);
+                            return ${reactIdentifier}.createElement(
+                                RouterComponent,
+                                routerProps,
+                                ${reactIdentifier}.createElement(${ensuredImportsMap['Routes'] || 'Routes'}, {}, elements),
+                            );
+                        };
+                        ${ensuredImportsMap['render'] || 'render'}(
+                            ${reactIdentifier}.createElement(RootContainer, {
+                                Module,
+                                RouterComponent,
+                                routerProps,
+                            }),
+                            container,
+                        );
+                    } else {
+                        ${ensuredImportsMap['render'] || 'render'}(
+                            ${reactIdentifier}.createElement(componentInstance.getComponent()),
+                            container,
+                        );
+                    }
+                });
             });
         `;
     },
@@ -152,6 +157,7 @@ const platform: Platform = {
                 ...routeProps
             } = routerItem;
             const Component = componentInstance.getComponent();
+            const { elementProps = {} } = componentInstance.metadata;
 
             return createElement(
                 Route,
@@ -161,7 +167,7 @@ const platform: Platform = {
                     ...(
                         Component
                             ? {
-                                element: Component,
+                                element: createElement(Component, elementProps),
                             }
                             : {}
                     ),
