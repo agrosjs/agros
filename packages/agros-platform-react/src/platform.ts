@@ -7,12 +7,7 @@ import {
     useState,
     Suspense,
 } from 'react';
-import {
-    useLocation,
-    useParams,
-    useSearchParams,
-    Route,
-} from 'react-router-dom';
+import { Route } from 'react-router-dom';
 import { useAsyncEffect } from 'use-async-effect';
 import { RouterItem } from '@agros/common/lib/types';
 
@@ -40,6 +35,10 @@ const platform: Platform = {
                 type: 'default',
             },
             {
+                libName: '@agros/app/lib/constants',
+                identifierName: 'ROUTES_ROOT',
+            },
+            {
                 libName: '@agros/platform-react/lib/react-dom',
                 identifierName: 'render',
             },
@@ -65,28 +64,39 @@ const platform: Platform = {
                 routerProps,
                 container = document.getElementById('root'),
             } = config;
-            ${factoryIdentifier}.create(Module).then((routeItems) => {
-                const RootContainer = ({
-                    Module,
-                    routerProps = {},
-                    RouterComponent = ${ensuredImportsMap['BrowserRouter'] || 'BrowserRouter'},
-                }) => {
-                    const elements = ${platformIdentifier}.createRoutes(routeItems);
+            ${factoryIdentifier}.create(Module).then((componentInstance) => {
+                const rootModuleInstance = ${factoryIdentifier}.getRootModuleInstance();
+                const routes = rootModuleInstance.getProviderValue(${ensuredImportsMap['ROUTES_ROOT']});
 
-                    return ${reactIdentifier}.createElement(
-                        RouterComponent,
-                        routerProps,
-                        ${reactIdentifier}.createElement(${ensuredImportsMap['Routes'] || 'Routes'}, {}, elements),
-                    );
-                };
-                ${ensuredImportsMap['render'] || 'render'}(
-                    ${reactIdentifier}.createElement(RootContainer, {
+                console.log(rootModuleInstance, routes);
+
+                if (routes && Array.isArray(routes) && routes.length > 0) {
+                    const RootContainer = ({
                         Module,
-                        RouterComponent,
-                        routerProps,
-                    }),
-                    container,
-                );
+                        routerProps = {},
+                        RouterComponent = ${ensuredImportsMap['BrowserRouter'] || 'BrowserRouter'},
+                    }) => {
+                        const elements = ${platformIdentifier}.createRoutes(routeItems);
+                        return ${reactIdentifier}.createElement(
+                            RouterComponent,
+                            routerProps,
+                            ${reactIdentifier}.createElement(${ensuredImportsMap['Routes'] || 'Routes'}, {}, elements),
+                        );
+                    };
+                    ${ensuredImportsMap['render'] || 'render'}(
+                        ${reactIdentifier}.createElement(RootContainer, {
+                            Module,
+                            RouterComponent,
+                            routerProps,
+                        }),
+                        container,
+                    );
+                } else {
+                    ${ensuredImportsMap['render'] || 'render'}(
+                        ${reactIdentifier}.createElement(componentInstance.getComponent()),
+                        container,
+                    );
+                }
             });
         `;
     },
@@ -103,43 +113,35 @@ const platform: Platform = {
          * set component directly so that it can prevent unlimited creating tasks
          */
         componentInstance.setComponent((props: any) => {
-            const fallback = componentInstance.metadata.interceptorsFallback = null;
+            const {
+                interceptorsFallback = null,
+                suspenseFallback = null,
+            } = componentInstance.metadata;
             const [interceptorEnd, setInterceptorEnd] = useState<boolean>(false);
-            const routeLocation = useLocation();
-            const routeParams = useParams();
-            const routeSearchParams = useSearchParams();
 
             useAsyncEffect(async () => {
                 try {
-                    if (routeLocation && routeParams && routeSearchParams) {
-                        if (Array.isArray(componentInstance.metadata.interceptorInstances)) {
-                            for (const interceptorInstance of componentInstance.metadata.interceptorInstances) {
-                                await interceptorInstance.intercept({
-                                    props,
-                                    route: {
-                                        location: routeLocation,
-                                        params: routeParams,
-                                        searchParams: routeSearchParams,
-                                    },
-                                });
-                            }
+                    if (Array.isArray(componentInstance.metadata.interceptorInstances)) {
+                        for (const interceptorInstance of componentInstance.metadata.interceptorInstances) {
+                            await interceptorInstance.intercept({
+                                props,
+                            });
                         }
                     }
                 } finally {
                     setInterceptorEnd(true);
                 }
-            }, [
-                routeLocation,
-                routeParams,
-                routeSearchParams,
-            ]);
+            }, []);
 
             return interceptorEnd
                 ? createElement(
-                    component,
-                    props,
+                    Suspense,
+                    {
+                        fallback: suspenseFallback,
+                    },
+                    createElement(component, props),
                 )
-                : fallback;
+                : interceptorsFallback;
         });
 
         return component;
@@ -151,23 +153,7 @@ const platform: Platform = {
                 children,
                 ...routeProps
             } = routerItem;
-
-            const {
-                suspenseFallback = null,
-                elementProps = {},
-            } = componentInstance.metadata;
-
             const Component = componentInstance.getComponent();
-
-            const createAppRouterElement = (Component) => {
-                return createElement(
-                    Suspense,
-                    {
-                        fallback: suspenseFallback,
-                    },
-                    createElement(Component, elementProps),
-                );
-            };
 
             return createElement(
                 Route,
@@ -177,7 +163,7 @@ const platform: Platform = {
                     ...(
                         Component
                             ? {
-                                element: createAppRouterElement(Component),
+                                element: Component,
                             }
                             : {}
                     ),

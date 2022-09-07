@@ -9,6 +9,7 @@ import {
  */
 export class ModuleInstance {
     private importedModuleInstances = new Set<ModuleInstance>();
+    private valueProviderMap = new Map<string, any>();
 
     /**
      * @constructor
@@ -61,5 +62,13 @@ export class ModuleInstance {
 
     public hasDependedProviderClass(ProviderClass: Type) {
         return this.getProviderClasses().has(ProviderClass);
+    }
+
+    public setValueProviderItem(key: string, value) {
+        this.valueProviderMap.set(key, value);
+    }
+
+    public getProviderValue<T = any>(key: string) {
+        return this.valueProviderMap.get(key) as T;
     }
 }

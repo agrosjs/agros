@@ -1,4 +1,7 @@
-import { Module } from '@agros/app';
+import {
+    Module,
+    RouterModule,
+} from '@agros/app';
 import { AppNavigateComponent } from './app-navigate.component';
 import { AppComponent } from './app.component';
 import { BarModule } from './modules/bar/bar.module';
@@ -17,28 +20,29 @@ const FooModule = import('./modules/foo/foo.module').then((({ FooModule }) => Fo
         BarModule,
         BazModule,
         LoremModule,
-    ],
-    routes: [
-        {
-            path: '',
-            useComponentClass: AppComponent,
-            children: [
+        RouterModule.forRoot({
+            routes: [
                 {
-                    useModuleClass: FooModule,
+                    path: '',
+                    useComponentClass: AppComponent,
+                    children: [
+                        {
+                            useModuleClass: FooModule,
+                        },
+                        {
+                            useModuleClass: LoremModule,
+                        },
+                    ],
                 },
                 {
-                    useModuleClass: LoremModule,
+                    path: '*',
+                    useComponentClass: AppNavigateComponent,
                 },
             ],
-        },
-        {
-            path: '*',
-            useComponentClass: AppNavigateComponent,
-        },
+        }),
     ],
     exports: [
         AppComponent,
-        AppNavigateComponent,
     ],
 })
 export class AppModule {}
