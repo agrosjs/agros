@@ -2,11 +2,6 @@ import 'reflect-metadata';
 import { ComponentInstance } from '@agros/common/lib/component-instance.class';
 import { Platform } from '@agros/platforms/lib/platform.interface';
 import { EnsureImportOptions } from '@agros/utils/lib/ensure-import';
-import {
-    defineAsyncComponent,
-    defineComponent,
-} from 'vue';
-import { RouterItem } from '@agros/common/lib/types';
 
 const platform: Platform = {
     getDefaultConfig() {
@@ -24,6 +19,18 @@ const platform: Platform = {
                 identifierName: 'Vue',
                 type: 'namespace',
             },
+            {
+                libName: '@agros/app/lib/constants',
+                identifierName: 'ROUTES_ROOT',
+            },
+            {
+                libName: '@agros/app/lib/modules/router.module',
+                identifierName: 'RouterModule',
+            },
+            {
+                libName: '@agros/platform-vue/lib/create-routes',
+                identifierName: 'createRoutes',
+            },
         ];
     },
     getDecoratorImports(): Omit<EnsureImportOptions, 'statements'>[] {
@@ -32,7 +39,7 @@ const platform: Platform = {
     getBootstrapCode(ensuredImportsMap: Record<string, string>): string {
         const vueIdentifier = ensuredImportsMap['Vue'] || 'Vue';
         const vueRouterIdentifier = ensuredImportsMap['VueRouter'] || 'VueRouter';
-        const platformIdentifier = ensuredImportsMap['platform'] || 'platform';
+        const factoryIdentifier = ensuredImportsMap['factory'] || 'factory';
         return `
             const {
                 module: Module,
@@ -40,22 +47,30 @@ const platform: Platform = {
                 routerProps,
                 container = document.getElementById('root'),
             } = config;
-            ${ensuredImportsMap['factory'] || 'factory'}.create(Module).then((routeItems) => {
-                const routes = ${platformIdentifier}.createRoutes(routeItems).map((route) => {
-                    return {
-                        ...route,
-                        path: '/' + route.path,
-                    };
+            ${ensuredImportsMap['factory'] || 'factory'}.create(Module).then((componentInstance) => {
+                const rootModuleInstance = ${factoryIdentifier}.getRootModuleInstance();
+                const rootRoutes = rootModuleInstance.getProviderValue(${ensuredImportsMap['ROUTES_ROOT']});
+                ${ensuredImportsMap['RouterModule']}.createRouterItems(${factoryIdentifier}, rootRoutes).then((routeItems) => {
+                    if (routeItems && Array.isArray(routeItems) && routeItems.length > 0) {
+                        const routes = ${ensuredImportsMap['createRoutes']}(routeItems).map((route) => {
+                            return {
+                                ...route,
+                                path: '/' + route.path,
+                            };
+                        });
+                        const router = ${vueRouterIdentifier}.createRouter({
+                            history: RouterComponent,
+                            routes,
+                        });
+                        const app = ${vueIdentifier}.createApp({
+                            template: '<router-view></router-view>',
+                        });
+                        app.use(router);
+                        app.mount(container);
+                    } else {
+                        ${vueIdentifier}.createApp(componentInstance.getComponent()).mount(container);
+                    }
                 });
-                const router = ${vueRouterIdentifier}.createRouter({
-                    history: RouterComponent,
-                    routes,
-                });
-                const app = ${vueIdentifier}.createApp({
-                    template: '<router-view></router-view>',
-                });
-                app.use(router);
-                app.mount(container);
             });
         `;
     },
@@ -70,63 +85,6 @@ const platform: Platform = {
     async generateComponent<T = any>(componentInstance: ComponentInstance, component: any): Promise<T> {
         componentInstance.setComponent(component);
         return component;
-    },
-    createRoutes(routerItems: RouterItem[], level = 0) {
-        return routerItems.map((routerItem) => {
-            const {
-                componentInstance,
-                children,
-                ...routeProps
-            } = routerItem;
-            const component = componentInstance.getComponent();
-            const {
-                lazy,
-                suspenseFallback,
-                interceptorsFallback,
-                interceptorInstances = [],
-            } = componentInstance.metadata;
-
-            let loadingComponent = interceptorsFallback || suspenseFallback;
-
-            if (typeof loadingComponent === 'string') {
-                loadingComponent = defineComponent({
-                    template: loadingComponent,
-                });
-            }
-
-            return {
-                path: routeProps.path,
-                component: !lazy
-                    ? interceptorInstances.length === 0
-                        ? component
-                        : defineAsyncComponent({
-                            loader: async () => {
-                                for (const interceptorInstance of interceptorInstances) {
-                                    await interceptorInstance.intercept();
-                                }
-                                return component;
-                            },
-                        })
-                    : defineAsyncComponent({
-                        loader: interceptorInstances.length === 0
-                            ? component
-                            : async () => {
-                                for (const interceptorInstance of interceptorInstances) {
-                                    await interceptorInstance.intercept();
-                                }
-                                return component();
-                            },
-                        loadingComponent,
-                    }),
-                ...(
-                    (Array.isArray(children) && children.length > 0)
-                        ? {
-                            children: platform.createRoutes(children, level + 1) || [],
-                        }
-                        : {}
-                ),
-            };
-        });
     },
 };
 

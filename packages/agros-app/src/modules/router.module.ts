@@ -43,7 +43,7 @@ export class RouterModule {
 
     public static async createRouterItems(
         context: Factory,
-        routes: RouteOptionItem[],
+        routes: RouteOptionItem[] = [],
         prefixPathname = '',
     ) {
         const normalizePath = (path: string, topLeveled = false) => {

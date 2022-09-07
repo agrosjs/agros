@@ -7,9 +7,7 @@ import {
     useState,
     Suspense,
 } from 'react';
-import { Route } from 'react-router-dom';
 import { useAsyncEffect } from 'use-async-effect';
-import { RouterItem } from '@agros/common/lib/types';
 
 const platform: Platform = {
     getDefaultConfig() {
@@ -46,6 +44,10 @@ const platform: Platform = {
                 libName: '@agros/platform-react/lib/react-dom',
                 identifierName: 'render',
             },
+            {
+                libName: '@agros/platform-react/lib/create-routes',
+                identifierName: 'createRoutes',
+            },
         ];
     },
     getDecoratorImports(): Omit<EnsureImportOptions, 'statements'>[] {
@@ -60,7 +62,6 @@ const platform: Platform = {
     getBootstrapCode(ensuredImportsMap: Record<string, string>): string {
         const reactIdentifier = ensuredImportsMap['React'] || 'React';
         const factoryIdentifier = ensuredImportsMap['factory'] || 'factory';
-        const platformIdentifier = ensuredImportsMap['platform'] || 'platform';
         return `
             const {
                 module: Module,
@@ -78,7 +79,7 @@ const platform: Platform = {
                             routerProps = {},
                             RouterComponent = ${ensuredImportsMap['BrowserRouter'] || 'BrowserRouter'},
                         }) => {
-                            const elements = ${platformIdentifier}.createRoutes(routes);
+                            const elements = ${ensuredImportsMap['createRoutes']}(routes);
                             return ${reactIdentifier}.createElement(
                                 RouterComponent,
                                 routerProps,
@@ -148,33 +149,6 @@ const platform: Platform = {
         });
 
         return component;
-    },
-    createRoutes(routerItems: RouterItem[], level = 0) {
-        return routerItems.map((routerItem, index) => {
-            const {
-                componentInstance,
-                children,
-                ...routeProps
-            } = routerItem;
-            const Component = componentInstance.getComponent();
-            const { elementProps = {} } = componentInstance.metadata;
-
-            return createElement(
-                Route,
-                {
-                    key: `level${level}_${index}`,
-                    ...routeProps,
-                    ...(
-                        Component
-                            ? {
-                                element: createElement(Component, elementProps),
-                            }
-                            : {}
-                    ),
-                },
-                (Array.isArray(children) && children.length > 0) ? platform.createRoutes(children, level + 1) : [],
-            );
-        });
     },
 };
 

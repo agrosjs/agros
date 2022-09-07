@@ -89,7 +89,6 @@ export interface ModuleDecoratorOptions {
     imports?: Array<AsyncModuleClass>;
     providers?: Array<Type>;
     components?: Array<Type>;
-    routes?: Array<RouteOptionItem>;
     exports?: Array<Type>;
 }
 
