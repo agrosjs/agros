@@ -2,6 +2,18 @@
   "name": "@agros/platforms",
   "entries": [
     {
+      "version": "0.3.0",
+      "tag": "@agros/platforms_v0.3.0",
+      "date": "Wed, 07 Sep 2022 04:00:16 GMT",
+      "comments": {
+        "minor": [
+          {
+            "comment": "Refactor component code generator"
+          }
+        ]
+      }
+    },
+    {
       "version": "0.2.2",
       "tag": "@agros/platforms_v0.2.2",
       "date": "Fri, 02 Sep 2022 09:12:43 GMT",

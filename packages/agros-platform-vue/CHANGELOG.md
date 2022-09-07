@@ -1,6 +1,13 @@
 # Change Log - @agros/platform-vue
 
-This log was last generated on Fri, 02 Sep 2022 09:12:43 GMT and should not be manually modified.
+This log was last generated on Wed, 07 Sep 2022 04:00:16 GMT and should not be manually modified.
+
+## 0.2.0
+Wed, 07 Sep 2022 04:00:16 GMT
+
+### Minor changes
+
+- Refactor component code generator
 
 ## 0.1.4
 Fri, 02 Sep 2022 09:12:43 GMT
