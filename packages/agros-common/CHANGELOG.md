@@ -1,6 +1,13 @@
 # Change Log - @agros/common
 
-This log was last generated on Sun, 04 Sep 2022 14:11:10 GMT and should not be manually modified.
+This log was last generated on Wed, 07 Sep 2022 15:52:33 GMT and should not be manually modified.
+
+## 0.6.0
+Wed, 07 Sep 2022 15:52:33 GMT
+
+### Minor changes
+
+- Refactor platform, remove `createRoutes`
 
 ## 0.5.1
 Sun, 04 Sep 2022 14:11:10 GMT

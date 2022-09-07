@@ -2,6 +2,23 @@
   "name": "@agros/platforms",
   "entries": [
     {
+      "version": "0.4.0",
+      "tag": "@agros/platforms_v0.4.0",
+      "date": "Wed, 07 Sep 2022 15:52:33 GMT",
+      "comments": {
+        "minor": [
+          {
+            "comment": "Refactor platform for removing routes"
+          }
+        ],
+        "dependency": [
+          {
+            "comment": "Updating dependency \"@agros/common\" from `^0.5.1` to `^0.6.0`"
+          }
+        ]
+      }
+    },
+    {
       "version": "0.3.0",
       "tag": "@agros/platforms_v0.3.0",
       "date": "Wed, 07 Sep 2022 04:00:16 GMT",
