@@ -7,7 +7,7 @@ importers:
 
   ../../packages/agros-app:
     specifiers:
-      '@agros/common': workspace:^0.5.0
+      '@agros/common': workspace:^0.5.1
       '@agros/config': workspace:^0.2.1
       '@agros/loader': workspace:^0.3.2
       '@agros/logger': workspace:^0.1.0
@@ -131,7 +131,7 @@ importers:
   ../../packages/agros-cli:
     specifiers:
       '@agros/collections': workspace:^0.1.0
-      '@agros/common': workspace:^0.5.0
+      '@agros/common': workspace:^0.5.1
       '@agros/config': workspace:^0.2.1
       '@agros/logger': workspace:^0.1.0
       '@agros/utils': workspace:^0.2.0
@@ -165,7 +165,7 @@ importers:
 
   ../../packages/agros-collections:
     specifiers:
-      '@agros/common': workspace:^0.5.0
+      '@agros/common': workspace:^0.5.1
       '@agros/config': workspace:^0.2.1
       '@agros/create-app': workspace:^0.1.6
       '@types/jest': ^28.1.1
@@ -341,7 +341,7 @@ importers:
 
   ../../packages/agros-loader:
     specifiers:
-      '@agros/common': workspace:^0.5.0
+      '@agros/common': workspace:^0.5.1
       '@agros/config': workspace:^0.2.1
       '@agros/platforms': workspace:^0.2.2
       '@agros/utils': workspace:^0.2.0
@@ -421,7 +421,7 @@ importers:
 
   ../../packages/agros-platform-react:
     specifiers:
-      '@agros/common': workspace:^0.5.0
+      '@agros/common': workspace:^0.5.1
       '@agros/config': workspace:^0.2.1
       '@agros/loader': workspace:^0.3.2
       '@agros/logger': workspace:^0.1.0
@@ -494,7 +494,7 @@ importers:
 
   ../../packages/agros-platform-vue:
     specifiers:
-      '@agros/common': workspace:^0.5.0
+      '@agros/common': workspace:^0.5.1
       '@agros/config': workspace:^0.2.1
       '@agros/loader': workspace:^0.3.2
       '@agros/platforms': workspace:^0.2.2
@@ -561,7 +561,7 @@ importers:
 
   ../../packages/agros-platforms:
     specifiers:
-      '@agros/common': workspace:^0.5.0
+      '@agros/common': workspace:^0.5.1
       '@agros/utils': workspace:^0.2.0
       '@types/jest': ^28.1.1
       '@types/lodash': ^4.14.182
@@ -613,7 +613,7 @@ importers:
 
   ../../packages/create-agros-app:
     specifiers:
-      '@agros/common': workspace:^0.5.0
+      '@agros/common': workspace:^0.5.1
       '@agros/logger': workspace:^0.1.0
       '@agros/utils': workspace:^0.2.0
       '@types/commander': ^2.12.2
