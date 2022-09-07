@@ -194,7 +194,7 @@ const generateApiDocs = async (currentVersion) => {
                         JSON.stringify({
                             label: packageName,
                             position: index,
-                        }, null, 4),
+                        }, null, 4) + '\n',
                     );
                     resolve();
                 });
@@ -208,7 +208,7 @@ const generateApiDocs = async (currentVersion) => {
         path.resolve(apiDocsDir, '_category_.json'),
         JSON.stringify({
             label: 'API',
-        }, null, 4),
+        }, null, 4) + '\n',
     );
 
     console.log('Generate api docs successfully');
