@@ -180,12 +180,19 @@ export const transformComponentDecorator = createLoaderAOP(
         const legacyDecorator: Decorator = _.clone(componentClassDeclaration?.decorators[componentDecoratorIndex]);
         const {
             lazy,
-            file,
+            file: filePath,
         } = componentMetadataConfig;
-        const {
-            importCodeLines = [],
-            factoryCode = '',
-        } = platform.getComponentFactoryCode(ensureIdentifierNameMap, file, lazy);
+        const componentIdentifierName = 'Agros$$CurrentComponent';
+        const factoryCode = platform.getComponentFactoryCode(
+            ensureIdentifierNameMap,
+            filePath,
+            componentIdentifierName,
+            lazy,
+        );
+
+        const importCodeLines = lazy
+            ? []
+            : [`const ${componentIdentifierName} = import('${filePath}');`];
 
         componentClassDeclaration?.decorators?.splice(
             componentDecoratorIndex,

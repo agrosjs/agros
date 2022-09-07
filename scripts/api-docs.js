@@ -208,6 +208,9 @@ const generateApiDocs = async (currentVersion) => {
         path.resolve(apiDocsDir, '_category_.json'),
         JSON.stringify({
             label: 'API',
+            link: {
+                type: 'generated-index',
+            },
         }, null, 4) + '\n',
     );
 
