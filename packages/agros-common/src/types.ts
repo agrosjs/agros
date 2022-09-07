@@ -2,6 +2,7 @@ import { CollectionType } from '@agros/config';
 import { Dirent } from 'fs';
 import { ComponentInstance } from './component-instance.class';
 import { Map as ImmutableMap } from 'immutable';
+import { ModuleInstance } from './module-instance.class';
 
 export interface PathDescriptor extends Omit<Dirent, 'name'> {
     id: string;
@@ -42,8 +43,13 @@ export type ComponentMetadata = Omit<ComponentDecoratorOptions, 'declarations'> 
     factory?: () => any;
 };
 
+export interface ValueProvider<T = any> {
+    provide: string;
+    useValue: T;
+}
+
 export type Type<T = any> = new (...args: Array<any>) => T;
-export type AsyncModuleClass<T = any> = Type<T> | Promise<Type>;
+export type AsyncModuleClass<T = any> = Type<T> | Promise<Type> | ValueProvider;
 
 export interface RouteProps<C = any, R = any> {
     caseSensitive?: boolean;
@@ -83,7 +89,6 @@ export interface ModuleDecoratorOptions {
     imports?: Array<AsyncModuleClass>;
     providers?: Array<Type>;
     components?: Array<Type>;
-    routes?: Array<RouteOptionItem>;
     exports?: Array<Type>;
 }
 
@@ -112,8 +117,11 @@ export interface ContainerForwardedComponentProps<Props> {
 export type UseInterceptorsDecoratorOptions = Type[];
 
 export interface Factory {
-    create: <T = any>(ModuleClass: Type<T>) => Promise<RouterItem[]>;
+    create: <T = any>(ModuleClass: Type<T>) => Promise<ComponentInstance>;
     generateDependencyMap: (componentInstanceOrId: ComponentInstance | string) => ImmutableMap<Type<any>, any>;
+    getModuleInstanceMap: () => Map<Type<any>, ModuleInstance>;
+    getRootModuleInstance: () => ModuleInstance;
+    getComponentInstanceMap: () => Map<Type<any>, ComponentInstance>;
 }
 
 export interface Interceptor {

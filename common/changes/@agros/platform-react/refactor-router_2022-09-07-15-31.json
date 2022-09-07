@@ -1,0 +1,10 @@
+{
+  "changes": [
+    {
+      "packageName": "@agros/platform-react",
+      "comment": "Refactor bootstrap code and createRoutes function",
+      "type": "patch"
+    }
+  ],
+  "packageName": "@agros/platform-react"
+}

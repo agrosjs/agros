@@ -1,0 +1,10 @@
+{
+  "changes": [
+    {
+      "packageName": "@agros/app",
+      "comment": "Remove `routes` declaration in @Module() decorator",
+      "type": "minor"
+    }
+  ],
+  "packageName": "@agros/app"
+}

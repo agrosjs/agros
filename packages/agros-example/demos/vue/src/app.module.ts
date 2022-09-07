@@ -1,4 +1,7 @@
-import { Module } from '@agros/app';
+import {
+    Module,
+    RouterModule,
+} from '@agros/app';
 import { AppComponent } from './app.component';
 import { BarModule } from './modules/bar/bar.module';
 import { BazModule } from './modules/baz/baz.module';
@@ -11,24 +14,26 @@ import { FooModule } from './modules/foo/foo.module';
         AppComponent,
     ],
     imports: [
+        RouterModule.forRoot({
+            routes: [
+                {
+                    path: '',
+                    useComponentClass: AppComponent,
+                    children: [
+                        {
+                            useModuleClass: FooModule,
+                        },
+                        {
+                            useModuleClass: LoremModule,
+                        },
+                    ],
+                },
+            ],
+        }),
         FooModule,
         BarModule,
         BazModule,
         LoremModule,
-    ],
-    routes: [
-        {
-            path: '',
-            useComponentClass: AppComponent,
-            children: [
-                {
-                    useModuleClass: FooModule,
-                },
-                {
-                    useModuleClass: LoremModule,
-                },
-            ],
-        },
     ],
     exports: [
         AppComponent,
