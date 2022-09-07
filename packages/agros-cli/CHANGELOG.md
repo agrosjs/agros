@@ -1,6 +1,13 @@
 # Change Log - @agros/cli
 
-This log was last generated on Fri, 02 Sep 2022 09:12:43 GMT and should not be manually modified.
+This log was last generated on Wed, 07 Sep 2022 15:52:33 GMT and should not be manually modified.
+
+## 0.1.0
+Wed, 07 Sep 2022 15:52:33 GMT
+
+### Minor changes
+
+- Remove `agros routes` command
 
 ## 0.0.7
 Fri, 02 Sep 2022 09:12:43 GMT

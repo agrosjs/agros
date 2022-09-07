@@ -2,6 +2,18 @@
   "name": "@agros/common",
   "entries": [
     {
+      "version": "0.6.0",
+      "tag": "@agros/common_v0.6.0",
+      "date": "Wed, 07 Sep 2022 15:52:33 GMT",
+      "comments": {
+        "minor": [
+          {
+            "comment": "Refactor platform, remove `createRoutes`"
+          }
+        ]
+      }
+    },
+    {
       "version": "0.5.1",
       "tag": "@agros/common_v0.5.1",
       "date": "Sun, 04 Sep 2022 14:11:10 GMT",

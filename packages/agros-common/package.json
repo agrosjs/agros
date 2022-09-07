@@ -46,7 +46,7 @@
         "typescript": "^4.5.5"
     },
     "name": "@agros/common",
-    "version": "0.5.1",
+    "version": "0.6.0",
     "description": "Common functions for Agros.js",
     "dependencies": {
         "@agros/config": "workspace:^0.2.1",

@@ -1,6 +1,13 @@
 # Change Log - @agros/platform-react
 
-This log was last generated on Wed, 07 Sep 2022 04:00:16 GMT and should not be manually modified.
+This log was last generated on Wed, 07 Sep 2022 15:52:33 GMT and should not be manually modified.
+
+## 0.2.1
+Wed, 07 Sep 2022 15:52:33 GMT
+
+### Patches
+
+- Refactor bootstrap code and createRoutes function
 
 ## 0.2.0
 Wed, 07 Sep 2022 04:00:16 GMT
