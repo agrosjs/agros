@@ -84,7 +84,11 @@ const uploadFiles = async (options) => {
         user: username,
         repo: repoName,
         tree: (_.get(baseTreeInfo, 'data.tree') || []).filter((tree) => {
-            return !newTree.some((newTreeItem) => newTreeItem.path === tree.path) && tree.type !== 'tree';
+            return (
+                !newTree.some((newTreeItem) => newTreeItem.path === tree.path) &&
+                tree.type !== 'tree' &&
+                !tree.path.startsWith(basePath)
+            );
         }).concat(newTree),
         baseTree: baseTreeSha,
     });
