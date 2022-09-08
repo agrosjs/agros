@@ -10,7 +10,7 @@ import {
     normalizeModulesPath,
     normalizeSrcPath,
 } from '@agros/common';
-import { CodeLocation } from '@agros/utils/lib/platform-loader';
+import { CodeLocation } from '@agros/utils/lib/types';
 
 export const createLoaderAOP = <T = string, E = { factoryFilename: string }>(
     aop: (data: LoaderAOPData<E>) => Promise<T>,

@@ -1,0 +1,10 @@
+{
+  "changes": [
+    {
+      "packageName": "@agros/config",
+      "comment": "Fix platform loader function",
+      "type": "patch"
+    }
+  ],
+  "packageName": "@agros/config"
+}

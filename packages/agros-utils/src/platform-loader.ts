@@ -1,41 +1,76 @@
 import * as path from 'path';
+import * as fs from 'fs-extra';
+import { cosmiconfigSync } from 'cosmiconfig';
+import { ComponentScript } from './types';
+import _ from 'lodash';
 
-export interface CodeLocation {
-    start: number;
-    end: number;
-}
-
-export interface ComponentScript {
-    content: string;
-    location?: CodeLocation;
+export interface BundlessPlatform {
+    getComponentScript?: (source: string) => ComponentScript;
 }
 
 export class PlatformLoader {
     protected platformIndexFile: string;
-    protected platformIndexDir: string;
+    protected platformRootDir: string;
 
     public constructor(protected readonly platformName: string) {
         this.platformIndexFile = require.resolve(platformName, {
             paths: [process.cwd()],
         });
-        this.platformIndexDir = path.dirname(this.platformIndexFile);
+
+        let currentDetectDir = path.dirname(this.platformIndexFile);
+
+        while (true) {
+            if (currentDetectDir === path.dirname(currentDetectDir)) {
+                break;
+            }
+
+            if (fs.existsSync(path.resolve(currentDetectDir, 'package.json'))) {
+                this.platformRootDir = currentDetectDir;
+                break;
+            }
+
+            currentDetectDir = path.dirname(currentDetectDir);
+        }
+
+        if (!this.platformRootDir) {
+            throw new Error(`Platform '${this.platformName}' is not a valid NPM package`);
+        }
+    }
+
+    public getPlatformRootDir() {
+        return this.platformRootDir;
+    }
+
+    public getPlatformWebpackConfigFactory(): Function {
+        const configFactory = cosmiconfigSync('agros-platform').search(this.platformRootDir);
+        if (!configFactory || typeof configFactory.config === 'function') {
+            return configFactory.config;
+        }
+        return (config) => config;
     }
 
     public getPlatform<T>(): T {
-        let platform = require(path.join(this.platformIndexDir, 'platform'));
+        let platform = require(this.platformIndexFile);
         if (platform) {
             platform = platform.default || platform;
         }
         return platform;
     }
 
-    public getComponentScript(source: string): ComponentScript {
+    public getBundlessPlatform(): BundlessPlatform {
         try {
-            const required = require(path.join(this.platformIndexDir, 'get-component-script'));
-            if (typeof required?.getComponentScript === 'function') {
-                return required.getComponentScript(source) as ComponentScript;
+            const packageJson = fs.readJsonSync(path.resolve(this.platformRootDir, 'package.json'));
+            const bundlessPlatformFilePathname = _.get(packageJson, 'agrosPlatform.bundless');
+
+            if (!bundlessPlatformFilePathname) {
+                return {};
             }
-        } catch (e) {}
-        return null;
+
+            const required = require(path.resolve(this.platformRootDir, bundlessPlatformFilePathname));
+
+            return required.default || required;
+        } catch (e) {
+            return {};
+        }
     }
 }

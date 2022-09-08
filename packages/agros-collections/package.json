@@ -42,7 +42,7 @@
     "dependencies": {
         "@agros/common": "workspace:^0.6.0",
         "@agros/config": "workspace:^0.2.1",
-        "@agros/create-app": "workspace:^0.1.7",
+        "@agros/create-app": "workspace:^0.1.8",
         "lodash": "^4.17.21"
     }
 }

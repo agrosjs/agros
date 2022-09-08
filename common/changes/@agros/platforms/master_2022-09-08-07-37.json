@@ -1,0 +1,10 @@
+{
+  "changes": [
+    {
+      "packageName": "@agros/platforms",
+      "comment": "Change some unnecessary methods into optional",
+      "type": "patch"
+    }
+  ],
+  "packageName": "@agros/platforms"
+}

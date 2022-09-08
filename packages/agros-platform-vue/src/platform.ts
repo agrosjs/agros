@@ -1,12 +1,8 @@
 import 'reflect-metadata';
-import { ComponentInstance } from '@agros/common/lib/component-instance.class';
 import { Platform } from '@agros/platforms/lib/platform.interface';
 import { EnsureImportOptions } from '@agros/utils/lib/ensure-import';
 
 const platform: Platform = {
-    getDefaultConfig() {
-        return {};
-    },
     getLoaderImports(): Omit<EnsureImportOptions, 'statements'>[] {
         return [
             {
@@ -81,10 +77,6 @@ const platform: Platform = {
         lazy = false,
     ) {
         return `() => ${lazy ? `() => import('${filePath}')` : componentIdentifierName};`;
-    },
-    async generateComponent<T = any>(componentInstance: ComponentInstance, component: any): Promise<T> {
-        componentInstance.setComponent(component);
-        return component;
     },
 };
 

@@ -156,14 +156,6 @@ export class Factory implements IFactory {
                 let dependedComponent = dependedComponentInstance.getComponent();
 
                 /**
-                 * if current depended component class is not initialized, then create
-                 * the component recursively
-                 */
-                if (!dependedComponent) {
-                    dependedComponent = this.platform.generateComponent(dependedComponentInstance, this);
-                }
-
-                /**
                  * get the component from depended component class
                  */
                 dependencyMap = dependencyMap.set(ProviderClass, dependedComponent);
@@ -442,7 +434,10 @@ export class Factory implements IFactory {
                 if (!componentInstance.metadata.lazy) {
                     component = await component.then((result) => result.default || result);
                 }
-                await this.platform.generateComponent(componentInstance, component);
+                componentInstance.setComponent(component);
+                if (typeof this.platform.generateComponent === 'function') {
+                    await this.platform.generateComponent(componentInstance, component);
+                }
             }
 
             const dependencyMap = this.generateDependencyMap(componentInstance);
