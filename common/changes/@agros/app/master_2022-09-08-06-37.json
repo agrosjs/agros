@@ -1,0 +1,10 @@
+{
+  "changes": [
+    {
+      "packageName": "@agros/app",
+      "comment": "Remove unused generate component condition",
+      "type": "patch"
+    }
+  ],
+  "packageName": "@agros/app"
+}
