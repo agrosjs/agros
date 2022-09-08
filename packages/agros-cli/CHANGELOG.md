@@ -1,6 +1,11 @@
 # Change Log - @agros/cli
 
-This log was last generated on Wed, 07 Sep 2022 15:52:33 GMT and should not be manually modified.
+This log was last generated on Thu, 08 Sep 2022 09:49:50 GMT and should not be manually modified.
+
+## 0.1.1
+Thu, 08 Sep 2022 09:49:50 GMT
+
+_Version update only_
 
 ## 0.1.0
 Wed, 07 Sep 2022 15:52:33 GMT

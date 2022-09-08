@@ -1,6 +1,11 @@
 # Change Log - @agros/create-app
 
-This log was last generated on Thu, 08 Sep 2022 00:28:23 GMT and should not be manually modified.
+This log was last generated on Thu, 08 Sep 2022 09:49:50 GMT and should not be manually modified.
+
+## 0.1.9
+Thu, 08 Sep 2022 09:49:50 GMT
+
+_Version update only_
 
 ## 0.1.8
 Thu, 08 Sep 2022 00:28:23 GMT

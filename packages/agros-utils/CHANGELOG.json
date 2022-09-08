@@ -2,6 +2,18 @@
   "name": "@agros/utils",
   "entries": [
     {
+      "version": "0.3.0",
+      "tag": "@agros/utils_v0.3.0",
+      "date": "Thu, 08 Sep 2022 09:49:50 GMT",
+      "comments": {
+        "minor": [
+          {
+            "comment": "Add support to BundlessPlatform and optimize platform loader"
+          }
+        ]
+      }
+    },
+    {
       "version": "0.2.0",
       "tag": "@agros/utils_v0.2.0",
       "date": "Wed, 24 Aug 2022 06:21:27 GMT",
