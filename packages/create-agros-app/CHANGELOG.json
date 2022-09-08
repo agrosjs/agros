@@ -2,6 +2,18 @@
   "name": "@agros/create-app",
   "entries": [
     {
+      "version": "0.1.8",
+      "tag": "@agros/create-app_v0.1.8",
+      "date": "Thu, 08 Sep 2022 00:28:23 GMT",
+      "comments": {
+        "patch": [
+          {
+            "comment": "Refactor template code of @agros/create-app"
+          }
+        ]
+      }
+    },
+    {
       "version": "0.1.7",
       "tag": "@agros/create-app_v0.1.7",
       "date": "Wed, 07 Sep 2022 15:52:33 GMT",
