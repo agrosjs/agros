@@ -1,6 +1,11 @@
 # Change Log - @agros/collections
 
-This log was last generated on Fri, 02 Sep 2022 09:12:43 GMT and should not be manually modified.
+This log was last generated on Wed, 07 Sep 2022 15:52:33 GMT and should not be manually modified.
+
+## 0.1.1
+Wed, 07 Sep 2022 15:52:33 GMT
+
+_Version update only_
 
 ## 0.1.0
 Fri, 02 Sep 2022 09:12:43 GMT

@@ -2,6 +2,21 @@
   "name": "@agros/collections",
   "entries": [
     {
+      "version": "0.1.1",
+      "tag": "@agros/collections_v0.1.1",
+      "date": "Wed, 07 Sep 2022 15:52:33 GMT",
+      "comments": {
+        "dependency": [
+          {
+            "comment": "Updating dependency \"@agros/common\" from `^0.5.1` to `^0.6.0`"
+          },
+          {
+            "comment": "Updating dependency \"@agros/create-app\" from `^0.1.6` to `^0.1.7`"
+          }
+        ]
+      }
+    },
+    {
       "version": "0.1.0",
       "tag": "@agros/collections_v0.1.0",
       "date": "Fri, 02 Sep 2022 09:12:43 GMT",

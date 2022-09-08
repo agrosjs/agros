@@ -37,12 +37,12 @@
         "typescript": "^4.5.5"
     },
     "name": "@agros/collections",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "description": "Collections for Agros.js",
     "dependencies": {
-        "@agros/common": "workspace:^0.5.1",
+        "@agros/common": "workspace:^0.6.0",
         "@agros/config": "workspace:^0.2.1",
-        "@agros/create-app": "workspace:^0.1.6",
+        "@agros/create-app": "workspace:^0.1.7",
         "lodash": "^4.17.21"
     }
 }
