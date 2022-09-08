@@ -156,14 +156,6 @@ export class Factory implements IFactory {
                 let dependedComponent = dependedComponentInstance.getComponent();
 
                 /**
-                 * if current depended component class is not initialized, then create
-                 * the component recursively
-                 */
-                if (!dependedComponent) {
-                    dependedComponent = this.platform.generateComponent(dependedComponentInstance, this);
-                }
-
-                /**
                  * get the component from depended component class
                  */
                 dependencyMap = dependencyMap.set(ProviderClass, dependedComponent);
