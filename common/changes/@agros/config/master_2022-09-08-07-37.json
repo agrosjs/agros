@@ -1,0 +1,10 @@
+{
+  "changes": [
+    {
+      "packageName": "@agros/config",
+      "comment": "Optimize `getDefaultConfig` of platform",
+      "type": "patch"
+    }
+  ],
+  "packageName": "@agros/config"
+}
