@@ -1,0 +1,10 @@
+{
+  "changes": [
+    {
+      "packageName": "@agros/config",
+      "comment": "Add PlatformConfigParser",
+      "type": "minor"
+    }
+  ],
+  "packageName": "@agros/config"
+}

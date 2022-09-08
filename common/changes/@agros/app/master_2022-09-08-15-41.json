@@ -1,0 +1,10 @@
+{
+  "changes": [
+    {
+      "packageName": "@agros/app",
+      "comment": "Support for PlatformConfigParser",
+      "type": "patch"
+    }
+  ],
+  "packageName": "@agros/app"
+}
