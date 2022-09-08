@@ -11,10 +11,7 @@ import createEnvironmentHash from './create-environment-hash';
 import paths, { moduleFileExtensions } from './paths';
 import modules from './modules';
 import { getClientEnvironment } from './env';
-import {
-    ProjectConfigParser,
-    PlatformConfigParser,
-} from '@agros/config';
+import { ProjectConfigParser } from '@agros/config';
 import { Logger } from '@agros/logger';
 import TerserPlugin from 'terser-webpack-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
@@ -28,6 +25,7 @@ import evalSourceMapMiddleware from 'react-dev-utils/evalSourceMapMiddleware';
 import noopServiceWorkerMiddleware from 'react-dev-utils/noopServiceWorkerMiddleware';
 import ignoredFiles from 'react-dev-utils/ignoredFiles';
 import redirectServedPath from 'react-dev-utils/redirectServedPathMiddleware';
+import { PlatformLoader } from '@agros/utils/lib/platform-loader';
 
 const configParser = new ProjectConfigParser();
 const shouldUseSourceMap = process.env.GENERATE_SOURCEMAP !== 'false';
@@ -480,9 +478,8 @@ export const generateBuildConfig = (webpackEnv) => {
     };
 
     try {
-        const platformConfigParser = new PlatformConfigParser();
-        const configFactory = platformConfigParser.getConfigFactory();
-
+        const platformLoader = new PlatformLoader(configParser.getConfig<string>('platform'));
+        const configFactory = platformLoader.getPlatformWebpackConfigFactory();
         if (typeof configFactory === 'function') {
             const currentConfig = configFactory(config);
             if (currentConfig) {

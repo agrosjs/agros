@@ -10,6 +10,7 @@ import { parseAST } from '@agros/utils';
 import { detectNamedImports } from '@agros/common/lib/detectors';
 import traverse from '@babel/traverse';
 import * as path from 'path';
+import { ComponentScript } from '@agros/utils/lib/types';
 
 export const transformComponentFile = createLoaderAOP(
     async ({
@@ -21,18 +22,23 @@ export const transformComponentFile = createLoaderAOP(
         let tree = astTree;
         const configParser = new ProjectConfigParser();
         const platformLoader = new PlatformLoader(configParser.getConfig<string>('platform'));
-        const codeScript = platformLoader.getComponentScript(source);
+        const bundlessPlatform = platformLoader.getBundlessPlatform();
         let scriptContent: string;
+        let componentScript: ComponentScript;
+
+        if (typeof bundlessPlatform.getComponentScript === 'function') {
+            componentScript = bundlessPlatform.getComponentScript(source);
+        }
 
         if (!tree) {
-            if (!codeScript) {
+            if (!componentScript) {
                 scriptContent = source;
             }
 
-            if (!codeScript?.content && !scriptContent) {
+            if (!componentScript?.content && !scriptContent) {
                 scriptContent = '';
             } else {
-                scriptContent = codeScript.content;
+                scriptContent = componentScript.content;
             }
 
             if (!scriptContent) {
@@ -93,7 +99,7 @@ export const transformComponentFile = createLoaderAOP(
             `const __AGROS_DEPS_MAP__ = __AGROS_FACTORY__.generateDependencyMap('${parsedQuery['component_uuid']}');`,
         ].join('\n') + newScriptCode;
 
-        const [headCode, tailCode] = splitCode(source, codeScript?.location);
+        const [headCode, tailCode] = splitCode(source, componentScript?.location);
         const newCode = [headCode, newScriptCode, tailCode].join('\n');
 
         return newCode;

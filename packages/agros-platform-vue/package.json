@@ -67,5 +67,8 @@
         "vue-loader": "^17.0.0",
         "vue-router": "^4.0.0",
         "webpack": "^5.28.0"
+    },
+    "agrosPlatform": {
+        "bundless": "./lib/bundless-platform.js"
     }
 }
