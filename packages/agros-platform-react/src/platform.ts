@@ -10,9 +10,6 @@ import {
 import { useAsyncEffect } from 'use-async-effect';
 
 const platform: Platform = {
-    getDefaultConfig() {
-        return {};
-    },
     getLoaderImports(): Omit<EnsureImportOptions, 'statements'>[] {
         return [
             {

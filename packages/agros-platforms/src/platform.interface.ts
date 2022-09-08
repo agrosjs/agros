@@ -6,7 +6,6 @@ export type AddVirtualFile = (pathname: string, content: string) => void;
 export interface Platform {
     getLoaderImports: () => Omit<EnsureImportOptions, 'statements'>[];
     getDecoratorImports: () => Omit<EnsureImportOptions, 'statements'>[];
-    getDefaultConfig: () => Record<string, any>;
     getBootstrapCode: (ensuredImportsMap: Record<string, string>, addVirtualFile: AddVirtualFile) => string;
     getComponentFactoryCode: (
         ensuredImportsMap: Record<string, string>,
@@ -14,5 +13,6 @@ export interface Platform {
         componentIdentifierName: string,
         lazy: boolean,
     ) => string;
-    generateComponent: <T = any>(componentInstance: ComponentInstance, component: any) => Promise<T>;
+    getDefaultConfig?: () => Record<string, any>;
+    generateComponent?: <T = any>(componentInstance: ComponentInstance, component: any) => Promise<T>;
 }

@@ -434,7 +434,10 @@ export class Factory implements IFactory {
                 if (!componentInstance.metadata.lazy) {
                     component = await component.then((result) => result.default || result);
                 }
-                await this.platform.generateComponent(componentInstance, component);
+                componentInstance.setComponent(component);
+                if (typeof this.platform.generateComponent === 'function') {
+                    await this.platform.generateComponent(componentInstance, component);
+                }
             }
 
             const dependencyMap = this.generateDependencyMap(componentInstance);

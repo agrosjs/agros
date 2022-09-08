@@ -54,7 +54,9 @@ export class ProjectConfigParser {
             this.projectConfig = _.set(
                 _.cloneDeep(this.projectConfig),
                 `platformConfig['${this.projectConfig.platform}']`,
-                platform.getDefaultConfig() || {},
+                typeof platform.getDefaultConfig === 'function'
+                    ? platform.getDefaultConfig() || {}
+                    : {},
             );
         } catch (e) {}
 
