@@ -1,6 +1,13 @@
 # Change Log - @agros/app
 
-This log was last generated on Thu, 08 Sep 2022 09:49:50 GMT and should not be manually modified.
+This log was last generated on Thu, 08 Sep 2022 15:59:00 GMT and should not be manually modified.
+
+## 0.7.1
+Thu, 08 Sep 2022 15:59:00 GMT
+
+### Patches
+
+- Support for PlatformConfigParser
 
 ## 0.7.0
 Thu, 08 Sep 2022 09:49:50 GMT

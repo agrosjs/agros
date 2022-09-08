@@ -1,6 +1,11 @@
 # Change Log - @agros/common
 
-This log was last generated on Thu, 08 Sep 2022 09:49:50 GMT and should not be manually modified.
+This log was last generated on Thu, 08 Sep 2022 15:59:00 GMT and should not be manually modified.
+
+## 0.6.2
+Thu, 08 Sep 2022 15:59:00 GMT
+
+_Version update only_
 
 ## 0.6.1
 Thu, 08 Sep 2022 09:49:50 GMT
