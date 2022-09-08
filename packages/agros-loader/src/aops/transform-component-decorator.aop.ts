@@ -8,7 +8,7 @@ import {
 } from '@agros/common';
 import { ensureImport } from '@agros/utils/lib/ensure-import';
 import { parseAST } from '@agros/utils/lib/parse-ast';
-import { PlatformLoader } from '@agros/utils/lib/platform-loader';
+import { PlatformConfigParser } from '@agros/config/lib/platform-config-parser';
 import {
     CallExpression as BabelCallExpression,
     Identifier,
@@ -39,8 +39,7 @@ export const transformComponentDecorator = createLoaderAOP(
         const ensureIdentifierNameMap: Record<string, string> = {};
         const declaredClasses = detectExports<t.ClassDeclaration>(tree, 'ClassDeclaration');
         const configParser = new ProjectConfigParser();
-        const platformLoader = new PlatformLoader(configParser.getConfig<string>('platform'));
-        const platform = platformLoader.getPlatform<Platform>();
+        const platform = new PlatformConfigParser(configParser.getConfig<string>('platform')).getPlatform<Platform>();
 
         if (declaredClasses.length > 1) {
             throw new Error('Component files should have only one named class export');

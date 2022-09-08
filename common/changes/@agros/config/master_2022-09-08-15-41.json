@@ -2,8 +2,8 @@
   "changes": [
     {
       "packageName": "@agros/config",
-      "comment": "Optimize `getDefaultConfig` of platform",
-      "type": "patch"
+      "comment": "Add PlatformConfigParser",
+      "type": "minor"
     }
   ],
   "packageName": "@agros/config"

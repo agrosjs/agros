@@ -2,7 +2,7 @@
   "changes": [
     {
       "packageName": "@agros/platform-vue",
-      "comment": "Remove useless methods",
+      "comment": "Support for PlatformConfigParser",
       "type": "patch"
     }
   ],

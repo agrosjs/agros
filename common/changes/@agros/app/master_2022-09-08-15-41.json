@@ -2,7 +2,7 @@
   "changes": [
     {
       "packageName": "@agros/app",
-      "comment": "Set component before invoking platform's generateComponent",
+      "comment": "Support for PlatformConfigParser",
       "type": "patch"
     }
   ],

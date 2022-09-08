@@ -1,6 +1,18 @@
 # Change Log - @agros/config
 
-This log was last generated on Wed, 24 Aug 2022 06:21:27 GMT and should not be manually modified.
+This log was last generated on Thu, 08 Sep 2022 09:49:50 GMT and should not be manually modified.
+
+## 0.3.0
+Thu, 08 Sep 2022 09:49:50 GMT
+
+### Minor changes
+
+- Add support to BundlessPlatform and optimize platform loader
+
+### Patches
+
+- Optimize `getDefaultConfig` of platform
+- Fix platform loader function
 
 ## 0.2.1
 Wed, 24 Aug 2022 06:21:27 GMT

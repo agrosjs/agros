@@ -1,4 +1,4 @@
-import { BundlessPlatform } from '@agros/utils/lib/platform-loader';
+import { BundlessPlatform } from '@agros/utils/lib/types';
 import { parse } from 'vue/compiler-sfc';
 
 const bundlessPlatform: BundlessPlatform = {

@@ -2,7 +2,7 @@ import _ from 'lodash';
 import { cosmiconfigSync } from 'cosmiconfig';
 import * as path from 'path';
 import { Configuration } from 'webpack';
-import { PlatformLoader } from '@agros/utils/lib/platform-loader';
+import { PlatformConfigParser } from './platform-config-parser';
 
 export type ScopeMap = Record<string, string>;
 export type AliasMap = Record<string, string>;
@@ -47,7 +47,7 @@ export class ProjectConfigParser {
         try {
             const userProjectConfig = cosmiconfigSync('agros').search()?.config || {};
             this.projectConfig = _.merge({}, this.projectConfig, userProjectConfig);
-            const platform = new PlatformLoader(this.projectConfig.platform).getPlatform<any>();
+            const platform = new PlatformConfigParser(this.projectConfig.platform).getPlatform<any>();
             this.projectConfig = _.set(
                 _.cloneDeep(this.projectConfig),
                 `platformConfig['${this.projectConfig.platform}']`,

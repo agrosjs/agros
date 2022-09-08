@@ -1,6 +1,13 @@
 # Change Log - @agros/utils
 
-This log was last generated on Wed, 24 Aug 2022 06:21:27 GMT and should not be manually modified.
+This log was last generated on Thu, 08 Sep 2022 09:49:50 GMT and should not be manually modified.
+
+## 0.3.0
+Thu, 08 Sep 2022 09:49:50 GMT
+
+### Minor changes
+
+- Add support to BundlessPlatform and optimize platform loader
 
 ## 0.2.0
 Wed, 24 Aug 2022 06:21:27 GMT
