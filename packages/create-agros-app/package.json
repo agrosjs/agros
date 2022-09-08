@@ -49,9 +49,9 @@
     "version": "0.1.9",
     "description": "Agros project initializer",
     "dependencies": {
-        "@agros/common": "workspace:^0.6.1",
+        "@agros/common": "workspace:^0.6.2",
         "@agros/logger": "workspace:^0.1.0",
-        "@agros/utils": "workspace:^0.3.0",
+        "@agros/utils": "workspace:^0.3.1",
         "commander": "^9.3.0",
         "fs-extra": "^10.1.0",
         "glob": "^8.0.3",
