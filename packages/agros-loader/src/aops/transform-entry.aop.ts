@@ -4,7 +4,7 @@ import {
     EnsureImportOptions,
 } from '@agros/utils/lib/ensure-import';
 import { parseAST } from '@agros/utils/lib/parse-ast';
-import { PlatformLoader } from '@agros/utils/lib/platform-loader';
+import { PlatformConfigParser } from '@agros/config/lib/platform-config-parser';
 import * as path from 'path';
 import generate from '@babel/generator';
 import { createLoaderAOP } from '../utils';
@@ -26,8 +26,7 @@ export const transformEntry = createLoaderAOP(
         const ensureIdentifierNameMap: Record<string, string> = {};
         const configParser = new ProjectConfigParser();
         const platformName = configParser.getConfig<string>('platform');
-        const platformLoader = new PlatformLoader(platformName);
-        const platform = platformLoader.getPlatform<Platform>();
+        const platform = new PlatformConfigParser(platformName).getPlatform<Platform>();
         const addVirtualFile: AddVirtualFile = (pathname: string, content: string) => {
             if (!pathname || !content) {
                 return;

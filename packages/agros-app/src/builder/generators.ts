@@ -25,7 +25,7 @@ import evalSourceMapMiddleware from 'react-dev-utils/evalSourceMapMiddleware';
 import noopServiceWorkerMiddleware from 'react-dev-utils/noopServiceWorkerMiddleware';
 import ignoredFiles from 'react-dev-utils/ignoredFiles';
 import redirectServedPath from 'react-dev-utils/redirectServedPathMiddleware';
-import { PlatformLoader } from '@agros/utils/lib/platform-loader';
+import { PlatformConfigParser } from '@agros/config/lib/platform-config-parser';
 
 const configParser = new ProjectConfigParser();
 const shouldUseSourceMap = process.env.GENERATE_SOURCEMAP !== 'false';
@@ -478,8 +478,8 @@ export const generateBuildConfig = (webpackEnv) => {
     };
 
     try {
-        const platformLoader = new PlatformLoader(configParser.getConfig<string>('platform'));
-        const configFactory = platformLoader.getPlatformWebpackConfigFactory();
+        const platformConfigParser = new PlatformConfigParser(configParser.getConfig<string>('platform'));
+        const configFactory = platformConfigParser.getPlatformWebpackConfigFactory();
         if (typeof configFactory === 'function') {
             const currentConfig = configFactory(config);
             if (currentConfig) {

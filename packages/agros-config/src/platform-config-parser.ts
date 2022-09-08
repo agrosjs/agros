@@ -1,14 +1,10 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import { cosmiconfigSync } from 'cosmiconfig';
-import { ComponentScript } from './types';
 import _ from 'lodash';
+import { BundlessPlatform } from '@agros/utils/lib/types';
 
-export interface BundlessPlatform {
-    getComponentScript?: (source: string) => ComponentScript;
-}
-
-export class PlatformLoader {
+export class PlatformConfigParser {
     protected platformIndexFile: string;
     protected platformRootDir: string;
 

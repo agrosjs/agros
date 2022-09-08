@@ -1,7 +1,7 @@
 lockfileVersion: 5.4
 
 specifiers:
-  '@agros/utils': workspace:^0.0.3
+  '@agros/utils': workspace:^0.3.0
   '@types/fs-extra': ^9.0.13
   '@types/minimatch': ^3.0.5
   '@types/parse-glob': ^3.0.29

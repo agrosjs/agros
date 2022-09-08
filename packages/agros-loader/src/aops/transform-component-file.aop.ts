@@ -3,7 +3,7 @@ import {
     splitCode,
 } from '../utils';
 import * as t from '@babel/types';
-import { PlatformLoader } from '@agros/utils/lib/platform-loader';
+import { PlatformConfigParser } from '@agros/config/lib/platform-config-parser';
 import { ProjectConfigParser } from '@agros/config';
 import generate from '@babel/generator';
 import { parseAST } from '@agros/utils';
@@ -21,7 +21,7 @@ export const transformComponentFile = createLoaderAOP(
     }) => {
         let tree = astTree;
         const configParser = new ProjectConfigParser();
-        const platformLoader = new PlatformLoader(configParser.getConfig<string>('platform'));
+        const platformLoader = new PlatformConfigParser(configParser.getConfig<string>('platform'));
         const bundlessPlatform = platformLoader.getBundlessPlatform();
         let scriptContent: string;
         let componentScript: ComponentScript;
