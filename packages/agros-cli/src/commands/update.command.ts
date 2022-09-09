@@ -2,13 +2,13 @@ import { Command } from 'commander';
 import { AbstractCommand } from '../command.abstract';
 import {
     addArgumentsAndOptionsToCommandWithSchema,
-    getCollections,
+    loadCollections,
     logGenerateResult,
 } from '../utils';
 
 export class UpdateCommand extends AbstractCommand implements AbstractCommand {
     public register() {
-        const collections = getCollections('update');
+        const collections = loadCollections('update');
         const command = new Command('update');
         command.alias('u').description('Update an Agros.js collections with another collection');
 

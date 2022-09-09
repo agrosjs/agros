@@ -8,7 +8,7 @@ export interface CLIConfig {
 }
 
 export class CLIConfigParser {
-    private readonly configFilePath = path.resolve(os.homedir(), '.agros/config.json');
+    private readonly configFilePath = path.resolve(os.homedir(), '.config/agros/config.json');
     private defaultCLIConfig: CLIConfig = {
         collection: '@agros/collections',
     };
