@@ -8,7 +8,7 @@ const axios = require('axios').default;
 const semver = require('semver');
 
 const createVersionedDocs = async (baseTree) => {
-    if (!Array.isArray(baseTree)) {
+    if (!Array.isArray(baseTree) || baseTree.length === 0) {
         return;
     }
 
@@ -144,17 +144,16 @@ const uploadFiles = async (options) => {
         return;
     }
 
-    const baseTree = (_.get(baseTreeInfo, 'data.tree') || []).filter((tree) => {
-        return (
-            !newTree.some((newTreeItem) => newTreeItem.path === tree.path) &&
-            tree.type !== 'tree' &&
-            !tree.path.startsWith(basePath)
-        );
-    }).concat(newTree);
     const createTreeResponse = await octokit.request('POST https://api.github.com/repos/{user}/{repo}/git/trees', {
         user: username,
         repo: repoName,
-        tree: (await createVersionedDocs(baseTree)) || baseTree,
+        tree: ((await createVersionedDocs(_.get(baseTreeInfo, 'data.tree') || [])) || _.get(baseTreeInfo, 'data.tree') || []).filter((tree) => {
+            return (
+                tree.type !== 'tree' &&
+                !newTree.some((newTreeItem) => newTreeItem.path === tree.path) &&
+                !tree.path.startsWith(basePath)
+            );
+        }).concat(newTree),
         baseTree: baseTreeSha,
     });
     const newTreeSha = _.get(createTreeResponse, 'data.sha');
