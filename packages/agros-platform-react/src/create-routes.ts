@@ -1,7 +1,5 @@
 import { RouterItem } from '@agros/common/lib/types';
-import {
-    createElement,
-} from 'react';
+import { createElement } from 'react';
 import { Route } from 'react-router-dom';
 
 export const createRoutes = (routerItems: RouterItem[], level = 0) => {
