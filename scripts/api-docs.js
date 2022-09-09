@@ -4,6 +4,70 @@ const _ = require('lodash');
 const { spawn } = require('child_process');
 const glob = require('glob');
 const { Octokit } = require('octokit');
+const axios = require('axios').default;
+const semver = require('semver');
+
+const createVersionedDocs = async (baseTree) => {
+    if (!Array.isArray(baseTree)) {
+        return;
+    }
+
+    try {
+        const packageJson = fs.readJsonSync(
+            path.resolve(__dirname, '../packages/agros-app/package.json'),
+        );
+        const newAppVersion = packageJson.version;
+
+        if (!newAppVersion) {
+            console.log('Warn: cannot read version of `@agros/app`');
+            return;
+        }
+
+        const { data: appPackageInfo } = await axios.get('https://registry.npmjs.org/@agros/app', {
+            responseType: 'json',
+        });
+        // eslint-disable-next-line @typescript-eslint/prefer-optional-chain
+        const versions = Object.keys((appPackageInfo || {}).versions || {});
+        const lastVersion = versions.pop();
+
+        console.log(`Got new version: ${newAppVersion}, latest version: ${lastVersion}`);
+
+        if (
+            !semver.lt(
+                lastVersion.split('.').slice(0, 2).join('.') + '.0',
+                newAppVersion.split('.').slice(0, 2).join('.') + '.0',
+            )
+        ) {
+            console.log('New version and the latest one has the same minor version, nothing to do');
+            return;
+        }
+
+        console.log('Found new version ' + newAppVersion + ', generating docs version ' + newDocsVersion);
+        const versionedDocsPath = `versioned_docs/version-${newDocsVersion}`;
+        const newDocsVersion = newAppVersion.split('.').slice(0, 2).join('.') + '.x';
+        const newBaseTree = baseTree.filter((tree) => {
+            return !tree.path.startsWith(versionedDocsPath);
+        }).concat(
+            baseTree.filter((tree) => {
+                return tree.path.startsWith('docs');
+            }).map((tree) => {
+                return {
+                    ...tree,
+                    path: path.join(
+                        versionedDocsPath,
+                        path.relative('api', tree.path),
+                    ),
+                };
+            }),
+        );
+        console.log('Generated new docs version ' + newDocsVersion);
+
+        return newBaseTree;
+    } catch (e) {
+        console.log('Warn: cannot create versioned docs');
+        console.log(e);
+    }
+};
 
 const uploadFiles = async (options) => {
     const defaultOptions = {
@@ -80,16 +144,17 @@ const uploadFiles = async (options) => {
         return;
     }
 
+    const baseTree = (_.get(baseTreeInfo, 'data.tree') || []).filter((tree) => {
+        return (
+            !newTree.some((newTreeItem) => newTreeItem.path === tree.path) &&
+            tree.type !== 'tree' &&
+            !tree.path.startsWith(basePath)
+        );
+    }).concat(newTree);
     const createTreeResponse = await octokit.request('POST https://api.github.com/repos/{user}/{repo}/git/trees', {
         user: username,
         repo: repoName,
-        tree: (_.get(baseTreeInfo, 'data.tree') || []).filter((tree) => {
-            return (
-                !newTree.some((newTreeItem) => newTreeItem.path === tree.path) &&
-                tree.type !== 'tree' &&
-                !tree.path.startsWith(basePath)
-            );
-        }).concat(newTree),
+        tree: (await createVersionedDocs(baseTree)) || baseTree,
         baseTree: baseTreeSha,
     });
     const newTreeSha = _.get(createTreeResponse, 'data.sha');
