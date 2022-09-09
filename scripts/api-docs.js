@@ -123,11 +123,7 @@ const uploadFiles = async (options) => {
     });
 };
 
-const generateApiDocs = async (currentVersion) => {
-    if (!_.isString(currentVersion)) {
-        return;
-    }
-
+const generateApiDocs = async () => {
     let rushConfig = {};
     let projects = [];
     const apiDocsDir = path.resolve(__dirname, '../api-docs');
@@ -222,10 +218,7 @@ const generateApiDocs = async (currentVersion) => {
 };
 
 try {
-    const version = fs.readJsonSync(path.resolve(__dirname, '../packages/agros-app/package.json')).version;
-    const [majorVersion] = version.split('.');
-    const docVersion = `${majorVersion}.x`;
-    generateApiDocs(docVersion).then(() => {
+    generateApiDocs().then(() => {
         console.log('Uploading built docs ...');
         uploadFiles({
             username: 'agrosjs',
@@ -233,7 +226,7 @@ try {
             repo: 'agrosjs.github.io',
             branch: 'master',
             directory: path.resolve(__dirname, '../api-docs'),
-            basePath: `versioned_docs/version-${docVersion}/api`,
+            basePath: 'docs/api',
             message: 'Update API docs',
         }).then(() => console.log('Docs updated successfully'));
     });
