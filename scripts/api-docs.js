@@ -55,7 +55,7 @@ const createVersionedDocs = async (baseTree) => {
                     ...tree,
                     path: path.join(
                         versionedDocsPath,
-                        path.relative('api', tree.path),
+                        path.relative('docs', tree.path),
                     ),
                 };
             }),
