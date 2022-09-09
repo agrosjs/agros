@@ -1,0 +1,10 @@
+{
+  "changes": [
+    {
+      "packageName": "@agros/cli",
+      "comment": "Refactor default collection loader",
+      "type": "patch"
+    }
+  ],
+  "packageName": "@agros/cli"
+}

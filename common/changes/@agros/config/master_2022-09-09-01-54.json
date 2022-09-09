@@ -1,0 +1,10 @@
+{
+  "changes": [
+    {
+      "packageName": "@agros/config",
+      "comment": "Add default collection for ProjectConfigParser",
+      "type": "minor"
+    }
+  ],
+  "packageName": "@agros/config"
+}
