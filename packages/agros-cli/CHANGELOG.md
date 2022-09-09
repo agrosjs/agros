@@ -1,6 +1,13 @@
 # Change Log - @agros/cli
 
-This log was last generated on Thu, 08 Sep 2022 15:59:00 GMT and should not be manually modified.
+This log was last generated on Fri, 09 Sep 2022 02:08:57 GMT and should not be manually modified.
+
+## 0.1.3
+Fri, 09 Sep 2022 02:08:57 GMT
+
+### Patches
+
+- Refactor default collection loader
 
 ## 0.1.2
 Thu, 08 Sep 2022 15:59:00 GMT

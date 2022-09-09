@@ -42,12 +42,12 @@
         "typescript": "^4.5.5"
     },
     "name": "@agros/platform-vue",
-    "version": "0.3.1",
+    "version": "0.3.2",
     "description": "Vue.js platform for Agros.js",
     "dependencies": {
-        "@agros/common": "workspace:^0.6.2",
-        "@agros/config": "workspace:^0.4.0",
-        "@agros/loader": "workspace:^0.5.1",
+        "@agros/common": "workspace:^0.6.3",
+        "@agros/config": "workspace:^0.5.0",
+        "@agros/loader": "workspace:^0.5.2",
         "@agros/platforms": "workspace:^0.5.0",
         "@agros/utils": "workspace:^0.3.1",
         "@babel/plugin-transform-parameters": "^7.18.8",
