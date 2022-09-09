@@ -2,13 +2,13 @@ import { Command } from 'commander';
 import { AbstractCommand } from '../command.abstract';
 import {
     addArgumentsAndOptionsToCommandWithSchema,
-    getCollections,
+    loadCollections,
     logGenerateResult,
 } from '../utils';
 
 export class GenerateCommand extends AbstractCommand implements AbstractCommand {
     public register(): Command {
-        const collections = getCollections('generate');
+        const collections = loadCollections('generate');
         const command = new Command('generate');
         command.alias('g').description('Generate Agros.js collections');
 

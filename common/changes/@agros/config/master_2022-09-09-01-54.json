@@ -2,7 +2,7 @@
   "changes": [
     {
       "packageName": "@agros/config",
-      "comment": "Add PlatformConfigParser",
+      "comment": "Add default collection for ProjectConfigParser",
       "type": "minor"
     }
   ],

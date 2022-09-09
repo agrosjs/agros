@@ -1,4 +1,7 @@
-import { CLIConfigParser } from '@agros/config';
+import {
+    CLIConfigParser,
+    ProjectConfigParser,
+} from '@agros/config';
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import {
@@ -12,10 +15,11 @@ import {
 } from 'commander';
 import { Logger } from '@agros/logger';
 
-export const getCollections = (scene: string) => {
+export const loadCollections = (scene: string) => {
     try {
         const cliConfigParser = new CLIConfigParser();
-        const collectionPackageName = cliConfigParser.getConfig<string>('collection');
+        const projectConfigParser = new ProjectConfigParser();
+        const collectionPackageName = projectConfigParser.getConfig<string>('useCollection') || cliConfigParser.getConfig<string>('collection');
         let collectionIndexFilePath: string;
 
         try {

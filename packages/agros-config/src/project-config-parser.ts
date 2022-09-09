@@ -11,6 +11,7 @@ export type CollectionType = 'module' | 'service' | 'component' | 'interceptor';
 
 export interface ProjectConfig {
     platform?: string;
+    useCollection?: string;
     npmClient?: string;
     alias?: AliasMap;
     entry?: string;
@@ -24,6 +25,7 @@ export interface ProjectConfig {
 export class ProjectConfigParser {
     private defaultProjectConfig: ProjectConfig = {
         platform: '@agros/platform-react',
+        useCollection: '@agros/collections',
         npmClient: 'npm',
         alias: {
             '@/*': '*',
@@ -47,6 +49,8 @@ export class ProjectConfigParser {
         try {
             const userProjectConfig = cosmiconfigSync('agros').search()?.config || {};
             this.projectConfig = _.merge({}, this.projectConfig, userProjectConfig);
+            // TODO allow switching collection
+            this.projectConfig.useCollection = '@agros/collections';
             const platform = new PlatformConfigParser(this.projectConfig.platform).getPlatform<any>();
             this.projectConfig = _.set(
                 _.cloneDeep(this.projectConfig),
