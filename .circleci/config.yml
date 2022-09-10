@@ -103,9 +103,11 @@ workflows:
           filters:
             branches:
               only: /^publish$/
-      - publish_packages:
+      - publish_docs_manually:
           requires:
             - build
           filters:
+            branches:
+              ignore: /.*/
             tags:
               only: /^docs@\d+$/
