@@ -1,0 +1,62 @@
+{
+    "main": "lib/index.js",
+    "types": "lib/index.d.ts",
+    "files": [
+        "lib",
+        "bin",
+        "LICENSE",
+        "README.md",
+        "package.json",
+        "package-lock.json"
+    ],
+    "publishConfig": {
+        "access": "public"
+    },
+    "scripts": {
+        "lint": "eslint .",
+        "build": "rimraf ./lib && tsc --build tsconfig.json",
+        "watch": "tsc --watch --project tsconfig.json",
+        "pretest": "npm run lint",
+        "test": "exit 0"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/lenconda/agros.git"
+    },
+    "author": "Lenconda <i@lenconda.top>",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/lenconda/agros/issues"
+    },
+    "homepage": "https://github.com/lenconda/agros#readme",
+    "devDependencies": {
+        "@types/jest": "^28.1.1",
+        "@types/lodash": "^4.14.182",
+        "@types/node": "^15.12.2",
+        "rimraf": "^3.0.2",
+        "typescript": "^4.5.5"
+    },
+    "name": "@agros/platform-svelte",
+    "version": "0.0.0",
+    "description": "Official Agros platform for Svelte.js",
+    "dependencies": {
+        "@agros/common": "workspace:^0.6.3",
+        "@agros/loader": "workspace:^0.5.2",
+        "@agros/platforms": "workspace:^0.5.0",
+        "@agros/utils": "workspace:^0.3.1",
+        "@babel/core": "^7.18.5",
+        "@babel/plugin-transform-parameters": "^7.18.8",
+        "@babel/plugin-transform-runtime": "^7.18.10",
+        "@babel/plugin-transform-typescript": "^7.19.0",
+        "@babel/preset-env": "^7.19.0",
+        "@babel/preset-es2015": "7.0.0-beta.53",
+        "@babel/preset-typescript": "^7.18.6",
+        "autoprefixer": "^10.4.8",
+        "awesome-typescript-loader": "^5.2.1",
+        "babel-loader": "^8.2.5",
+        "reflect-metadata": "^0.1.13",
+        "svelte-loader": "^3.1.3",
+        "svelte-preprocess": "^4.10.7",
+        "webpack": "^5.74.0"
+    }
+}
