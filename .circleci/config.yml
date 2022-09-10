@@ -66,6 +66,19 @@ jobs:
       - run: git add -A && git commit -S -m "publish packages"
       - run: rgu agrosjs agros --source publish_$(date +%s)
       - run: npm run api-docs
+  publish_docs_manually:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/repo
+      - restore_cache:
+          keys:
+            - v1-dist-{{ checksum "checksum.txt" }}
+            - v1-dependencies-{{ checksum "checksum.txt" }}
+      - run: ls -al packages/agros-app
+      - run: ls -al common/temp
+      - run: rush update
+      - run: npm run api-docs
 workflows:
   version: 2
   npm_workflow:
@@ -90,3 +103,9 @@ workflows:
           filters:
             branches:
               only: /^publish$/
+      - publish_packages:
+          requires:
+            - build
+          filters:
+            tags:
+              only: /^docs@\d+$/
