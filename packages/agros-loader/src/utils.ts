@@ -11,6 +11,8 @@ import {
     normalizeSrcPath,
 } from '@agros/common';
 import { CodeLocation } from '@agros/utils/lib/types';
+import { AddVirtualFile } from '@agros/platforms/lib/platform.interface';
+import * as fsPatch from './fs-patch';
 
 export const createLoaderAOP = <T = string, E = { factoryFilename: string }>(
     aop: (data: LoaderAOPData<E>) => Promise<T>,
@@ -95,4 +97,19 @@ export const splitCode = (source: string, location?: CodeLocation): [string, str
         source.slice(0, location.start),
         source.slice(location.end),
     ];
+};
+
+export const createAddVirtualFile = (context: LoaderContext<{}>): AddVirtualFile => {
+    return (
+        pathname: string,
+        content: string,
+    ) => {
+        if (!pathname || !content) {
+            return;
+        }
+        fsPatch.add(context.fs, {
+            path: pathname,
+            content,
+        });
+    };
 };

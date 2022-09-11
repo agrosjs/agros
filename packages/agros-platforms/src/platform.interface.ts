@@ -12,6 +12,7 @@ export interface Platform {
         filePath: string,
         componentIdentifierName: string,
         lazy: boolean,
+        addVirtualFile: AddVirtualFile,
     ) => string;
     getDefaultConfig?: () => Record<string, any>;
     generateComponent?: <T = any>(componentInstance: ComponentInstance, component: any) => Promise<T>;

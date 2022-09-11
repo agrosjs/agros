@@ -1,5 +1,8 @@
 import 'reflect-metadata';
-import { Platform } from '@agros/platforms/lib/platform.interface';
+import {
+    AddVirtualFile,
+    Platform,
+} from '@agros/platforms/lib/platform.interface';
 import { EnsureImportOptions } from '@agros/utils/lib/ensure-import';
 
 const platform: Platform = {
@@ -32,7 +35,10 @@ const platform: Platform = {
     getDecoratorImports(): Omit<EnsureImportOptions, 'statements'>[] {
         return [];
     },
-    getBootstrapCode(ensuredImportsMap: Record<string, string>): string {
+    getBootstrapCode(
+        ensuredImportsMap: Record<string, string>,
+        addVirtualFile: AddVirtualFile,
+    ): string {
         const vueIdentifier = ensuredImportsMap['Vue'] || 'Vue';
         const vueRouterIdentifier = ensuredImportsMap['VueRouter'] || 'VueRouter';
         const factoryIdentifier = ensuredImportsMap['factory'] || 'factory';

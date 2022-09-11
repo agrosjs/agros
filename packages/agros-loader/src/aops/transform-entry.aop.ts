@@ -7,14 +7,13 @@ import { parseAST } from '@agros/utils/lib/parse-ast';
 import { PlatformConfigParser } from '@agros/config/lib/platform-config-parser';
 import * as path from 'path';
 import generate from '@babel/generator';
-import { createLoaderAOP } from '../utils';
+import {
+    createAddVirtualFile,
+    createLoaderAOP,
+} from '../utils';
 import * as t from '@babel/types';
 import { ProjectConfigParser } from '@agros/config';
-import {
-    AddVirtualFile,
-    Platform,
-} from '@agros/platforms/lib/platform.interface';
-import * as fsPatch from '../fs-patch';
+import { Platform } from '@agros/platforms/lib/platform.interface';
 
 export const transformEntry = createLoaderAOP(
     async ({
@@ -27,15 +26,7 @@ export const transformEntry = createLoaderAOP(
         const configParser = new ProjectConfigParser();
         const platformName = configParser.getConfig<string>('platform');
         const platform = new PlatformConfigParser(platformName).getPlatform<Platform>();
-        const addVirtualFile: AddVirtualFile = (pathname: string, content: string) => {
-            if (!pathname || !content) {
-                return;
-            }
-            fsPatch.add(context.fs, {
-                path: pathname,
-                content,
-            });
-        };
+        const addVirtualFile = createAddVirtualFile(context);
         const [exportDefaultDeclaration] = detectExports<t.ObjectExpression>(tree, 'ObjectExpression');
 
         if (!exportDefaultDeclaration) {

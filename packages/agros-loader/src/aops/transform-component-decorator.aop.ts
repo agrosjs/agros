@@ -20,7 +20,10 @@ import {
     ExpressionStatement,
 } from '@babel/types';
 import * as path from 'path';
-import { createLoaderAOP } from '../utils';
+import {
+    createAddVirtualFile,
+    createLoaderAOP,
+} from '../utils';
 import * as t from '@babel/types';
 import template from '@babel/template';
 import _ from 'lodash';
@@ -35,6 +38,7 @@ export const transformComponentDecorator = createLoaderAOP(
         context,
         tree,
     }) => {
+        const addVirtualFile = createAddVirtualFile(context);
         const uuid = uuidV4();
         const ensureIdentifierNameMap: Record<string, string> = {};
         const declaredClasses = detectExports<t.ClassDeclaration>(tree, 'ClassDeclaration');
@@ -187,6 +191,7 @@ export const transformComponentDecorator = createLoaderAOP(
             filePath,
             componentIdentifierName,
             lazy,
+            addVirtualFile,
         );
 
         const importCodeLines = lazy
