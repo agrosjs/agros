@@ -16,6 +16,7 @@ specifiers:
   awesome-typescript-loader: ^5.2.1
   babel-loader: ^8.2.5
   reflect-metadata: ^0.1.13
+  svelte: ^3.50.1
   svelte-loader: ^3.1.3
   svelte-preprocess: ^4.10.7
   webpack: ^5.74.0
@@ -36,6 +37,7 @@ dependencies:
   awesome-typescript-loader: 5.2.1
   babel-loader: 8.2.5_z22tmofudeh3tyeifpjvwjl5ei
   reflect-metadata: 0.1.13
+  svelte: 3.50.1
   svelte-loader: 3.1.3
   svelte-preprocess: 4.10.7
   webpack: 5.74.0
@@ -3547,6 +3549,11 @@ packages:
       magic-string: 0.25.9
       sorcery: 0.10.0
       strip-indent: 3.0.0
+    dev: false
+
+  /svelte/3.50.1:
+    resolution: {integrity: sha512-bS4odcsdj5D5jEg6riZuMg5NKelzPtmsCbD9RG+8umU03TeNkdWnP6pqbCm0s8UQNBkqk29w/Bdubn3C+HWSwA==}
+    engines: {node: '>= 8'}
     dev: false
 
   /tapable/1.1.3:

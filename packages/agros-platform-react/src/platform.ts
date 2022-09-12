@@ -101,12 +101,12 @@ const platform: Platform = {
             });
         `;
     },
-    getComponentFactoryCode(
-        map: Record<string, string>,
-        filePath: string,
-        componentIdentifierName: string,
+    getComponentFactoryCode({
+        ensuredImportsMap: map,
+        filePath,
+        componentIdentifierName,
         lazy = false,
-    ) {
+    }) {
         return `() => ${lazy ? `${map['React'] || 'React'}.lazy(() => import('${filePath}'))` : componentIdentifierName};`;
     },
     async generateComponent<T = any>(componentInstance: ComponentInstance, component: any): Promise<T> {

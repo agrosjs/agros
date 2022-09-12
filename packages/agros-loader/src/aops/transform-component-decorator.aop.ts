@@ -186,13 +186,14 @@ export const transformComponentDecorator = createLoaderAOP(
             file: filePath,
         } = componentMetadataConfig;
         const componentIdentifierName = 'Agros$$CurrentComponent';
-        const factoryCode = platform.getComponentFactoryCode(
-            ensureIdentifierNameMap,
+        const factoryCode = platform.getComponentFactoryCode({
+            ensuredImportsMap: ensureIdentifierNameMap,
             filePath,
             componentIdentifierName,
             lazy,
+            componentUuid: uuid,
             addVirtualFile,
-        );
+        });
 
         const importCodeLines = lazy
             ? []

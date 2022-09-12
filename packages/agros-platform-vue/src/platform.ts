@@ -70,12 +70,11 @@ const platform: Platform = {
             });
         `;
     },
-    getComponentFactoryCode(
-        map: Record<string, string>,
-        filePath: string,
-        componentIdentifierName: string,
+    getComponentFactoryCode({
+        filePath,
+        componentIdentifierName,
         lazy = false,
-    ) {
+    }) {
         return `() => ${lazy ? `() => import('${filePath}')` : componentIdentifierName};`;
     },
 };
