@@ -15,6 +15,7 @@ export function patch(fs) {
                 path: file,
                 content: options.content,
             };
+            return file;
         },
     };
     fs[NS] = virtualFS;

@@ -505,6 +505,8 @@ importers:
       '@babel/preset-env': ^7.19.0
       '@babel/preset-es2015': 7.0.0-beta.53
       '@babel/preset-typescript': ^7.18.6
+      '@easyroute/core': ^2.0.2
+      '@easyroute/svelte': ^3.2.2
       '@types/jest': ^28.1.1
       '@types/lodash': ^4.14.182
       '@types/node': ^15.12.2
@@ -530,6 +532,8 @@ importers:
       '@babel/preset-env': 7.19.0_@babel+core@7.18.10
       '@babel/preset-es2015': 7.0.0-beta.53_@babel+core@7.18.10
       '@babel/preset-typescript': 7.18.6_@babel+core@7.18.10
+      '@easyroute/core': 2.0.2
+      '@easyroute/svelte': 3.2.2_svelte@3.50.1
       autoprefixer: 10.4.8
       awesome-typescript-loader: 5.2.1_typescript@4.7.4
       babel-loader: 8.2.5_xc6oct4hcywdrbo4ned6ytbybm
@@ -4050,6 +4054,19 @@ packages:
       postcss-selector-parser: ^6.0.10
     dependencies:
       postcss-selector-parser: 6.0.10
+    dev: false
+
+  /@easyroute/core/2.0.2:
+    resolution: {integrity: sha512-9kwqbFAt/liXC2DAtao11HCgcBiku5khVStFu+xV0r8hI/M/ZoitnFQjTFRH+uG0ed04CDFb8VEtertfE8j2Gw==}
+    dev: false
+
+  /@easyroute/svelte/3.2.2_svelte@3.50.1:
+    resolution: {integrity: sha512-3BKePWiGUxEH0ZZDvurzuDPUK625xPbNn5XyZl9tSH9S1mtB5+g513tXLOUXoeSu9bva+cAtLuM1l/YDncMdEQ==}
+    peerDependencies:
+      svelte: ^3.0.0
+    dependencies:
+      '@easyroute/core': 2.0.2
+      svelte: 3.50.1
     dev: false
 
   /@eslint/eslintrc/1.3.0:

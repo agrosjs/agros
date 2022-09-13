@@ -9,13 +9,25 @@ const platform: Platform = {
     getLoaderImports(): Omit<EnsureImportOptions, 'statements'>[] {
         return [
             {
-                libName: '@agros/platform-vue/lib/vue-router',
-                identifierName: 'VueRouter',
+                libName: '@agros/platform-svelte/lib/svelte-router',
+                identifierName: 'svelteRouter',
                 type: 'namespace',
             },
             {
-                libName: '@agros/platform-vue/lib/vue',
-                identifierName: 'Vue',
+                libName: '@agros/platform-svelte/lib/svelte-router',
+                identifierName: 'hashMode',
+            },
+            {
+                libName: '@agros/platform-svelte/lib/svelte-router',
+                identifierName: 'historyMode',
+            },
+            {
+                libName: '@agros/platform-svelte/lib/svelte-router',
+                identifierName: 'silentMode',
+            },
+            {
+                libName: '@agros/platform-svelte/lib/svelte',
+                identifierName: 'svelte',
                 type: 'namespace',
             },
             {
@@ -27,7 +39,7 @@ const platform: Platform = {
                 identifierName: 'RouterModule',
             },
             {
-                libName: '@agros/platform-vue/lib/create-routes',
+                libName: '@agros/platform-svelte/lib/create-routes',
                 identifierName: 'createRoutes',
             },
         ];
@@ -36,52 +48,112 @@ const platform: Platform = {
         return [];
     },
     getBootstrapCode(
-        ensuredImportsMap: Record<string, string>,
+        map: Record<string, string>,
         addVirtualFile: AddVirtualFile,
     ): string {
-        const vueIdentifier = ensuredImportsMap['Vue'] || 'Vue';
-        const vueRouterIdentifier = ensuredImportsMap['VueRouter'] || 'VueRouter';
-        const factoryIdentifier = ensuredImportsMap['factory'] || 'factory';
+        addVirtualFile(
+            'src/temp__App.svelte',
+            `
+                <script>
+                    import {
+                        EasyrouteProvider,
+                        RouterOutlet,
+                    } from '@agros/platform-svelte/lib/svelte-router';
+                    export let router = null;
+                </script>
+                <EasyrouteProvider {router}>
+                    <RouterOutlet />
+                </EasyrouteProvider>
+            `,
+        );
+        const factoryIdentifier = map['factory'] || 'factory';
         return `
+            import TempApp from './temp__App.svelte';
+            const modeMap = {
+                hash: ${map['hashMode']},
+                history: ${map['historyMode']},
+                silent: ${map['silentMode']},
+            };
             const {
                 module: Module,
-                RouterComponent = ${vueRouterIdentifier}.createWebHashHistory(),
+                RouterComponent = 'hash',
                 routerProps,
                 container = document.getElementById('root'),
             } = config;
-            ${ensuredImportsMap['factory'] || 'factory'}.create(Module).then((componentInstance) => {
+            ${factoryIdentifier}.create(Module).then((componentInstance) => {
                 const rootModuleInstance = ${factoryIdentifier}.getRootModuleInstance();
-                const rootRoutes = rootModuleInstance.getProviderValue(${ensuredImportsMap['ROUTES_ROOT']});
-                ${ensuredImportsMap['RouterModule']}.createRouterItems(${factoryIdentifier}, rootRoutes).then((routeItems) => {
-                    if (routeItems && Array.isArray(routeItems) && routeItems.length > 0) {
-                        const routes = ${ensuredImportsMap['createRoutes']}(routeItems).map((route) => {
-                            return {
-                                ...route,
-                                path: '/' + route.path,
-                            };
-                        });
-                        const router = ${vueRouterIdentifier}.createRouter({
-                            history: RouterComponent,
+                const rootRoutes = rootModuleInstance.getProviderValue(${map['ROUTES_ROOT']});
+                ${map['RouterModule']}.createRouterItems(${factoryIdentifier}, rootRoutes).then((routes) => {
+                    if (routes && Array.isArray(routes) && routes.length > 0) {
+                        const router = new ${map['svelteRouter'] || 'svelteRouter'}.Router({
+                            mode: modeMap[RouterConfig],
                             routes,
                         });
-                        const app = ${vueIdentifier}.createApp({
-                            template: '<router-view></router-view>',
+                        const app = new TempApp({
+                            target: container,
+                            props: {
+                                router,
+                            },
                         });
-                        app.use(router);
-                        app.mount(container);
+                        export default app;
                     } else {
-                        ${vueIdentifier}.createApp(componentInstance.getComponent()).mount(container);
+                        const App = componentInstance.getComponent();
+                        const app = new App({
+                            target: container,
+                        });
+                        export default app;
                     }
                 });
             });
         `;
     },
     getComponentFactoryCode({
-        filePath,
-        componentIdentifierName,
         lazy = false,
+        componentUuid,
+        absoluteFilePath,
+        factoryPath,
+        addVirtualFile,
     }) {
-        return `() => ${lazy ? `() => import('${filePath}')` : componentIdentifierName};`;
+        const pathname = addVirtualFile(
+            `src/temp_${Math.random().toString(32).slice(2)}.svelte`,
+            `
+                <script>
+                    ${lazy ? `const Component = () => import('${absoluteFilePath}');` : `import Component from '${absoluteFilePath}';`}
+                    import __AGROS_FACTORY__ from '${factoryPath}';
+                    const componentInstanceMap = __AGROS_FACTORY__.getComponentInstanceMap();
+                    const componentInstance = Array.from(componentInstanceMap.values()).find((instance) => {
+                        return instance.metadata.uuid === '${componentUuid}';
+                    });
+                    let interceptors = [];
+                    if (componentInstance) {
+                        interceptors = componentInstance.metadata.interceptorInstances || [];
+                    }
+                    if (!Array.isArray(interceptors)) {
+                        interceptors = [];
+                    }
+                    const interceptorPromises = Promise.all(interceptors.map((interceptorInstance) => {
+                        return interceptorInstance.intercept();
+                    }));
+                    const componentPromise = ${lazy ? 'Component().then((result) => result.default || result)' : 'Promise.resolve(Component)'};
+                </script>
+                {#await interceptorPromises}
+                <svelte:component this={componentInstance.metadata.interceptorsFallback || undefined} />
+                {:then result}
+                {#await componentPromise}
+                <svelte:component this={componentInstance.metadata.suspenseFallback || undefined} />
+                {:then component}
+                <svelte:component this={component} />
+                {/await}
+                {/await}
+            `,
+        );
+        return {
+            code: '() => TempComponent',
+            modifier: (code) => `
+                import TempComponent from '${pathname}';
+                ${code}
+            `,
+        };
     },
 };
 

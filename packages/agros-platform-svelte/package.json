@@ -51,6 +51,8 @@
         "@babel/preset-env": "^7.19.0",
         "@babel/preset-es2015": "7.0.0-beta.53",
         "@babel/preset-typescript": "^7.18.6",
+        "@easyroute/core": "^2.0.2",
+        "@easyroute/svelte": "^3.2.2",
         "autoprefixer": "^10.4.8",
         "awesome-typescript-loader": "^5.2.1",
         "babel-loader": "^8.2.5",

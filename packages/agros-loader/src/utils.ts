@@ -107,7 +107,7 @@ export const createAddVirtualFile = (context: LoaderContext<{}>): AddVirtualFile
         if (!pathname || !content) {
             return;
         }
-        fsPatch.add(context.fs, {
+        return fsPatch.add(context.fs, {
             path: pathname,
             content,
         });

@@ -50,7 +50,7 @@ export const transformEntry = createLoaderAOP(
                 type: 'default',
             },
             {
-                libName: `./${factoryFilename}`,
+                libName: path.resolve('src', factoryFilename),
                 identifierName: 'factory',
                 type: 'default',
             },
