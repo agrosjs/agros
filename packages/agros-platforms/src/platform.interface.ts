@@ -16,7 +16,11 @@ export interface GetComponentFactoryCodeData {
 
 export interface FactoryCode {
     code: string;
-    modifier: (data: string) => string;
+    modifier?: (data: string) => string;
+}
+
+export interface EntryTailCodeData {
+    bootstrapReturnValueIdentifier: string;
 }
 
 export interface Platform {
@@ -26,4 +30,5 @@ export interface Platform {
     getComponentFactoryCode: (data: GetComponentFactoryCodeData) => string | FactoryCode;
     getDefaultConfig?: () => Record<string, any>;
     generateComponent?: <T = any>(componentInstance: ComponentInstance, component: any) => Promise<T>;
+    getEntryTailCode?: (data: EntryTailCodeData) => string[];
 }

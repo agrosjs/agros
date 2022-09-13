@@ -10,8 +10,12 @@ const platform: Platform = {
         return [
             {
                 libName: '@agros/platform-svelte/lib/svelte-router',
-                identifierName: 'svelteRouter',
-                type: 'namespace',
+                identifierName: 'Router',
+            },
+            {
+                libName: './__temp_App__.svelte',
+                identifierName: 'TempApp',
+                type: 'default',
             },
             {
                 libName: '@agros/platform-svelte/lib/svelte-router',
@@ -52,60 +56,91 @@ const platform: Platform = {
         addVirtualFile: AddVirtualFile,
     ): string {
         addVirtualFile(
-            'src/temp__App.svelte',
+            'src/__temp_App__.svelte',
             `
                 <script>
                     import {
                         EasyrouteProvider,
                         RouterOutlet,
                     } from '@agros/platform-svelte/lib/svelte-router';
-                    export let router = null;
+                    export let config = {};
+                    export let factory = null;
+                    export let map = {};
+                    export let mode;
+                    const {
+                        module: Module,
+                        container = document.getElementById('root'),
+                    } = config;
+                    let factoryPromise;
+                    if (factory) {
+                        factoryPromise = factory.create(Module).then((componentInstance) => {
+                            const rootModuleInstance = factory.getRootModuleInstance();
+                            const rootRoutes = rootModuleInstance.getProviderValue(map['ROUTES_ROOT']);
+                            return map['RouterModule'].createRouterItems(factory, rootRoutes).then((routes) => {
+                                if (routes && Array.isArray(routes) && routes.length > 0) {
+                                    return {
+                                        type: 'router',
+                                        value: new map['Router'].Router({
+                                            mode,
+                                            routes,
+                                        }),
+                                    };
+                                } else {
+                                    return {
+                                        type: 'single',
+                                        value: componentInstance.getComponent(),
+                                    };
+                                }
+                            });
+                        });
+                    } else {
+                        factoryPromise = Promise.resolve({});
+                    }
                 </script>
-                <EasyrouteProvider {router}>
+                {#await factoryPromise}
+                <span></span>
+                {:then result}
+                {#if result.type === 'router'}
+                <EasyrouteProvider router={result.value}>
                     <RouterOutlet />
                 </EasyrouteProvider>
+                {:else if result.type === 'single'}
+                <svelte:component this={result.value} />
+                {/if}
+                {/await}
             `,
         );
         const factoryIdentifier = map['factory'] || 'factory';
         return `
-            import TempApp from './temp__App.svelte';
             const modeMap = {
                 hash: ${map['hashMode']},
                 history: ${map['historyMode']},
                 silent: ${map['silentMode']},
             };
             const {
-                module: Module,
-                RouterComponent = 'hash',
-                routerProps,
+                RouterComponent,
                 container = document.getElementById('root'),
             } = config;
-            ${factoryIdentifier}.create(Module).then((componentInstance) => {
-                const rootModuleInstance = ${factoryIdentifier}.getRootModuleInstance();
-                const rootRoutes = rootModuleInstance.getProviderValue(${map['ROUTES_ROOT']});
-                ${map['RouterModule']}.createRouterItems(${factoryIdentifier}, rootRoutes).then((routes) => {
-                    if (routes && Array.isArray(routes) && routes.length > 0) {
-                        const router = new ${map['svelteRouter'] || 'svelteRouter'}.Router({
-                            mode: modeMap[RouterConfig],
-                            routes,
-                        });
-                        const app = new TempApp({
-                            target: container,
-                            props: {
-                                router,
-                            },
-                        });
-                        export default app;
-                    } else {
-                        const App = componentInstance.getComponent();
-                        const app = new App({
-                            target: container,
-                        });
-                        export default app;
-                    }
-                });
+            const app = new ${map['TempApp'] || 'TempApp'}({
+                target: container,
+                props: {
+                    factory: ${factoryIdentifier},
+                    mode: modeMap[RouterComponent],
+                    config,
+                    map: {
+                        ${Object.keys(map).map((value) => `'${value}': ${map[value]}`).join(',')}
+                    },
+                },
             });
+            return app;
         `;
+    },
+    getEntryTailCode({
+        bootstrapReturnValueIdentifier,
+    }) {
+        return [
+            `export default ${bootstrapReturnValueIdentifier};`,
+        ];
     },
     getComponentFactoryCode({
         lazy = false,

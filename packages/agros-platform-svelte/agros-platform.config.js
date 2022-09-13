@@ -3,7 +3,7 @@ const {
     addBabelPreset,
     addBabelPlugin,
 } = require('@agros/utils/lib/customizers');
-const sveltePreprocess = require('svelte-preprocess').default;
+const sveltePreprocess = require('svelte-preprocess');
 const autoprefixer = require('autoprefixer');
 
 module.exports = defineBuilderConfig((config) => {

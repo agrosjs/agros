@@ -6,6 +6,7 @@ import {
 import { parseAST } from '@agros/utils/lib/parse-ast';
 import { PlatformConfigParser } from '@agros/config/lib/platform-config-parser';
 import * as path from 'path';
+import * as template from '@babel/template';
 import generate from '@babel/generator';
 import {
     createAddVirtualFile,
@@ -77,8 +78,6 @@ export const transformEntry = createLoaderAOP(
             }
         }
 
-        const bootstrapDeclarations = parseAST(bootstrapDeclarationStr).program.body;
-
         tree.program.body.splice(
             lastImportDeclarationIndex + 1,
             0,
@@ -87,12 +86,22 @@ export const transformEntry = createLoaderAOP(
                 [
                     t.identifier('config'),
                 ],
-                t.blockStatement(bootstrapDeclarations),
+                t.blockStatement(template.default.ast(bootstrapDeclarationStr) as t.Statement[]),
             ),
         );
         tree.program.body.splice(lastImportDeclarationIndex + 2, 1);
-        tree.program.body.push(...parseAST('Agros$$bootstrap(' + generate(exportDefaultDeclaration.declaration).code + ');').program.body);
-        const newCode = generate(tree).code;
+        const bootstrapReturnValueIdentifier = `return_${Math.random().toString(32).slice(2)}`;
+        tree.program.body.push(...parseAST('var ' + bootstrapReturnValueIdentifier + ' = Agros$$bootstrap(' + generate(exportDefaultDeclaration.declaration).code + ');').program.body);
+        let newCode = generate(tree).code;
+
+        if (typeof platform.getEntryTailCode === 'function') {
+            const tailCodeLines = platform.getEntryTailCode({
+                bootstrapReturnValueIdentifier,
+            });
+            if (Array.isArray(tailCodeLines)) {
+                newCode += `\n${tailCodeLines.join('\n')}`;
+            }
+        }
 
         return newCode;
     },
