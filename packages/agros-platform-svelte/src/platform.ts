@@ -76,11 +76,13 @@ const platform: Platform = {
                         factoryPromise = factory.create(Module).then((componentInstance) => {
                             const rootModuleInstance = factory.getRootModuleInstance();
                             const rootRoutes = rootModuleInstance.getProviderValue(map['ROUTES_ROOT']);
-                            return map['RouterModule'].createRouterItems(factory, rootRoutes).then((routes) => {
+                            return map['RouterModule'].createRouterItems(factory, rootRoutes).then((routeItems) => {
+                                const routes = map['createRoutes'](routeItems);
+                                console.log(routes);
                                 if (routes && Array.isArray(routes) && routes.length > 0) {
                                     return {
                                         type: 'router',
-                                        value: new map['Router'].Router({
+                                        value: new map['Router']({
                                             mode,
                                             routes,
                                         }),
@@ -153,7 +155,7 @@ const platform: Platform = {
             `src/temp_${Math.random().toString(32).slice(2)}.svelte`,
             `
                 <script>
-                    ${lazy ? `const Component = () => import('${absoluteFilePath}');` : `import Component from '${absoluteFilePath}';`}
+                    ${lazy ? `const Component = () => import('${absoluteFilePath}');` : `const Component = import('${absoluteFilePath}');`}
                     import __AGROS_FACTORY__ from '${factoryPath}';
                     const componentInstanceMap = __AGROS_FACTORY__.getComponentInstanceMap();
                     const componentInstance = Array.from(componentInstanceMap.values()).find((instance) => {
@@ -169,7 +171,7 @@ const platform: Platform = {
                     const interceptorPromises = Promise.all(interceptors.map((interceptorInstance) => {
                         return interceptorInstance.intercept();
                     }));
-                    const componentPromise = ${lazy ? 'Component().then((result) => result.default || result)' : 'Promise.resolve(Component)'};
+                    const componentPromise = ${lazy ? 'Component()' : 'Promise.resolve(Component)'}.then((result) => result.default || result);
                 </script>
                 {#await interceptorPromises}
                 <svelte:component this={componentInstance.metadata.interceptorsFallback || undefined} />

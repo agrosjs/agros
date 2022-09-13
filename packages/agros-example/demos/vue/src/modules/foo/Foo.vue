@@ -7,10 +7,10 @@
 </template>
 
 <script lang="ts">
-import { getContainer } from "@agros/app";
-import { BarComponent } from "../bar/bar.component";
-import { BarService } from "../bar/bar.service";
-import { FooService } from "./foo.service";
+import { getContainer } from '@agros/app';
+import { BarComponent } from '../bar/bar.component';
+import { BarService } from '../bar/bar.service';
+import { FooService } from './foo.service';
 
 export default {
     created() {

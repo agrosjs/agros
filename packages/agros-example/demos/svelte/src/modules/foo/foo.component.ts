@@ -8,8 +8,7 @@ import { FooInterceptor } from './foo.interceptor';
 import { FooService } from './foo.service';
 
 @Component({
-    suspenseFallback: 'loading...',
-    file: './Foo.vue',
+    file: './Foo.svelte',
     lazy: true,
     declarations: [
         BarComponent,

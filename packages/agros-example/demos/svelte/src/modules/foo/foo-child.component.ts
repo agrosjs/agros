@@ -1,8 +1,7 @@
 import { Component } from '@agros/app';
 
 @Component({
-    suspenseFallback: 'loading...',
-    file: './FooChild.vue',
+    file: './FooChild.svelte',
     lazy: true,
 })
 export class FooChildComponent {}
