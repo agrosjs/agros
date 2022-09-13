@@ -39,6 +39,7 @@ jobs:
           keys:
             - v1-dependencies-{{ checksum "checksum.txt" }}
       - run: rush build
+      - run: npm run api-docs
       - save_cache:
           paths: *output-paths
           key: v1-dist-{{ checksum "checksum.txt" }}
