@@ -147,13 +147,7 @@ const platform: Platform = {
                 {/await}
             `,
         );
-        return {
-            code: '() => TempComponent',
-            modifier: (code) => `
-                import TempComponent from '${pathname}';
-                ${code}
-            `,
-        };
+        return `() => import('${pathname}')`;
     },
 };
 
