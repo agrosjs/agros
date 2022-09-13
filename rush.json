@@ -537,6 +537,11 @@
             "packageName": "@agros/platform-vue",
             "projectFolder": "packages/agros-platform-vue",
             "shouldPublish": true
+        },
+        {
+            "packageName": "@agros/platform-svelte",
+            "projectFolder": "packages/agros-platform-svelte",
+            "shouldPublish": true
         }
     ]
 }

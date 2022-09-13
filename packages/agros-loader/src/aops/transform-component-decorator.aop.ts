@@ -20,13 +20,19 @@ import {
     ExpressionStatement,
 } from '@babel/types';
 import * as path from 'path';
-import { createLoaderAOP } from '../utils';
+import {
+    createAddVirtualFile,
+    createLoaderAOP,
+} from '../utils';
 import * as t from '@babel/types';
 import template from '@babel/template';
 import _ from 'lodash';
 import qs from 'qs';
 import { ProjectConfigParser } from '@agros/config';
-import { Platform } from '@agros/platforms/lib/platform.interface';
+import {
+    Platform,
+    FactoryCode,
+} from '@agros/platforms/lib/platform.interface';
 import generate from '@babel/generator';
 import { v4 as uuidV4 } from 'uuid';
 
@@ -34,7 +40,9 @@ export const transformComponentDecorator = createLoaderAOP(
     async ({
         context,
         tree,
+        factoryFilename,
     }) => {
+        const addVirtualFile = createAddVirtualFile(context);
         const uuid = uuidV4();
         const ensureIdentifierNameMap: Record<string, string> = {};
         const declaredClasses = detectExports<t.ClassDeclaration>(tree, 'ClassDeclaration');
@@ -182,16 +190,25 @@ export const transformComponentDecorator = createLoaderAOP(
             file: filePath,
         } = componentMetadataConfig;
         const componentIdentifierName = 'Agros$$CurrentComponent';
-        const factoryCode = platform.getComponentFactoryCode(
-            ensureIdentifierNameMap,
+        const factoryCodeConfig = platform.getComponentFactoryCode({
+            ensuredImportsMap: ensureIdentifierNameMap,
             filePath,
             componentIdentifierName,
             lazy,
-        );
-
+            componentUuid: uuid,
+            absoluteFilePath: path.resolve(context.context, filePath),
+            factoryPath: path.resolve('src', factoryFilename),
+            addVirtualFile,
+        });
+        const factoryCode = typeof factoryCodeConfig === 'string'
+            ? factoryCodeConfig
+            : (factoryCodeConfig as FactoryCode).code;
         const importCodeLines = lazy
             ? []
             : [`const ${componentIdentifierName} = import('${filePath}');`];
+        const codeModifier = typeof factoryCodeConfig !== 'string'
+            ? (factoryCodeConfig as FactoryCode).modifier
+            : null;
 
         componentClassDeclaration?.decorators?.splice(
             componentDecoratorIndex,
@@ -264,7 +281,13 @@ export const transformComponentDecorator = createLoaderAOP(
             tree.program.body.push(template.ast(`export default ${componentClassDeclaration.id.name}`) as Statement);
         }
 
-        return generate(tree).code;
+        let code = generate(tree).code;
+
+        if (typeof codeModifier === 'function') {
+            code = codeModifier(code);
+        }
+
+        return code;
     },
     async ({ context }) => getCollectionType(context.resourcePath) === 'component',
 );

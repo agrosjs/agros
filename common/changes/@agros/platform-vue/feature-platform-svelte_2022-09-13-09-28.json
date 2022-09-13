@@ -1,0 +1,11 @@
+{
+  "changes": [
+    {
+      "comment": "Optimize platform interfaces and provide some new functions",
+      "type": "major",
+      "packageName": "@agros/platform-vue"
+    }
+  ],
+  "packageName": "@agros/platform-vue",
+  "email": "i@lenconda.top"
+}
