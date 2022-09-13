@@ -78,7 +78,6 @@ const platform: Platform = {
                             const rootRoutes = rootModuleInstance.getProviderValue(map['ROUTES_ROOT']);
                             return map['RouterModule'].createRouterItems(factory, rootRoutes).then((routeItems) => {
                                 const routes = map['createRoutes'](routeItems);
-                                console.log(routes);
                                 if (routes && Array.isArray(routes) && routes.length > 0) {
                                     return {
                                         type: 'router',
@@ -179,7 +178,7 @@ const platform: Platform = {
                 {#await componentPromise}
                 <svelte:component this={componentInstance.metadata.suspenseFallback || undefined} />
                 {:then component}
-                <svelte:component this={component} />
+                <svelte:component this={component} {...$$props} />
                 {/await}
                 {/await}
             `,
