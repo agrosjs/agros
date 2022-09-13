@@ -6,8 +6,8 @@ import { FooService } from './foo.service';
 import { RouterOutlet } from '@agros/platform-svelte/lib/svelte-router';
 
 const container = getContainer();
-const fooService = container.get<FooService>(FooService);
-const barService = container.get<BarService>(BarService);
+const fooService = container.get(FooService);
+const barService = container.get(BarService);
 fooService.logHello();
 barService.sayHello();
 </script>
