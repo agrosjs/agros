@@ -49,10 +49,10 @@
     "dependencies": {
         "@agros/common": "workspace:^0.6.3",
         "@agros/config": "workspace:^0.5.0",
-        "@agros/loader": "workspace:^0.5.2",
+        "@agros/loader": "workspace:^1.0.0",
         "@agros/logger": "workspace:^0.1.0",
-        "@agros/platforms": "workspace:^0.5.0",
-        "@agros/utils": "workspace:^0.3.1",
+        "@agros/platforms": "workspace:^1.0.0",
+        "@agros/utils": "workspace:^0.3.2",
         "@babel/core": "^7.18.5",
         "@babel/plugin-proposal-class-properties": "^7.17.12",
         "@babel/plugin-proposal-decorators": "^7.18.2",
@@ -98,6 +98,6 @@
         "workbox-webpack-plugin": "^6.5.4"
     },
     "name": "@agros/app",
-    "version": "0.7.2",
+    "version": "1.0.0",
     "description": "Agros app"
 }
