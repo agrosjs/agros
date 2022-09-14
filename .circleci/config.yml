@@ -55,6 +55,7 @@ jobs:
       - run: ls -al packages/agros-app
       - run: ls -al common/temp
       - run: rush update
+      - run: npm run api-docs
       - run: npm run sync-readme
       - run: rush publish --apply
       - run: rush publish --publish --include-all
@@ -66,7 +67,6 @@ jobs:
       - run: ssh-keyscan github.com >> ~/.ssh/known_hosts
       - run: git add -A && git commit -S -m "publish packages"
       - run: rgu agrosjs agros --source publish_$(date +%s)
-      - run: npm run api-docs
   publish_docs_manually:
     <<: *defaults
     steps:

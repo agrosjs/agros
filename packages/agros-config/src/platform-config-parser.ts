@@ -3,10 +3,20 @@ import * as fs from 'fs-extra';
 import { cosmiconfigSync } from 'cosmiconfig';
 import _ from 'lodash';
 import { BundlessPlatform } from '@agros/utils/lib/types';
+import { Configuration } from 'webpack';
+
+export interface PlatformConfig {
+    bundlessPlatform?: string;
+    configWebpack?: (config: Configuration) => Configuration;
+}
 
 export class PlatformConfigParser {
     protected platformIndexFile: string;
     protected platformRootDir: string;
+    protected platformConfig: Required<PlatformConfig> = {
+        bundlessPlatform: './lib/bundless-platform.js',
+        configWebpack: (config) => config,
+    };
 
     public constructor(protected readonly platformName: string) {
         this.platformIndexFile = require.resolve(platformName, {
@@ -31,6 +41,9 @@ export class PlatformConfigParser {
         if (!this.platformRootDir) {
             throw new Error(`Platform '${this.platformName}' is not a valid NPM package`);
         }
+
+        const platformConfig = (cosmiconfigSync('agros-platform').search(this.platformRootDir)?.config || {}) as PlatformConfig;
+        this.platformConfig = _.merge({}, _.clone(this.platformConfig), platformConfig);
     }
 
     public getPlatformRootDir() {
@@ -38,11 +51,7 @@ export class PlatformConfigParser {
     }
 
     public getPlatformWebpackConfigFactory(): Function {
-        const configFactory = cosmiconfigSync('agros-platform').search(this.platformRootDir);
-        if (!configFactory || typeof configFactory.config === 'function') {
-            return configFactory.config;
-        }
-        return (config) => config;
+        return this.platformConfig.configWebpack;
     }
 
     public getPlatform<T>(): T {
@@ -55,14 +64,13 @@ export class PlatformConfigParser {
 
     public getBundlessPlatform(): BundlessPlatform {
         try {
-            const packageJson = fs.readJsonSync(path.resolve(this.platformRootDir, 'package.json'));
-            const bundlessPlatformFilePathname = _.get(packageJson, 'agrosPlatform.bundless');
+            const bundlessPlatformPathname = path.resolve(this.platformRootDir, this.platformConfig.bundlessPlatform);
 
-            if (!bundlessPlatformFilePathname) {
+            if (!this.platformConfig.bundlessPlatform || !fs.existsSync(bundlessPlatformPathname)) {
                 return {};
             }
 
-            const required = require(path.resolve(this.platformRootDir, bundlessPlatformFilePathname));
+            const required = require(bundlessPlatformPathname);
 
             return required.default || required;
         } catch (e) {
