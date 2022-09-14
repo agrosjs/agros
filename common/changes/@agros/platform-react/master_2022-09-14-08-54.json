@@ -1,0 +1,11 @@
+{
+  "changes": [
+    {
+      "comment": "Optimize platform cofiguration",
+      "type": "minor",
+      "packageName": "@agros/platform-react"
+    }
+  ],
+  "packageName": "@agros/platform-react",
+  "email": "i@lenconda.top"
+}
