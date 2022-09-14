@@ -37,13 +37,13 @@
         "typescript": "^4.5.5"
     },
     "name": "@agros/platform-svelte",
-    "version": "0.0.0",
+    "version": "1.0.0",
     "description": "Official Agros platform for Svelte.js",
     "dependencies": {
         "@agros/common": "workspace:^0.6.3",
-        "@agros/loader": "workspace:^0.5.2",
-        "@agros/platforms": "workspace:^0.5.0",
-        "@agros/utils": "workspace:^0.3.1",
+        "@agros/loader": "workspace:^1.0.0",
+        "@agros/platforms": "workspace:^1.0.0",
+        "@agros/utils": "workspace:^0.3.2",
         "@babel/core": "^7.18.5",
         "@babel/plugin-transform-parameters": "^7.18.8",
         "@babel/plugin-transform-runtime": "^7.18.10",

@@ -50,7 +50,7 @@
     "description": "Common functions for Agros.js",
     "dependencies": {
         "@agros/config": "workspace:^0.5.0",
-        "@agros/utils": "workspace:^0.3.1",
+        "@agros/utils": "workspace:^0.3.2",
         "@babel/generator": "^7.18.2",
         "@babel/parser": "^7.18.5",
         "@babel/traverse": "^7.18.8",
