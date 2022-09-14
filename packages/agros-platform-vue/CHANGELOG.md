@@ -1,6 +1,13 @@
 # Change Log - @agros/platform-vue
 
-This log was last generated on Wed, 14 Sep 2022 08:32:07 GMT and should not be manually modified.
+This log was last generated on Wed, 14 Sep 2022 09:43:25 GMT and should not be manually modified.
+
+## 1.1.0
+Wed, 14 Sep 2022 09:43:25 GMT
+
+### Minor changes
+
+- Optimize platform cofiguration
 
 ## 1.0.0
 Wed, 14 Sep 2022 08:32:07 GMT

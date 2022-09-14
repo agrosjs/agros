@@ -9,10 +9,10 @@ importers:
     specifiers:
       '@agros/common': workspace:^0.6.3
       '@agros/config': workspace:^0.5.0
-      '@agros/loader': workspace:^0.5.2
+      '@agros/loader': workspace:^1.0.0
       '@agros/logger': workspace:^0.1.0
-      '@agros/platforms': workspace:^0.5.0
-      '@agros/utils': workspace:^0.3.1
+      '@agros/platforms': workspace:^1.0.0
+      '@agros/utils': workspace:^0.3.2
       '@babel/core': ^7.18.5
       '@babel/plugin-proposal-class-properties': ^7.17.12
       '@babel/plugin-proposal-decorators': ^7.18.2
@@ -134,7 +134,7 @@ importers:
       '@agros/common': workspace:^0.6.3
       '@agros/config': workspace:^0.5.0
       '@agros/logger': workspace:^0.1.0
-      '@agros/utils': workspace:^0.3.1
+      '@agros/utils': workspace:^0.3.2
       '@types/fs-extra': ^9.0.13
       '@types/inquirer': ~8.1.1
       '@types/jest': ^28.1.1
@@ -191,7 +191,7 @@ importers:
   ../../packages/agros-common:
     specifiers:
       '@agros/config': workspace:^0.5.0
-      '@agros/utils': workspace:^0.3.1
+      '@agros/utils': workspace:^0.3.2
       '@babel/generator': ^7.18.2
       '@babel/parser': ^7.18.5
       '@babel/traverse': ^7.18.8
@@ -259,7 +259,7 @@ importers:
 
   ../../packages/agros-config:
     specifiers:
-      '@agros/utils': workspace:^0.3.1
+      '@agros/utils': workspace:^0.3.2
       '@types/fs-extra': ^9.0.13
       '@types/jest': ^28.1.1
       '@types/lodash': ^4.14.182
@@ -298,10 +298,10 @@ importers:
 
   ../../packages/agros-example:
     specifiers:
-      '@agros/app': workspace:^0.7.2
-      '@agros/platform-react': workspace:^0.3.2
-      '@agros/platform-svelte': workspace:^0.0.0
-      '@agros/platform-vue': workspace:^0.3.2
+      '@agros/app': workspace:^1.0.0
+      '@agros/platform-react': workspace:^1.0.0
+      '@agros/platform-svelte': workspace:^1.0.0
+      '@agros/platform-vue': workspace:^1.0.0
       '@babel/core': ^7.18.5
       '@types/jest': ^28.1.1
       '@types/lodash': ^4.14.182
@@ -347,8 +347,8 @@ importers:
     specifiers:
       '@agros/common': workspace:^0.6.3
       '@agros/config': workspace:^0.5.0
-      '@agros/platforms': workspace:^0.5.0
-      '@agros/utils': workspace:^0.3.1
+      '@agros/platforms': workspace:^1.0.0
+      '@agros/utils': workspace:^0.3.2
       '@babel/generator': ^7.18.2
       '@babel/parser': ^7.18.5
       '@babel/template': ^7.16.7
@@ -427,10 +427,10 @@ importers:
     specifiers:
       '@agros/common': workspace:^0.6.3
       '@agros/config': workspace:^0.5.0
-      '@agros/loader': workspace:^0.5.2
+      '@agros/loader': workspace:^1.0.0
       '@agros/logger': workspace:^0.1.0
-      '@agros/platforms': workspace:^0.5.0
-      '@agros/utils': workspace:^0.3.1
+      '@agros/platforms': workspace:^1.0.0
+      '@agros/utils': workspace:^0.3.2
       '@babel/core': ^7.18.5
       '@babel/generator': ^7.18.10
       '@babel/plugin-proposal-class-properties': ^7.17.12
@@ -499,9 +499,9 @@ importers:
   ../../packages/agros-platform-svelte:
     specifiers:
       '@agros/common': workspace:^0.6.3
-      '@agros/loader': workspace:^0.5.2
-      '@agros/platforms': workspace:^0.5.0
-      '@agros/utils': workspace:^0.3.1
+      '@agros/loader': workspace:^1.0.0
+      '@agros/platforms': workspace:^1.0.0
+      '@agros/utils': workspace:^0.3.2
       '@babel/core': ^7.18.5
       '@babel/plugin-transform-parameters': ^7.18.8
       '@babel/plugin-transform-runtime': ^7.18.10
@@ -557,9 +557,9 @@ importers:
     specifiers:
       '@agros/common': workspace:^0.6.3
       '@agros/config': workspace:^0.5.0
-      '@agros/loader': workspace:^0.5.2
-      '@agros/platforms': workspace:^0.5.0
-      '@agros/utils': workspace:^0.3.1
+      '@agros/loader': workspace:^1.0.0
+      '@agros/platforms': workspace:^1.0.0
+      '@agros/utils': workspace:^0.3.2
       '@babel/plugin-transform-parameters': ^7.18.8
       '@babel/plugin-transform-runtime': ^7.18.10
       '@babel/plugin-transform-typescript': ^7.18.12
@@ -623,7 +623,7 @@ importers:
   ../../packages/agros-platforms:
     specifiers:
       '@agros/common': workspace:^0.6.3
-      '@agros/utils': workspace:^0.3.1
+      '@agros/utils': workspace:^0.3.2
       '@types/jest': ^28.1.1
       '@types/lodash': ^4.14.182
       '@types/node': ^15.12.2
@@ -676,7 +676,7 @@ importers:
     specifiers:
       '@agros/common': workspace:^0.6.3
       '@agros/logger': workspace:^0.1.0
-      '@agros/utils': workspace:^0.3.1
+      '@agros/utils': workspace:^0.3.2
       '@types/commander': ^2.12.2
       '@types/fs-extra': ^9.0.13
       '@types/glob': ^7.2.0

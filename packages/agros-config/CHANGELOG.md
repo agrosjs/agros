@@ -1,6 +1,13 @@
 # Change Log - @agros/config
 
-This log was last generated on Fri, 09 Sep 2022 02:08:57 GMT and should not be manually modified.
+This log was last generated on Wed, 14 Sep 2022 09:43:25 GMT and should not be manually modified.
+
+## 0.6.0
+Wed, 14 Sep 2022 09:43:25 GMT
+
+### Minor changes
+
+- Optimize platform cofiguration
 
 ## 0.5.0
 Fri, 09 Sep 2022 02:08:57 GMT
