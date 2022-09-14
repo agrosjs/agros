@@ -6,15 +6,15 @@ import {
 import { parseAST } from '@agros/utils/lib/parse-ast';
 import { PlatformConfigParser } from '@agros/config/lib/platform-config-parser';
 import * as path from 'path';
+import * as template from '@babel/template';
 import generate from '@babel/generator';
-import { createLoaderAOP } from '../utils';
+import {
+    createAddVirtualFile,
+    createLoaderAOP,
+} from '../utils';
 import * as t from '@babel/types';
 import { ProjectConfigParser } from '@agros/config';
-import {
-    AddVirtualFile,
-    Platform,
-} from '@agros/platforms/lib/platform.interface';
-import * as fsPatch from '../fs-patch';
+import { Platform } from '@agros/platforms/lib/platform.interface';
 
 export const transformEntry = createLoaderAOP(
     async ({
@@ -27,15 +27,7 @@ export const transformEntry = createLoaderAOP(
         const configParser = new ProjectConfigParser();
         const platformName = configParser.getConfig<string>('platform');
         const platform = new PlatformConfigParser(platformName).getPlatform<Platform>();
-        const addVirtualFile: AddVirtualFile = (pathname: string, content: string) => {
-            if (!pathname || !content) {
-                return;
-            }
-            fsPatch.add(context.fs, {
-                path: pathname,
-                content,
-            });
-        };
+        const addVirtualFile = createAddVirtualFile(context);
         const [exportDefaultDeclaration] = detectExports<t.ObjectExpression>(tree, 'ObjectExpression');
 
         if (!exportDefaultDeclaration) {
@@ -59,7 +51,7 @@ export const transformEntry = createLoaderAOP(
                 type: 'default',
             },
             {
-                libName: `./${factoryFilename}`,
+                libName: path.resolve('src', factoryFilename),
                 identifierName: 'factory',
                 type: 'default',
             },
@@ -86,8 +78,6 @@ export const transformEntry = createLoaderAOP(
             }
         }
 
-        const bootstrapDeclarations = parseAST(bootstrapDeclarationStr).program.body;
-
         tree.program.body.splice(
             lastImportDeclarationIndex + 1,
             0,
@@ -96,12 +86,22 @@ export const transformEntry = createLoaderAOP(
                 [
                     t.identifier('config'),
                 ],
-                t.blockStatement(bootstrapDeclarations),
+                t.blockStatement(template.default.ast(bootstrapDeclarationStr) as t.Statement[]),
             ),
         );
         tree.program.body.splice(lastImportDeclarationIndex + 2, 1);
-        tree.program.body.push(...parseAST('Agros$$bootstrap(' + generate(exportDefaultDeclaration.declaration).code + ');').program.body);
-        const newCode = generate(tree).code;
+        const bootstrapReturnValueIdentifier = `return_${Math.random().toString(32).slice(2)}`;
+        tree.program.body.push(...parseAST('var ' + bootstrapReturnValueIdentifier + ' = Agros$$bootstrap(' + generate(exportDefaultDeclaration.declaration).code + ');').program.body);
+        let newCode = generate(tree).code;
+
+        if (typeof platform.getEntryTailCode === 'function') {
+            const tailCodeLines = platform.getEntryTailCode({
+                bootstrapReturnValueIdentifier,
+            });
+            if (Array.isArray(tailCodeLines)) {
+                newCode += `\n${tailCodeLines.join('\n')}`;
+            }
+        }
 
         return newCode;
     },

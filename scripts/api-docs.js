@@ -1,25 +1,136 @@
+/* eslint-disable @typescript-eslint/prefer-optional-chain */
 const path = require('path');
 const fs = require('fs-extra');
 const _ = require('lodash');
 const { spawn } = require('child_process');
 const glob = require('glob');
 const { Octokit } = require('octokit');
+const axios = require('axios').default;
+const semver = require('semver');
+
+const octokit = new Octokit({
+    auth: process.env.GITHUB_ACCESS_TOKEN,
+});
+const GIT_USER = 'agrosjs';
+const GIT_REPO = 'agrosjs.github.io';
+const GIT_BRANCH = 'master';
+
+const createVersionedDocs = async (baseTree) => {
+    if (!Array.isArray(baseTree) || baseTree.length === 0) {
+        return;
+    }
+
+    try {
+        const packageJson = fs.readJsonSync(
+            path.resolve(__dirname, '../packages/agros-app/package.json'),
+        );
+        const newAppVersion = packageJson.version;
+
+        if (!newAppVersion) {
+            console.log('Warn: cannot read version of `@agros/app`');
+            return;
+        }
+
+        const { data: appPackageInfo } = await axios.get('https://registry.npmjs.org/@agros/app', {
+            responseType: 'json',
+        });
+        const versions = Object.keys((appPackageInfo || {}).versions || {});
+        const lastVersion = versions.pop();
+
+        console.log(`Got new version: ${newAppVersion}, latest version: ${lastVersion}`);
+
+        if (
+            !semver.lt(
+                lastVersion.split('.').slice(0, 2).join('.') + '.0',
+                newAppVersion.split('.').slice(0, 2).join('.') + '.0',
+            )
+        ) {
+            console.log('New version and the latest one has the same minor version, nothing to do');
+            return;
+        }
+
+        const newDocsVersion = newAppVersion.split('.').slice(0, 2).join('.') + '.x';
+        const versionedDocsPath = `versioned_docs/version-${newDocsVersion}`;
+        console.log('Found new version ' + newAppVersion + ', generating docs version ' + newDocsVersion);
+        const newBaseTree = baseTree.filter((tree) => {
+            return !tree.path.startsWith(versionedDocsPath);
+        }).concat(
+            baseTree.filter((tree) => {
+                return tree.path.startsWith('docs');
+            }).map((tree) => {
+                return {
+                    ...tree,
+                    path: path.join(
+                        versionedDocsPath,
+                        path.relative('docs', tree.path),
+                    ),
+                };
+            }),
+        );
+        console.log('Creating new versions.json blob...');
+        const versionsJsonBlobIndex = newBaseTree.findIndex((tree) => tree.path === 'versions.json');
+
+        if (versionsJsonBlobIndex !== -1) {
+            console.log('Found versions.json, process update...');
+            try {
+                const { data: versionsJsonBlobContent } = await octokit.request(
+                    'GET /repos/{owner}/{repo}/git/blobs/{file_sha}',
+                    {
+                        owner: GIT_USER,
+                        repo: GIT_REPO,
+                        file_sha: newBaseTree[versionsJsonBlobIndex].sha,
+                    },
+                );
+                const versionJson = JSON.parse(Buffer.from(versionsJsonBlobContent?.content, 'base64').toString());
+                console.log('Got versions.json content: ', versionJson);
+                console.log('Updating blob...');
+                const content = JSON.stringify(_.uniq(versionJson.concat(newDocsVersion)), null, 4);
+                if (Array.isArray(versionJson)) {
+                    const {
+                        data: updatedVersionsJsonBlob,
+                    } = await octokit.request('POST https://api.github.com/repos/{user}/{repo}/git/blobs', {
+                        user: GIT_USER,
+                        repo: GIT_REPO,
+                        content,
+                        encoding: 'utf-8',
+                    });
+                    console.log('Create new version.json blob: ', updatedVersionsJsonBlob);
+                    if ((updatedVersionsJsonBlob || {}).sha) {
+                        newBaseTree.splice(
+                            versionsJsonBlobIndex,
+                            1,
+                            {
+                                mode: '100644',
+                                type: 'blob',
+                                path: 'versions.json',
+                                sha: (updatedVersionsJsonBlob || {}).sha,
+                            },
+                        );
+                        console.log('Successfully updated versions.json: ', content);
+                    }
+                }
+                console.log('Update versions.json finished');
+            } catch (e) {
+                console.log('Warn: cannot update versions.json');
+                console.log(e);
+            }
+        }
+        console.log('Generated new docs version ' + newDocsVersion);
+
+        return newBaseTree;
+    } catch (e) {
+        console.log('Warn: cannot create versioned docs');
+        console.log(e);
+    }
+};
 
 const uploadFiles = async (options) => {
     const defaultOptions = {
-        branch: 'master',
-        token: '',
-        username: '',
-        repo: '',
         directory: '',
         basePath: '',
         message: 'Update files',
     };
     const {
-        branch: branchName,
-        token,
-        username,
-        repo: repoName,
         directory,
         message,
         basePath,
@@ -29,9 +140,6 @@ const uploadFiles = async (options) => {
         return;
     }
 
-    const octokit = new Octokit({
-        auth: token,
-    });
     const files = glob.sync(
         path.resolve(__dirname, '../api-docs/**/*'),
         {
@@ -42,8 +150,8 @@ const uploadFiles = async (options) => {
     const newTree = await Promise.all(
         files.map((absolutePathname) => {
             return octokit.request('POST https://api.github.com/repos/{user}/{repo}/git/blobs', {
-                user: username,
-                repo: repoName,
+                user: GIT_USER,
+                repo: GIT_REPO,
                 content: fs.readFileSync(absolutePathname).toString(),
                 encoding: 'utf-8',
             }).then((res) => {
@@ -68,10 +176,12 @@ const uploadFiles = async (options) => {
         });
     });
 
+    console.log('New api docs blob tree generated');
+
     const baseTreeInfo = await octokit.request('GET https://api.github.com/repos/{user}/{repo}/git/trees/{branch}?recursive=1', {
-        user: username,
-        repo: repoName,
-        branch: branchName,
+        user: GIT_USER,
+        repo: GIT_REPO,
+        branch: GIT_BRANCH,
     });
 
     const baseTreeSha = _.get(baseTreeInfo, 'data.sha');
@@ -80,23 +190,25 @@ const uploadFiles = async (options) => {
         return;
     }
 
+    console.log('Creating new tree');
     const createTreeResponse = await octokit.request('POST https://api.github.com/repos/{user}/{repo}/git/trees', {
-        user: username,
-        repo: repoName,
-        tree: (_.get(baseTreeInfo, 'data.tree') || []).filter((tree) => {
+        user: GIT_USER,
+        repo: GIT_REPO,
+        tree: ((await createVersionedDocs(_.get(baseTreeInfo, 'data.tree') || [])) || _.get(baseTreeInfo, 'data.tree') || []).filter((tree) => {
             return (
-                !newTree.some((newTreeItem) => newTreeItem.path === tree.path) &&
                 tree.type !== 'tree' &&
+                !newTree.some((newTreeItem) => newTreeItem.path === tree.path) &&
                 !tree.path.startsWith(basePath)
             );
         }).concat(newTree),
         baseTree: baseTreeSha,
     });
+    console.log('Created new tree');
     const newTreeSha = _.get(createTreeResponse, 'data.sha');
     const parentTreeResponse = await octokit.request('GET https://api.github.com/repos/{user}/{repo}/git/refs/heads/{branch}', {
-        user: username,
-        repo: repoName,
-        branch: branchName,
+        user: GIT_USER,
+        repo: GIT_REPO,
+        branch: GIT_BRANCH,
     });
     const parentSha = _.get(parentTreeResponse, 'data.object.sha');
 
@@ -105,8 +217,8 @@ const uploadFiles = async (options) => {
     }
 
     const commitResponse = await octokit.request('POST https://api.github.com/repos/{user}/{repo}/git/commits', {
-        user: username,
-        repo: repoName,
+        user: GIT_USER,
+        repo: GIT_REPO,
         tree: newTreeSha,
         message,
         parents: [
@@ -116,18 +228,14 @@ const uploadFiles = async (options) => {
     const commitSha = _.get(commitResponse, 'data.sha');
 
     await octokit.request('PATCH https://api.github.com/repos/{user}/{repo}/git/refs/heads/{branch}', {
-        user: username,
-        repo: repoName,
-        branch: branchName,
+        user: GIT_USER,
+        repo: GIT_REPO,
+        branch: GIT_BRANCH,
         sha: commitSha,
     });
 };
 
-const generateApiDocs = async (currentVersion) => {
-    if (!_.isString(currentVersion)) {
-        return;
-    }
-
+const generateApiDocs = async () => {
     let rushConfig = {};
     let projects = [];
     const apiDocsDir = path.resolve(__dirname, '../api-docs');
@@ -222,18 +330,12 @@ const generateApiDocs = async (currentVersion) => {
 };
 
 try {
-    const version = fs.readJsonSync(path.resolve(__dirname, '../packages/agros-app/package.json')).version;
-    const [majorVersion] = version.split('.');
-    const docVersion = `${majorVersion}.x`;
-    generateApiDocs(docVersion).then(() => {
+    generateApiDocs().then(() => {
         console.log('Uploading built docs ...');
         uploadFiles({
-            username: 'agrosjs',
-            token: process.env.GITHUB_ACCESS_TOKEN,
-            repo: 'agrosjs.github.io',
             branch: 'master',
             directory: path.resolve(__dirname, '../api-docs'),
-            basePath: `versioned_docs/version-${docVersion}/api`,
+            basePath: 'docs/api',
             message: 'Update API docs',
         }).then(() => console.log('Docs updated successfully'));
     });

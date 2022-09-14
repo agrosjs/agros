@@ -1,6 +1,13 @@
 # Change Log - @agros/config
 
-This log was last generated on Thu, 08 Sep 2022 15:59:00 GMT and should not be manually modified.
+This log was last generated on Fri, 09 Sep 2022 02:08:57 GMT and should not be manually modified.
+
+## 0.5.0
+Fri, 09 Sep 2022 02:08:57 GMT
+
+### Minor changes
+
+- Add default collection for ProjectConfigParser
 
 ## 0.4.0
 Thu, 08 Sep 2022 15:59:00 GMT

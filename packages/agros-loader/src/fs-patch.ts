@@ -15,6 +15,7 @@ export function patch(fs) {
                 path: file,
                 content: options.content,
             };
+            return file;
         },
     };
     fs[NS] = virtualFS;
@@ -138,7 +139,7 @@ export function patch(fs) {
 
 export function add(fs, options) {
     patch(fs);
-    fs[NS].add(options);
+    return fs[NS].add(options);
 }
 
 function createPatchFn(obj, name, fn) {

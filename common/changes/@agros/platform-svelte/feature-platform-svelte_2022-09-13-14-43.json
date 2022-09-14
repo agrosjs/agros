@@ -1,0 +1,10 @@
+{
+  "changes": [
+    {
+      "packageName": "@agros/platform-svelte",
+      "comment": "Add spread props into getComponentFactoryCode",
+      "type": "patch"
+    }
+  ],
+  "packageName": "@agros/platform-svelte"
+}

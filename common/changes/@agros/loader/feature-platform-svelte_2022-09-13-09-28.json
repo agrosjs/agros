@@ -1,0 +1,11 @@
+{
+  "changes": [
+    {
+      "comment": "Optimize platform interfaces and provide some new functions",
+      "type": "major",
+      "packageName": "@agros/loader"
+    }
+  ],
+  "packageName": "@agros/loader",
+  "email": "i@lenconda.top"
+}
