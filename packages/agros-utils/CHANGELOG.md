@@ -1,6 +1,13 @@
 # Change Log - @agros/utils
 
-This log was last generated on Thu, 08 Sep 2022 15:59:00 GMT and should not be manually modified.
+This log was last generated on Wed, 14 Sep 2022 08:32:07 GMT and should not be manually modified.
+
+## 0.3.2
+Wed, 14 Sep 2022 08:32:07 GMT
+
+### Patches
+
+- Add exports for CodeLocation and ComponentScript
 
 ## 0.3.1
 Thu, 08 Sep 2022 15:59:00 GMT

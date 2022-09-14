@@ -42,14 +42,14 @@
         "typescript": "^4.5.5"
     },
     "name": "@agros/platform-vue",
-    "version": "0.3.2",
+    "version": "1.0.0",
     "description": "Vue.js platform for Agros.js",
     "dependencies": {
         "@agros/common": "workspace:^0.6.3",
         "@agros/config": "workspace:^0.5.0",
-        "@agros/loader": "workspace:^0.5.2",
-        "@agros/platforms": "workspace:^0.5.0",
-        "@agros/utils": "workspace:^0.3.1",
+        "@agros/loader": "workspace:^1.0.0",
+        "@agros/platforms": "workspace:^1.0.0",
+        "@agros/utils": "workspace:^0.3.2",
         "@babel/plugin-transform-parameters": "^7.18.8",
         "@babel/plugin-transform-runtime": "^7.18.10",
         "@babel/plugin-transform-typescript": "^7.18.12",
@@ -67,8 +67,5 @@
         "vue-loader": "^17.0.0",
         "vue-router": "^4.0.0",
         "webpack": "^5.28.0"
-    },
-    "agrosPlatform": {
-        "bundless": "./lib/bundless-platform.js"
     }
 }

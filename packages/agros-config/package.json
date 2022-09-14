@@ -48,7 +48,7 @@
     "version": "0.5.0",
     "description": "Config parser for Agros.js",
     "dependencies": {
-        "@agros/utils": "workspace:^0.3.1",
+        "@agros/utils": "workspace:^0.3.2",
         "@typescript-eslint/eslint-plugin": "^5.30.5",
         "@typescript-eslint/parser": "^5.30.5",
         "cosmiconfig": "^7.0.1",

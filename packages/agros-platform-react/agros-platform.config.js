@@ -19,35 +19,37 @@ const hasJsxRuntime = (() => {
     }
 })();
 
-module.exports = defineBuilderConfig((config) => {
-    addBabelPreset(
-        [
-            require.resolve('babel-preset-react-app'),
-            {
-                runtime: hasJsxRuntime ? 'automatic' : 'classic',
-            },
-        ],
-    )(config);
-
-    const outsideJsBabelLoader = getBabelLoader(config, true);
-
-    if (outsideJsBabelLoader) {
-        if (!Array.isArray(outsideJsBabelLoader.options.presets)) {
-            outsideJsBabelLoader.options.presets = [];
-        }
-        outsideJsBabelLoader.options.presets.push(
+module.exports = {
+    configWebpack: defineBuilderConfig((config) => {
+        addBabelPreset(
             [
-                require.resolve('babel-preset-react-app/dependencies'),
+                require.resolve('babel-preset-react-app'),
                 {
-                    helpers: true,
+                    runtime: hasJsxRuntime ? 'automatic' : 'classic',
                 },
             ],
-        );
-    }
+        )(config);
 
-    addWebpackPlugin(new ReactRefreshWebpackPlugin({
-        overlay: false,
-    }))(config);
+        const outsideJsBabelLoader = getBabelLoader(config, true);
 
-    return config;
-});
+        if (outsideJsBabelLoader) {
+            if (!Array.isArray(outsideJsBabelLoader.options.presets)) {
+                outsideJsBabelLoader.options.presets = [];
+            }
+            outsideJsBabelLoader.options.presets.push(
+                [
+                    require.resolve('babel-preset-react-app/dependencies'),
+                    {
+                        helpers: true,
+                    },
+                ],
+            );
+        }
+
+        addWebpackPlugin(new ReactRefreshWebpackPlugin({
+            overlay: false,
+        }))(config);
+
+        return config;
+    }),
+};
