@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import { Platform } from '@agros/tools/lib/platform.interface';
-import { EnsureImportOptions } from '@agros/tools/lib/ensure-import';
+import { EnsureImportOptions } from '@agros/tools/lib/types';
 
 const platform: Platform = {
     getLoaderImports(): Omit<EnsureImportOptions, 'statements'>[] {

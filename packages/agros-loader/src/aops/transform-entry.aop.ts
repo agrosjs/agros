@@ -1,8 +1,6 @@
 import { detectExports } from '@agros/tools/lib/detectors';
-import {
-    ensureImport,
-    EnsureImportOptions,
-} from '@agros/tools/lib/ensure-import';
+import { ensureImport } from '@agros/tools/lib/ensure-import';
+import { EnsureImportOptions } from '@agros/tools/lib/types';
 import { parseAST } from '@agros/tools/lib/parse-ast';
 import {
     PlatformConfigParser,

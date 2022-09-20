@@ -2,7 +2,7 @@ import * as path from 'path';
 import { ProjectConfigParser } from './config-parsers';
 import parseGlob from 'parse-glob';
 import { CollectionType } from './types';
-import { EntityDescriptor } from './descriptor-types';
+import { EntityDescriptor } from './types';
 import _ from 'lodash';
 
 const projectConfigParser = new ProjectConfigParser();

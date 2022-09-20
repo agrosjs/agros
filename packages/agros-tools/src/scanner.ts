@@ -1,7 +1,7 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import { parseAST } from './parse-ast';
-import { EntityDescriptor } from './descriptor-types';
+import { EntityDescriptor } from './types';
 import { normalizeModulesPath, normalizeRelativePath } from './normalizers';
 import {
     getCollectionType,

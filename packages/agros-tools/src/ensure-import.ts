@@ -1,23 +1,10 @@
-import {
-    ImportDeclaration,
-    Statement,
-} from '@babel/types';
+import { ImportDeclaration } from '@babel/types';
 import * as t from '@babel/types';
 import template from '@babel/template';
-
-export type EnsureImportType = 'named' | 'default' | 'namespace';
-
-export interface EnsureImportOptions {
-    statements: Statement[];
-    libName: string;
-    identifierName: string;
-    type?: EnsureImportType;
-}
-
-export interface EnsureImportResult {
-    statements: Statement[];
-    identifierName: string;
-}
+import {
+    EnsureImportOptions,
+    EnsureImportResult,
+} from './types';
 
 export const ensureImport = (options: EnsureImportOptions): EnsureImportResult => {
     const prefix = 'Agros$$';

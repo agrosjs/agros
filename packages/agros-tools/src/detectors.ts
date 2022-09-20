@@ -35,7 +35,7 @@ import {
 } from './normalizers';
 import _ from 'lodash';
 import { lintCode } from './linters';
-import { RootPointDescriptor } from './descriptor-types';
+import { RootPointDescriptor } from './types';
 import { ProjectConfigParser } from './config-parsers';
 import traverse from '@babel/traverse';
 

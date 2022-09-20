@@ -2,13 +2,10 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import { cosmiconfigSync } from 'cosmiconfig';
 import _ from 'lodash';
-import { BundlessPlatform } from '../types';
-import { Configuration } from 'webpack';
-
-export interface PlatformConfig {
-    bundlessPlatform?: string;
-    configWebpack?: (config: Configuration) => Configuration;
-}
+import {
+    BundlessPlatform,
+    PlatformConfig,
+} from '../types';
 
 export class PlatformConfigParser {
     protected platformIndexFile: string;

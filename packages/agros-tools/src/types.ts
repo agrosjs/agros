@@ -1,6 +1,9 @@
 import { ComponentInstance } from './component-instance.class';
 import { Map as ImmutableMap } from 'immutable';
 import { ModuleInstance } from './module-instance.class';
+import { Statement } from '@babel/types';
+import { Configuration } from 'webpack';
+import { Dirent } from 'fs';
 
 export type CollectionMap = Record<string, string[]>;
 export type CollectionType = 'module' | 'service' | 'component' | 'interceptor';
@@ -117,4 +120,47 @@ export interface Factory {
 
 export interface Interceptor {
     intercept: <T = any, R = undefined>(context?: T, ...args: any[]) => Promise<R> | R | null | undefined;
+}
+
+export type EnsureImportType = 'named' | 'default' | 'namespace';
+
+export interface EnsureImportOptions {
+    statements: Statement[];
+    libName: string;
+    identifierName: string;
+    type?: EnsureImportType;
+}
+
+export interface EnsureImportResult {
+    statements: Statement[];
+    identifierName: string;
+}
+
+export interface PlatformConfig {
+    bundlessPlatform?: string;
+    configWebpack?: (config: Configuration) => Configuration;
+}
+
+export interface PathDescriptor extends Omit<Dirent, 'name'> {
+    id: string;
+    relativePath: string;
+    absolutePath: string;
+    aliasPath: string;
+    filename: string;
+}
+
+export interface CollectionDescriptor extends PathDescriptor {
+    collectionType: CollectionType;
+}
+
+export interface EntityDescriptor extends CollectionDescriptor {
+    entityName: string;
+    moduleName: string;
+    modules: EntityDescriptor[];
+}
+
+export interface RootPointDescriptor extends EntityDescriptor {
+    localName: string;
+    exportName: string | 'default';
+    name: string;
 }

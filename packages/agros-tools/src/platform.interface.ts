@@ -1,5 +1,5 @@
 import { ComponentInstance } from './component-instance.class';
-import { EnsureImportOptions } from './ensure-import';
+import { EnsureImportOptions } from './types';
 
 export type AddVirtualFile = (pathname: string, content: string) => void;
 

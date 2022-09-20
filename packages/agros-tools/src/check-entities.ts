@@ -1,4 +1,4 @@
-import { EntityDescriptor } from './descriptor-types';
+import { EntityDescriptor } from './types';
 
 export const checkEntities = (entities: EntityDescriptor[]) => {
     if (entities.some((entity) => entity.modules.length > 1)) {

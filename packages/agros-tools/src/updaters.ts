@@ -1,4 +1,4 @@
-import { EntityDescriptor } from './descriptor-types';
+import { EntityDescriptor } from './types';
 import * as fs from 'fs';
 import {
     ClassImportItem,

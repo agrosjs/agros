@@ -7,7 +7,7 @@ import { CollectionType } from './types';
 import {
     EntityDescriptor,
     PathDescriptor,
-} from './descriptor-types';
+} from './types';
 import {
     normalizeAlias,
     normalizeCollectionPattern,

@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 import { ComponentInstance } from '@agros/tools/lib/component-instance.class';
 import { Platform } from '@agros/tools/lib/platform.interface';
-import { EnsureImportOptions } from '@agros/tools/lib/ensure-import';
+import { EnsureImportOptions } from '@agros/tools/lib/types';
 import {
     createElement,
     useState,

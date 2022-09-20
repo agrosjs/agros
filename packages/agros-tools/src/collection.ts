@@ -15,7 +15,7 @@ import {
 } from './linters';
 import { isBinaryFileSync } from 'isbinaryfile';
 import { checkEntities } from './check-entities';
-import { EntityDescriptor } from './descriptor-types';
+import { EntityDescriptor } from './types';
 
 export interface Collection {
     name: string;
