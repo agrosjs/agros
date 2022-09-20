@@ -24,9 +24,7 @@ export const loadCollections = (scene: string) => {
 
         try {
             collectionIndexFilePath = require.resolve(collectionPackageName);
-        } catch (e) {
-            collectionIndexFilePath = require.resolve(collectionPackageName);
-        }
+        } catch (e) {}
 
         if (!collectionIndexFilePath) {
             try {
@@ -34,8 +32,8 @@ export const loadCollections = (scene: string) => {
                     process.cwd(),
                     'node_modules',
                     collectionPackageName,
-                    'lib/collections',
                 );
+                console.log(projectCollectionPackagePath);
                 if (fs.existsSync(projectCollectionPackagePath) && fs.statSync(projectCollectionPackagePath).isDirectory()) {
                     collectionIndexFilePath = projectCollectionPackagePath;
                 }
@@ -46,7 +44,7 @@ export const loadCollections = (scene: string) => {
             return [];
         }
 
-        const collectionsDir = path.resolve(path.dirname(collectionIndexFilePath), './collections');
+        const collectionsDir = path.dirname(collectionIndexFilePath);
         let collectionExports = require(collectionIndexFilePath);
         collectionExports = collectionExports?.default || collectionExports;
 
@@ -80,6 +78,7 @@ export const loadCollections = (scene: string) => {
 
         return collections;
     } catch (e) {
+        console.log(e);
         return [];
     }
 };

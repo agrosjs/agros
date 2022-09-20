@@ -19,7 +19,7 @@
     },
     "scripts": {
         "lint": "eslint .",
-        "build": "rimraf ./lib && tsc --build tsconfig.json",
+        "build": "rimraf ./lib && tsc --build tsconfig.json && copyfiles -u 1 src/collections/**/*._ src/collections/**/*.json lib",
         "watch": "tsc --watch --project tsconfig.json",
         "pretest": "npm run lint",
         "test": "exit 0"
@@ -59,6 +59,7 @@
         "babel-plugin-transform-typescript-metadata": "^0.3.2",
         "bfj": "^7.0.2",
         "case-sensitive-paths-webpack-plugin": "^2.4.0",
+        "copyfiles": "^2.4.1",
         "crypto": "^1.0.1",
         "css-loader": "^6.7.1",
         "css-minimizer-webpack-plugin": "^4.0.0",

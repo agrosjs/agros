@@ -3,8 +3,8 @@ import {
     existsSync,
     readdirSync,
 } from 'fs';
-import { CollectionType } from './types';
 import {
+    CollectionType,
     EntityDescriptor,
     PathDescriptor,
 } from './types';

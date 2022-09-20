@@ -1,6 +1,7 @@
 lockfileVersion: 5.4
 
 specifiers:
+  '@agros/app': workspace:^1.0.1
   '@agros/common': workspace:^0.6.4
   '@agros/tools': workspace:^0.0.0
   '@types/fs-extra': ^9.0.13
@@ -10,6 +11,7 @@ specifiers:
   inquirer: ^9.0.0
 
 dependencies:
+  '@agros/app': link:../agros-app
   '@agros/common': link:../agros-common
   '@agros/tools': link:../agros-tools
   commander: 9.3.0

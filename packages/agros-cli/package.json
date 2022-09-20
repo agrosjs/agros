@@ -45,6 +45,7 @@
     "version": "0.1.4",
     "description": "Agros CLI",
     "dependencies": {
+        "@agros/app": "workspace:^1.0.1",
         "@agros/common": "workspace:^0.6.4",
         "@agros/tools": "workspace:^0.0.0",
         "commander": "^9.3.0",
