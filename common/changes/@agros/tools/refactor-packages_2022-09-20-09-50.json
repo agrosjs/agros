@@ -1,0 +1,10 @@
+{
+  "changes": [
+    {
+      "packageName": "@agros/tools",
+      "comment": "Move all interfaces into a single file",
+      "type": "patch"
+    }
+  ],
+  "packageName": "@agros/tools"
+}
