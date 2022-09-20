@@ -1,0 +1,11 @@
+{
+  "changes": [
+    {
+      "comment": "Refactor packages structure",
+      "type": "minor",
+      "packageName": "@agros/platform-react"
+    }
+  ],
+  "packageName": "@agros/platform-react",
+  "email": "i@lenconda.top"
+}

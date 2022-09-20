@@ -1,0 +1,11 @@
+{
+  "changes": [
+    {
+      "comment": "Refactor packages structure",
+      "type": "minor",
+      "packageName": "@agros/platform-vue"
+    }
+  ],
+  "packageName": "@agros/platform-vue",
+  "email": "i@lenconda.top"
+}
