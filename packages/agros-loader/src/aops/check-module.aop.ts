@@ -4,9 +4,11 @@ import { createLoaderAOP } from '../utils';
 import {
     detectExports,
     detectDecorators,
+} from '@agros/tools/lib/detectors';
+import {
     getCollectionType,
     getFileEntityIdentifier,
-} from '@agros/common';
+} from '@agros/tools/lib/utils';
 
 export const checkModule = createLoaderAOP<null>(
     async ({

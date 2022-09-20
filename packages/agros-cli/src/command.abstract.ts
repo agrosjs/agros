@@ -1,4 +1,4 @@
-import { Logger } from '@agros/logger';
+import { Logger } from '@agros/tools/lib/logger';
 import { Command } from 'commander';
 
 export abstract class AbstractCommand {

@@ -5,13 +5,13 @@ import {
 } from './types';
 import qs from 'qs';
 import { LoaderContext } from 'webpack';
-import { parseAST } from '@agros/utils/lib/parse-ast';
+import { parseAST } from '@agros/tools/lib/parse-ast';
 import {
     normalizeModulesPath,
     normalizeSrcPath,
-} from '@agros/common';
-import { CodeLocation } from '@agros/utils/lib/types';
-import { AddVirtualFile } from '@agros/platforms/lib/platform.interface';
+} from '@agros/tools/lib/normalizers';
+import { CodeLocation } from '@agros/tools/lib/types';
+import { AddVirtualFile } from '@agros/tools/lib/platform.interface';
 import * as fsPatch from './fs-patch';
 
 export const createLoaderAOP = <T = string, E = { factoryFilename: string }>(

@@ -29,6 +29,7 @@
     "description": "Agros example",
     "dependencies": {
         "@agros/app": "workspace:^1.0.1",
+        "@agros/common": "workspace:^0.6.4",
         "@agros/platform-react": "workspace:^1.1.0",
         "@agros/platform-svelte": "workspace:^1.1.0",
         "@agros/platform-vue": "workspace:^1.1.0",

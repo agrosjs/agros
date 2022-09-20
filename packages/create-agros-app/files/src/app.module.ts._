@@ -1,7 +1,7 @@
 import {
     Module,
     RouterModule,
-} from '@agros/app';
+} from '@agros/common';
 import { AppComponent } from '@/app.component';
 import { AppService } from '@/app.service';
 import { AppInterceptor } from '@/app.interceptor';

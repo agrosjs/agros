@@ -1,19 +1,19 @@
 import {
     CLIConfigParser,
     ProjectConfigParser,
-} from '@agros/config';
+} from '@agros/tools/lib/config-parsers';
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import {
     Collection,
     CollectionGenerateResult,
-} from '@agros/common';
+} from '@agros/tools/lib/collection';
 import _ from 'lodash';
 import {
     Command,
     Option,
 } from 'commander';
-import { Logger } from '@agros/logger';
+import { Logger } from '@agros/tools/lib/logger';
 
 export const loadCollections = (scene: string) => {
     try {

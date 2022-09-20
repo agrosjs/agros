@@ -48,11 +48,8 @@
     "description": "Official React.js platform adapter for Agros.js",
     "dependencies": {
         "@agros/common": "workspace:^0.6.4",
-        "@agros/config": "workspace:^0.6.0",
         "@agros/loader": "workspace:^1.0.1",
-        "@agros/logger": "workspace:^0.1.0",
-        "@agros/platforms": "workspace:^1.0.0",
-        "@agros/utils": "workspace:^0.3.2",
+        "@agros/tools": "workspace:^0.0.0",
         "@babel/core": "^7.18.5",
         "@babel/generator": "^7.18.10",
         "@babel/plugin-proposal-class-properties": "^7.17.12",

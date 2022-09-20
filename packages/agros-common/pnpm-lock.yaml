@@ -1,8 +1,7 @@
 lockfileVersion: 5.4
 
 specifiers:
-  '@agros/config': workspace:^0.2.0
-  '@agros/utils': workspace:^0.1.0
+  '@agros/tools': workspace:^0.0.0
   '@babel/generator': ^7.18.2
   '@babel/parser': ^7.18.5
   '@babel/traverse': ^7.18.8
@@ -13,6 +12,7 @@ specifiers:
   '@types/eslint': ^8.4.5
   '@types/fs-extra': ^9.0.13
   '@types/immutable': ^3.8.7
+  '@types/is-promise': ^2.2.0
   '@types/lodash': ^4.14.182
   '@types/parse-glob': ^3.0.29
   '@types/prettier': ^2.6.3
@@ -23,16 +23,17 @@ specifiers:
   eslint: ^8.19.0
   fs-extra: ^10.1.0
   immutable: ^4.1.0
+  is-promise: ^4.0.0
   isbinaryfile: ^5.0.0
   lodash: ^4.17.21
   parse-glob: ^3.0.4
   prettier: ^2.7.1
   react: ^17.0.0
+  reflect-metadata: ^0.1.13
   webpack: ^5.28.0
 
 dependencies:
-  '@agros/config': link:../agros-config
-  '@agros/utils': link:../agros-utils
+  '@agros/tools': link:../agros-tools
   '@babel/generator': 7.18.7
   '@babel/parser': 7.18.5
   '@babel/traverse': 7.18.8
@@ -43,11 +44,13 @@ dependencies:
   eslint: 8.19.0
   fs-extra: 10.1.0
   immutable: 4.1.0
+  is-promise: 4.0.0
   isbinaryfile: 5.0.0
   lodash: 4.17.21
   parse-glob: 3.0.4
   prettier: 2.7.1
   react: 17.0.2
+  reflect-metadata: 0.1.13
   webpack: 5.74.0
 
 devDependencies:
@@ -57,6 +60,7 @@ devDependencies:
   '@types/eslint': 8.4.5
   '@types/fs-extra': 9.0.13
   '@types/immutable': 3.8.7
+  '@types/is-promise': 2.2.0
   '@types/lodash': 4.14.182
   '@types/parse-glob': 3.0.29
   '@types/prettier': 2.6.3
@@ -299,6 +303,13 @@ packages:
     deprecated: This is a stub types definition for Facebook's Immutable (https://github.com/facebook/immutable-js). Facebook's Immutable provides its own type definitions, so you don't need @types/immutable installed!
     dependencies:
       immutable: 4.1.0
+    dev: true
+
+  /@types/is-promise/2.2.0:
+    resolution: {integrity: sha512-3ZWSl4E6mj0VlzLs4aaBOG8ZzAYn6l0rq+NjBLSd5Fsg4WUgn/AEXIl/50E8PTGMJESx6U15v7692fyBpMcpSQ==}
+    deprecated: This is a stub types definition. is-promise provides its own type definitions, so you do not need this installed.
+    dependencies:
+      is-promise: 4.0.0
     dev: true
 
   /@types/json-schema/7.0.11:
@@ -980,6 +991,9 @@ packages:
       is-extglob: 2.1.1
     dev: false
 
+  /is-promise/4.0.0:
+    resolution: {integrity: sha512-hvpoI6korhJMnej285dSg6nu1+e6uxs7zG3BYAm5byqDsgJNWwxzM6z6iZiAgQR4TJ30JmBTOwqZUw3WlyH3AQ==}
+
   /isbinaryfile/5.0.0:
     resolution: {integrity: sha512-UDdnyGvMajJUWCkib7Cei/dvyJrrvo4FIrsvSFWdPpXSUorzXrDJ0S+X5Q4ZlasfPjca4yqCNNsjbCeiy8FFeg==}
     engines: {node: '>= 14.0.0'}
@@ -1208,6 +1222,10 @@ packages:
     dependencies:
       loose-envify: 1.4.0
       object-assign: 4.1.1
+    dev: false
+
+  /reflect-metadata/0.1.13:
+    resolution: {integrity: sha512-Ts1Y/anZELhSsjMcU605fU9RE4Oi3p5ORujwbIKXfWa+0Zxs510Qrmrce5/Jowq3cHSZSJqBjypxmHarc+vEWg==}
     dev: false
 
   /regexpp/3.2.0:

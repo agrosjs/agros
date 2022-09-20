@@ -1,8 +1,8 @@
-const { defineBuilderConfig } = require('@agros/common/lib/builder-config');
+const { defineBuilderConfig } = require('@agros/tools/lib/builder-config');
 const {
     addBabelPreset,
     addBabelPlugin,
-} = require('@agros/utils/lib/customizers');
+} = require('@agros/tools/lib/customizers');
 const { VueLoaderPlugin } = require('vue-loader');
 
 module.exports = {

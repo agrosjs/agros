@@ -1,10 +1,11 @@
 lockfileVersion: 5.4
 
 specifiers:
-  '@agros/app': workspace:^0.7.2
-  '@agros/platform-react': workspace:^0.3.2
-  '@agros/platform-svelte': workspace:^0.0.0
-  '@agros/platform-vue': workspace:^0.3.2
+  '@agros/app': workspace:^1.0.1
+  '@agros/common': workspace:^0.6.4
+  '@agros/platform-react': workspace:^1.1.0
+  '@agros/platform-svelte': workspace:^1.1.0
+  '@agros/platform-vue': workspace:^1.1.0
   '@types/react': ^17.0.0
   core-js: ^3.24.1
   customize-cra-less-loader: ^2.0.0
@@ -19,6 +20,7 @@ specifiers:
 
 dependencies:
   '@agros/app': link:../agros-app
+  '@agros/common': link:../agros-common
   '@agros/platform-react': link:../agros-platform-react
   '@agros/platform-svelte': link:../agros-platform-svelte
   '@agros/platform-vue': link:../agros-platform-vue

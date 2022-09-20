@@ -50,8 +50,7 @@
     "description": "Agros project initializer",
     "dependencies": {
         "@agros/common": "workspace:^0.6.4",
-        "@agros/logger": "workspace:^0.1.0",
-        "@agros/utils": "workspace:^0.3.2",
+        "@agros/tools": "workspace:^0.0.0",
         "commander": "^9.3.0",
         "fs-extra": "^10.1.0",
         "glob": "^8.0.3",

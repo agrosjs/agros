@@ -48,11 +48,9 @@
     },
     "dependencies": {
         "@agros/common": "workspace:^0.6.4",
-        "@agros/config": "workspace:^0.6.0",
+        "@agros/create-app": "workspace:^0.1.9",
         "@agros/loader": "workspace:^1.0.1",
-        "@agros/logger": "workspace:^0.1.0",
-        "@agros/platforms": "workspace:^1.0.0",
-        "@agros/utils": "workspace:^0.3.2",
+        "@agros/tools": "workspace:^0.0.0",
         "@babel/core": "^7.18.5",
         "@babel/plugin-proposal-class-properties": "^7.17.12",
         "@babel/plugin-proposal-decorators": "^7.18.2",

@@ -1,7 +1,7 @@
 import {
     AbstractCollection,
     CollectionGenerateResult,
-} from '@agros/common';
+} from '@agros/tools/lib/collection';
 import inquirer from 'inquirer';
 import * as path from 'path';
 import * as fs from 'fs-extra';
@@ -12,8 +12,8 @@ import {
     execSync,
 } from 'child_process';
 import * as glob from 'glob';
-import { Logger } from '@agros/logger';
-import { runCommand } from '@agros/utils/lib/run-command';
+import { Logger } from '@agros/tools/lib/logger';
+import { runCommand } from '@agros/tools/lib/run-command';
 import { LicenseUtils } from './license';
 
 export interface AppCollectionOptions {

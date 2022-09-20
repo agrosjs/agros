@@ -1,4 +1,4 @@
-import { RouterItem } from '@agros/common/lib/types';
+import { RouterItem } from '@agros/tools';
 
 export const createRoutes = (routerItems: RouterItem[], level = 0) => {
     return routerItems.map((routerItem) => {

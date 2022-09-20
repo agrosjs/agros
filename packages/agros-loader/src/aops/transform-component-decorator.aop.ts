@@ -1,14 +1,9 @@
+import { ensureImport } from '@agros/tools/lib/ensure-import';
+import { parseAST } from '@agros/tools/lib/parse-ast';
 import {
-    detectExports,
-    detectDecorators,
-    getCollectionType,
-    getPathDescriptorWithAlias,
-    matchAlias,
-    detectNamedImports,
-} from '@agros/common';
-import { ensureImport } from '@agros/utils/lib/ensure-import';
-import { parseAST } from '@agros/utils/lib/parse-ast';
-import { PlatformConfigParser } from '@agros/config/lib/platform-config-parser';
+    PlatformConfigParser,
+    ProjectConfigParser,
+} from '@agros/tools/lib/config-parsers';
 import {
     CallExpression as BabelCallExpression,
     Identifier,
@@ -28,13 +23,22 @@ import * as t from '@babel/types';
 import template from '@babel/template';
 import _ from 'lodash';
 import qs from 'qs';
-import { ProjectConfigParser } from '@agros/config';
 import {
     Platform,
     FactoryCode,
-} from '@agros/platforms/lib/platform.interface';
+} from '@agros/tools/lib/platform.interface';
 import generate from '@babel/generator';
 import { v4 as uuidV4 } from 'uuid';
+import {
+    detectDecorators,
+    detectExports,
+    detectNamedImports,
+} from '@agros/tools/lib/detectors';
+import {
+    getCollectionType,
+    getPathDescriptorWithAlias,
+    matchAlias,
+} from '@agros/tools/lib/utils';
 
 export const transformComponentDecorator = createLoaderAOP(
     async ({
@@ -62,7 +66,7 @@ export const transformComponentDecorator = createLoaderAOP(
         const [importedComponentDecoratorSpecifier] = detectNamedImports(
             tree,
             'Component',
-            (source) => source.indexOf('@agros/app') !== -1,
+            (source) => source.indexOf('@agros/common') !== -1,
         );
 
         if (!importedComponentDecoratorSpecifier) {
@@ -145,11 +149,11 @@ export const transformComponentDecorator = createLoaderAOP(
 
         const imports = [
             {
-                libName: '@agros/app/lib/constants',
+                libName: '@agros/common',
                 identifierName: 'DI_METADATA_COMPONENT_SYMBOL',
             },
             {
-                libName: '@agros/app/lib/constants',
+                libName: '@agros/common',
                 identifierName: 'DI_DEPS_SYMBOL',
             },
         ].concat(platform.getDecoratorImports());
@@ -261,9 +265,13 @@ export const transformComponentDecorator = createLoaderAOP(
             }).filter((ast) => !!ast),
             ...componentFactoryDeclarations,
         ];
-        if (lastImportDeclarationIndex) {
-            tree.program.body.splice(lastImportDeclarationIndex + 1, 0, ...addedDeclarations);
-        }
+        tree.program.body.splice(
+            lastImportDeclarationIndex > 0
+                ? lastImportDeclarationIndex + 1
+                : 0,
+            0,
+            ...addedDeclarations,
+        );
 
         if (exportMode === 'default' || exportMode === 'named') {
             if (!componentClassDeclaration.id) {
