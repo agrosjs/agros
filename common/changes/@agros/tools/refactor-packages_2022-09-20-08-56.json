@@ -1,0 +1,10 @@
+{
+  "changes": [
+    {
+      "packageName": "@agros/tools",
+      "comment": "Add ESLint types declarations",
+      "type": "patch"
+    }
+  ],
+  "packageName": "@agros/tools"
+}
