@@ -3,8 +3,9 @@ import {
     updateImportedInjectableToInjectable,
 } from '@agros/tools/lib/updaters';
 import {
-    AbstractCollection,
-    CollectionGenerateResult,
+    AbstractGeneratorFactory,
+    AbstractUpdaterFactory,
+    CollectionFactoryResult,
     UpdateBaseOptions,
 } from '@agros/tools/lib/collection';
 import {
@@ -23,7 +24,7 @@ interface InjectableCollectionGenerateOptions {
     skipExport?: boolean;
 }
 
-export class InjectableCollectionGenerateFactory extends AbstractCollection implements AbstractCollection {
+export class InjectableCollectionGenerateFactory extends AbstractGeneratorFactory implements AbstractGeneratorFactory {
     public constructor(
         protected readonly collectionType: CollectionType,
         protected readonly templateFilePath: string,
@@ -41,7 +42,7 @@ export class InjectableCollectionGenerateFactory extends AbstractCollection impl
             throw new Error('Expect `name` to be of type `string`');
         }
 
-        const result: CollectionGenerateResult = {
+        const result: CollectionFactoryResult = {
             create: [],
             update: [],
         };
@@ -89,20 +90,20 @@ interface InjectableCollectionUpdateOptions extends UpdateBaseOptions {
     skipReadonly?: boolean;
 }
 
-export class InjectableCollectionUpdateFactory extends AbstractCollection implements AbstractCollection {
+export class InjectableCollectionUpdateFactory extends AbstractUpdaterFactory implements AbstractUpdaterFactory {
     public constructor(
         protected readonly collectionType: CollectionType,
     ) {
         super();
     }
 
-    public async generate({
+    public async add({
         source,
         target,
         accessibility,
         skipReadonly,
     }: InjectableCollectionUpdateOptions) {
-        const result: CollectionGenerateResult = {
+        const result: CollectionFactoryResult = {
             create: [],
             update: [],
         };
@@ -154,6 +155,14 @@ export class InjectableCollectionUpdateFactory extends AbstractCollection implem
             result.update.push(source);
         }
 
+        return result;
+    }
+
+    public async delete() {
+        const result: CollectionFactoryResult = {
+            create: [],
+            update: [],
+        };
         return result;
     }
 }

@@ -1,4 +1,7 @@
-import { ProjectConfigParser } from './config-parsers';
+import {
+    PlatformConfigParser,
+    ProjectConfigParser,
+} from './config-parsers';
 import {
     normalizeModulesPath,
     normalizeNoExtensionPath,
@@ -17,13 +20,13 @@ import { isBinaryFileSync } from 'isbinaryfile';
 import { checkEntities } from './check-entities';
 import { EntityDescriptor } from './types';
 
-export interface Collection {
+export interface Collection<T extends AbstractBaseFactory = AbstractBaseFactory> {
     name: string;
     schema: Record<string, any>;
-    FactoryClass: new (...args: any[]) => AbstractCollection;
+    FactoryClass: new (...args: any[]) => T;
 }
 
-export interface CollectionGenerateResult {
+export interface CollectionFactoryResult {
     update: string[];
     create: string[];
 }
@@ -33,8 +36,11 @@ export interface CollectionWriteFileOptions {
     lintOptions?: LinterOptions;
 }
 
-export abstract class AbstractCollection {
+export class AbstractBaseFactory {
     protected readonly projectConfig = new ProjectConfigParser();
+    protected readonly platformConfig = new PlatformConfigParser(
+        this.projectConfig.getConfig<string>('platform'),
+    );
     protected entities: EntityDescriptor[] = [];
 
     public constructor() {
@@ -138,11 +144,18 @@ export abstract class AbstractCollection {
 
         fs.writeFileSync(pathname, buffer);
     }
-
-    public abstract generate(props): Promise<CollectionGenerateResult>;
 }
 
 export interface UpdateBaseOptions {
     source: string;
     target: string;
+}
+
+export abstract class AbstractGeneratorFactory extends AbstractBaseFactory {
+    public abstract generate(props): Promise<CollectionFactoryResult>;
+}
+
+export abstract class AbstractUpdaterFactory extends AbstractBaseFactory {
+    public abstract add(props): Promise<CollectionFactoryResult>;
+    public abstract delete(props): Promise<CollectionFactoryResult>;
 }

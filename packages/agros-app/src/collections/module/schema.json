@@ -38,18 +38,20 @@
             ]
         },
         "update": {
-            "properties": {
-                "skipExport": {
-                    "type": "confirm",
-                    "message": "Prevent exporting the collection from this module",
-                    "cliType": "option",
-                    "default": false
-                },
-                "asyncModule": {
-                    "type": "confirm",
-                    "message": "If the collection is a module, use this flag will asynchronously import this collection",
-                    "cliType": "option",
-                    "default": false
+            "add": {
+                "properties": {
+                    "skipExport": {
+                        "type": "confirm",
+                        "message": "Prevent exporting the collection from this module",
+                        "cliType": "option",
+                        "default": false
+                    },
+                    "asyncModule": {
+                        "type": "confirm",
+                        "message": "If the collection is a module, use this flag will asynchronously import this collection",
+                        "cliType": "option",
+                        "default": false
+                    }
                 }
             }
         }

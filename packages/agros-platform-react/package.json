@@ -4,6 +4,7 @@
     "files": [
         "lib",
         "bin",
+        "files",
         "LICENSE",
         "README.md",
         "agros-platform.config.js",

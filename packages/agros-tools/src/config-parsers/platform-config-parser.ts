@@ -11,6 +11,13 @@ export class PlatformConfigParser {
     protected platformIndexFile: string;
     protected platformRootDir: string;
     protected platformConfig: Required<PlatformConfig> = {
+        files: {
+            create: './files/create/**/*',
+            generate: {
+                declaration: './files/generate/component.ts._',
+                description: './files/generate/component.tsx._',
+            },
+        },
         bundlessPlatform: './lib/bundless-platform.js',
         configWebpack: (config) => config,
     };

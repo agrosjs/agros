@@ -3,8 +3,9 @@ import {
     updateImportedEntityToModule,
 } from '@agros/tools/lib/updaters';
 import {
-    AbstractCollection,
-    CollectionGenerateResult,
+    AbstractGeneratorFactory,
+    AbstractUpdaterFactory,
+    CollectionFactoryResult,
     UpdateBaseOptions,
 } from '@agros/tools/lib/collection';
 import {
@@ -26,7 +27,7 @@ interface ComponentCollectionGenerateOptions {
     skipExport?: boolean;
 }
 
-export class ComponentCollectionGenerateFactory extends AbstractCollection implements AbstractCollection {
+export class ComponentCollectionGenerateFactory extends AbstractGeneratorFactory implements AbstractGeneratorFactory {
     public async generate({
         name,
         moduleName,
@@ -37,7 +38,7 @@ export class ComponentCollectionGenerateFactory extends AbstractCollection imple
             throw new Error('Expect `name` to be of type `string`');
         }
 
-        const result: CollectionGenerateResult = {
+        const result: CollectionFactoryResult = {
             create: [],
             update: [],
         };
@@ -95,12 +96,12 @@ export class ComponentCollectionGenerateFactory extends AbstractCollection imple
 
 type ComponentCollectionUpdateOptions = UpdateBaseOptions;
 
-export class ComponentCollectionUpdateFactory extends AbstractCollection implements AbstractCollection {
-    public async generate({
+export class ComponentCollectionUpdateFactory extends AbstractUpdaterFactory implements AbstractUpdaterFactory {
+    public async add({
         source,
         target,
     }: ComponentCollectionUpdateOptions) {
-        const result: CollectionGenerateResult = {
+        const result: CollectionFactoryResult = {
             create: [],
             update: [],
         };
@@ -149,6 +150,14 @@ export class ComponentCollectionUpdateFactory extends AbstractCollection impleme
             result.update.push(source);
         }
 
+        return result;
+    }
+
+    public async delete() {
+        const result: CollectionFactoryResult = {
+            create: [],
+            update: [],
+        };
         return result;
     }
 }

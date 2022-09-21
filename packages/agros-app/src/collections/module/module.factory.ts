@@ -1,7 +1,7 @@
 import { updateImportedEntityToModule } from '@agros/tools/lib/updaters';
 import {
-    AbstractCollection,
-    CollectionGenerateResult,
+    AbstractGeneratorFactory,
+    CollectionFactoryResult,
     UpdateBaseOptions,
 } from '@agros/tools/lib/collection';
 import {
@@ -22,7 +22,7 @@ interface ModuleCollectionGenerateOptions {
     skipExportDeclaredCollections?: boolean;
 }
 
-export class ModuleCollectionGenerateFactory extends AbstractCollection implements AbstractCollection {
+export class ModuleCollectionGenerateFactory extends AbstractGeneratorFactory implements AbstractGeneratorFactory {
     public async generate({
         name,
         async: asyncModule,
@@ -34,7 +34,7 @@ export class ModuleCollectionGenerateFactory extends AbstractCollection implemen
             throw new Error('Expect `name` to be of type `string`');
         }
 
-        const result: CollectionGenerateResult = {
+        const result: CollectionFactoryResult = {
             create: [],
             update: [],
         };
@@ -104,14 +104,14 @@ interface ModuleCollectionUpdateOptions extends UpdateBaseOptions {
     asyncModule?: boolean;
 }
 
-export class ModuleCollectionUpdateFactory extends AbstractCollection implements AbstractCollection {
+export class ModuleCollectionUpdateFactory extends AbstractGeneratorFactory implements AbstractGeneratorFactory {
     public async generate({
         source,
         target,
         skipExport,
         asyncModule,
     }: ModuleCollectionUpdateOptions) {
-        const result: CollectionGenerateResult = {
+        const result: CollectionFactoryResult = {
             create: [],
             update: [],
         };

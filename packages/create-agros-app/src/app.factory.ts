@@ -1,6 +1,6 @@
 import {
-    AbstractCollection,
-    CollectionGenerateResult,
+    AbstractGeneratorFactory,
+    CollectionFactoryResult,
 } from '@agros/tools/lib/collection';
 import inquirer from 'inquirer';
 import * as path from 'path';
@@ -21,7 +21,7 @@ export interface AppCollectionOptions {
     skipInstall?: boolean;
 }
 
-export class AppCollectionFactory extends AbstractCollection implements AbstractCollection {
+export class AppCollectionFactory extends AbstractGeneratorFactory implements AbstractGeneratorFactory {
     private licenseUtils = new LicenseUtils();
     private licenseList = this.licenseUtils.getLicenseList();
 
@@ -31,7 +31,7 @@ export class AppCollectionFactory extends AbstractCollection implements Abstract
     }: AppCollectionOptions) {
         const targetAbsolutePath = path.resolve(process.cwd(), targetPath);
         const pathExisted = fs.existsSync(targetAbsolutePath);
-        const result: CollectionGenerateResult = {
+        const result: CollectionFactoryResult = {
             create: [],
             update: [],
         };

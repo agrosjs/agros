@@ -5,8 +5,9 @@ import {
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import {
+    AbstractBaseFactory,
     Collection,
-    CollectionGenerateResult,
+    CollectionFactoryResult,
 } from '@agros/tools/lib/collection';
 import _ from 'lodash';
 import {
@@ -15,7 +16,7 @@ import {
 } from 'commander';
 import { Logger } from '@agros/tools/lib/logger';
 
-export const loadCollections = (scene: string) => {
+export const loadCollections = <T extends AbstractBaseFactory = AbstractBaseFactory>(scene: string) => {
     try {
         const cliConfigParser = new CLIConfigParser();
         const projectConfigParser = new ProjectConfigParser();
@@ -57,7 +58,7 @@ export const loadCollections = (scene: string) => {
             return result;
         }, {});
 
-        const collections: Collection[] = fs.readdirSync(collectionsDir)
+        const collections: Collection<T>[] = fs.readdirSync(collectionsDir)
             .filter((entity) => {
                 const absolutePath = path.resolve(collectionsDir, entity);
                 return fs.statSync(absolutePath).isDirectory() && fs.existsSync(path.resolve(absolutePath, 'schema.json'));
@@ -69,7 +70,7 @@ export const loadCollections = (scene: string) => {
                         name,
                         schema: fs.readJsonSync(path.resolve(collectionsDir, dirname, 'schema.json')),
                         FactoryClass: collectionExports[scene][name],
-                    } as Collection;
+                    } as Collection<T>;
                 } catch (e) {
                     return null;
                 }
@@ -78,7 +79,6 @@ export const loadCollections = (scene: string) => {
 
         return collections;
     } catch (e) {
-        console.log(e);
         return [];
     }
 };
@@ -233,7 +233,7 @@ export const addArgumentsAndOptionsToCommandWithSchema = ({
     };
 };
 
-export const logGenerateResult = (result: CollectionGenerateResult) => {
+export const logGenerateResult = (result: CollectionFactoryResult) => {
     const logger = new Logger();
     const terminateLog = logger.loadingLog('Updating and creating files...');
     const bgColorMap = {
