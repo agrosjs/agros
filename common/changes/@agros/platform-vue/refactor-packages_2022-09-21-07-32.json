@@ -1,0 +1,11 @@
+{
+  "changes": [
+    {
+      "comment": "Refactor collections and collection factories",
+      "type": "minor",
+      "packageName": "@agros/platform-vue"
+    }
+  ],
+  "packageName": "@agros/platform-vue",
+  "email": "i@lenconda.top"
+}
