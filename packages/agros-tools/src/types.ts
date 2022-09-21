@@ -136,17 +136,18 @@ export interface EnsureImportResult {
     identifierName: string;
 }
 
-interface PlatformFiles {
+export interface PlatformFiles {
     create: string;
     generate: {
-        declaration: string;
-        description: string;
+        componentDeclaration: string;
+        componentDescription: string;
     };
 }
 
 export interface PlatformConfig {
-    bundlessPlatform?: string;
     files: PlatformFiles;
+    withoutComponentDescriptionFileExtension?: boolean;
+    bundlessPlatform?: string;
     configWebpack?: (config: Configuration) => Configuration;
 }
 

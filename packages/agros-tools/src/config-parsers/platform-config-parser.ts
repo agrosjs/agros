@@ -12,12 +12,13 @@ export class PlatformConfigParser {
     protected platformRootDir: string;
     protected platformConfig: Required<PlatformConfig> = {
         files: {
-            create: './files/create/**/*',
+            create: '',
             generate: {
-                declaration: './files/generate/component.ts._',
-                description: './files/generate/component.tsx._',
+                componentDeclaration: '',
+                componentDescription: '',
             },
         },
+        withoutComponentDescriptionFileExtension: false,
         bundlessPlatform: './lib/bundless-platform.js',
         configWebpack: (config) => config,
     };
@@ -48,6 +49,21 @@ export class PlatformConfigParser {
 
         const platformConfig = (cosmiconfigSync('agros-platform').search(this.platformRootDir)?.config || {}) as PlatformConfig;
         this.platformConfig = _.merge({}, _.clone(this.platformConfig), platformConfig);
+        this.platformConfig.files = {
+            create: path.resolve(this.platformRootDir, './files/create/**/*'),
+            generate: {
+                componentDeclaration: path.resolve(this.platformRootDir, './files/generate/component.ts._'),
+                componentDescription: path.resolve(this.platformRootDir, './files/generate/component.tsx._'),
+            },
+        };
+    }
+
+    public getConfig<T>(pathname?: string): T {
+        if (!pathname) {
+            return _.cloneDeep(this.platformConfig) as unknown as T;
+        }
+
+        return _.get(_.cloneDeep(this.platformConfig), pathname) as T;
     }
 
     public getPlatformRootDir() {

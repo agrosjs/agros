@@ -4,9 +4,16 @@ const {
     addBabelPlugin,
 } = require('@agros/tools/lib/customizers');
 const { VueLoaderPlugin } = require('vue-loader');
+const path = require('path');
 
 module.exports = {
     bundlessPlatform: './lib/bundless-platform.js',
+    files: {
+        generate: {
+            componentDeclaration: path.resolve(__dirname, './files/generate/component.ts._'),
+            componentDescription: path.resolve(__dirname, './files/generate/component.vue._'),
+        },
+    },
     configWebpack: defineBuilderConfig((config) => {
         addBabelPreset(require.resolve('@babel/preset-env'))(config);
         addBabelPreset(require.resolve('@vue/babel-preset-app'))(config);

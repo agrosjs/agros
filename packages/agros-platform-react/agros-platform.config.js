@@ -20,6 +20,7 @@ const hasJsxRuntime = (() => {
 })();
 
 module.exports = {
+    withoutComponentDescriptionFileExtension: true,
     configWebpack: defineBuilderConfig((config) => {
         addBabelPreset(
             [

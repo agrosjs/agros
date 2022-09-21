@@ -48,21 +48,27 @@ export class ComponentCollectionGenerateFactory extends AbstractGeneratorFactory
         const serviceModuleName = moduleName ? _.kebabCase(moduleName) : componentName;
         const componentFilename = normalizeEntityFileName('component', componentName, '*.component.ts');
         const componentDeclarationTargetPath = this.modulesPath(`${serviceModuleName}/${componentFilename}`);
-        const componentDescriptionTargetPath = this.modulesPath(`${serviceModuleName}/${declarationName}.tsx`);
+        const componentDescriptionTargetPathWithoutExtension = this.modulesPath(`${serviceModuleName}/${declarationName}`);
+        const componentDescriptionExtension = path.extname(componentDescriptionTargetPathWithoutExtension.replace(/\.\_$/g, ''));
+        const componentDescriptionTargetPath = `${componentDescriptionTargetPathWithoutExtension}${componentDescriptionExtension}`;
 
         await this.writeTemplateFile(
-            path.resolve(__dirname, 'files/component.ts._'),
+            this.platformConfig.getConfig<string>('files.generate.componentDeclaration'),
             componentDeclarationTargetPath,
             {
                 name: declarationName,
-                file: transformPathToAliasedPath(normalizeNoExtensionPath(componentDescriptionTargetPath)),
+                file: transformPathToAliasedPath(
+                    this.platformConfig.getConfig<boolean>('withoutComponentDescriptionFileExtension')
+                        ? normalizeNoExtensionPath(componentDescriptionTargetPath)
+                        : componentDescriptionTargetPath,
+                ),
                 ...(lazy ? { lazy: true } : {}),
             },
         );
         result.create.push(componentDeclarationTargetPath);
 
         await this.writeTemplateFile(
-            path.resolve(__dirname, 'files/component.normal.tsx._'),
+            this.platformConfig.getConfig<string>('files.generate.componentDescription'),
             componentDescriptionTargetPath,
             {
                 name: declarationName,

@@ -24,7 +24,7 @@ export class UpdateCommand extends AbstractCommand implements AbstractCommand {
                 const collectionCommand = new Command(name);
                 const parseProps = addArgumentsAndOptionsToCommandWithSchema({
                     scene: `update.${type}`,
-                    command: subCommand,
+                    command: collectionCommand,
                     schema,
                     prependProperties: {
                         target: {
