@@ -1,0 +1,11 @@
+{
+  "changes": [
+    {
+      "comment": "Optimize component collection and update commands",
+      "type": "patch",
+      "packageName": "@agros/tools"
+    }
+  ],
+  "packageName": "@agros/tools",
+  "email": "i@lenconda.top"
+}

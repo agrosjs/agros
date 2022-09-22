@@ -1,4 +1,7 @@
-import { updateImportedEntityToModule } from '@agros/tools/lib/updaters';
+import {
+    addImportedEntityToModule,
+    applyAddUpdates,
+} from '@agros/tools/lib/update-utils';
 import {
     AbstractGeneratorFactory,
     CollectionFactoryResult,
@@ -8,7 +11,6 @@ import {
     normalizeCLIPath,
     normalizeEntityFileName,
 } from '@agros/tools/lib/normalizers';
-import { applyUpdates } from '@agros/tools/lib/apply-updates';
 import * as path from 'path';
 import _ from 'lodash';
 import * as fs from 'fs';
@@ -65,7 +67,7 @@ export class ModuleCollectionGenerateFactory extends AbstractGeneratorFactory im
         });
 
         for (const collectionDescriptor of collectionDescriptors) {
-            const updates = await updateImportedEntityToModule(
+            const updates = await addImportedEntityToModule(
                 collectionDescriptor,
                 this.getEntityDescriptor(targetPath),
                 {
@@ -74,14 +76,14 @@ export class ModuleCollectionGenerateFactory extends AbstractGeneratorFactory im
             );
             await this.writeFile(
                 targetPath,
-                applyUpdates(updates, fs.readFileSync(targetPath).toString()),
+                applyAddUpdates(updates, fs.readFileSync(targetPath).toString()),
             );
         }
 
         const rootPointDescriptor = detectRootPoint();
 
         if (rootPointDescriptor) {
-            const updates = await updateImportedEntityToModule(
+            const updates = await addImportedEntityToModule(
                 this.getEntityDescriptor(targetPath),
                 rootPointDescriptor,
                 {
@@ -90,7 +92,7 @@ export class ModuleCollectionGenerateFactory extends AbstractGeneratorFactory im
             );
             await this.writeFile(
                 rootPointDescriptor.absolutePath,
-                applyUpdates(updates, fs.readFileSync(rootPointDescriptor.absolutePath).toString()),
+                applyAddUpdates(updates, fs.readFileSync(rootPointDescriptor.absolutePath).toString()),
             );
             result.update.push(rootPointDescriptor.absolutePath);
         }
@@ -127,7 +129,7 @@ export class ModuleCollectionUpdateFactory extends AbstractGeneratorFactory impl
             throw new Error(`Cannot find target entity with identifier: ${target}`);
         }
 
-        const updates = await updateImportedEntityToModule(sourceDescriptor, targetDescriptor, {
+        const updates = await addImportedEntityToModule(sourceDescriptor, targetDescriptor, {
             skipExport,
             asyncModule,
         });
@@ -135,7 +137,7 @@ export class ModuleCollectionUpdateFactory extends AbstractGeneratorFactory impl
         if (updates.length > 0) {
             this.writeFile(
                 targetDescriptor.absolutePath,
-                applyUpdates(updates, fs.readFileSync(targetDescriptor.absolutePath).toString()),
+                applyAddUpdates(updates, fs.readFileSync(targetDescriptor.absolutePath).toString()),
             );
             result.update.push(targetDescriptor.absolutePath);
         }

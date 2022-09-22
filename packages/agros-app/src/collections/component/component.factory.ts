@@ -1,7 +1,8 @@
 import {
-    updateImportedEntityToComponent,
-    updateImportedEntityToModule,
-} from '@agros/tools/lib/updaters';
+    applyAddUpdates,
+    addImportedEntityToComponent,
+    addImportedEntityToModule,
+} from '@agros/tools/lib/update-utils';
 import {
     AbstractGeneratorFactory,
     AbstractUpdaterFactory,
@@ -14,7 +15,6 @@ import {
     normalizeNoExtensionPath,
 } from '@agros/tools/lib/normalizers';
 import { transformPathToAliasedPath } from '@agros/tools/lib/transformers';
-import { applyUpdates } from '@agros/tools/lib/apply-updates';
 import * as path from 'path';
 import _ from 'lodash';
 import * as fs from 'fs';
@@ -48,11 +48,12 @@ export class ComponentCollectionGenerateFactory extends AbstractGeneratorFactory
         );
         const componentName = _.kebabCase(name);
         const declarationName = _.startCase(componentName).replace(/\s+/g, '');
-        const serviceModuleName = moduleName ? _.kebabCase(moduleName) : componentName;
-        const componentFilename = normalizeEntityFileName('component', componentName, '*.component.ts');
-        const componentDeclarationTargetPath = this.modulesPath(`${serviceModuleName}/${componentFilename}`);
-        const componentDescriptionTargetPathWithoutExtension = this.modulesPath(`${serviceModuleName}/${declarationName}`);
-        const componentDescriptionExtension = path.extname(componentDescriptionTargetPathWithoutExtension.replace(/\.\_$/g, ''));
+        const componentModuleName = moduleName ? _.kebabCase(moduleName) : componentName;
+        const componentdeclarationFilename = normalizeEntityFileName('component', componentName, '*.component.ts');
+        const componentDeclarationTargetPath = this.modulesPath(`${componentModuleName}/${componentdeclarationFilename}`);
+        const componentDescriptionFilepath = platformConfig.getConfig<string>('files.generate.componentDescription');
+        const componentDescriptionTargetPathWithoutExtension = this.modulesPath(`${componentModuleName}/${declarationName}`);
+        const componentDescriptionExtension = path.extname(componentDescriptionFilepath.replace(/\.\_$/g, ''));
         const componentDescriptionTargetPath = `${componentDescriptionTargetPathWithoutExtension}${componentDescriptionExtension}`;
 
         await this.writeTemplateFile(
@@ -71,7 +72,7 @@ export class ComponentCollectionGenerateFactory extends AbstractGeneratorFactory
         result.create.push(componentDeclarationTargetPath);
 
         await this.writeTemplateFile(
-            platformConfig.getConfig<string>('files.generate.componentDescription'),
+            componentDescriptionFilepath,
             componentDescriptionTargetPath,
             {
                 name: declarationName,
@@ -81,11 +82,11 @@ export class ComponentCollectionGenerateFactory extends AbstractGeneratorFactory
         this.updateEntities();
 
         const moduleEntityDescriptor = this.entities.find((entity) => {
-            return entity.collectionType === 'module' && entity.moduleName === serviceModuleName;
+            return entity.collectionType === 'module' && entity.moduleName === componentModuleName;
         });
 
         if (moduleEntityDescriptor) {
-            const updates = await updateImportedEntityToModule(
+            const updates = await addImportedEntityToModule(
                 this.getEntityDescriptor(componentDeclarationTargetPath),
                 moduleEntityDescriptor,
                 {
@@ -94,7 +95,7 @@ export class ComponentCollectionGenerateFactory extends AbstractGeneratorFactory
             );
             await this.writeFile(
                 moduleEntityDescriptor.absolutePath,
-                applyUpdates(updates, fs.readFileSync(moduleEntityDescriptor.absolutePath).toString()),
+                applyAddUpdates(updates, fs.readFileSync(moduleEntityDescriptor.absolutePath).toString()),
             );
             result.update.push(moduleEntityDescriptor.absolutePath);
         }
@@ -126,12 +127,12 @@ export class ComponentCollectionUpdateFactory extends AbstractUpdaterFactory imp
             throw new Error(`Cannot find target entity with identifier: ${target}`);
         }
 
-        const updates = await updateImportedEntityToComponent(sourceDescriptor, targetDescriptor, {});
+        const updates = await addImportedEntityToComponent(sourceDescriptor, targetDescriptor, {});
 
         if (updates.length > 0) {
             this.writeFile(
                 targetDescriptor.absolutePath,
-                applyUpdates(updates, fs.readFileSync(targetDescriptor.absolutePath).toString()),
+                applyAddUpdates(updates, fs.readFileSync(targetDescriptor.absolutePath).toString()),
             );
             result.update.push(targetDescriptor.absolutePath);
         }
@@ -145,7 +146,7 @@ export class ComponentCollectionUpdateFactory extends AbstractUpdaterFactory imp
             const absolutePath = sourceDescriptor.modules[0]?.absolutePath;
             this.writeFile(
                 absolutePath,
-                applyUpdates(sourceModuleUpdates, fs.readFileSync(absolutePath).toString()),
+                applyAddUpdates(sourceModuleUpdates, fs.readFileSync(absolutePath).toString()),
             );
             result.update.push(source);
         }
@@ -154,9 +155,9 @@ export class ComponentCollectionUpdateFactory extends AbstractUpdaterFactory imp
             const absolutePath = targetDescriptor.modules[0]?.absolutePath;
             this.writeFile(
                 absolutePath,
-                applyUpdates(targetModuleUpdates, fs.readFileSync(absolutePath).toString()),
+                applyAddUpdates(targetModuleUpdates, fs.readFileSync(absolutePath).toString()),
             );
-            result.update.push(source);
+            result.update.push(absolutePath);
         }
 
         return result;
