@@ -2,6 +2,18 @@
   "name": "@agros/common",
   "entries": [
     {
+      "version": "0.7.1",
+      "tag": "@agros/common_v0.7.1",
+      "date": "Thu, 22 Sep 2022 08:53:45 GMT",
+      "comments": {
+        "dependency": [
+          {
+            "comment": "Updating dependency \"@agros/tools\" from `^0.1.0` to `^0.2.0`"
+          }
+        ]
+      }
+    },
+    {
       "version": "0.7.0",
       "tag": "@agros/common_v0.7.0",
       "date": "Thu, 22 Sep 2022 05:32:44 GMT",

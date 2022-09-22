@@ -2,6 +2,35 @@
   "name": "@agros/app",
   "entries": [
     {
+      "version": "1.1.1",
+      "tag": "@agros/app_v1.1.1",
+      "date": "Thu, 22 Sep 2022 08:53:45 GMT",
+      "comments": {
+        "patch": [
+          {
+            "comment": "Fix template files with wrong import declarations"
+          },
+          {
+            "comment": "Optimize component collection and update commands"
+          }
+        ],
+        "dependency": [
+          {
+            "comment": "Updating dependency \"@agros/common\" from `^0.7.0` to `^0.7.1`"
+          },
+          {
+            "comment": "Updating dependency \"@agros/create-app\" from `^0.2.0` to `^0.2.1`"
+          },
+          {
+            "comment": "Updating dependency \"@agros/loader\" from `^1.1.0` to `^1.1.1`"
+          },
+          {
+            "comment": "Updating dependency \"@agros/tools\" from `^0.1.0` to `^0.2.0`"
+          }
+        ]
+      }
+    },
+    {
       "version": "1.1.0",
       "tag": "@agros/app_v1.1.0",
       "date": "Thu, 22 Sep 2022 05:32:44 GMT",
