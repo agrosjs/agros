@@ -1,9 +1,0 @@
-lockfileVersion: 5.4
-
-specifiers:
-  '@agros/common': workspace:^0.1.1
-  '@agros/utils': workspace:^0.0.3
-
-dependencies:
-  '@agros/common': link:../agros-common
-  '@agros/utils': link:../agros-utils

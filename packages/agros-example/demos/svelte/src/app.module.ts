@@ -1,7 +1,7 @@
 import {
     Module,
     RouterModule,
-} from '@agros/app';
+} from '@agros/common';
 import { AppComponent } from './app.component';
 import { BarModule } from './modules/bar/bar.module';
 import { BazModule } from './modules/baz/baz.module';

@@ -3,8 +3,8 @@ import { createLoaderAOP } from '../utils';
 import {
     detectExports,
     detectDecorators,
-    getCollectionType,
-} from '@agros/common';
+} from '@agros/tools/lib/detectors';
+import { getCollectionType } from '@agros/tools/lib/utils';
 
 export const checkService = createLoaderAOP<null>(
     async ({ tree }) => {

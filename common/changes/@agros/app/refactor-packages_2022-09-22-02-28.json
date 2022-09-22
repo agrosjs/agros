@@ -1,0 +1,11 @@
+{
+  "changes": [
+    {
+      "comment": "Optimize generator factories and template files",
+      "type": "patch",
+      "packageName": "@agros/app"
+    }
+  ],
+  "packageName": "@agros/app",
+  "email": "i@lenconda.top"
+}

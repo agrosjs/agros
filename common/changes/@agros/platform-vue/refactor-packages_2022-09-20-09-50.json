@@ -1,0 +1,10 @@
+{
+  "changes": [
+    {
+      "packageName": "@agros/platform-vue",
+      "comment": "Apply refactors from tools package",
+      "type": "patch"
+    }
+  ],
+  "packageName": "@agros/platform-vue"
+}

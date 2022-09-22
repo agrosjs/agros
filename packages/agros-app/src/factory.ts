@@ -8,7 +8,10 @@ import {
     Interceptor,
     AsyncModuleClass,
     ValueProvider,
-} from '@agros/common/lib/types';
+    ComponentInstance,
+    ModuleInstance,
+    Platform,
+} from '@agros/tools';
 import isPromise from 'is-promise';
 import {
     DI_DEPS_SYMBOL,
@@ -16,10 +19,7 @@ import {
     DI_METADATA_COMPONENT_SYMBOL,
     DI_METADATA_MODULE_SYMBOL,
     DI_METADATA_USE_INTERCEPTORS_SYMBOL,
-} from '@agros/common/lib/constants';
-import { ComponentInstance } from '@agros/common/lib/component-instance.class';
-import { ModuleInstance } from '@agros/common/lib/module-instance.class';
-import { Platform } from '@agros/platforms/lib/platform.interface';
+} from '@agros/common';
 
 export class Factory implements IFactory {
     /**

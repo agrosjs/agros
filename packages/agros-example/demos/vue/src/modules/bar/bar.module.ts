@@ -1,4 +1,4 @@
-import { Module } from '@agros/app';
+import { Module } from '@agros/common';
 import { BarComponent } from './bar.component';
 import { BarService } from './bar.service';
 

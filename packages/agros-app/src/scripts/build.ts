@@ -8,7 +8,7 @@ import printHostingInstructions from 'react-dev-utils/printHostingInstructions';
 import FileSizeReporter from 'react-dev-utils/FileSizeReporter';
 import printBuildError from 'react-dev-utils/printBuildError';
 import { checkBrowsers } from 'react-dev-utils/browsersHelper';
-import { Logger } from '@agros/logger';
+import { Logger } from '@agros/tools/lib/logger';
 import { generateBuildConfig } from '../builder/generators';
 import paths from '../builder/paths';
 // Ensure environment variables are read.

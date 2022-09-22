@@ -1,7 +1,7 @@
 import {
     Global,
     Module,
-} from '@agros/app';
+} from '@agros/common';
 import { BazService } from './baz.service';
 
 @Module({

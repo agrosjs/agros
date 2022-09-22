@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 import { RouterOutlet } from '@agros/platform-svelte/lib/svelte-router';
 </script>
 

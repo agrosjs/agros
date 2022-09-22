@@ -3,7 +3,7 @@ import {
     webpack,
     Compiler,
 } from 'webpack';
-import { Logger } from '@agros/logger';
+import { Logger } from '@agros/tools/lib/logger';
 import WebpackDevServer from 'webpack-dev-server';
 import { checkBrowsers } from 'react-dev-utils/browsersHelper';
 import checkRequiredFiles from 'react-dev-utils/checkRequiredFiles';

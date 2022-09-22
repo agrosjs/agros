@@ -1,0 +1,10 @@
+{
+  "changes": [
+    {
+      "packageName": "@agros/common",
+      "comment": "Remove unused dependencies",
+      "type": "patch"
+    }
+  ],
+  "packageName": "@agros/common"
+}

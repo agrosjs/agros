@@ -1,4 +1,4 @@
-import { Injectable } from '@agros/app';
+import { Injectable } from '@agros/common';
 import { BarService } from '../bar/bar.service';
 import { BazService } from '../baz/baz.service';
 

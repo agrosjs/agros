@@ -1,4 +1,4 @@
-import { Component } from '@agros/app';
+import { Component } from '@agros/common';
 
 @Component({
     file: './App.svelte',

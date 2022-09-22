@@ -1,10 +1,8 @@
 lockfileVersion: 5.4
 
 specifiers:
-  '@agros/common': workspace:^0.2.1
-  '@agros/config': workspace:^0.2.0
-  '@agros/platforms': workspace:^0.0.1
-  '@agros/utils': workspace:^0.1.0
+  '@agros/common': workspace:^0.6.4
+  '@agros/tools': workspace:^0.0.0
   '@babel/generator': ^7.18.2
   '@babel/parser': ^7.18.5
   '@babel/template': ^7.16.7
@@ -26,9 +24,7 @@ specifiers:
 
 dependencies:
   '@agros/common': link:../agros-common
-  '@agros/config': link:../agros-config
-  '@agros/platforms': link:../agros-platforms
-  '@agros/utils': link:../agros-utils
+  '@agros/tools': link:../agros-tools
   '@babel/generator': 7.18.2
   '@babel/parser': 7.18.5
   '@babel/template': 7.16.7

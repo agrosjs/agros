@@ -1,13 +1,20 @@
-const { defineBuilderConfig } = require('@agros/common/lib/builder-config');
+const { defineBuilderConfig } = require('@agros/tools/lib/builder-config');
 const {
     addBabelPreset,
     addBabelPlugin,
-} = require('@agros/utils/lib/customizers');
+} = require('@agros/tools/lib/customizers');
 const sveltePreprocess = require('svelte-preprocess');
 const autoprefixer = require('autoprefixer');
+const path = require('path');
 
 module.exports = {
     bundlessPlatform: './lib/bundless-platform.js',
+    files: {
+        generate: {
+            componentDeclaration: path.resolve(__dirname, './files/generate/component.ts._'),
+            componentDescription: path.resolve(__dirname, './files/generate/component.svelte._'),
+        },
+    },
     configWebpack: defineBuilderConfig((config) => {
         addBabelPreset(require.resolve('@babel/preset-env'))(config);
         addBabelPreset(require.resolve('@vue/babel-preset-app'))(config);
