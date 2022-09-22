@@ -5,15 +5,16 @@ import {
     loadCollections,
     logGenerateResult,
 } from '../utils';
-import { AbstractGeneratorFactory } from '@agros/tools/lib/collection';
+import { AbstractUpdaterFactory } from '@agros/tools/lib/collection';
 
 export class UpdateCommand extends AbstractCommand implements AbstractCommand {
     public register() {
-        const collections = loadCollections<AbstractGeneratorFactory>('update');
+        const collections = loadCollections<AbstractUpdaterFactory>('update');
         const command = new Command('update');
         command.alias('u').description('Update an Agros.js collections with another collection');
 
         ['add', 'delete'].forEach((type) => {
+            const factoryMethod = type as 'add' | 'delete';
             const subCommand = new Command(type);
             for (const collection of collections) {
                 const {
@@ -32,27 +33,29 @@ export class UpdateCommand extends AbstractCommand implements AbstractCommand {
                             message: 'Target entity pathname or identifier',
                             cliType: 'argument',
                         },
-                        from: {
+                        use: {
                             type: 'input',
                             message: 'Source entity pathname or identifier',
                             cliType: 'option',
                         },
                     },
-                    defaultRequired: ['from', 'target'],
+                    defaultRequired: ['use', 'target'],
                 });
 
                 collectionCommand.action(async (...data) => {
                     try {
                         const {
-                            from: source,
+                            use: source,
                             ...otherProps
                         } = parseProps(data);
                         const factory = new FactoryClass();
-                        const result = await factory.generate({
-                            source,
-                            ...otherProps,
-                        });
-                        logGenerateResult(result);
+                        if (typeof factory[factoryMethod] === 'function') {
+                            const result = await factory[factoryMethod]({
+                                source,
+                                ...otherProps,
+                            });
+                            logGenerateResult(result);
+                        }
                     } catch (e) {
                         this.logger.error(e.message || e.toString());
                         process.exit(1);

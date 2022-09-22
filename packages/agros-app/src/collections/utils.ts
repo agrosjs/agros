@@ -8,7 +8,7 @@ export const updateCorrespondingTargetModule = async (
     sourceDescriptor: EntityDescriptor,
     targetDescriptor: EntityDescriptor,
 ) => {
-    const result = [] as UpdateItem[][];
+    const result = [[], []] as UpdateItem[][];
 
     if (sourceDescriptor.modules[0]) {
         const sourceModuleDescriptor = sourceDescriptor.modules[0];

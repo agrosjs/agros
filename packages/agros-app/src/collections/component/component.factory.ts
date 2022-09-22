@@ -157,7 +157,7 @@ export class ComponentCollectionUpdateFactory extends AbstractUpdaterFactory imp
                 absolutePath,
                 applyAddUpdates(targetModuleUpdates, fs.readFileSync(absolutePath).toString()),
             );
-            result.update.push(source);
+            result.update.push(absolutePath);
         }
 
         return result;

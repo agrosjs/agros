@@ -152,7 +152,7 @@ export class InjectableCollectionUpdateFactory extends AbstractUpdaterFactory im
                 absolutePath,
                 applyAddUpdates(targetModuleUpdates, fs.readFileSync(absolutePath).toString()),
             );
-            result.update.push(source);
+            result.update.push(absolutePath);
         }
 
         return result;
