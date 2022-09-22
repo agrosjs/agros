@@ -1,0 +1,10 @@
+{
+  "changes": [
+    {
+      "packageName": "@agros/tools",
+      "comment": "Refactor updaters",
+      "type": "minor"
+    }
+  ],
+  "packageName": "@agros/tools"
+}
