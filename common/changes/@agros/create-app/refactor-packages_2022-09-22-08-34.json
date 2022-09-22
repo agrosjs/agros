@@ -1,7 +1,7 @@
 {
   "changes": [
     {
-      "comment": "Optimize generator factories and template files",
+      "comment": "Optimize component collection and update commands",
       "type": "patch",
       "packageName": "@agros/create-app"
     }

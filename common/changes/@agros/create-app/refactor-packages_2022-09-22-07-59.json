@@ -1,0 +1,10 @@
+{
+  "changes": [
+    {
+      "packageName": "@agros/create-app",
+      "comment": "Fix generator issues",
+      "type": "patch"
+    }
+  ],
+  "packageName": "@agros/create-app"
+}

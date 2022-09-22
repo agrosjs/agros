@@ -2,9 +2,9 @@
 import {
     Global,
     Module,
-} from '@agros/app';
+} from '@agros/common';
 <% } else { -%>
-import { Module } from '@agros/app';
+import { Module } from '@agros/common';
 <% } -%>
 
 <% if (globalModule) { -%>

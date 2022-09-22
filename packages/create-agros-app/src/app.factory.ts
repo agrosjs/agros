@@ -37,7 +37,6 @@ export class AppCollectionFactory extends AbstractGeneratorFactory implements Ab
             create: [],
             update: [],
         };
-        const platformConfig = new PlatformConfigParser(this.projectConfig.getConfig<string>('platform'));
         const logger = new Logger();
 
         if (pathExisted && !fs.statSync(targetAbsolutePath).isDirectory()) {
@@ -95,6 +94,7 @@ export class AppCollectionFactory extends AbstractGeneratorFactory implements Ab
                 name: 'repository',
                 type: 'input',
                 message: 'Project repository URL',
+                default: `git@github.com:${gitConfigUserName}/${path.basename(targetAbsolutePath)}.git`,
             },
             ...(
                 this.licenseList.length > 0
@@ -117,6 +117,7 @@ export class AppCollectionFactory extends AbstractGeneratorFactory implements Ab
             },
         ]);
 
+        const finishLoadingLog = logger.loadingLog('Generating project files...');
         const configValidator = yup.object().shape({
             name: yup.string().required(),
             version: yup.string().required().test(
@@ -137,7 +138,6 @@ export class AppCollectionFactory extends AbstractGeneratorFactory implements Ab
             ),
             license: yup.string().optional(),
         });
-
         const templateConfig = _.pick(
             props,
             [
@@ -156,38 +156,35 @@ export class AppCollectionFactory extends AbstractGeneratorFactory implements Ab
 
         configValidator.validateSync(templateConfig);
 
-        {
-            const finishLoadingLog = logger.loadingLog('Generating project files...');
-            try {
-                const templateAbsolutePath = path.resolve(__dirname, '../files');
-                const paths = glob.sync(templateAbsolutePath + '/**/{.*,*}._');
+        try {
+            const templateAbsolutePath = path.resolve(__dirname, '../files');
+            const paths = glob.sync(templateAbsolutePath + '/**/{.*,*}._');
 
-                for (const pathname of paths) {
-                    const relativePath = path.relative(templateAbsolutePath, pathname).replace(/\.\_$/g, '');
-                    this.writeTemplateFile(
-                        pathname,
-                        path.resolve(targetAbsolutePath, relativePath),
-                        templateConfig,
-                    );
-                    result.create.push(relativePath);
-                }
-
-                if (props.license) {
-                    this.writeFile(
-                        this.projectPath('LICENSE'),
-                        this.licenseUtils.generate(props.license, {
-                            user: props.author,
-                            description: props.description,
-                            year: new Date().getFullYear().toString(),
-                        }),
-                    );
-                    result.create.push('LICENSE');
-                }
-
-                finishLoadingLog('success');
-            } catch (e) {
-                finishLoadingLog('error', 'Failed to generate project files, with error: ' + e.message || e.toString());
+            for (const pathname of paths) {
+                const relativePath = path.relative(templateAbsolutePath, pathname).replace(/\.\_$/g, '');
+                this.writeTemplateFile(
+                    pathname,
+                    path.resolve(targetAbsolutePath, relativePath),
+                    templateConfig,
+                );
+                result.create.push(relativePath);
             }
+
+            if (props.license) {
+                this.writeFile(
+                    this.projectPath('LICENSE'),
+                    this.licenseUtils.generate(props.license, {
+                        user: props.author,
+                        description: props.description,
+                        year: new Date().getFullYear().toString(),
+                    }),
+                );
+                result.create.push('LICENSE');
+            }
+
+            finishLoadingLog('success');
+        } catch (e) {
+            finishLoadingLog('error', 'Failed to generate project files, with error: ' + e.message || e.toString());
         }
 
         if (!skipInstall) {
@@ -205,7 +202,7 @@ export class AppCollectionFactory extends AbstractGeneratorFactory implements Ab
             {
                 let succeeded = true;
                 const finishLoadingLog = logger.loadingLog('Installing platform \'' + props.platform + '\'...');
-                if (fs.existsSync(path.resolve(props.platform))) {
+                if (!fs.existsSync(path.resolve(props.platform))) {
                     const result = await runCommand(
                         'npm',
                         [
@@ -225,11 +222,19 @@ export class AppCollectionFactory extends AbstractGeneratorFactory implements Ab
                 }
                 if (succeeded) {
                     const finishLoadingLog = logger.loadingLog('Generating platform-specified files...');
+                    const platformConfig = new PlatformConfigParser(props.platform);
                     try {
                         const createFilesDir = platformConfig.getConfig<string>('files.create');
-                        const files = glob.sync(createFilesDir);
+                        const files = glob.sync(createFilesDir, {
+                            nodir: true,
+                        });
                         for (const pathname of files) {
-                            const relativePath = path.relative(parseGlob(createFilesDir).base, pathname).replace(/\.\_$/g, '');
+                            const relativePath = path.resolve(
+                                path.relative(
+                                    parseGlob(createFilesDir).base,
+                                    pathname,
+                                ).replace(/\.\_$/g, ''),
+                            );
                             this.writeTemplateFile(
                                 pathname,
                                 path.resolve(targetAbsolutePath, relativePath),

@@ -1,8 +1,8 @@
 {
   "changes": [
     {
-      "comment": "Refactor collections and collection factories",
-      "type": "minor",
+      "comment": "Optimize component collection and update commands",
+      "type": "patch",
       "packageName": "@agros/app"
     }
   ],

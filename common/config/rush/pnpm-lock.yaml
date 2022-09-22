@@ -549,6 +549,7 @@ importers:
       '@types/jest': ^28.1.1
       '@types/lodash': ^4.14.182
       '@types/node': ^15.12.2
+      '@types/parse-glob': ^3.0.29
       '@types/semver': ^7.3.10
       commander: ^9.3.0
       fs-extra: ^10.1.0
@@ -556,6 +557,7 @@ importers:
       inquirer: ~8.1.1
       lice: ^1.1.0
       lodash: ^4.17.21
+      parse-glob: ^3.0.4
       rimraf: ^3.0.2
       semver: ^7.3.7
       typescript: ^4.5.5
@@ -569,6 +571,7 @@ importers:
       inquirer: 8.1.5
       lice: 1.1.0
       lodash: 4.17.21
+      parse-glob: 3.0.4
       semver: 7.3.7
       yup: 0.32.11
     devDependencies:
@@ -579,6 +582,7 @@ importers:
       '@types/jest': 28.1.6
       '@types/lodash': 4.14.182
       '@types/node': 15.14.9
+      '@types/parse-glob': 3.0.29
       '@types/semver': 7.3.10
       rimraf: 3.0.2
       typescript: 4.7.4

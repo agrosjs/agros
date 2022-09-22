@@ -1,0 +1,10 @@
+{
+  "changes": [
+    {
+      "packageName": "@agros/app",
+      "comment": "Fix template files with wrong import declarations",
+      "type": "patch"
+    }
+  ],
+  "packageName": "@agros/app"
+}
