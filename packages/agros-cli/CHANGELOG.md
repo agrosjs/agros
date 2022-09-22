@@ -1,6 +1,19 @@
 # Change Log - @agros/cli
 
-This log was last generated on Wed, 14 Sep 2022 09:43:25 GMT and should not be manually modified.
+This log was last generated on Thu, 22 Sep 2022 05:32:44 GMT and should not be manually modified.
+
+## 0.2.0
+Thu, 22 Sep 2022 05:32:44 GMT
+
+### Minor changes
+
+- Refactor packages structure
+- Refactor collections and collection factories
+
+### Patches
+
+- Fix unable to load collections issue
+- Optimize generator factories and template files
 
 ## 0.1.4
 Wed, 14 Sep 2022 09:43:25 GMT

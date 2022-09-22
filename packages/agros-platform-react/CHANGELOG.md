@@ -1,6 +1,20 @@
 # Change Log - @agros/platform-react
 
-This log was last generated on Wed, 14 Sep 2022 09:43:25 GMT and should not be manually modified.
+This log was last generated on Thu, 22 Sep 2022 05:32:44 GMT and should not be manually modified.
+
+## 1.2.0
+Thu, 22 Sep 2022 05:32:44 GMT
+
+### Minor changes
+
+- Refactor packages structure
+- Refactor collections and collection factories
+- Optimize template files and generate platform-specified from platform when generating or updating
+
+### Patches
+
+- Apply refactors from tools package
+- Optimize generator factories and template files
 
 ## 1.1.0
 Wed, 14 Sep 2022 09:43:25 GMT
