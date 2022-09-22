@@ -15,6 +15,8 @@ import * as glob from 'glob';
 import { Logger } from '@agros/tools/lib/logger';
 import { runCommand } from '@agros/tools/lib/run-command';
 import { LicenseUtils } from './license';
+import { PlatformConfigParser } from '@agros/tools/lib/config-parsers';
+import parseGlob from 'parse-glob';
 
 export interface AppCollectionOptions {
     path?: string;
@@ -35,6 +37,8 @@ export class AppCollectionFactory extends AbstractGeneratorFactory implements Ab
             create: [],
             update: [],
         };
+        const platformConfig = new PlatformConfigParser(this.projectConfig.getConfig<string>('platform'));
+        const logger = new Logger();
 
         if (pathExisted && !fs.statSync(targetAbsolutePath).isDirectory()) {
             throw new Error(`Path "${targetPath}" is not a directory`);
@@ -106,27 +110,10 @@ export class AppCollectionFactory extends AbstractGeneratorFactory implements Ab
                     : []
             ),
             {
-                name: 'packageManager',
-                type: 'list',
-                message: 'Package manager of this project',
-                choices: [
-                    {
-                        name: 'NPM',
-                        value: 'npm',
-                    },
-                    {
-                        name: 'Yarn',
-                        value: 'yarn',
-                    },
-                    {
-                        name: 'PNPM',
-                        value: 'pnpm',
-                    },
-                    {
-                        name: 'Other...',
-                        value: 'other',
-                    },
-                ],
+                name: 'platform',
+                type: 'input',
+                message: 'Enter the package name or directory name of platform you want to use in this project',
+                default: '@agros/platform-react',
             },
         ]);
 
@@ -169,79 +156,95 @@ export class AppCollectionFactory extends AbstractGeneratorFactory implements Ab
 
         configValidator.validateSync(templateConfig);
 
-        let installCommand: string[] = [];
+        {
+            const finishLoadingLog = logger.loadingLog('Generating project files...');
+            try {
+                const templateAbsolutePath = path.resolve(__dirname, '../files');
+                const paths = glob.sync(templateAbsolutePath + '/**/{.*,*}._');
+
+                for (const pathname of paths) {
+                    const relativePath = path.relative(templateAbsolutePath, pathname).replace(/\.\_$/g, '');
+                    this.writeTemplateFile(
+                        pathname,
+                        path.resolve(targetAbsolutePath, relativePath),
+                        templateConfig,
+                    );
+                    result.create.push(relativePath);
+                }
+
+                if (props.license) {
+                    this.writeFile(
+                        this.projectPath('LICENSE'),
+                        this.licenseUtils.generate(props.license, {
+                            user: props.author,
+                            description: props.description,
+                            year: new Date().getFullYear().toString(),
+                        }),
+                    );
+                    result.create.push('LICENSE');
+                }
+
+                finishLoadingLog('success');
+            } catch (e) {
+                finishLoadingLog('error', 'Failed to generate project files, with error: ' + e.message || e.toString());
+            }
+        }
 
         if (!skipInstall) {
-            const { packageManager } = props;
-
-            switch (packageManager) {
-                case 'npm': {
-                    installCommand = ['npm', 'i'];
-                    break;
+            {
+                const finishLoadingLog = logger.loadingLog('Installing dependencies...');
+                const result = await runCommand('npm', ['i'], {
+                    cwd: targetAbsolutePath,
+                });
+                if (result instanceof Error) {
+                    finishLoadingLog('error', 'Failed to install dependencies');
+                } else {
+                    finishLoadingLog('success', 'Dependencies installed');
                 }
-                case 'yarn': {
-                    installCommand = ['yarn'];
-                    break;
-                }
-                case 'pnpm': {
-                    installCommand = ['pnpm', 'i'];
-                    break;
-                }
-                case 'other':
-                default: {
-                    const { installCommandStr } = await inquirer.prompt([
-                        {
-                            name: 'installCommandStr',
-                            type: 'input',
-                            message: 'Please input the install command',
-                        },
-                    ]);
-
-                    if (_.isString(installCommandStr)) {
-                        installCommand = installCommandStr.split(/\s+/g);
+            }
+            {
+                let succeeded = true;
+                const finishLoadingLog = logger.loadingLog('Installing platform \'' + props.platform + '\'...');
+                if (fs.existsSync(path.resolve(props.platform))) {
+                    const result = await runCommand(
+                        'npm',
+                        [
+                            'install',
+                            props.platform,
+                            '-S',
+                        ],
+                    );
+                    if (result instanceof Error) {
+                        finishLoadingLog('error', 'Failed to install platform package \'' + props.platform + '\'');
+                        succeeded = false;
+                    } else {
+                        finishLoadingLog('success', 'Platform package \'' + props.platform + '\' installed');
                     }
-
-                    break;
+                } else {
+                    finishLoadingLog('success', 'The platform pathname is a local directory, installation skipped');
+                }
+                if (succeeded) {
+                    const finishLoadingLog = logger.loadingLog('Generating platform-specified files...');
+                    try {
+                        const createFilesDir = platformConfig.getConfig<string>('files.create');
+                        const files = glob.sync(createFilesDir);
+                        for (const pathname of files) {
+                            const relativePath = path.relative(parseGlob(createFilesDir).base, pathname).replace(/\.\_$/g, '');
+                            this.writeTemplateFile(
+                                pathname,
+                                path.resolve(targetAbsolutePath, relativePath),
+                                templateConfig,
+                            );
+                            result.create.push(relativePath);
+                        }
+                        finishLoadingLog('success');
+                    } catch (e) {
+                        finishLoadingLog('error', 'Failed to generate platform-specified file with error: ' + e.message || e.toString());
+                    }
                 }
             }
-        }
-
-        const templateAbsolutePath = path.resolve(__dirname, '../files');
-        const paths = glob.sync(templateAbsolutePath + '/**/{.*,*}._');
-
-        for (const pathname of paths) {
-            const relativePath = path.relative(templateAbsolutePath, pathname).replace(/\.\_$/g, '');
-            this.writeTemplateFile(
-                pathname,
-                path.resolve(targetAbsolutePath, relativePath),
-                templateConfig,
-            );
-            result.create.push(relativePath);
-        }
-
-        if (props.license) {
-            this.writeFile(
-                this.projectPath('LICENSE'),
-                this.licenseUtils.generate(props.license, {
-                    user: props.author,
-                    description: props.description,
-                    year: new Date().getFullYear().toString(),
-                }),
-            );
-            result.create.push('LICENSE');
-        }
-
-        if (Array.isArray(installCommand) && installCommand.length > 0) {
-            const logger = new Logger();
-            const installationLoadingLog = logger.loadingLog('Installing dependencies...');
-            const result = await runCommand(installCommand[0], installCommand.slice(1), {
-                cwd: targetAbsolutePath,
-            });
-            if (result instanceof Error) {
-                installationLoadingLog('warning', 'Failed to install dependencies');
-            } else {
-                installationLoadingLog('success', 'Dependencies installed');
-            }
+        } else {
+            logger.warning('There is no package manager specified, you should install platform package and dependencies manually');
         }
 
         return result;

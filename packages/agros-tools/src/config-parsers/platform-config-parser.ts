@@ -9,7 +9,8 @@ import {
 
 export class PlatformConfigParser {
     protected platformIndexFile: string;
-    protected platformRootDir: string;
+    protected platformIndexDir: string;
+    protected platformPackageDir: string;
     protected platformConfig: Required<PlatformConfig> = {
         files: {
             create: '',
@@ -21,12 +22,13 @@ export class PlatformConfigParser {
         bundlessPlatform: './lib/bundless-platform.js',
         configWebpack: (config) => config,
     };
+    protected platformConfigFile: string;
 
     public constructor(protected readonly platformName: string) {
         this.platformIndexFile = require.resolve(platformName, {
             paths: [process.cwd()],
         });
-
+        this.platformIndexDir = path.dirname(this.platformIndexFile);
         let currentDetectDir = path.dirname(this.platformIndexFile);
 
         while (true) {
@@ -35,23 +37,23 @@ export class PlatformConfigParser {
             }
 
             if (fs.existsSync(path.resolve(currentDetectDir, 'package.json'))) {
-                this.platformRootDir = currentDetectDir;
+                this.platformPackageDir = currentDetectDir;
                 break;
             }
 
             currentDetectDir = path.dirname(currentDetectDir);
         }
 
-        if (!this.platformRootDir) {
-            throw new Error(`Platform '${this.platformName}' is not a valid NPM package`);
-        }
-
-        const platformConfig = (cosmiconfigSync('agros-platform').search(this.platformRootDir)?.config || {}) as PlatformConfig;
+        const platformCosmiconfig = cosmiconfigSync('agros-platform').search(
+            this.platformPackageDir || this.platformIndexDir,
+        );
+        const platformConfig = (platformCosmiconfig?.config || {}) as PlatformConfig;
+        this.platformConfigFile = platformCosmiconfig.filepath;
         this.platformConfig = _.merge({}, _.clone(this.platformConfig), platformConfig);
         this.platformConfig.files = {
-            create: path.resolve(this.platformRootDir, './files/create/**/*'),
+            create: path.resolve(this.platformIndexDir, './files/create/**/*'),
             generate: {
-                componentDescription: path.resolve(this.platformRootDir, './files/generate/component.tsx._'),
+                componentDescription: path.resolve(this.platformIndexDir, './files/generate/component.tsx._'),
             },
         };
     }
@@ -64,8 +66,8 @@ export class PlatformConfigParser {
         return _.get(_.cloneDeep(this.platformConfig), pathname) as T;
     }
 
-    public getPlatformRootDir() {
-        return this.platformRootDir;
+    public getPlatformPackageDir() {
+        return this.platformPackageDir;
     }
 
     public getPlatformWebpackConfigFactory(): Function {
@@ -82,7 +84,10 @@ export class PlatformConfigParser {
 
     public getBundlessPlatform(): BundlessPlatform {
         try {
-            const bundlessPlatformPathname = path.resolve(this.platformRootDir, this.platformConfig.bundlessPlatform);
+            const bundlessPlatformPathname = path.resolve(
+                path.dirname(this.platformConfigFile),
+                this.platformConfig.bundlessPlatform,
+            );
 
             if (!this.platformConfig.bundlessPlatform || !fs.existsSync(bundlessPlatformPathname)) {
                 return {};
