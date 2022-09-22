@@ -1,6 +1,18 @@
 # Change Log - @agros/common
 
-This log was last generated on Wed, 14 Sep 2022 09:43:25 GMT and should not be manually modified.
+This log was last generated on Thu, 22 Sep 2022 05:32:44 GMT and should not be manually modified.
+
+## 0.7.0
+Thu, 22 Sep 2022 05:32:44 GMT
+
+### Minor changes
+
+- Refactor packages structure
+
+### Patches
+
+- Remove unused dependencies
+- Optimize generator factories and template files
 
 ## 0.6.4
 Wed, 14 Sep 2022 09:43:25 GMT

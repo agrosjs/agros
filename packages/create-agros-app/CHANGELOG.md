@@ -1,6 +1,19 @@
 # Change Log - @agros/create-app
 
-This log was last generated on Thu, 08 Sep 2022 09:49:50 GMT and should not be manually modified.
+This log was last generated on Thu, 22 Sep 2022 05:32:44 GMT and should not be manually modified.
+
+## 0.2.0
+Thu, 22 Sep 2022 05:32:44 GMT
+
+### Minor changes
+
+- Refactor packages structure
+- Refactor collections and collection factories
+- Optimize template files and generate platform-specified from platform when generating or updating
+
+### Patches
+
+- Optimize generator factories and template files
 
 ## 0.1.9
 Thu, 08 Sep 2022 09:49:50 GMT
