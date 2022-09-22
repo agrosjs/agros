@@ -139,12 +139,7 @@ export const addImportedEntityToModule = createUpdater<AddImportedEntityToModule
             decorator.expression.arguments.push(t.objectExpression([]));
         }
 
-        const argument = decorator.expression.arguments[0];
-
-        if (argument.type !== 'ObjectExpression') {
-            return result;
-        }
-
+        const argument = decorator.expression.arguments[0] as t.ObjectExpression;
         let decoratorProperties: string[];
 
         if (!sourceDescriptor.collectionType) {
