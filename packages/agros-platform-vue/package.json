@@ -4,6 +4,7 @@
     "files": [
         "lib",
         "bin",
+        "files",
         "LICENSE",
         "README.md",
         "agros-platform.config.js",
@@ -46,10 +47,8 @@
     "description": "Vue.js platform for Agros.js",
     "dependencies": {
         "@agros/common": "workspace:^0.6.4",
-        "@agros/config": "workspace:^0.6.0",
         "@agros/loader": "workspace:^1.0.1",
-        "@agros/platforms": "workspace:^1.0.0",
-        "@agros/utils": "workspace:^0.3.2",
+        "@agros/tools": "workspace:^0.0.0",
         "@babel/plugin-transform-parameters": "^7.18.8",
         "@babel/plugin-transform-runtime": "^7.18.10",
         "@babel/plugin-transform-typescript": "^7.18.12",

@@ -1,0 +1,16 @@
+import {
+    Component,
+    UseInterceptors,
+} from '@agros/common';
+import { AppService } from '@/app.service';
+import { AppInterceptor } from '@/app.interceptor';
+
+@Component({
+    file: '@/App.vue',
+    styles: ['@/app.component.css'],
+    declarations: [
+        AppService,
+    ],
+})
+@UseInterceptors(AppInterceptor)
+export class AppComponent {}

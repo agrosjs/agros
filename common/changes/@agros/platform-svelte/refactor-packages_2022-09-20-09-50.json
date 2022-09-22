@@ -1,0 +1,10 @@
+{
+  "changes": [
+    {
+      "packageName": "@agros/platform-svelte",
+      "comment": "Apply refactors from tools package",
+      "type": "patch"
+    }
+  ],
+  "packageName": "@agros/platform-svelte"
+}

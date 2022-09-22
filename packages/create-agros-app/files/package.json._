@@ -21,9 +21,8 @@
         "typescript": "^4.5.5"
     },
     "dependencies": {
-        "@agros/app": "^0.4.1",
-        "@agros/platform-react": "^0.0.2",
-        "react": "^17.0.0"
+        "@agros/app": "^1.1.0",
+        "@agros/common": "^0.7.0"
     },
     "browserslist": {
         "production": [

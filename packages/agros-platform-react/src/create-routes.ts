@@ -1,4 +1,4 @@
-import { RouterItem } from '@agros/common/lib/types';
+import { RouterItem } from '@agros/tools';
 import { createElement } from 'react';
 import { Route } from 'react-router-dom';
 

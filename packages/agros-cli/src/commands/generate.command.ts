@@ -5,10 +5,11 @@ import {
     loadCollections,
     logGenerateResult,
 } from '../utils';
+import { AbstractGeneratorFactory } from '@agros/tools/lib/collection';
 
 export class GenerateCommand extends AbstractCommand implements AbstractCommand {
     public register(): Command {
-        const collections = loadCollections('generate');
+        const collections = loadCollections<AbstractGeneratorFactory>('generate');
         const command = new Command('generate');
         command.alias('g').description('Generate Agros.js collections');
 

@@ -1,0 +1,11 @@
+{
+  "changes": [
+    {
+      "comment": "Refactor collections and collection factories",
+      "type": "minor",
+      "packageName": "@agros/platform-svelte"
+    }
+  ],
+  "packageName": "@agros/platform-svelte",
+  "email": "i@lenconda.top"
+}

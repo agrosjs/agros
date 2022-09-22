@@ -1,0 +1,11 @@
+{
+  "changes": [
+    {
+      "comment": "Optimize template files and generate platform-specified from platform when generating or updating",
+      "type": "minor",
+      "packageName": "@agros/platform-vue"
+    }
+  ],
+  "packageName": "@agros/platform-vue",
+  "email": "i@lenconda.top"
+}

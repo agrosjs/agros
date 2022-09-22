@@ -1,7 +1,7 @@
 import {
     Module,
     RouterModule,
-} from '@agros/app';
+} from '@agros/common';
 import { LoremComponent } from './lorem.component';
 import { LoremService } from './lorem.service';
 

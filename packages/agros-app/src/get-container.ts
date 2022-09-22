@@ -1,4 +1,4 @@
-import { Type } from '@agros/common/lib/types';
+import { Type } from '@agros/tools';
 import { Map as ImmutableMap } from 'immutable';
 
 /**

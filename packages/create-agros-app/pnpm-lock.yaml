@@ -1,13 +1,13 @@
 lockfileVersion: 5.4
 
 specifiers:
-  '@agros/common': workspace:^0.0.0
-  '@agros/logger': workspace:^0.0.1
-  '@agros/utils': workspace:^0.0.1
+  '@agros/common': workspace:^0.6.4
+  '@agros/tools': workspace:^0.0.0
   '@types/commander': ^2.12.2
   '@types/fs-extra': ^9.0.13
   '@types/glob': ^7.2.0
   '@types/inquirer': ~8.1.1
+  '@types/parse-glob': ^3.0.29
   '@types/semver': ^7.3.10
   commander: ^9.3.0
   fs-extra: ^10.1.0
@@ -15,19 +15,20 @@ specifiers:
   inquirer: ~8.1.1
   lice: ^1.1.0
   lodash: ^4.17.21
+  parse-glob: ^3.0.4
   semver: ^7.3.7
   yup: ^0.32.11
 
 dependencies:
   '@agros/common': link:../agros-common
-  '@agros/logger': link:../agros-logger
-  '@agros/utils': link:../agros-utils
+  '@agros/tools': link:../agros-tools
   commander: 9.4.0
   fs-extra: 10.1.0
   glob: 8.0.3
   inquirer: 8.1.5
   lice: 1.1.0
   lodash: 4.17.21
+  parse-glob: 3.0.4
   semver: 7.3.7
   yup: 0.32.11
 
@@ -36,6 +37,7 @@ devDependencies:
   '@types/fs-extra': 9.0.13
   '@types/glob': 7.2.0
   '@types/inquirer': 8.1.3
+  '@types/parse-glob': 3.0.29
   '@types/semver': 7.3.10
 
 packages:
@@ -84,6 +86,10 @@ packages:
 
   /@types/node/18.0.4:
     resolution: {integrity: sha512-M0+G6V0Y4YV8cqzHssZpaNCqvYwlCiulmm0PwpNLF55r/+cT8Ol42CHRU1SEaYFH2rTwiiE1aYg/2g2rrtGdPA==}
+    dev: true
+
+  /@types/parse-glob/3.0.29:
+    resolution: {integrity: sha512-OFwMPH5eJOhtwR92GMjTNWukaKTdWQC12cBgRvrTQl5CwhruSq6734wi1CTSh5Qjm/pMJWaKOOPKZOp6FpIkXQ==}
     dev: true
 
   /@types/semver/7.3.10:
@@ -297,6 +303,20 @@ packages:
     resolution: {integrity: sha512-OO0pH2lK6a0hZnAdau5ItzHPI6pUlvI7jMVnxUQRtw4owF2wk8lOSabtGDCTP4Ggrg2MbGnWO9X8K1t4+fGMDw==}
     dev: false
 
+  /glob-base/0.3.0:
+    resolution: {integrity: sha512-ab1S1g1EbO7YzauaJLkgLp7DZVAqj9M/dvKlTt8DkXA2tiOIcSMrlVI2J1RZyB5iJVccEscjGn+kpOG9788MHA==}
+    engines: {node: '>=0.10.0'}
+    dependencies:
+      glob-parent: 2.0.0
+      is-glob: 2.0.1
+    dev: false
+
+  /glob-parent/2.0.0:
+    resolution: {integrity: sha512-JDYOvfxio/t42HKdxkAYaCiBN7oYiuxykOxKxdaUW5Qn0zaYN3gRQWolrwdnf0shM9/EP0ebuuTmyoXNr1cC5w==}
+    dependencies:
+      is-glob: 2.0.1
+    dev: false
+
   /glob/8.0.3:
     resolution: {integrity: sha512-ull455NHSHI/Y1FqGaaYFaLGkNMMJbavMrEGFXG/PGrg6y7sutWHUHrz6gy6WEBH6akM1M414dWKCNs+IhKdiQ==}
     engines: {node: '>=12'}
@@ -379,9 +399,26 @@ packages:
       through: 2.3.8
     dev: false
 
+  /is-dotfile/1.0.3:
+    resolution: {integrity: sha512-9YclgOGtN/f8zx0Pr4FQYMdibBiTaH3sn52vjYip4ZSf6C4/6RfTEZ+MR4GvKhCxdPh21Bg42/WL55f6KSnKpg==}
+    engines: {node: '>=0.10.0'}
+    dev: false
+
+  /is-extglob/1.0.0:
+    resolution: {integrity: sha512-7Q+VbVafe6x2T+Tu6NcOf6sRklazEPmBoB3IWk3WdGZM2iGUwU/Oe3Wtq5lSEkDTTlpp8yx+5t4pzO/i9Ty1ww==}
+    engines: {node: '>=0.10.0'}
+    dev: false
+
   /is-fullwidth-code-point/3.0.0:
     resolution: {integrity: sha512-zymm5+u+sCsSWyD9qNaejV3DFvhCKclKdizYaJUuHA83RLjb7nSuGnddCHGv0hk+KY7BMAlsWeK4Ueg6EV6XQg==}
     engines: {node: '>=8'}
+    dev: false
+
+  /is-glob/2.0.1:
+    resolution: {integrity: sha512-a1dBeB19NXsf/E0+FHqkagizel/LQw2DjSQpvQrj3zT+jYPpaUCryPnrQajXKFLCMuf4I6FhRpaGtw4lPrG6Eg==}
+    engines: {node: '>=0.10.0'}
+    dependencies:
+      is-extglob: 1.0.0
     dev: false
 
   /is-interactive/1.0.0:
@@ -503,6 +540,16 @@ packages:
   /os-tmpdir/1.0.2:
     resolution: {integrity: sha512-D2FR03Vir7FIu45XBY20mTb+/ZSWB00sjU9jdQXt83gDrI4Ztz5Fs7/yy74g2N5SVQY4xY1qDr4rNddwYRVX0g==}
     engines: {node: '>=0.10.0'}
+    dev: false
+
+  /parse-glob/3.0.4:
+    resolution: {integrity: sha512-FC5TeK0AwXzq3tUBFtH74naWkPQCEWs4K+xMxWZBlKDWu0bVHXGZa+KKqxKidd7xwhdZ19ZNuF2uO1M/r196HA==}
+    engines: {node: '>=0.10.0'}
+    dependencies:
+      glob-base: 0.3.0
+      is-dotfile: 1.0.3
+      is-extglob: 1.0.0
+      is-glob: 2.0.1
     dev: false
 
   /property-expr/2.0.5:

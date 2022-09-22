@@ -1,10 +1,11 @@
-import { detectExports } from '@agros/common';
+import { detectExports } from '@agros/tools/lib/detectors';
+import { ensureImport } from '@agros/tools/lib/ensure-import';
+import { EnsureImportOptions } from '@agros/tools/lib/types';
+import { parseAST } from '@agros/tools/lib/parse-ast';
 import {
-    ensureImport,
-    EnsureImportOptions,
-} from '@agros/utils/lib/ensure-import';
-import { parseAST } from '@agros/utils/lib/parse-ast';
-import { PlatformConfigParser } from '@agros/config/lib/platform-config-parser';
+    PlatformConfigParser,
+    ProjectConfigParser,
+} from '@agros/tools/lib/config-parsers';
 import * as path from 'path';
 import * as template from '@babel/template';
 import generate from '@babel/generator';
@@ -13,8 +14,7 @@ import {
     createLoaderAOP,
 } from '../utils';
 import * as t from '@babel/types';
-import { ProjectConfigParser } from '@agros/config';
-import { Platform } from '@agros/platforms/lib/platform.interface';
+import { Platform } from '@agros/tools/lib/platform.interface';
 
 export const transformEntry = createLoaderAOP(
     async ({

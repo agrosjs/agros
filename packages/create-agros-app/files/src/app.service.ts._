@@ -1,4 +1,4 @@
-import { Injectable } from '@agros/app';
+import { Injectable } from '@agros/common';
 
 @Injectable()
 export class AppService {

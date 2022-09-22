@@ -8,11 +8,9 @@ importers:
   ../../packages/agros-app:
     specifiers:
       '@agros/common': workspace:^0.6.4
-      '@agros/config': workspace:^0.6.0
+      '@agros/create-app': workspace:^0.1.9
       '@agros/loader': workspace:^1.0.1
-      '@agros/logger': workspace:^0.1.0
-      '@agros/platforms': workspace:^1.0.0
-      '@agros/utils': workspace:^0.3.2
+      '@agros/tools': workspace:^0.0.0
       '@babel/core': ^7.18.5
       '@babel/plugin-proposal-class-properties': ^7.17.12
       '@babel/plugin-proposal-decorators': ^7.18.2
@@ -29,6 +27,7 @@ importers:
       babel-plugin-transform-typescript-metadata: ^0.3.2
       bfj: ^7.0.2
       case-sensitive-paths-webpack-plugin: ^2.4.0
+      copyfiles: ^2.4.1
       crypto: ^1.0.1
       css-loader: ^6.7.1
       css-minimizer-webpack-plugin: ^4.0.0
@@ -68,11 +67,9 @@ importers:
       workbox-webpack-plugin: ^6.5.4
     dependencies:
       '@agros/common': link:../agros-common
-      '@agros/config': link:../agros-config
+      '@agros/create-app': link:../create-agros-app
       '@agros/loader': link:../agros-loader
-      '@agros/logger': link:../agros-logger
-      '@agros/platforms': link:../agros-platforms
-      '@agros/utils': link:../agros-utils
+      '@agros/tools': link:../agros-tools
       '@babel/core': 7.18.10
       '@babel/plugin-proposal-class-properties': 7.18.6_@babel+core@7.18.10
       '@babel/plugin-proposal-decorators': 7.18.10_@babel+core@7.18.10
@@ -81,6 +78,7 @@ importers:
       babel-plugin-transform-typescript-metadata: 0.3.2
       bfj: 7.0.2
       case-sensitive-paths-webpack-plugin: 2.4.0
+      copyfiles: 2.4.1
       crypto: 1.0.1
       css-loader: 6.7.1_webpack@5.74.0
       css-minimizer-webpack-plugin: 4.0.0_webpack@5.74.0
@@ -130,11 +128,9 @@ importers:
 
   ../../packages/agros-cli:
     specifiers:
-      '@agros/collections': workspace:^0.1.5
+      '@agros/app': workspace:^1.0.1
       '@agros/common': workspace:^0.6.4
-      '@agros/config': workspace:^0.6.0
-      '@agros/logger': workspace:^0.1.0
-      '@agros/utils': workspace:^0.3.2
+      '@agros/tools': workspace:^0.0.0
       '@types/fs-extra': ^9.0.13
       '@types/inquirer': ~8.1.1
       '@types/jest': ^28.1.1
@@ -146,11 +142,9 @@ importers:
       rimraf: ^3.0.2
       typescript: ^4.5.5
     dependencies:
-      '@agros/collections': link:../agros-collections
+      '@agros/app': link:../agros-app
       '@agros/common': link:../agros-common
-      '@agros/config': link:../agros-config
-      '@agros/logger': link:../agros-logger
-      '@agros/utils': link:../agros-utils
+      '@agros/tools': link:../agros-tools
       commander: 9.4.0
       fs-extra: 10.1.0
       inquirer: 8.1.5
@@ -163,142 +157,31 @@ importers:
       rimraf: 3.0.2
       typescript: 4.7.4
 
-  ../../packages/agros-collections:
-    specifiers:
-      '@agros/common': workspace:^0.6.4
-      '@agros/config': workspace:^0.6.0
-      '@agros/create-app': workspace:^0.1.9
-      '@types/jest': ^28.1.1
-      '@types/lodash': ^4.14.182
-      '@types/node': ^15.12.2
-      copyfiles: ^2.4.1
-      lodash: ^4.17.21
-      rimraf: ^3.0.2
-      typescript: ^4.5.5
-    dependencies:
-      '@agros/common': link:../agros-common
-      '@agros/config': link:../agros-config
-      '@agros/create-app': link:../create-agros-app
-      lodash: 4.17.21
-    devDependencies:
-      '@types/jest': 28.1.6
-      '@types/lodash': 4.14.182
-      '@types/node': 15.14.9
-      copyfiles: 2.4.1
-      rimraf: 3.0.2
-      typescript: 4.7.4
-
   ../../packages/agros-common:
     specifiers:
-      '@agros/config': workspace:^0.6.0
-      '@agros/utils': workspace:^0.3.2
-      '@babel/generator': ^7.18.2
-      '@babel/parser': ^7.18.5
-      '@babel/traverse': ^7.18.8
-      '@babel/types': ^7.18.4
-      '@types/babel__generator': ^7.6.4
-      '@types/babel__traverse': ^7.17.1
-      '@types/ejs': ^3.1.1
-      '@types/eslint': ^8.4.5
-      '@types/fs-extra': ^9.0.13
-      '@types/immutable': ^3.8.7
+      '@agros/tools': workspace:^0.0.0
+      '@types/is-promise': ^2.2.0
       '@types/jest': ^28.1.1
-      '@types/lodash': ^4.14.182
       '@types/node': ^15.12.2
-      '@types/parse-glob': ^3.0.29
-      '@types/prettier': ^2.6.3
-      '@types/react': ^17.0.0
-      '@types/webpack': ^5.28.0
-      cosmiconfig: ^7.0.1
-      ejs: ^3.1.8
-      eslint: ^8.19.0
-      fs-extra: ^10.1.0
-      immutable: ^4.1.0
-      isbinaryfile: ^5.0.0
-      lodash: ^4.17.21
-      parse-glob: ^3.0.4
-      prettier: ^2.7.1
-      react: ^17.0.0
+      is-promise: ^4.0.0
+      reflect-metadata: ^0.1.13
       rimraf: ^3.0.2
       typescript: ^4.5.5
-      webpack: ^5.28.0
     dependencies:
-      '@agros/config': link:../agros-config
-      '@agros/utils': link:../agros-utils
-      '@babel/generator': 7.18.12
-      '@babel/parser': 7.18.11
-      '@babel/traverse': 7.18.11
-      '@babel/types': 7.18.10
-      '@types/react': 17.0.48
-      cosmiconfig: 7.0.1
-      ejs: 3.1.8
-      eslint: 8.21.0
-      fs-extra: 10.1.0
-      immutable: 4.1.0
-      isbinaryfile: 5.0.0
-      lodash: 4.17.21
-      parse-glob: 3.0.4
-      prettier: 2.7.1
-      react: 17.0.2
-      webpack: 5.74.0
+      '@agros/tools': link:../agros-tools
+      is-promise: 4.0.0
+      reflect-metadata: 0.1.13
     devDependencies:
-      '@types/babel__generator': 7.6.4
-      '@types/babel__traverse': 7.18.0
-      '@types/ejs': 3.1.1
-      '@types/eslint': 8.4.5
-      '@types/fs-extra': 9.0.13
-      '@types/immutable': 3.8.7
+      '@types/is-promise': 2.2.0
       '@types/jest': 28.1.6
-      '@types/lodash': 4.14.182
       '@types/node': 15.14.9
-      '@types/parse-glob': 3.0.29
-      '@types/prettier': 2.7.0
-      '@types/webpack': 5.28.0
-      rimraf: 3.0.2
-      typescript: 4.7.4
-
-  ../../packages/agros-config:
-    specifiers:
-      '@agros/utils': workspace:^0.3.2
-      '@types/fs-extra': ^9.0.13
-      '@types/jest': ^28.1.1
-      '@types/lodash': ^4.14.182
-      '@types/minimatch': ^3.0.5
-      '@types/node': ^15.12.2
-      '@types/parse-glob': ^3.0.29
-      '@types/webpack': ^5.28.0
-      '@typescript-eslint/eslint-plugin': ^5.30.5
-      '@typescript-eslint/parser': ^5.30.5
-      cosmiconfig: ^7.0.1
-      eslint-config-alloy: ^4.6.2
-      fs-extra: ^10.1.0
-      lodash: ^4.17.21
-      rimraf: ^3.0.2
-      typescript: ^4.5.5
-      webpack: ^5.28.0
-    dependencies:
-      '@agros/utils': link:../agros-utils
-      '@typescript-eslint/eslint-plugin': 5.32.0_e2qss4o2jcywurwceqafjaghoy
-      '@typescript-eslint/parser': 5.32.0_typescript@4.7.4
-      cosmiconfig: 7.0.1
-      eslint-config-alloy: 4.6.2_ovrofuivuyl2tk4n56wrkycnfq
-      fs-extra: 10.1.0
-      lodash: 4.17.21
-      webpack: 5.74.0
-    devDependencies:
-      '@types/fs-extra': 9.0.13
-      '@types/jest': 28.1.6
-      '@types/lodash': 4.14.182
-      '@types/minimatch': 3.0.5
-      '@types/node': 15.14.9
-      '@types/parse-glob': 3.0.29
-      '@types/webpack': 5.28.0
       rimraf: 3.0.2
       typescript: 4.7.4
 
   ../../packages/agros-example:
     specifiers:
       '@agros/app': workspace:^1.0.1
+      '@agros/common': workspace:^0.6.4
       '@agros/platform-react': workspace:^1.1.0
       '@agros/platform-svelte': workspace:^1.1.0
       '@agros/platform-vue': workspace:^1.1.0
@@ -321,6 +204,7 @@ importers:
       web-vitals: ^2.1.4
     dependencies:
       '@agros/app': link:../agros-app
+      '@agros/common': link:../agros-common
       '@agros/platform-react': link:../agros-platform-react
       '@agros/platform-svelte': link:../agros-platform-svelte
       '@agros/platform-vue': link:../agros-platform-vue
@@ -346,9 +230,7 @@ importers:
   ../../packages/agros-loader:
     specifiers:
       '@agros/common': workspace:^0.6.4
-      '@agros/config': workspace:^0.6.0
-      '@agros/platforms': workspace:^1.0.0
-      '@agros/utils': workspace:^0.3.2
+      '@agros/tools': workspace:^0.0.0
       '@babel/generator': ^7.18.2
       '@babel/parser': ^7.18.5
       '@babel/template': ^7.16.7
@@ -374,9 +256,7 @@ importers:
       uuid: ^8.3.2
     dependencies:
       '@agros/common': link:../agros-common
-      '@agros/config': link:../agros-config
-      '@agros/platforms': link:../agros-platforms
-      '@agros/utils': link:../agros-utils
+      '@agros/tools': link:../agros-tools
       '@babel/generator': 7.18.12
       '@babel/parser': 7.18.11
       '@babel/template': 7.18.10
@@ -402,35 +282,11 @@ importers:
       rimraf: 3.0.2
       typescript: 4.7.4
 
-  ../../packages/agros-logger:
-    specifiers:
-      '@types/cli-spinners': ^1.3.0
-      '@types/jest': ^28.1.1
-      '@types/lodash': ^4.14.182
-      '@types/node': ^15.12.2
-      cli-spinners: ^2.6.1
-      lodash: ^4.17.21
-      rimraf: ^3.0.2
-      typescript: ^4.5.5
-    dependencies:
-      cli-spinners: 2.7.0
-      lodash: 4.17.21
-    devDependencies:
-      '@types/cli-spinners': 1.3.0
-      '@types/jest': 28.1.6
-      '@types/lodash': 4.14.182
-      '@types/node': 15.14.9
-      rimraf: 3.0.2
-      typescript: 4.7.4
-
   ../../packages/agros-platform-react:
     specifiers:
       '@agros/common': workspace:^0.6.4
-      '@agros/config': workspace:^0.6.0
       '@agros/loader': workspace:^1.0.1
-      '@agros/logger': workspace:^0.1.0
-      '@agros/platforms': workspace:^1.0.0
-      '@agros/utils': workspace:^0.3.2
+      '@agros/tools': workspace:^0.0.0
       '@babel/core': ^7.18.5
       '@babel/generator': ^7.18.10
       '@babel/plugin-proposal-class-properties': ^7.17.12
@@ -461,11 +317,8 @@ importers:
       webpack: ^5.28.0
     dependencies:
       '@agros/common': link:../agros-common
-      '@agros/config': link:../agros-config
       '@agros/loader': link:../agros-loader
-      '@agros/logger': link:../agros-logger
-      '@agros/platforms': link:../agros-platforms
-      '@agros/utils': link:../agros-utils
+      '@agros/tools': link:../agros-tools
       '@babel/core': 7.18.10
       '@babel/generator': 7.18.12
       '@babel/plugin-proposal-class-properties': 7.18.6_@babel+core@7.18.10
@@ -500,8 +353,7 @@ importers:
     specifiers:
       '@agros/common': workspace:^0.6.4
       '@agros/loader': workspace:^1.0.1
-      '@agros/platforms': workspace:^1.0.0
-      '@agros/utils': workspace:^0.3.2
+      '@agros/tools': workspace:^0.0.0
       '@babel/core': ^7.18.5
       '@babel/plugin-transform-parameters': ^7.18.8
       '@babel/plugin-transform-runtime': ^7.18.10
@@ -527,8 +379,7 @@ importers:
     dependencies:
       '@agros/common': link:../agros-common
       '@agros/loader': link:../agros-loader
-      '@agros/platforms': link:../agros-platforms
-      '@agros/utils': link:../agros-utils
+      '@agros/tools': link:../agros-tools
       '@babel/core': 7.18.10
       '@babel/plugin-transform-parameters': 7.18.8_@babel+core@7.18.10
       '@babel/plugin-transform-runtime': 7.18.10_@babel+core@7.18.10
@@ -556,10 +407,8 @@ importers:
   ../../packages/agros-platform-vue:
     specifiers:
       '@agros/common': workspace:^0.6.4
-      '@agros/config': workspace:^0.6.0
       '@agros/loader': workspace:^1.0.1
-      '@agros/platforms': workspace:^1.0.0
-      '@agros/utils': workspace:^0.3.2
+      '@agros/tools': workspace:^0.0.0
       '@babel/plugin-transform-parameters': ^7.18.8
       '@babel/plugin-transform-runtime': ^7.18.10
       '@babel/plugin-transform-typescript': ^7.18.12
@@ -588,10 +437,8 @@ importers:
       webpack: ^5.28.0
     dependencies:
       '@agros/common': link:../agros-common
-      '@agros/config': link:../agros-config
       '@agros/loader': link:../agros-loader
-      '@agros/platforms': link:../agros-platforms
-      '@agros/utils': link:../agros-utils
+      '@agros/tools': link:../agros-tools
       '@babel/plugin-transform-parameters': 7.18.8
       '@babel/plugin-transform-runtime': 7.18.10
       '@babel/plugin-transform-typescript': 7.18.12
@@ -620,63 +467,81 @@ importers:
       rimraf: 3.0.2
       typescript: 4.7.4
 
-  ../../packages/agros-platforms:
+  ../../packages/agros-tools:
     specifiers:
-      '@agros/common': workspace:^0.6.4
-      '@agros/utils': workspace:^0.3.2
-      '@types/jest': ^28.1.1
-      '@types/lodash': ^4.14.182
-      '@types/node': ^15.12.2
-      rimraf: ^3.0.2
-      typescript: ^4.5.5
-    dependencies:
-      '@agros/common': link:../agros-common
-      '@agros/utils': link:../agros-utils
-    devDependencies:
-      '@types/jest': 28.1.6
-      '@types/lodash': 4.14.182
-      '@types/node': 15.14.9
-      rimraf: 3.0.2
-      typescript: 4.7.4
-
-  ../../packages/agros-utils:
-    specifiers:
+      '@babel/generator': ^7.19.0
       '@babel/parser': ^7.18.5
       '@babel/template': ^7.16.7
+      '@babel/traverse': ^7.18.8
       '@babel/types': ^7.18.4
+      '@types/babel__generator': ^7.6.4
       '@types/babel__template': ^7.4.1
+      '@types/babel__traverse': ^7.17.1
+      '@types/cli-spinners': ^1.3.0
       '@types/customize-cra': ^1.0.2
+      '@types/ejs': ^3.1.1
+      '@types/eslint': ^8.4.5
       '@types/fs-extra': ^9.0.13
+      '@types/immutable': ^3.8.7
       '@types/jest': ^28.1.1
       '@types/lodash': ^4.14.182
       '@types/node': ^15.12.2
+      '@types/parse-glob': ^3.0.29
+      '@types/prettier': ^2.6.3
+      '@types/webpack': ^5.28.0
+      cli-spinners: ^2.6.1
       customize-cra: ^1.0.0
+      ejs: ^3.1.8
+      eslint: ^8.19.0
       fs-extra: ^10.1.0
+      immutable: ^4.1.0
+      isbinaryfile: ^5.0.0
       lodash: ^4.17.21
+      parse-glob: ^3.0.4
+      prettier: ^2.7.1
       rimraf: ^3.0.2
       typescript: ^4.5.5
+      webpack: ^5.28.0
     dependencies:
-      '@babel/parser': 7.18.11
+      '@babel/generator': 7.19.0
+      '@babel/parser': 7.19.0
       '@babel/template': 7.18.10
-      '@babel/types': 7.18.10
+      '@babel/traverse': 7.19.0
+      '@babel/types': 7.19.0
+      cli-spinners: 2.7.0
       customize-cra: 1.0.0
+      ejs: 3.1.8
+      eslint: 8.21.0
       fs-extra: 10.1.0
+      immutable: 4.1.0
+      isbinaryfile: 5.0.0
       lodash: 4.17.21
+      parse-glob: 3.0.4
+      prettier: 2.7.1
+      webpack: 5.74.0
     devDependencies:
+      '@types/babel__generator': 7.6.4
       '@types/babel__template': 7.4.1
+      '@types/babel__traverse': 7.18.0
+      '@types/cli-spinners': 1.3.0
       '@types/customize-cra': 1.0.2
+      '@types/ejs': 3.1.1
+      '@types/eslint': 8.4.5
       '@types/fs-extra': 9.0.13
+      '@types/immutable': 3.8.7
       '@types/jest': 28.1.6
       '@types/lodash': 4.14.182
       '@types/node': 15.14.9
+      '@types/parse-glob': 3.0.29
+      '@types/prettier': 2.7.0
+      '@types/webpack': 5.28.0
       rimraf: 3.0.2
       typescript: 4.7.4
 
   ../../packages/create-agros-app:
     specifiers:
       '@agros/common': workspace:^0.6.4
-      '@agros/logger': workspace:^0.1.0
-      '@agros/utils': workspace:^0.3.2
+      '@agros/tools': workspace:^0.0.0
       '@types/commander': ^2.12.2
       '@types/fs-extra': ^9.0.13
       '@types/glob': ^7.2.0
@@ -697,8 +562,7 @@ importers:
       yup: ^0.32.11
     dependencies:
       '@agros/common': link:../agros-common
-      '@agros/logger': link:../agros-logger
-      '@agros/utils': link:../agros-utils
+      '@agros/tools': link:../agros-tools
       commander: 9.4.0
       fs-extra: 10.1.0
       glob: 8.0.3
@@ -1339,7 +1203,6 @@ packages:
     hasBin: true
     dependencies:
       '@babel/types': 7.19.0
-    dev: false
 
   /@babel/plugin-bugfix-safari-id-destructuring-collision-in-function-expression/7.18.6:
     resolution: {integrity: sha512-Dgxsyg54Fx1d4Nge8UnvTrED63vrwOdPmyvPzlNN/boaliRP54pm3pGzZD1SJUwrBA+Cs/xdG8kXX6Mn/RfISQ==}
@@ -3856,8 +3719,8 @@ packages:
     engines: {node: '>=6.9.0'}
     dependencies:
       '@babel/code-frame': 7.18.6
-      '@babel/parser': 7.18.11
-      '@babel/types': 7.18.10
+      '@babel/parser': 7.19.0
+      '@babel/types': 7.19.0
 
   /@babel/traverse/7.0.0-beta.53:
     resolution: {integrity: sha512-JZh3vX/9ox9aoub2gLlpPRm8LM0yJuqzmp5MrbwD57SPh1dHMDWjGen9exbaITAe03t9MJV5PAacv0K2UJBffg==}
@@ -4444,8 +4307,8 @@ packages:
   /@types/babel__core/7.1.19:
     resolution: {integrity: sha512-WEOTgRsbYkvA/KCsDwVEGkd7WAr1e3g31VHQ8zy5gul/V1qKullU/BU5I68X5v7V3GnB9eotmom4v5a5gjxorw==}
     dependencies:
-      '@babel/parser': 7.18.11
-      '@babel/types': 7.18.10
+      '@babel/parser': 7.19.0
+      '@babel/types': 7.19.0
       '@types/babel__generator': 7.6.4
       '@types/babel__template': 7.4.1
       '@types/babel__traverse': 7.18.0
@@ -4454,20 +4317,20 @@ packages:
   /@types/babel__generator/7.6.4:
     resolution: {integrity: sha512-tFkciB9j2K755yrTALxD44McOrk+gfpIpvC3sxHjRawj6PfnQxrse4Clq5y/Rq+G3mrBurMax/lG8Qn2t9mSsg==}
     dependencies:
-      '@babel/types': 7.18.10
+      '@babel/types': 7.19.0
     dev: true
 
   /@types/babel__template/7.4.1:
     resolution: {integrity: sha512-azBFKemX6kMg5Io+/rdGT0dkGreboUVR0Cdm3fz9QJWpaQGJRQXl7C+6hOTCZcMll7KFyEQpgbYI2lHdsS4U7g==}
     dependencies:
-      '@babel/parser': 7.18.11
-      '@babel/types': 7.18.10
+      '@babel/parser': 7.19.0
+      '@babel/types': 7.19.0
     dev: true
 
   /@types/babel__traverse/7.18.0:
     resolution: {integrity: sha512-v4Vwdko+pgymgS+A2UIaJru93zQd85vIGWObM5ekZNdXCKtDYqATlEYnWgfo86Q6I1Lh0oXnksDnMU1cwmlPDw==}
     dependencies:
-      '@babel/types': 7.18.10
+      '@babel/types': 7.19.0
     dev: true
 
   /@types/body-parser/1.19.2:
@@ -4677,6 +4540,7 @@ packages:
 
   /@types/prop-types/15.7.5:
     resolution: {integrity: sha512-JCB8C6SnDoQf0cNycqd/35A7MjcnK+ZTqE7judS6o7utxUCg6imJg3QK2qzHKszlTjcj2cn+NwMB2i96ubpj7w==}
+    dev: true
 
   /@types/pug/2.0.6:
     resolution: {integrity: sha512-SnHmG9wN1UVmagJOnyo/qkk0Z7gejYxOYYmaAwr5u2yFYfsupN3sg10kyzN8Hep/2zbHxCnsumxOoRIRMBwKCg==}
@@ -4712,6 +4576,7 @@ packages:
       '@types/prop-types': 15.7.5
       '@types/scheduler': 0.16.2
       csstype: 3.1.0
+    dev: true
 
   /@types/relateurl/0.2.29:
     resolution: {integrity: sha512-QSvevZ+IRww2ldtfv1QskYsqVVVwCKQf1XbwtcyyoRvLIQzfyPhj/C+3+PKzSDRdiyejaiLgnq//XTkleorpLg==}
@@ -4735,6 +4600,7 @@ packages:
 
   /@types/scheduler/0.16.2:
     resolution: {integrity: sha512-hppQEBDmlwhFAXKJX2KnWLYu5yMfi91yazPb2l+lbJiwW+wdo1gNeRA+3RgNSO39WYX2euey41KEwnqesU2Jew==}
+    dev: true
 
   /@types/semver/7.3.10:
     resolution: {integrity: sha512-zsv3fsC7S84NN6nPK06u79oWgrPVd0NvOyqgghV1haPaFcVxIrP4DLomRwGAXk0ui4HZA7mOcSFL98sMVW9viw==}
@@ -4850,128 +4716,6 @@ packages:
     resolution: {integrity: sha512-6YOoWjruKj1uLf3INHH7D3qTXwFfEsg1kf3c0uDdSBJwfa/llkwIjrAGV7j7mVgGNbzTQ3HiHKKDXl6bJPD97w==}
     dependencies:
       '@types/node': 15.14.9
-    dev: false
-
-  /@typescript-eslint/eslint-plugin/5.32.0_e2qss4o2jcywurwceqafjaghoy:
-    resolution: {integrity: sha512-CHLuz5Uz7bHP2WgVlvoZGhf0BvFakBJKAD/43Ty0emn4wXWv5k01ND0C0fHcl/Im8Td2y/7h44E9pca9qAu2ew==}
-    engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
-    peerDependencies:
-      '@typescript-eslint/parser': ^5.0.0
-      eslint: ^6.0.0 || ^7.0.0 || ^8.0.0
-      typescript: '*'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-    dependencies:
-      '@typescript-eslint/parser': 5.32.0_typescript@4.7.4
-      '@typescript-eslint/scope-manager': 5.32.0
-      '@typescript-eslint/type-utils': 5.32.0_typescript@4.7.4
-      '@typescript-eslint/utils': 5.32.0_typescript@4.7.4
-      debug: 4.3.4
-      functional-red-black-tree: 1.0.1
-      ignore: 5.2.0
-      regexpp: 3.2.0
-      semver: 7.3.7
-      tsutils: 3.21.0_typescript@4.7.4
-      typescript: 4.7.4
-    transitivePeerDependencies:
-      - supports-color
-    dev: false
-
-  /@typescript-eslint/parser/5.32.0_typescript@4.7.4:
-    resolution: {integrity: sha512-IxRtsehdGV9GFQ35IGm5oKKR2OGcazUoiNBxhRV160iF9FoyuXxjY+rIqs1gfnd+4eL98OjeGnMpE7RF/NBb3A==}
-    engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
-    peerDependencies:
-      eslint: ^6.0.0 || ^7.0.0 || ^8.0.0
-      typescript: '*'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-    dependencies:
-      '@typescript-eslint/scope-manager': 5.32.0
-      '@typescript-eslint/types': 5.32.0
-      '@typescript-eslint/typescript-estree': 5.32.0_typescript@4.7.4
-      debug: 4.3.4
-      typescript: 4.7.4
-    transitivePeerDependencies:
-      - supports-color
-    dev: false
-
-  /@typescript-eslint/scope-manager/5.32.0:
-    resolution: {integrity: sha512-KyAE+tUON0D7tNz92p1uetRqVJiiAkeluvwvZOqBmW9z2XApmk5WSMV9FrzOroAcVxJZB3GfUwVKr98Dr/OjOg==}
-    engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
-    dependencies:
-      '@typescript-eslint/types': 5.32.0
-      '@typescript-eslint/visitor-keys': 5.32.0
-    dev: false
-
-  /@typescript-eslint/type-utils/5.32.0_typescript@4.7.4:
-    resolution: {integrity: sha512-0gSsIhFDduBz3QcHJIp3qRCvVYbqzHg8D6bHFsDMrm0rURYDj+skBK2zmYebdCp+4nrd9VWd13egvhYFJj/wZg==}
-    engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
-    peerDependencies:
-      eslint: '*'
-      typescript: '*'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-    dependencies:
-      '@typescript-eslint/utils': 5.32.0_typescript@4.7.4
-      debug: 4.3.4
-      tsutils: 3.21.0_typescript@4.7.4
-      typescript: 4.7.4
-    transitivePeerDependencies:
-      - supports-color
-    dev: false
-
-  /@typescript-eslint/types/5.32.0:
-    resolution: {integrity: sha512-EBUKs68DOcT/EjGfzywp+f8wG9Zw6gj6BjWu7KV/IYllqKJFPlZlLSYw/PTvVyiRw50t6wVbgv4p9uE2h6sZrQ==}
-    engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
-    dev: false
-
-  /@typescript-eslint/typescript-estree/5.32.0_typescript@4.7.4:
-    resolution: {integrity: sha512-ZVAUkvPk3ITGtCLU5J4atCw9RTxK+SRc6hXqLtllC2sGSeMFWN+YwbiJR9CFrSFJ3w4SJfcWtDwNb/DmUIHdhg==}
-    engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
-    peerDependencies:
-      typescript: '*'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-    dependencies:
-      '@typescript-eslint/types': 5.32.0
-      '@typescript-eslint/visitor-keys': 5.32.0
-      debug: 4.3.4
-      globby: 11.1.0
-      is-glob: 4.0.3
-      semver: 7.3.7
-      tsutils: 3.21.0_typescript@4.7.4
-      typescript: 4.7.4
-    transitivePeerDependencies:
-      - supports-color
-    dev: false
-
-  /@typescript-eslint/utils/5.32.0_typescript@4.7.4:
-    resolution: {integrity: sha512-W7lYIAI5Zlc5K082dGR27Fczjb3Q57ECcXefKU/f0ajM5ToM0P+N9NmJWip8GmGu/g6QISNT+K6KYB+iSHjXCQ==}
-    engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
-    peerDependencies:
-      eslint: ^6.0.0 || ^7.0.0 || ^8.0.0
-    dependencies:
-      '@types/json-schema': 7.0.11
-      '@typescript-eslint/scope-manager': 5.32.0
-      '@typescript-eslint/types': 5.32.0
-      '@typescript-eslint/typescript-estree': 5.32.0_typescript@4.7.4
-      eslint-scope: 5.1.1
-      eslint-utils: 3.0.0
-    transitivePeerDependencies:
-      - supports-color
-      - typescript
-    dev: false
-
-  /@typescript-eslint/visitor-keys/5.32.0:
-    resolution: {integrity: sha512-S54xOHZgfThiZ38/ZGTgB2rqx51CMJ5MCfVT2IplK4Q7hgzGfe0nLzLCcenDnc/cSjP568hdeKfeDcBgqNHD/g==}
-    engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
-    dependencies:
-      '@typescript-eslint/types': 5.32.0
-      eslint-visitor-keys: 3.3.0
     dev: false
 
   /@vue/babel-helper-vue-jsx-merge-props/1.2.1:
@@ -6055,7 +5799,7 @@ packages:
       string-width: 4.2.3
       strip-ansi: 6.0.1
       wrap-ansi: 7.0.0
-    dev: true
+    dev: false
 
   /clone/1.0.4:
     resolution: {integrity: sha512-JQHZ2QMW6l3aH/j6xCqQThY/9OH4D/9ls34cgkUBiEeocRTU04tHfKPBsUK1PqZCUQM7GiA0IIXJSuXHI64Kbg==}
@@ -6206,7 +5950,7 @@ packages:
       through2: 2.0.5
       untildify: 4.0.0
       yargs: 16.2.0
-    dev: true
+    dev: false
 
   /core-js-compat/3.24.1:
     resolution: {integrity: sha512-XhdNAGeRnTpp8xbD+sR/HFDK9CbeeeqXT6TuofXh3urqEevzkWmLRgrVoykodsw8okqo2pu1BOmuCKrHx63zdw==}
@@ -6227,6 +5971,7 @@ packages:
 
   /core-util-is/1.0.3:
     resolution: {integrity: sha512-ZQBvi1DcpJ4GDqanjucZ2Hj3wEO5pZDS89BWbkcrvdxksJorwUDDZamX9ldFkp9aw2lmBDLgkObEA4DWNJ9FYQ==}
+    dev: false
 
   /cosmiconfig/6.0.0:
     resolution: {integrity: sha512-xb3ZL6+L8b9JLLCx3ZdoZy4+2ECphCMo2PwqgP1tlfVq6M6YReyzBJtvWWtbDSpNr9hn96pkCiZqUcFEc+54Qg==}
@@ -6456,6 +6201,7 @@ packages:
 
   /csstype/3.1.0:
     resolution: {integrity: sha512-uX1KG+x9h5hIJsaKR9xHUeUraxf8IODOwq9JLNPq6BwB04a/xgpq3rcx47l5BZu5zBPlgD342tdke3Hom/nJRA==}
+    dev: true
 
   /customize-cra-less-loader/2.0.0:
     resolution: {integrity: sha512-b+ofZYNNyZgav09t+HJA4Fm7IKhmF6F/QOCrLpZvo0cod5uT+53EuelvYJV9t12vGgd/xJuvfw+AbaQhJR2Tgg==}
@@ -6735,6 +6481,7 @@ packages:
 
   /emoji-regex/8.0.0:
     resolution: {integrity: sha512-MSjYzcWNOA0ewAHpz0MxpYFvwg6yjy1NG3xteoqz644VCo/RPgnr1/GGt+ic3iJTzQ8Eu3TdM14SawnVUmGE6A==}
+    dev: false
 
   /emojis-list/3.0.0:
     resolution: {integrity: sha512-/kyM18EfinwXZbno9FyUGeFh87KC8HRQBQGildHZbEuRyWFOmv1U10o9BBp8XVZDVNNuQKyIGIu5ZYAAXJ0V2Q==}
@@ -6882,41 +6629,6 @@ packages:
     engines: {node: '>=12'}
     dev: false
 
-  /eslint-config-alloy/4.6.2_ovrofuivuyl2tk4n56wrkycnfq:
-    resolution: {integrity: sha512-mntO/1jazNIJJCb3mwtaH4D9uLnEIzI0EM2aYnllYVBmET0t490yBSLdPz+5cWtJsHU2DkW7aPI/kFtal9Vopg==}
-    peerDependencies:
-      '@babel/eslint-parser': 7.x
-      '@babel/preset-react': 7.x
-      '@typescript-eslint/eslint-plugin': '>=5.29.0'
-      '@typescript-eslint/parser': 5.x
-      eslint: '>=8.18.0'
-      eslint-plugin-react: '>=7.30.1'
-      eslint-plugin-vue: '>=9.1.1'
-      typescript: 4.x
-      vue-eslint-parser: 9.x
-    peerDependenciesMeta:
-      '@babel/eslint-parser':
-        optional: true
-      '@babel/preset-react':
-        optional: true
-      '@typescript-eslint/eslint-plugin':
-        optional: true
-      '@typescript-eslint/parser':
-        optional: true
-      eslint-plugin-react:
-        optional: true
-      eslint-plugin-vue:
-        optional: true
-      typescript:
-        optional: true
-      vue-eslint-parser:
-        optional: true
-    dependencies:
-      '@typescript-eslint/eslint-plugin': 5.32.0_e2qss4o2jcywurwceqafjaghoy
-      '@typescript-eslint/parser': 5.32.0_typescript@4.7.4
-      typescript: 4.7.4
-    dev: false
-
   /eslint-scope/5.1.1:
     resolution: {integrity: sha512-2NxwbF/hZ0KpepYN0cNbo+FN6XoK7GaHlQhgx/hIZl6Va0bF45RQOOwhLIy8lQDbuCiadSLCBnH2CFYquit5bw==}
     engines: {node: '>=8.0.0'}
@@ -6930,15 +6642,6 @@ packages:
     dependencies:
       esrecurse: 4.3.0
       estraverse: 5.3.0
-    dev: false
-
-  /eslint-utils/3.0.0:
-    resolution: {integrity: sha512-uuQC43IGctw68pJA1RgbQS8/NP7rch6Cwd4j3ZBtgo4/8Flj4eGE7ZYSZRN3iq5pVUv6GPdW5Z1RFleo84uLDA==}
-    engines: {node: ^10.0.0 || ^12.0.0 || >= 14.0.0}
-    peerDependencies:
-      eslint: '>=5'
-    dependencies:
-      eslint-visitor-keys: 2.1.0
     dev: false
 
   /eslint-utils/3.0.0_eslint@8.21.0:
@@ -7493,7 +7196,7 @@ packages:
   /get-caller-file/2.0.5:
     resolution: {integrity: sha512-DyFP3BM/3YHTQOCUL/w0OZHR0lpKeGrxotcHWcqNEdnltqFwXVfhEBQ94eIo34AfQpo0rGki4cyIiftY06h2Fg==}
     engines: {node: 6.* || 8.* || >= 10.*}
-    dev: true
+    dev: false
 
   /get-intrinsic/1.1.2:
     resolution: {integrity: sha512-Jfm3OyCxHh9DJyc28qGk+JmfkpO41A4XkneDSujN9MDXrm4oDKdHvndhZ2dN94+ERNfkYJWDclW6k2L/ZGHjXA==}
@@ -8130,6 +7833,7 @@ packages:
   /is-fullwidth-code-point/3.0.0:
     resolution: {integrity: sha512-zymm5+u+sCsSWyD9qNaejV3DFvhCKclKdizYaJUuHA83RLjb7nSuGnddCHGv0hk+KY7BMAlsWeK4Ueg6EV6XQg==}
     engines: {node: '>=8'}
+    dev: false
 
   /is-glob/2.0.1:
     resolution: {integrity: sha512-a1dBeB19NXsf/E0+FHqkagizel/LQw2DjSQpvQrj3zT+jYPpaUCryPnrQajXKFLCMuf4I6FhRpaGtw4lPrG6Eg==}
@@ -8266,10 +7970,11 @@ packages:
 
   /isarray/0.0.1:
     resolution: {integrity: sha512-D2S+3GLxWH+uhrNEcoh/fnmYeP8E8/zHl644d/jdA0g2uyXvy3sb0qxotE+ne0LtccHknQzWwZEzhak7oJ0COQ==}
-    dev: true
+    dev: false
 
   /isarray/1.0.0:
     resolution: {integrity: sha512-VLghIWNM6ELQzo7zwmcg0NmTVyWKYjvIeM83yjp0wRDTmUnrM678fQbcKBo6n2CJEF0szoG//ytg+TKla89ALQ==}
+    dev: false
 
   /isbinaryfile/5.0.0:
     resolution: {integrity: sha512-UDdnyGvMajJUWCkib7Cei/dvyJrrvo4FIrsvSFWdPpXSUorzXrDJ0S+X5Q4ZlasfPjca4yqCNNsjbCeiy8FFeg==}
@@ -8834,7 +8539,7 @@ packages:
     resolution: {integrity: sha512-vVqVZQyf3WLx2Shd0qJ9xuvqgAyKPLAiqITEtqW0oIUjzo3PePDd6fW9iFz30ef7Ysp/oiWqbhszeGWW2T6Gzw==}
     engines: {node: '>=10'}
     hasBin: true
-    dev: true
+    dev: false
 
   /ms/2.0.0:
     resolution: {integrity: sha512-Tpp60P6IUJDTuOq/5Z8cdskzJujfwqfOTkrwIwj7IRISpnkJnT6SyJ4PCPnGMoFjC9ddhal5KVIYtAt97ix05A==}
@@ -8944,7 +8649,7 @@ packages:
     dependencies:
       inherits: 2.0.4
       readable-stream: 1.0.34
-    dev: true
+    dev: false
 
   /normalize-path/3.0.0:
     resolution: {integrity: sha512-6eZs5Ls3WtCisHWp9S2GUy8dqkpGi4BVSz3GaqiE6ezub0512ESztXUwUB6C6IKbQkY2Pnb/mD4WYojCRwcwLA==}
@@ -10025,6 +9730,7 @@ packages:
 
   /process-nextick-args/2.0.1:
     resolution: {integrity: sha512-3ouUOpQhtgrbOa17J7+uxOTpITYWaGP7/AhoR3+A+/1e9skrzelGi/dXzEYyvbxubEF6Wn2ypscTKiKJFFn1ag==}
+    dev: false
 
   /prompts/2.4.2:
     resolution: {integrity: sha512-NxNv/kLguCA7p3jE8oL2aEBsrJWgAakBpgmgK6lpPWV+WuOmY6r2/zbAVnP+T8bQlA0nzHXSJSJW0Hq7ylaD2Q==}
@@ -10212,7 +9918,7 @@ packages:
       inherits: 2.0.4
       isarray: 0.0.1
       string_decoder: 0.10.31
-    dev: true
+    dev: false
 
   /readable-stream/2.3.7:
     resolution: {integrity: sha512-Ebho8K4jIbHAxnuxi7o42OrZgF/ZTNcsZj6nRKyUmkhLFq8CHItp/fy6hQZuZmP/n3yZ9VBUbp4zz/mX8hmYPw==}
@@ -10224,6 +9930,7 @@ packages:
       safe-buffer: 5.1.2
       string_decoder: 1.1.1
       util-deprecate: 1.0.2
+    dev: false
 
   /readable-stream/3.6.0:
     resolution: {integrity: sha512-BViHy7LKeTz4oNnkcLJ+lVSL6vpiFeX6/d3oSH8zCW7UxP2onchk+vTGB143xuFjHS3deTgkKoXXymXqymiIdA==}
@@ -10393,7 +10100,7 @@ packages:
   /require-directory/2.1.1:
     resolution: {integrity: sha512-fGxEI7+wsG9xrvdjsrlmL22OMTTiHRwAMroiEeMgq8gzoLC/PQr7RsRDSTLUg/bZAZtF+TVIkHc6/4RIKrui+Q==}
     engines: {node: '>=0.10.0'}
-    dev: true
+    dev: false
 
   /require-from-string/2.0.2:
     resolution: {integrity: sha512-Xf0nWe6RseziFMu+Ap9biiUbmplq6S9/p+7w7YXP/JBHhrUDDUhwa+vANyubuqfZWTveU//DYVGsDG7RKL/vEw==}
@@ -10938,6 +10645,7 @@ packages:
       emoji-regex: 8.0.0
       is-fullwidth-code-point: 3.0.0
       strip-ansi: 6.0.1
+    dev: false
 
   /string.prototype.matchall/4.0.7:
     resolution: {integrity: sha512-f48okCX7JiwVi1NXCVWcFnZgADDC/n2vePlQ/KUCNqCikLLilQvwjMO8+BHVKvgzH0JB0J9LEPgxOGT02RoETg==}
@@ -10970,12 +10678,13 @@ packages:
 
   /string_decoder/0.10.31:
     resolution: {integrity: sha512-ev2QzSzWPYmy9GuqfIVildA4OdcGLeFZQrq5ys6RtiuF+RQQiZWr8TZNyAcuVXyQRYfEO+MsoB/1BuQVhOJuoQ==}
-    dev: true
+    dev: false
 
   /string_decoder/1.1.1:
     resolution: {integrity: sha512-n/ShnvDi6FHbbVfviro+WojiFzv+s8MPMHBczVePfUpDJLwoLT0ht1l4YwBCbi8pJAveEEdnkHyPyTP/mzRfwg==}
     dependencies:
       safe-buffer: 5.1.2
+    dev: false
 
   /string_decoder/1.3.0:
     resolution: {integrity: sha512-hkRX8U1WjJFd8LsDJ2yQ/wWWxaopEsABU1XfkM8A+j0+85JAGppt16cr1Whg6KIbb4okU6Mql6BOj+uup/wKeA==}
@@ -11012,6 +10721,7 @@ packages:
     engines: {node: '>=8'}
     dependencies:
       ansi-regex: 5.0.1
+    dev: false
 
   /strip-comments/2.0.1:
     resolution: {integrity: sha512-ZprKx+bBLXv067WTCALv8SSz5l2+XhpYCsVtSqlMnkAXMWDq+/ekVbl1ghqP9rUHTzv6sm/DwCOiYutU/yp1fw==}
@@ -11287,7 +10997,7 @@ packages:
     dependencies:
       readable-stream: 2.3.7
       xtend: 4.0.2
-    dev: true
+    dev: false
 
   /thunky/1.1.0:
     resolution: {integrity: sha512-eHY7nBftgThBqOyHGVN+l8gF0BucP09fMo0oO/Lb0w1OF80dJv+lDVpXG60WMQvkcxAkNybKsrEIE3ZtKGmPrA==}
@@ -11359,22 +11069,8 @@ packages:
     resolution: {integrity: sha512-c3zayb8/kWWpycWYg87P71E1S1ZL6b6IJxfb5fvsUgsf0S2MVGaDhDXXjDMpdCpfWXqptc+4mXwmiy1ypXqRAA==}
     dev: false
 
-  /tslib/1.14.1:
-    resolution: {integrity: sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg==}
-    dev: false
-
   /tslib/2.4.0:
     resolution: {integrity: sha512-d6xOpEDfsi2CZVlPQzGeux8XMwLT9hssAsaPYExaQMuYskwb+x1x7J371tWlbBdWHroy99KnVB6qIkUbs5X3UQ==}
-
-  /tsutils/3.21.0_typescript@4.7.4:
-    resolution: {integrity: sha512-mHKK3iUXL+3UF6xL5k0PEhKRUBKPBCv/+RkEOpjRWxxx27KKRBmmA60A9pgOUvMi8GKhRMPEmjBRPzs2W7O1OA==}
-    engines: {node: '>= 6'}
-    peerDependencies:
-      typescript: '>=2.8.0 || >= 3.2.0-dev || >= 3.3.0-dev || >= 3.4.0-dev || >= 3.5.0-dev || >= 3.6.0-dev || >= 3.6.0-beta || >= 3.7.0-dev || >= 3.7.0-beta'
-    dependencies:
-      tslib: 1.14.1
-      typescript: 4.7.4
-    dev: false
 
   /type-check/0.4.0:
     resolution: {integrity: sha512-XleUoc9uwGXqjWwXaUTZAmzMcFZ5858QA2vvx1Ur5xIcixXIP+8LnFDgRplU30us6teqdlskFfu+ae4K79Ooew==}
@@ -11493,7 +11189,7 @@ packages:
   /untildify/4.0.0:
     resolution: {integrity: sha512-KK8xQ1mkzZeg9inewmFVDNkg3l5LUhoq9kN6iWYB/CC9YMG8HA+c1Q8HwDe6dEX7kErrEVNVBO3fWsVq5iDgtw==}
     engines: {node: '>=8'}
-    dev: true
+    dev: false
 
   /upath/1.2.0:
     resolution: {integrity: sha512-aZwGpamFO61g3OlfT7OQCHqhGnW43ieH9WZeP7QxN/G/jS4jfqUkZxoryvJgVPEcrl5NL/ggHsSmLMHuH64Lhg==}
@@ -11535,6 +11231,7 @@ packages:
 
   /util-deprecate/1.0.2:
     resolution: {integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==}
+    dev: false
 
   /utila/0.4.0:
     resolution: {integrity: sha512-Z0DbgELS9/L/75wZbro8xAnT50pBVFQZ+hUEueGDU5FN51YSCYM+jdxsfCiHjwNP/4LCDD0i/graKpeBnOXKRA==}
@@ -11985,7 +11682,7 @@ packages:
       ansi-styles: 4.3.0
       string-width: 4.2.3
       strip-ansi: 6.0.1
-    dev: true
+    dev: false
 
   /wrappy/1.0.2:
     resolution: {integrity: sha512-l4Sp/DRseor9wL6EvV2+TuQn63dMkPjZ/sp9XkghTEbV9KlPS1xUsZ3u7/IQO4wxtcFB4bgpQPRcR3QCvezPcQ==}
@@ -12006,11 +11703,12 @@ packages:
   /xtend/4.0.2:
     resolution: {integrity: sha512-LKYU1iAXJXUgAXn9URjiu+MWhyUXHsvfp7mcuYm9dSUKK0/CjtrUwFAxD82/mCWbtLsGjFIad0wIsod4zrTAEQ==}
     engines: {node: '>=0.4'}
+    dev: false
 
   /y18n/5.0.8:
     resolution: {integrity: sha512-0pfFzegeDWJHJIAmTLRP2DwHjdF5s7jo9tuztdQxAhINCdvS+3nGINqPd00AphqJR/0LhANUS6/+7SCb98YOfA==}
     engines: {node: '>=10'}
-    dev: true
+    dev: false
 
   /yallist/4.0.0:
     resolution: {integrity: sha512-3wdGidZyq5PB084XLES5TpOSRA3wjXAlIWMhum2kRcv/41Sn2emQ0dycQW4uZXLejwKvg6EsvbdlVL+FYEct7A==}
@@ -12024,7 +11722,7 @@ packages:
   /yargs-parser/20.2.9:
     resolution: {integrity: sha512-y11nGElTIV+CT3Zv9t7VKl+Q3hTQoT9a1Qzezhhl6Rp21gJ/IVTW7Z3y9EWXhuUBC2Shnf+DX0antecpAwSP8w==}
     engines: {node: '>=10'}
-    dev: true
+    dev: false
 
   /yargs/16.2.0:
     resolution: {integrity: sha512-D1mvvtDG0L5ft/jGWkLpG1+m0eQxOfaBvTNELraWj22wSVUMWxZUvYgJYcKh6jGGIkJFhH4IZPQhR4TKpc8mBw==}
@@ -12037,7 +11735,7 @@ packages:
       string-width: 4.2.3
       y18n: 5.0.8
       yargs-parser: 20.2.9
-    dev: true
+    dev: false
 
   /yocto-queue/0.1.0:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}

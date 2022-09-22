@@ -3,14 +3,16 @@ import {
     splitCode,
 } from '../utils';
 import * as t from '@babel/types';
-import { PlatformConfigParser } from '@agros/config/lib/platform-config-parser';
-import { ProjectConfigParser } from '@agros/config';
+import {
+    ProjectConfigParser,
+    PlatformConfigParser,
+} from '@agros/tools/lib/config-parsers';
 import generate from '@babel/generator';
-import { parseAST } from '@agros/utils';
-import { detectNamedImports } from '@agros/common/lib/detectors';
+import { parseAST } from '@agros/tools/lib/parse-ast';
+import { detectNamedImports } from '@agros/tools/lib/detectors';
 import traverse from '@babel/traverse';
 import * as path from 'path';
-import { ComponentScript } from '@agros/utils/lib/types';
+import { ComponentScript } from '@agros/tools/lib/types';
 
 export const transformComponentFile = createLoaderAOP(
     async ({

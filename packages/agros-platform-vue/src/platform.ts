@@ -1,6 +1,6 @@
 import 'reflect-metadata';
-import { Platform } from '@agros/platforms/lib/platform.interface';
-import { EnsureImportOptions } from '@agros/utils/lib/ensure-import';
+import { Platform } from '@agros/tools/lib/platform.interface';
+import { EnsureImportOptions } from '@agros/tools/lib/types';
 
 const platform: Platform = {
     getLoaderImports(): Omit<EnsureImportOptions, 'statements'>[] {
@@ -16,11 +16,11 @@ const platform: Platform = {
                 type: 'namespace',
             },
             {
-                libName: '@agros/app/lib/constants',
+                libName: '@agros/common',
                 identifierName: 'ROUTES_ROOT',
             },
             {
-                libName: '@agros/app/lib/modules/router.module',
+                libName: '@agros/common',
                 identifierName: 'RouterModule',
             },
             {

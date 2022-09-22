@@ -1,0 +1,11 @@
+{
+  "changes": [
+    {
+      "comment": "Optimize template files and generate platform-specified from platform when generating or updating",
+      "type": "minor",
+      "packageName": "@agros/tools"
+    }
+  ],
+  "packageName": "@agros/tools",
+  "email": "i@lenconda.top"
+}

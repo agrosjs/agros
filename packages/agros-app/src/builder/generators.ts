@@ -11,8 +11,11 @@ import createEnvironmentHash from './create-environment-hash';
 import paths, { moduleFileExtensions } from './paths';
 import modules from './modules';
 import { getClientEnvironment } from './env';
-import { ProjectConfigParser } from '@agros/config';
-import { Logger } from '@agros/logger';
+import {
+    ProjectConfigParser,
+    PlatformConfigParser,
+} from '@agros/tools/lib/config-parsers';
+import { Logger } from '@agros/tools/lib/logger';
 import TerserPlugin from 'terser-webpack-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
@@ -25,7 +28,6 @@ import evalSourceMapMiddleware from 'react-dev-utils/evalSourceMapMiddleware';
 import noopServiceWorkerMiddleware from 'react-dev-utils/noopServiceWorkerMiddleware';
 import ignoredFiles from 'react-dev-utils/ignoredFiles';
 import redirectServedPath from 'react-dev-utils/redirectServedPathMiddleware';
-import { PlatformConfigParser } from '@agros/config/lib/platform-config-parser';
 
 const configParser = new ProjectConfigParser();
 const shouldUseSourceMap = process.env.GENERATE_SOURCEMAP !== 'false';

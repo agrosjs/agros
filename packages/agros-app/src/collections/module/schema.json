@@ -1,0 +1,59 @@
+{
+    "alias": "m",
+    "scenes": {
+        "generate": {
+            "properties": {
+                "name": {
+                    "type": "input",
+                    "message": "The name of the module",
+                    "cliType": "argument"
+                },
+                "global": {
+                    "type": "confirm",
+                    "message": "Set this module as a global module",
+                    "cliType": "option",
+                    "default": false
+                },
+                "async": {
+                    "type": "confirm",
+                    "message": "Set this module as a async module",
+                    "cliType": "option",
+                    "default": false
+                },
+                "skipDeclareCollections": {
+                    "type": "confirm",
+                    "message": "Skip declaring existed collections (services & components)",
+                    "default": false,
+                    "cliType": "option"
+                },
+                "skipExportDeclaredCollections": {
+                    "type": "confirm",
+                    "message": "Skip exporting the collections declared before",
+                    "default": false,
+                    "cliType": "option"
+                }
+            },
+            "required": [
+                "name"
+            ]
+        },
+        "update": {
+            "add": {
+                "properties": {
+                    "skipExport": {
+                        "type": "confirm",
+                        "message": "Prevent exporting the collection from this module",
+                        "cliType": "option",
+                        "default": false
+                    },
+                    "asyncModule": {
+                        "type": "confirm",
+                        "message": "If the collection is a module, use this flag will asynchronously import this collection",
+                        "cliType": "option",
+                        "default": false
+                    }
+                }
+            }
+        }
+    }
+}

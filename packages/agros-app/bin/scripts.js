@@ -1,9 +1,7 @@
 #!/usr/bin/env node
-const { Logger } = require('@agros/logger');
-const {
-    scanProjectEntities,
-    checkEntities,
-} = require('@agros/common');
+const { Logger } = require('@agros/tools/lib/logger');
+const { scanProjectEntities } = require('@agros/tools/lib/scanner');
+const { checkEntities } = require('@agros/tools/lib/check-entities');
 
 const scripts = {
     start: require('../lib/scripts/start').default,

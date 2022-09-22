@@ -1,7 +1,7 @@
 import 'reflect-metadata';
-import { ComponentInstance } from '@agros/common/lib/component-instance.class';
-import { Platform } from '@agros/platforms/lib/platform.interface';
-import { EnsureImportOptions } from '@agros/utils/lib/ensure-import';
+import { ComponentInstance } from '@agros/tools/lib/component-instance.class';
+import { Platform } from '@agros/tools/lib/platform.interface';
+import { EnsureImportOptions } from '@agros/tools/lib/types';
 import {
     createElement,
     useState,
@@ -30,11 +30,11 @@ const platform: Platform = {
                 type: 'default',
             },
             {
-                libName: '@agros/app/lib/constants',
+                libName: '@agros/common',
                 identifierName: 'ROUTES_ROOT',
             },
             {
-                libName: '@agros/app/lib/modules/router.module',
+                libName: '@agros/common',
                 identifierName: 'RouterModule',
             },
             {

@@ -1,0 +1,11 @@
+{
+  "changes": [
+    {
+      "comment": "Refactor packages structure",
+      "type": "minor",
+      "packageName": "@agros/cli"
+    }
+  ],
+  "packageName": "@agros/cli",
+  "email": "i@lenconda.top"
+}

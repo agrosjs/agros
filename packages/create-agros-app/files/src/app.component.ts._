@@ -1,7 +1,7 @@
 import {
     Component,
     UseInterceptors,
-} from '@agros/app';
+} from '@agros/common';
 import { AppService } from '@/app.service';
 import { AppInterceptor } from '@/app.interceptor';
 

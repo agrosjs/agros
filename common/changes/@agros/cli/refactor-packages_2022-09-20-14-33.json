@@ -1,0 +1,11 @@
+{
+  "changes": [
+    {
+      "comment": "Fix unable to load collections issue",
+      "type": "patch",
+      "packageName": "@agros/cli"
+    }
+  ],
+  "packageName": "@agros/cli",
+  "email": "i@lenconda.top"
+}

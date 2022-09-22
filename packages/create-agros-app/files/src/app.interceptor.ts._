@@ -1,7 +1,7 @@
 import {
     Injectable,
     Interceptor,
-} from '@agros/app';
+} from '@agros/common';
 
 @Injectable()
 export class AppInterceptor implements Interceptor {

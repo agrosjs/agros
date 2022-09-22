@@ -1,9 +1,9 @@
-const { defineBuilderConfig } = require('@agros/common/lib/builder-config');
+const { defineBuilderConfig } = require('@agros/tools/lib/builder-config');
 const {
     addBabelPreset,
     getBabelLoader,
     addWebpackPlugin,
-} = require('@agros/utils/lib/customizers');
+} = require('@agros/tools/lib/customizers');
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 
 const hasJsxRuntime = (() => {
@@ -20,6 +20,7 @@ const hasJsxRuntime = (() => {
 })();
 
 module.exports = {
+    withoutComponentDescriptionFileExtension: true,
     configWebpack: defineBuilderConfig((config) => {
         addBabelPreset(
             [

@@ -19,7 +19,7 @@
     },
     "scripts": {
         "lint": "eslint .",
-        "build": "rimraf ./lib && tsc --build tsconfig.json",
+        "build": "rimraf ./lib && tsc --build tsconfig.json && rimraf ./lib/**/*._ && copyfiles -u 1 src/collections/**/*._ src/collections/**/*.json lib",
         "watch": "tsc --watch --project tsconfig.json",
         "pretest": "npm run lint",
         "test": "exit 0"
@@ -48,11 +48,9 @@
     },
     "dependencies": {
         "@agros/common": "workspace:^0.6.4",
-        "@agros/config": "workspace:^0.6.0",
+        "@agros/create-app": "workspace:^0.1.9",
         "@agros/loader": "workspace:^1.0.1",
-        "@agros/logger": "workspace:^0.1.0",
-        "@agros/platforms": "workspace:^1.0.0",
-        "@agros/utils": "workspace:^0.3.2",
+        "@agros/tools": "workspace:^0.0.0",
         "@babel/core": "^7.18.5",
         "@babel/plugin-proposal-class-properties": "^7.17.12",
         "@babel/plugin-proposal-decorators": "^7.18.2",
@@ -61,6 +59,7 @@
         "babel-plugin-transform-typescript-metadata": "^0.3.2",
         "bfj": "^7.0.2",
         "case-sensitive-paths-webpack-plugin": "^2.4.0",
+        "copyfiles": "^2.4.1",
         "crypto": "^1.0.1",
         "css-loader": "^6.7.1",
         "css-minimizer-webpack-plugin": "^4.0.0",
