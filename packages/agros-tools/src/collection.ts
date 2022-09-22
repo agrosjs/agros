@@ -38,9 +38,6 @@ export interface CollectionWriteFileOptions {
 
 export class AbstractBaseFactory {
     protected readonly projectConfig = new ProjectConfigParser();
-    protected readonly platformConfig = new PlatformConfigParser(
-        this.projectConfig.getConfig<string>('platform'),
-    );
     protected entities: EntityDescriptor[] = [];
 
     public constructor() {
@@ -156,6 +153,9 @@ export abstract class AbstractGeneratorFactory extends AbstractBaseFactory {
 }
 
 export abstract class AbstractUpdaterFactory extends AbstractBaseFactory {
+    protected readonly platformConfig = new PlatformConfigParser(
+        this.projectConfig.getConfig<string>('platform'),
+    );
     public abstract add(props): Promise<CollectionFactoryResult>;
     public abstract delete(props): Promise<CollectionFactoryResult>;
 }

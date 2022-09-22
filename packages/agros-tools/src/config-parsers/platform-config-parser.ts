@@ -14,7 +14,6 @@ export class PlatformConfigParser {
         files: {
             create: '',
             generate: {
-                componentDeclaration: '',
                 componentDescription: '',
             },
         },
@@ -52,7 +51,6 @@ export class PlatformConfigParser {
         this.platformConfig.files = {
             create: path.resolve(this.platformRootDir, './files/create/**/*'),
             generate: {
-                componentDeclaration: path.resolve(this.platformRootDir, './files/generate/component.ts._'),
                 componentDescription: path.resolve(this.platformRootDir, './files/generate/component.tsx._'),
             },
         };

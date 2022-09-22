@@ -139,7 +139,6 @@ export interface EnsureImportResult {
 export interface PlatformFiles {
     create: string;
     generate: {
-        componentDeclaration: string;
         componentDescription: string;
     };
 }

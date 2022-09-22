@@ -1,0 +1,10 @@
+<template>
+    <div><%= name %> Component is working!</div>
+</template>
+
+<script lang="ts">
+import { getContainer } from '@agros/app';
+// TODO use container
+// const container = getContainer();
+export default {}
+</script>

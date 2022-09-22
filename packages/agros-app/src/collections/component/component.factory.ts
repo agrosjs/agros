@@ -19,6 +19,7 @@ import * as path from 'path';
 import _ from 'lodash';
 import * as fs from 'fs';
 import { updateCorrespondingTargetModule } from '../utils';
+import { PlatformConfigParser } from '@agros/tools/lib/config-parsers';
 
 interface ComponentCollectionGenerateOptions {
     name: string;
@@ -42,7 +43,9 @@ export class ComponentCollectionGenerateFactory extends AbstractGeneratorFactory
             create: [],
             update: [],
         };
-
+        const platformConfig = new PlatformConfigParser(
+            this.projectConfig.getConfig<string>('platform'),
+        );
         const componentName = _.kebabCase(name);
         const declarationName = _.startCase(componentName).replace(/\s+/g, '');
         const serviceModuleName = moduleName ? _.kebabCase(moduleName) : componentName;
@@ -53,12 +56,12 @@ export class ComponentCollectionGenerateFactory extends AbstractGeneratorFactory
         const componentDescriptionTargetPath = `${componentDescriptionTargetPathWithoutExtension}${componentDescriptionExtension}`;
 
         await this.writeTemplateFile(
-            this.platformConfig.getConfig<string>('files.generate.componentDeclaration'),
+            path.resolve(__dirname, './files/component.ts._'),
             componentDeclarationTargetPath,
             {
                 name: declarationName,
                 file: transformPathToAliasedPath(
-                    this.platformConfig.getConfig<boolean>('withoutComponentDescriptionFileExtension')
+                    platformConfig.getConfig<boolean>('withoutComponentDescriptionFileExtension')
                         ? normalizeNoExtensionPath(componentDescriptionTargetPath)
                         : componentDescriptionTargetPath,
                 ),
@@ -68,7 +71,7 @@ export class ComponentCollectionGenerateFactory extends AbstractGeneratorFactory
         result.create.push(componentDeclarationTargetPath);
 
         await this.writeTemplateFile(
-            this.platformConfig.getConfig<string>('files.generate.componentDescription'),
+            platformConfig.getConfig<string>('files.generate.componentDescription'),
             componentDescriptionTargetPath,
             {
                 name: declarationName,
