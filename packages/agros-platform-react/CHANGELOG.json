@@ -2,6 +2,43 @@
   "name": "@agros/platform-react",
   "entries": [
     {
+      "version": "1.2.0",
+      "tag": "@agros/platform-react_v1.2.0",
+      "date": "Thu, 22 Sep 2022 05:32:44 GMT",
+      "comments": {
+        "minor": [
+          {
+            "comment": "Refactor packages structure"
+          },
+          {
+            "comment": "Refactor collections and collection factories"
+          },
+          {
+            "comment": "Optimize template files and generate platform-specified from platform when generating or updating"
+          }
+        ],
+        "patch": [
+          {
+            "comment": "Apply refactors from tools package"
+          },
+          {
+            "comment": "Optimize generator factories and template files"
+          }
+        ],
+        "dependency": [
+          {
+            "comment": "Updating dependency \"@agros/common\" from `^0.6.4` to `^0.7.0`"
+          },
+          {
+            "comment": "Updating dependency \"@agros/loader\" from `^1.0.1` to `^1.1.0`"
+          },
+          {
+            "comment": "Updating dependency \"@agros/tools\" from `^0.0.0` to `^0.1.0`"
+          }
+        ]
+      }
+    },
+    {
       "version": "1.1.0",
       "tag": "@agros/platform-react_v1.1.0",
       "date": "Wed, 14 Sep 2022 09:43:25 GMT",
