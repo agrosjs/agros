@@ -1,7 +1,7 @@
-import { detectEOLCharacter } from './detectors';
+import { detectEOLCharacter } from '../detectors';
 import { UpdateItem } from './updaters';
 
-export const applyUpdates = (updates: UpdateItem[], code: string): string => {
+export const applyAddUpdates = (updates: UpdateItem[], code: string): string => {
     if (!code || !Array.isArray(updates) || updates.length === 0) {
         return code;
     }

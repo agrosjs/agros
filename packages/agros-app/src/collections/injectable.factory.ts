@@ -1,7 +1,8 @@
 import {
-    updateImportedEntityToModule,
-    updateImportedInjectableToInjectable,
-} from '@agros/tools/lib/updaters';
+    addImportedEntityToModule,
+    addImportedInjectableToInjectable,
+    applyAddUpdates,
+} from '@agros/tools/lib/update-utils';
 import {
     AbstractGeneratorFactory,
     AbstractUpdaterFactory,
@@ -12,7 +13,6 @@ import {
     normalizeCLIPath,
     normalizeEntityFileName,
 } from '@agros/tools/lib/normalizers';
-import { applyUpdates } from '@agros/tools/lib/apply-updates';
 import _ from 'lodash';
 import * as fs from 'fs';
 import { CollectionType } from '@agros/tools';
@@ -67,7 +67,7 @@ export class InjectableCollectionGenerateFactory extends AbstractGeneratorFactor
         });
 
         if (moduleEntityDescriptor) {
-            const updates = await updateImportedEntityToModule(
+            const updates = await addImportedEntityToModule(
                 this.getEntityDescriptor(targetPath),
                 moduleEntityDescriptor,
                 {
@@ -76,7 +76,7 @@ export class InjectableCollectionGenerateFactory extends AbstractGeneratorFactor
             );
             await this.writeFile(
                 moduleEntityDescriptor.absolutePath,
-                applyUpdates(updates, fs.readFileSync(moduleEntityDescriptor.absolutePath).toString()),
+                applyAddUpdates(updates, fs.readFileSync(moduleEntityDescriptor.absolutePath).toString()),
             );
             result.update.push(moduleEntityDescriptor.absolutePath);
         }
@@ -119,7 +119,7 @@ export class InjectableCollectionUpdateFactory extends AbstractUpdaterFactory im
             throw new Error(`Cannot find target entity with identifier: ${target}`);
         }
 
-        const updates = await updateImportedInjectableToInjectable(sourceDescriptor, targetDescriptor, {
+        const updates = await addImportedInjectableToInjectable(sourceDescriptor, targetDescriptor, {
             skipReadonly,
             accessibility,
         });
@@ -127,7 +127,7 @@ export class InjectableCollectionUpdateFactory extends AbstractUpdaterFactory im
         if (updates.length > 0) {
             this.writeFile(
                 targetDescriptor.absolutePath,
-                applyUpdates(updates, fs.readFileSync(targetDescriptor.absolutePath).toString()),
+                applyAddUpdates(updates, fs.readFileSync(targetDescriptor.absolutePath).toString()),
             );
             result.update.push(targetDescriptor.absolutePath);
         }
@@ -141,7 +141,7 @@ export class InjectableCollectionUpdateFactory extends AbstractUpdaterFactory im
             const absolutePath = sourceDescriptor.modules[0]?.absolutePath;
             this.writeFile(
                 absolutePath,
-                applyUpdates(sourceModuleUpdates, fs.readFileSync(absolutePath).toString()),
+                applyAddUpdates(sourceModuleUpdates, fs.readFileSync(absolutePath).toString()),
             );
             result.update.push(source);
         }
@@ -150,7 +150,7 @@ export class InjectableCollectionUpdateFactory extends AbstractUpdaterFactory im
             const absolutePath = targetDescriptor.modules[0]?.absolutePath;
             this.writeFile(
                 absolutePath,
-                applyUpdates(targetModuleUpdates, fs.readFileSync(absolutePath).toString()),
+                applyAddUpdates(targetModuleUpdates, fs.readFileSync(absolutePath).toString()),
             );
             result.update.push(source);
         }

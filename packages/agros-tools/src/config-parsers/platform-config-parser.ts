@@ -25,37 +25,40 @@ export class PlatformConfigParser {
     protected platformConfigFile: string;
 
     public constructor(protected readonly platformName: string) {
-        this.platformIndexFile = require.resolve(platformName, {
-            paths: [process.cwd()],
-        });
-        this.platformIndexDir = path.dirname(this.platformIndexFile);
-        let currentDetectDir = path.dirname(this.platformIndexFile);
+        try {
+            this.platformIndexFile = require.resolve(platformName, {
+                paths: [process.cwd()],
+            });
+            this.platformIndexDir = path.dirname(this.platformIndexFile);
+            let currentDetectDir = path.dirname(this.platformIndexFile);
 
-        while (true) {
-            if (currentDetectDir === path.dirname(currentDetectDir)) {
-                break;
+            while (true) {
+                if (currentDetectDir === path.dirname(currentDetectDir)) {
+                    break;
+                }
+
+                if (fs.existsSync(path.resolve(currentDetectDir, 'package.json'))) {
+                    this.platformPackageDir = currentDetectDir;
+                    break;
+                }
+
+                currentDetectDir = path.dirname(currentDetectDir);
             }
 
-            if (fs.existsSync(path.resolve(currentDetectDir, 'package.json'))) {
-                this.platformPackageDir = currentDetectDir;
-                break;
-            }
-
-            currentDetectDir = path.dirname(currentDetectDir);
-        }
-
-        const platformCosmiconfig = cosmiconfigSync('agros-platform').search(
-            this.platformPackageDir || this.platformIndexDir,
-        );
-        const platformConfig = (platformCosmiconfig?.config || {}) as PlatformConfig;
-        this.platformConfigFile = platformCosmiconfig.filepath;
-        this.platformConfig = _.merge({}, _.clone(this.platformConfig), platformConfig);
-        this.platformConfig.files = {
-            create: path.resolve(this.platformIndexDir, './files/create/**/*'),
-            generate: {
-                componentDescription: path.resolve(this.platformIndexDir, './files/generate/component.tsx._'),
-            },
-        };
+            const platformCosmiconfig = cosmiconfigSync('agros-platform').search(
+                this.platformPackageDir || this.platformIndexDir,
+            );
+            const platformConfig = (platformCosmiconfig?.config || {}) as PlatformConfig;
+            this.platformConfigFile = platformCosmiconfig.filepath;
+            this.platformConfig = _.merge({}, _.clone(this.platformConfig), platformConfig);
+            const configFileDirname = path.dirname(this.platformConfigFile);
+            this.platformConfig.files = {
+                create: path.resolve(configFileDirname, './files/create/**/*'),
+                generate: {
+                    componentDescription: path.resolve(configFileDirname, './files/generate/component.tsx._'),
+                },
+            };
+        } catch (e) {}
     }
 
     public getConfig<T>(pathname?: string): T {

@@ -1,8 +1,8 @@
 import { EntityDescriptor } from '@agros/tools/lib/descriptor-types';
 import {
-    updateImportedEntityToModule,
+    addImportedEntityToModule,
     UpdateItem,
-} from '@agros/tools/lib/updaters';
+} from '@agros/tools/lib/update-utils';
 
 export const updateCorrespondingTargetModule = async (
     sourceDescriptor: EntityDescriptor,
@@ -12,7 +12,7 @@ export const updateCorrespondingTargetModule = async (
 
     if (sourceDescriptor.modules[0]) {
         const sourceModuleDescriptor = sourceDescriptor.modules[0];
-        const sourceModuleUpdates = await updateImportedEntityToModule(
+        const sourceModuleUpdates = await addImportedEntityToModule(
             sourceDescriptor,
             sourceModuleDescriptor,
         );
@@ -20,7 +20,7 @@ export const updateCorrespondingTargetModule = async (
 
         if (targetDescriptor.modules[0]) {
             const targetModuleDescriptor = targetDescriptor.modules[0];
-            const targetModuleUpdates = await updateImportedEntityToModule(
+            const targetModuleUpdates = await addImportedEntityToModule(
                 sourceModuleDescriptor,
                 targetModuleDescriptor,
             );

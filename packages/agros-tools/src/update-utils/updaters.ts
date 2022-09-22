@@ -1,4 +1,4 @@
-import { EntityDescriptor } from './types';
+import { EntityDescriptor } from '../types';
 import * as fs from 'fs';
 import {
     ClassImportItem,
@@ -6,13 +6,13 @@ import {
     detectDecorators,
     detectImportedClass,
     detectLastImportLine,
-} from './detectors';
-import { parseAST } from './parse-ast';
+} from '../detectors';
+import { parseAST } from '../parse-ast';
 import * as t from '@babel/types';
 import {
     generateConstructorCode,
     generateDecoratorCode,
-} from './code-generators';
+} from '../code-generators';
 import { ParseResult } from '@babel/parser';
 import _ from 'lodash';
 
@@ -92,12 +92,12 @@ const createUpdater = <T = Record<string, any>>(
     };
 };
 
-export interface UpdateImportedEntityToModuleOptions {
+export interface AddImportedEntityToModuleOptions {
     skipExport?: boolean;
     asyncModule?: boolean,
 }
 
-export const updateImportedEntityToModule = createUpdater<UpdateImportedEntityToModuleOptions>(
+export const addImportedEntityToModule = createUpdater<AddImportedEntityToModuleOptions>(
     async ({
         sourceDescriptor,
         targetDescriptor,
@@ -210,12 +210,12 @@ export const updateImportedEntityToModule = createUpdater<UpdateImportedEntityTo
     (source, target) => source.collectionType && target.collectionType === 'module',
 );
 
-export interface UpdateImportedServiceToServiceOptions {
+export interface AddImportedServiceToServiceOptions {
     skipReadonly?: boolean;
     accessibility?: 'public' | 'private' | 'protected';
 }
 
-export const updateImportedInjectableToInjectable = createUpdater<UpdateImportedServiceToServiceOptions>(
+export const addImportedInjectableToInjectable = createUpdater<AddImportedServiceToServiceOptions>(
     async ({
         classImportItem,
         initialResult,
@@ -321,7 +321,7 @@ export const updateImportedInjectableToInjectable = createUpdater<UpdateImported
     (source, target) => source.collectionType === 'service' && target.collectionType === 'service',
 );
 
-export const updateImportedEntityToComponent = createUpdater(
+export const addImportedEntityToComponent = createUpdater(
     async ({
         targetAST,
         classImportItem,
@@ -392,11 +392,11 @@ export const updateImportedEntityToComponent = createUpdater(
     (source, target) => ['component', 'service'].indexOf(source.collectionType) !== -1 && target.collectionType === 'component',
 );
 
-export interface UpdateRouteToModuleOptions {
+export interface AddRouteToModuleOptions {
     path?: string;
 }
 
-export const updateRouteToModule = createUpdater<UpdateRouteToModuleOptions>(
+export const addRouteToModule = createUpdater<AddRouteToModuleOptions>(
     async ({
         initialResult,
         classImportItem,
