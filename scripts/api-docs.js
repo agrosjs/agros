@@ -126,70 +126,61 @@ const uploadFiles = async (options) => {
         }),
     );
 
-    if (
-        semver.lt(
-            lastVersion.split('.').slice(0, 2).join('.') + '.0',
-            newAppVersion.split('.').slice(0, 2).join('.') + '.0',
-        )
-    ) {
-        console.log('Found new version' + newDocsVersion + ', creating new versions.json blob...');
-        const versionsJsonBlobIndex = newTree.findIndex((tree) => tree.path === 'versions.json');
-        if (versionsJsonBlobIndex !== -1) {
-            console.log('Found versions.json, process update...');
-            try {
-                const { data: versionsJsonBlobContent } = await octokit.request(
-                    'GET /repos/{owner}/{repo}/git/blobs/{file_sha}',
+    console.log('Found new version' + newDocsVersion + ', creating new versions.json blob...');
+    const versionsJsonBlobIndex = newTree.findIndex((tree) => tree.path === 'versions.json');
+    console.log('Found versions.json, process update...');
+    try {
+        const { data: versionsJsonBlobContent } = await octokit.request(
+            'GET /repos/{owner}/{repo}/git/blobs/{file_sha}',
+            {
+                owner: GIT_USER,
+                repo: GIT_REPO,
+                file_sha: newTree[versionsJsonBlobIndex].sha,
+            },
+        );
+        const versionJson = JSON.parse(Buffer.from(versionsJsonBlobContent?.content, 'base64').toString());
+        if (Array.isArray(versionJson)) {
+            console.log('Got versions.json content: ', versionJson);
+            console.log('Updating blob...');
+            const content = JSON.stringify(
+                _.uniq(versionJson.concat(newDocsVersion)).sort((a, b) => {
+                    return semver.lt(
+                        a.split('.').slice(0, 2).concat('0').join('.'),
+                        b.split('.').slice(0, 2).concat('0').join('.'),
+                    )
+                        ? -1
+                        : 1;
+                }),
+                null,
+                4,
+            );
+            const {
+                data: updatedVersionsJsonBlob,
+            } = await octokit.request('POST https://api.github.com/repos/{user}/{repo}/git/blobs', {
+                user: GIT_USER,
+                repo: GIT_REPO,
+                content,
+                encoding: 'utf-8',
+            });
+            console.log('Create new version.json blob: ', updatedVersionsJsonBlob);
+            if ((updatedVersionsJsonBlob || {}).sha) {
+                newTree.splice(
+                    versionsJsonBlobIndex,
+                    1,
                     {
-                        owner: GIT_USER,
-                        repo: GIT_REPO,
-                        file_sha: newTree[versionsJsonBlobIndex].sha,
+                        mode: '100644',
+                        type: 'blob',
+                        path: 'versions.json',
+                        sha: (updatedVersionsJsonBlob || {}).sha,
                     },
                 );
-                const versionJson = JSON.parse(Buffer.from(versionsJsonBlobContent?.content, 'base64').toString());
-                if (Array.isArray(versionJson)) {
-                    console.log('Got versions.json content: ', versionJson);
-                    console.log('Updating blob...');
-                    const content = JSON.stringify(
-                        _.uniq(versionJson.concat(newDocsVersion)).sort((a, b) => {
-                            return semver.lt(
-                                a.split('.').slice(0, 2).concat('0').join('.'),
-                                b.split('.').slice(0, 2).concat('0').join('.'),
-                            )
-                                ? -1
-                                : 1;
-                        }),
-                        null,
-                        4,
-                    );
-                    const {
-                        data: updatedVersionsJsonBlob,
-                    } = await octokit.request('POST https://api.github.com/repos/{user}/{repo}/git/blobs', {
-                        user: GIT_USER,
-                        repo: GIT_REPO,
-                        content,
-                        encoding: 'utf-8',
-                    });
-                    console.log('Create new version.json blob: ', updatedVersionsJsonBlob);
-                    if ((updatedVersionsJsonBlob || {}).sha) {
-                        newTree.splice(
-                            versionsJsonBlobIndex,
-                            1,
-                            {
-                                mode: '100644',
-                                type: 'blob',
-                                path: 'versions.json',
-                                sha: (updatedVersionsJsonBlob || {}).sha,
-                            },
-                        );
-                        console.log('Successfully updated versions.json: ', content);
-                    }
-                }
-                console.log('Update versions.json finished');
-            } catch (e) {
-                console.log('Warn: cannot update versions.json');
-                console.log(e);
+                console.log('Successfully updated versions.json: ', content);
             }
         }
+        console.log('Update versions.json finished');
+    } catch (e) {
+        console.log('Warn: cannot update versions.json');
+        console.log(e);
     }
 
     const createTreeResponse = await octokit.request('POST https://api.github.com/repos/{user}/{repo}/git/trees', {
