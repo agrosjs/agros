@@ -146,21 +146,21 @@ const uploadFiles = async (options) => {
                     },
                 );
                 const versionJson = JSON.parse(Buffer.from(versionsJsonBlobContent?.content, 'base64').toString());
-                console.log('Got versions.json content: ', versionJson);
-                console.log('Updating blob...');
-                const content = JSON.stringify(
-                    _.uniq(versionJson.concat(newDocsVersion)).sort((a, b) => {
-                        return semver.lt(
-                            a.split('.').slice(0, 2).concat('0').join('.'),
-                            b.split('.').slice(0, 2).concat('0').join('.'),
-                        )
-                            ? -1
-                            : 1;
-                    }),
-                    null,
-                    4,
-                );
                 if (Array.isArray(versionJson)) {
+                    console.log('Got versions.json content: ', versionJson);
+                    console.log('Updating blob...');
+                    const content = JSON.stringify(
+                        _.uniq(versionJson.concat(newDocsVersion)).sort((a, b) => {
+                            return semver.lt(
+                                a.split('.').slice(0, 2).concat('0').join('.'),
+                                b.split('.').slice(0, 2).concat('0').join('.'),
+                            )
+                                ? -1
+                                : 1;
+                        }),
+                        null,
+                        4,
+                    );
                     const {
                         data: updatedVersionsJsonBlob,
                     } = await octokit.request('POST https://api.github.com/repos/{user}/{repo}/git/blobs', {
