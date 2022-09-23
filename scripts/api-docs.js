@@ -148,8 +148,8 @@ const uploadFiles = async (options) => {
                         a.split('.').slice(0, 2).concat('0').join('.'),
                         b.split('.').slice(0, 2).concat('0').join('.'),
                     )
-                        ? -1
-                        : 1;
+                        ? 1
+                        : -1;
                 }),
                 null,
                 4,
