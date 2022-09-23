@@ -1,6 +1,14 @@
 # Change Log - @agros/app
 
-This log was last generated on Thu, 22 Sep 2022 08:53:45 GMT and should not be manually modified.
+This log was last generated on Fri, 23 Sep 2022 10:45:03 GMT and should not be manually modified.
+
+## 1.1.2
+Fri, 23 Sep 2022 10:45:03 GMT
+
+### Patches
+
+- Corresponding types refactor
+- Fix collection template files typos
 
 ## 1.1.1
 Thu, 22 Sep 2022 08:53:45 GMT
