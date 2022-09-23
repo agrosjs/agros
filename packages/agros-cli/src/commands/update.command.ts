@@ -13,9 +13,46 @@ export class UpdateCommand extends AbstractCommand implements AbstractCommand {
         const command = new Command('update');
         command.alias('u').description('Update an Agros.js collections with another collection');
 
-        ['add', 'delete'].forEach((type) => {
-            const factoryMethod = type as 'add' | 'delete';
-            const subCommand = new Command(type);
+        [
+            {
+                name: 'add',
+                defaultRequired: ['use', 'target'],
+                prependProperties: {
+                    target: {
+                        type: 'input',
+                        message: 'Target entity pathname or identifier',
+                        cliType: 'argument',
+                    },
+                    use: {
+                        type: 'input',
+                        message: 'Source entity pathname or identifier',
+                        cliType: 'option',
+                    },
+                },
+            },
+            {
+                name: 'delete',
+                defaultRequired: ['target'],
+                prependProperties: {
+                    target: {
+                        type: 'input',
+                        message: 'Target entity pathname or identifier',
+                        cliType: 'argument',
+                    },
+                    with: {
+                        type: 'input',
+                        message: 'Source entity pathname or identifier',
+                        cliType: 'option',
+                    },
+                },
+            },
+        ].forEach(({
+            name,
+            defaultRequired = [],
+            prependProperties = {},
+        }) => {
+            const factoryMethod = name as 'add' | 'delete';
+            const subCommand = new Command(name);
             for (const collection of collections) {
                 const {
                     name,
@@ -24,22 +61,11 @@ export class UpdateCommand extends AbstractCommand implements AbstractCommand {
                 } = collection;
                 const collectionCommand = new Command(name);
                 const parseProps = addArgumentsAndOptionsToCommandWithSchema({
-                    scene: `update.${type}`,
+                    scene: `update.${name}`,
                     command: collectionCommand,
                     schema,
-                    prependProperties: {
-                        target: {
-                            type: 'input',
-                            message: 'Target entity pathname or identifier',
-                            cliType: 'argument',
-                        },
-                        use: {
-                            type: 'input',
-                            message: 'Source entity pathname or identifier',
-                            cliType: 'option',
-                        },
-                    },
-                    defaultRequired: ['use', 'target'],
+                    prependProperties,
+                    defaultRequired,
                 });
 
                 collectionCommand.action(async (...data) => {
