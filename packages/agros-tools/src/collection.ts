@@ -156,6 +156,4 @@ export abstract class AbstractUpdaterFactory extends AbstractBaseFactory {
     protected readonly platformConfig = new PlatformConfigParser(
         this.projectConfig.getConfig<string>('platform'),
     );
-    public abstract add(props): Promise<CollectionFactoryResult>;
-    public abstract delete(props): Promise<CollectionFactoryResult>;
 }

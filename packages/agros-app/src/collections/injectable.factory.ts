@@ -91,9 +91,7 @@ interface InjectableCollectionUpdateOptions extends UpdateBaseOptions {
 }
 
 export class InjectableCollectionUpdateFactory extends AbstractUpdaterFactory implements AbstractUpdaterFactory {
-    public constructor(
-        protected readonly collectionType: CollectionType,
-    ) {
+    public constructor(protected readonly collectionType: CollectionType) {
         super();
     }
 
@@ -155,14 +153,6 @@ export class InjectableCollectionUpdateFactory extends AbstractUpdaterFactory im
             result.update.push(absolutePath);
         }
 
-        return result;
-    }
-
-    public async delete() {
-        const result: CollectionFactoryResult = {
-            create: [],
-            update: [],
-        };
         return result;
     }
 }

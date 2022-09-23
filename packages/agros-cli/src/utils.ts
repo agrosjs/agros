@@ -142,6 +142,9 @@ export const addArgumentsAndOptionsToCommandWithSchema = ({
             case 'option': {
                 let optionLiterals = [];
                 let transformer: Function;
+                const optionRequired = required.indexOf(propertyKey) !== -1;
+                const leftBracket = optionRequired ? '<' : '[';
+                const rightBracket = optionRequired ? '>' : ']';
 
                 [propertyKey, alias].forEach((key) => {
                     if (!key) {
@@ -155,11 +158,11 @@ export const addArgumentsAndOptionsToCommandWithSchema = ({
                         break;
                     }
                     case 'input': {
-                        optionLiterals.push('[value]');
+                        optionLiterals.push(`${leftBracket}value${rightBracket}`);
                         break;
                     }
                     case 'number': {
-                        optionLiterals.push('[value]');
+                        optionLiterals.push(`${leftBracket}value${rightBracket}`);
                         transformer = (option) => {
                             if (_.isUndefined) {
                                 return defaultValue;
@@ -170,7 +173,7 @@ export const addArgumentsAndOptionsToCommandWithSchema = ({
                     }
                     case 'list':
                     case 'rawlist': {
-                        optionLiterals.push('[value...]');
+                        optionLiterals.push(`${leftBracket}value...${rightBracket}`);
                         break;
                     }
                     default: {
@@ -190,12 +193,14 @@ export const addArgumentsAndOptionsToCommandWithSchema = ({
                     option = option.argParser(transformer);
                 }
 
-                if (required.indexOf(propertyKey) !== -1) {
+                if (optionRequired) {
                     if (_.isUndefined(defaultValue)) {
                         option = option.preset('');
                     }
                     option = option.makeOptionMandatory(true);
-                } else if (!_.isUndefined(defaultValue)) {
+                }
+
+                if (!_.isUndefined(defaultValue)) {
                     option = option.default(defaultValue);
                 }
 
