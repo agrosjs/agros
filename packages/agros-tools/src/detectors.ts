@@ -364,18 +364,28 @@ export const detectImportedClass = async (
     return result;
 };
 
-export const detectLastImportLine = (ast: ParseResult<File>) => {
-    let lastImportLine = 0;
+export const detectLastImportDeclaration = (ast: ParseResult<File>) => {
+    let started = false;
+    let lastImportDeclaration: ImportDeclaration;
 
     for (const statement of ast.program.body) {
         if (statement.type === 'ImportDeclaration') {
-            lastImportLine = statement.loc?.end.line;
+            if (!started) {
+                started = true;
+                lastImportDeclaration = statement;
+            } else {
+                break;
+            }
         } else {
             continue;
         }
     }
 
-    return lastImportLine + 1;
+    return lastImportDeclaration;
+};
+
+export const detectLastImportLine = (ast: ParseResult<File>) => {
+    return (detectLastImportDeclaration(ast)?.loc?.end?.line || 0) + 1;
 };
 
 export const detectEOLCharacter = (code: string): string => {

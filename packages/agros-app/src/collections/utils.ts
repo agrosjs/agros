@@ -1,8 +1,6 @@
 import { EntityDescriptor } from '@agros/tools/lib/descriptor-types';
-import {
-    addImportedEntityToModule,
-    UpdateItem,
-} from '@agros/tools/lib/update-utils';
+import { UpdateItem } from '@agros/tools/lib/types';
+import { addImportedEntityToModule } from '@agros/tools/lib/update-utils';
 
 export const updateCorrespondingTargetModule = async (
     sourceDescriptor: EntityDescriptor,
