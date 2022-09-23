@@ -1,0 +1,10 @@
+{
+  "changes": [
+    {
+      "packageName": "@agros/app",
+      "comment": "Corresponding types refactor",
+      "type": "patch"
+    }
+  ],
+  "packageName": "@agros/app"
+}
