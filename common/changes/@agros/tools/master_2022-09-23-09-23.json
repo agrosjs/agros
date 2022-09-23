@@ -1,0 +1,10 @@
+{
+  "changes": [
+    {
+      "packageName": "@agros/tools",
+      "comment": "Optimize update command",
+      "type": "minor"
+    }
+  ],
+  "packageName": "@agros/tools"
+}

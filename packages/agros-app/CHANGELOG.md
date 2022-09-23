@@ -1,6 +1,14 @@
 # Change Log - @agros/app
 
-This log was last generated on Thu, 22 Sep 2022 05:32:44 GMT and should not be manually modified.
+This log was last generated on Thu, 22 Sep 2022 08:53:45 GMT and should not be manually modified.
+
+## 1.1.1
+Thu, 22 Sep 2022 08:53:45 GMT
+
+### Patches
+
+- Fix template files with wrong import declarations
+- Optimize component collection and update commands
 
 ## 1.1.0
 Thu, 22 Sep 2022 05:32:44 GMT

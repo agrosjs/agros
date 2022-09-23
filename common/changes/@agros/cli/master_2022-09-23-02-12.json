@@ -1,0 +1,10 @@
+{
+  "changes": [
+    {
+      "packageName": "@agros/cli",
+      "comment": "Refactor agros update sub-commands",
+      "type": "minor"
+    }
+  ],
+  "packageName": "@agros/cli"
+}

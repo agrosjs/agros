@@ -1,7 +1,14 @@
-import { EntityDescriptor } from '../types';
+import {
+    AddImportedEntityToModuleOptions,
+    AddImportedServiceToServiceOptions,
+    AddRouteToModuleOptions,
+    EntityDescriptor,
+    UpdateItem,
+    Updater,
+    UpdaterWithChecker,
+} from '../types';
 import * as fs from 'fs';
 import {
-    ClassImportItem,
     detectExports,
     detectDecorators,
     detectImportedClass,
@@ -13,30 +20,7 @@ import {
     generateConstructorCode,
     generateDecoratorCode,
 } from '../code-generators';
-import { ParseResult } from '@babel/parser';
 import _ from 'lodash';
-
-export interface UpdateItem {
-    line: number;
-    content: string[];
-    deleteLines: number;
-    cutLine?: t.SourceLocation;
-};
-
-export type Updater<T> = (data: {
-    sourceDescriptor: EntityDescriptor,
-    targetDescriptor: EntityDescriptor,
-    targetAST: ParseResult<t.File>,
-    classImportItem: ClassImportItem<t.ClassDeclaration>,
-    initialResult: UpdateItem[],
-    options?: T;
-}) => Promise<UpdateItem[]>;
-
-export type UpdaterWithChecker<T = any> = (
-    sourceDescriptor: EntityDescriptor,
-    targetDescriptor: EntityDescriptor,
-    options?: T,
-) => Promise<UpdateItem[]>;
 
 const createUpdater = <T = Record<string, any>>(
     updater: Updater<T>,
@@ -91,11 +75,6 @@ const createUpdater = <T = Record<string, any>>(
         });
     };
 };
-
-export interface AddImportedEntityToModuleOptions {
-    skipExport?: boolean;
-    asyncModule?: boolean,
-}
 
 export const addImportedEntityToModule = createUpdater<AddImportedEntityToModuleOptions>(
     async ({
@@ -204,11 +183,6 @@ export const addImportedEntityToModule = createUpdater<AddImportedEntityToModule
     },
     (source, target) => source.collectionType && target.collectionType === 'module',
 );
-
-export interface AddImportedServiceToServiceOptions {
-    skipReadonly?: boolean;
-    accessibility?: 'public' | 'private' | 'protected';
-}
 
 export const addImportedInjectableToInjectable = createUpdater<AddImportedServiceToServiceOptions>(
     async ({
@@ -386,10 +360,6 @@ export const addImportedEntityToComponent = createUpdater(
     },
     (source, target) => ['component', 'service'].indexOf(source.collectionType) !== -1 && target.collectionType === 'component',
 );
-
-export interface AddRouteToModuleOptions {
-    path?: string;
-}
 
 export const addRouteToModule = createUpdater<AddRouteToModuleOptions>(
     async ({

@@ -5,67 +5,84 @@ import {
     loadCollections,
     logGenerateResult,
 } from '../utils';
-import { AbstractUpdaterFactory } from '@agros/tools/lib/collection';
+import { AbstractUpdaterFactory, CollectionFactoryResult } from '@agros/tools/lib/collection';
 
 export class UpdateCommand extends AbstractCommand implements AbstractCommand {
+    protected readonly updateTypes = [
+        'add',
+        'delete',
+    ];
+
     public register() {
         const collections = loadCollections<AbstractUpdaterFactory>('update');
         const command = new Command('update');
         command.alias('u').description('Update an Agros.js collections with another collection');
 
-        ['add', 'delete'].forEach((type) => {
-            const factoryMethod = type as 'add' | 'delete';
-            const subCommand = new Command(type);
-            for (const collection of collections) {
-                const {
-                    name,
-                    schema = {},
-                    FactoryClass,
-                } = collection;
-                const collectionCommand = new Command(name);
-                const parseProps = addArgumentsAndOptionsToCommandWithSchema({
-                    scene: `update.${type}`,
-                    command: collectionCommand,
-                    schema,
-                    prependProperties: {
-                        target: {
-                            type: 'input',
-                            message: 'Target entity pathname or identifier',
-                            cliType: 'argument',
-                        },
-                        use: {
-                            type: 'input',
-                            message: 'Source entity pathname or identifier',
-                            cliType: 'option',
-                        },
-                    },
-                    defaultRequired: ['use', 'target'],
-                });
+        for (const collection of collections) {
+            const {
+                name,
+                schema = {},
+                FactoryClass,
+            } = collection;
+            const collectionCommand = new Command(name);
+            const factory = new FactoryClass();
+            const types = this.updateTypes.filter((updateType) => typeof factory[updateType] === 'function');
 
-                collectionCommand.action(async (...data) => {
-                    try {
-                        const {
-                            use: source,
-                            ...otherProps
-                        } = parseProps(data);
-                        const factory = new FactoryClass();
-                        if (typeof factory[factoryMethod] === 'function') {
-                            const result = await factory[factoryMethod]({
-                                source,
-                                ...otherProps,
-                            });
-                            logGenerateResult(result);
-                        }
-                    } catch (e) {
-                        this.logger.error(e.message || e.toString());
-                        process.exit(1);
-                    }
-                });
-
-                subCommand.addCommand(collectionCommand);
+            if (types.length === 0) {
+                continue;
             }
-            command.addCommand(subCommand);
-        });
+
+            const parseProps = addArgumentsAndOptionsToCommandWithSchema({
+                scene: `update.${name}`,
+                command: collectionCommand,
+                schema,
+                prependProperties: {
+                    target: {
+                        type: 'input',
+                        message: 'Target entity pathname or identifier',
+                        cliType: 'argument',
+                    },
+                    with: {
+                        type: 'input',
+                        message: 'Source entity pathname or identifier',
+                        cliType: 'option',
+                    },
+                    type: {
+                        type: 'input',
+                        message: 'Collection update type',
+                        cliType: 'option',
+                        default: types,
+                    },
+                },
+                defaultRequired: ['with', 'target', 'type'],
+            });
+
+            collectionCommand.action(async (...data) => {
+                try {
+                    const {
+                        with: source,
+                        type,
+                        ...otherProps
+                    } = parseProps(data);
+                    let result: CollectionFactoryResult = {
+                        update: [],
+                        create: [],
+                    };
+                    if (typeof factory[type] === 'function') {
+                        result = await factory[type]({
+                            source,
+                            ...otherProps,
+                        });
+                    }
+                    logGenerateResult(result);
+                } catch (e) {
+                    this.logger.error(e.message || e.toString());
+                    process.exit(1);
+                }
+            });
+
+            command.addCommand(collectionCommand);
+        }
 
         return command;
     }

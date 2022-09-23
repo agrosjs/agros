@@ -2,7 +2,7 @@
   "changes": [
     {
       "packageName": "@agros/app",
-      "comment": "Fix template files with wrong import declarations",
+      "comment": "Fix collection template files typos",
       "type": "patch"
     }
   ],

@@ -162,12 +162,4 @@ export class ComponentCollectionUpdateFactory extends AbstractUpdaterFactory imp
 
         return result;
     }
-
-    public async delete() {
-        const result: CollectionFactoryResult = {
-            create: [],
-            update: [],
-        };
-        return result;
-    }
 }

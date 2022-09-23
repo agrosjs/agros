@@ -1,5 +1,5 @@
 import { detectEOLCharacter } from '../detectors';
-import { UpdateItem } from './updaters';
+import { UpdateItem } from '../types';
 
 export const applyAddUpdates = (updates: UpdateItem[], code: string): string => {
     if (!code || !Array.isArray(updates) || updates.length === 0) {

@@ -4,6 +4,9 @@ import { ModuleInstance } from './module-instance.class';
 import { Statement } from '@babel/types';
 import { Configuration } from 'webpack';
 import { Dirent } from 'fs';
+import * as t from '@babel/types';
+import { ParseResult } from '@babel/parser';
+import { ClassImportItem } from './detectors';
 
 export type CollectionMap = Record<string, string[]>;
 export type CollectionType = 'module' | 'service' | 'component' | 'interceptor';
@@ -172,4 +175,40 @@ export interface RootPointDescriptor extends EntityDescriptor {
     localName: string;
     exportName: string | 'default';
     name: string;
+}
+
+export interface UpdateItem {
+    line: number;
+    content: string[];
+    deleteLines: number;
+    cutLine?: t.SourceLocation;
+};
+
+export type Updater<T> = (data: {
+    sourceDescriptor: EntityDescriptor,
+    targetDescriptor: EntityDescriptor,
+    targetAST: ParseResult<t.File>,
+    classImportItem: ClassImportItem<t.ClassDeclaration>,
+    initialResult: UpdateItem[],
+    options?: T;
+}) => Promise<UpdateItem[]>;
+
+export type UpdaterWithChecker<T = any> = (
+    sourceDescriptor: EntityDescriptor,
+    targetDescriptor: EntityDescriptor,
+    options?: T,
+) => Promise<UpdateItem[]>;
+
+export interface AddImportedEntityToModuleOptions {
+    skipExport?: boolean;
+    asyncModule?: boolean,
+}
+
+export interface AddImportedServiceToServiceOptions {
+    skipReadonly?: boolean;
+    accessibility?: 'public' | 'private' | 'protected';
+}
+
+export interface AddRouteToModuleOptions {
+    path?: string;
 }

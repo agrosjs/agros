@@ -4,6 +4,7 @@ import {
 } from '@agros/tools/lib/update-utils';
 import {
     AbstractGeneratorFactory,
+    AbstractUpdaterFactory,
     CollectionFactoryResult,
     UpdateBaseOptions,
 } from '@agros/tools/lib/collection';
@@ -106,8 +107,8 @@ interface ModuleCollectionUpdateOptions extends UpdateBaseOptions {
     asyncModule?: boolean;
 }
 
-export class ModuleCollectionUpdateFactory extends AbstractGeneratorFactory implements AbstractGeneratorFactory {
-    public async generate({
+export class ModuleCollectionUpdateFactory extends AbstractUpdaterFactory implements AbstractUpdaterFactory {
+    public async add({
         source,
         target,
         skipExport,
