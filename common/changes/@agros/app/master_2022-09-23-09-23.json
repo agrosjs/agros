@@ -1,0 +1,10 @@
+{
+  "changes": [
+    {
+      "packageName": "@agros/app",
+      "comment": "Fix collection template files typos",
+      "type": "patch"
+    }
+  ],
+  "packageName": "@agros/app"
+}
