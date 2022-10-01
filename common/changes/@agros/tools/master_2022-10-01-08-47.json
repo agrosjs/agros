@@ -1,0 +1,10 @@
+{
+  "changes": [
+    {
+      "packageName": "@agros/tools",
+      "comment": "Fix deps missing issues",
+      "type": "patch"
+    }
+  ],
+  "packageName": "@agros/tools"
+}

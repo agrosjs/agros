@@ -1,6 +1,14 @@
 # Change Log - @agros/cli
 
-This log was last generated on Thu, 22 Sep 2022 08:53:45 GMT and should not be manually modified.
+This log was last generated on Fri, 23 Sep 2022 10:45:03 GMT and should not be manually modified.
+
+## 0.3.0
+Fri, 23 Sep 2022 10:45:03 GMT
+
+### Minor changes
+
+- Refactor agros update sub-commands
+- Optimize update command
 
 ## 0.2.1
 Thu, 22 Sep 2022 08:53:45 GMT
