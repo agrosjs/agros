@@ -1,6 +1,27 @@
-# Change Log - @agros/utils
+# Change Log - @agros/tools
 
-This log was last generated on Wed, 14 Sep 2022 08:32:07 GMT and should not be manually modified.
+This log was last generated on Sat, 01 Oct 2022 09:14:32 GMT and should not be manually modified.
+
+## 0.4.0
+Sat, 01 Oct 2022 09:14:32 GMT
+
+### Minor changes
+
+- Optimize update command
+- Refactor packages structure
+- Refactor collections and collection factories
+- Optimize template files and generate platform-specified from platform when generating or updating
+- Refactor updaters
+
+### Patches
+
+- Refactor and optimize updaters
+- Fix deps missing issues
+- Add ESLint types declarations
+- Move all interfaces into a single file
+- Fix unable to load collections issue
+- Optimize generator factories and template files
+- Optimize component collection and update commands
 
 ## 0.3.2
 Wed, 14 Sep 2022 08:32:07 GMT
