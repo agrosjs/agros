@@ -14,7 +14,7 @@
         "access": "public"
     },
     "bin": {
-        "create-app": "./bin/create-app.js"
+        "create-agros-app": "./bin/create-app.js"
     },
     "scripts": {
         "lint": "eslint .",
