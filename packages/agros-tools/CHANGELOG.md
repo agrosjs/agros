@@ -1,6 +1,13 @@
 # Change Log - @agros/tools
 
-This log was last generated on Sat, 01 Oct 2022 09:14:32 GMT and should not be manually modified.
+This log was last generated on Sun, 02 Oct 2022 11:56:06 GMT and should not be manually modified.
+
+## 0.4.1
+Sun, 02 Oct 2022 11:56:06 GMT
+
+### Patches
+
+- Fix npm client issues in Windows
 
 ## 0.4.0
 Sat, 01 Oct 2022 09:14:32 GMT
