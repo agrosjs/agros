@@ -160,7 +160,9 @@ export class AppCollectionFactory extends AbstractGeneratorFactory implements Ab
 
         try {
             const templateAbsolutePath = path.resolve(__dirname, '../files');
-            const paths = glob.sync(templateAbsolutePath + '/**/{.*,*}._');
+            const paths = glob.sync( '../files/**/{.*,*}._', {
+                cwd: __dirname,
+            }).map((pathname) => path.resolve(__dirname, pathname));
 
             for (const pathname of paths) {
                 const relativePath = path.relative(templateAbsolutePath, pathname).replace(/\.\_$/g, '');
