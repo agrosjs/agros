@@ -1,0 +1,10 @@
+{
+  "changes": [
+    {
+      "packageName": "@agros/create-app",
+      "comment": "Fix npm client issues in Windows",
+      "type": "patch"
+    }
+  ],
+  "packageName": "@agros/create-app"
+}
