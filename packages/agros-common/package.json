@@ -40,7 +40,7 @@
     "version": "0.7.3",
     "description": "Common functions for Agros.js",
     "dependencies": {
-        "@agros/tools": "workspace:^0.4.0",
+        "@agros/tools": "workspace:^0.4.1",
         "is-promise": "^4.0.0",
         "reflect-metadata": "^0.1.13"
     }
