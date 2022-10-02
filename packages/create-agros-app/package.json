@@ -14,7 +14,7 @@
         "access": "public"
     },
     "bin": {
-        "create-app": "./bin/create-app.js"
+        "create-agros-app": "./bin/create-app.js"
     },
     "scripts": {
         "lint": "eslint .",
@@ -47,11 +47,11 @@
         "typescript": "^4.5.5"
     },
     "name": "@agros/create-app",
-    "version": "0.2.2",
+    "version": "0.2.3",
     "description": "Agros project initializer",
     "dependencies": {
-        "@agros/common": "workspace:^0.7.2",
-        "@agros/tools": "workspace:^0.3.0",
+        "@agros/common": "workspace:^0.7.3",
+        "@agros/tools": "workspace:^0.4.0",
         "commander": "^9.3.0",
         "fs-extra": "^10.1.0",
         "glob": "^8.0.3",

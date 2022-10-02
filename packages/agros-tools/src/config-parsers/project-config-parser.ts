@@ -11,7 +11,6 @@ export type AliasMap = Record<string, string>;
 export interface ProjectConfig {
     platform?: string;
     useCollection?: string;
-    npmClient?: string;
     alias?: AliasMap;
     entry?: string;
     baseDir?: string;
@@ -25,7 +24,6 @@ export class ProjectConfigParser {
     private defaultProjectConfig: ProjectConfig = {
         platform: '@agros/platform-react',
         useCollection: '@agros/app/lib/collections',
-        npmClient: 'npm',
         alias: {
             '@/*': '*',
             '@modules/*': 'modules/*',

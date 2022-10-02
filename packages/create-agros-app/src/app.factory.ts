@@ -8,15 +8,14 @@ import * as fs from 'fs-extra';
 import _ from 'lodash';
 import * as yup from 'yup';
 import * as semver from 'semver';
-import {
-    execSync,
-} from 'child_process';
+import { execSync } from 'child_process';
 import * as glob from 'glob';
 import { Logger } from '@agros/tools/lib/logger';
 import { runCommand } from '@agros/tools/lib/run-command';
 import { LicenseUtils } from './license';
 import { PlatformConfigParser } from '@agros/tools/lib/config-parsers';
 import parseGlob from 'parse-glob';
+import * as os from 'os';
 
 export interface AppCollectionOptions {
     path?: string;
@@ -26,6 +25,9 @@ export interface AppCollectionOptions {
 export class AppCollectionFactory extends AbstractGeneratorFactory implements AbstractGeneratorFactory {
     private licenseUtils = new LicenseUtils();
     private licenseList = this.licenseUtils.getLicenseList();
+    private npmClient = os.platform() === 'win32'
+        ? 'npm.cmd'
+        : 'npm';
 
     public async generate({
         path: targetPath = process.cwd(),
@@ -190,7 +192,7 @@ export class AppCollectionFactory extends AbstractGeneratorFactory implements Ab
         if (!skipInstall) {
             {
                 const finishLoadingLog = logger.loadingLog('Installing dependencies...');
-                const result = await runCommand('npm', ['i'], {
+                const result = await runCommand(this.npmClient, ['i'], {
                     cwd: targetAbsolutePath,
                 });
                 if (result instanceof Error) {
@@ -204,7 +206,7 @@ export class AppCollectionFactory extends AbstractGeneratorFactory implements Ab
                 const finishLoadingLog = logger.loadingLog('Installing platform \'' + props.platform + '\'...');
                 if (!fs.existsSync(path.resolve(props.platform))) {
                     const result = await runCommand(
-                        'npm',
+                        this.npmClient,
                         [
                             'install',
                             props.platform,

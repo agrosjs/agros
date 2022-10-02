@@ -2,7 +2,7 @@
   "changes": [
     {
       "packageName": "@agros/tools",
-      "comment": "Move all interfaces into a single file",
+      "comment": "Fix npm client issues in Windows",
       "type": "patch"
     }
   ],

@@ -2,6 +2,24 @@
   "name": "@agros/cli",
   "entries": [
     {
+      "version": "0.3.1",
+      "tag": "@agros/cli_v0.3.1",
+      "date": "Sat, 01 Oct 2022 09:14:32 GMT",
+      "comments": {
+        "dependency": [
+          {
+            "comment": "Updating dependency \"@agros/app\" from `^1.1.2` to `^1.1.3`"
+          },
+          {
+            "comment": "Updating dependency \"@agros/common\" from `^0.7.2` to `^0.7.3`"
+          },
+          {
+            "comment": "Updating dependency \"@agros/tools\" from `^0.3.0` to `^0.4.0`"
+          }
+        ]
+      }
+    },
+    {
       "version": "0.3.0",
       "tag": "@agros/cli_v0.3.0",
       "date": "Fri, 23 Sep 2022 10:45:03 GMT",

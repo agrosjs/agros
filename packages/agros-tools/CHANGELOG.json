@@ -1,6 +1,53 @@
 {
-  "name": "@agros/utils",
+  "name": "@agros/tools",
   "entries": [
+    {
+      "version": "0.4.0",
+      "tag": "@agros/tools_v0.4.0",
+      "date": "Sat, 01 Oct 2022 09:14:32 GMT",
+      "comments": {
+        "patch": [
+          {
+            "comment": "Refactor and optimize updaters"
+          },
+          {
+            "comment": "Fix deps missing issues"
+          },
+          {
+            "comment": "Add ESLint types declarations"
+          },
+          {
+            "comment": "Move all interfaces into a single file"
+          },
+          {
+            "comment": "Fix unable to load collections issue"
+          },
+          {
+            "comment": "Optimize generator factories and template files"
+          },
+          {
+            "comment": "Optimize component collection and update commands"
+          }
+        ],
+        "minor": [
+          {
+            "comment": "Optimize update command"
+          },
+          {
+            "comment": "Refactor packages structure"
+          },
+          {
+            "comment": "Refactor collections and collection factories"
+          },
+          {
+            "comment": "Optimize template files and generate platform-specified from platform when generating or updating"
+          },
+          {
+            "comment": "Refactor updaters"
+          }
+        ]
+      }
+    },
     {
       "version": "0.3.2",
       "tag": "@agros/utils_v0.3.2",

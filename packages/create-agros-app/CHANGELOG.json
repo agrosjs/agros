@@ -2,6 +2,21 @@
   "name": "@agros/create-app",
   "entries": [
     {
+      "version": "0.2.3",
+      "tag": "@agros/create-app_v0.2.3",
+      "date": "Sat, 01 Oct 2022 09:14:32 GMT",
+      "comments": {
+        "dependency": [
+          {
+            "comment": "Updating dependency \"@agros/common\" from `^0.7.2` to `^0.7.3`"
+          },
+          {
+            "comment": "Updating dependency \"@agros/tools\" from `^0.3.0` to `^0.4.0`"
+          }
+        ]
+      }
+    },
+    {
       "version": "0.2.2",
       "tag": "@agros/create-app_v0.2.2",
       "date": "Fri, 23 Sep 2022 10:45:03 GMT",
