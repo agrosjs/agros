@@ -2,6 +2,23 @@
   "name": "@agros/create-app",
   "entries": [
     {
+      "version": "0.2.8",
+      "tag": "@agros/create-app_v0.2.8",
+      "date": "Mon, 03 Oct 2022 09:41:41 GMT",
+      "comments": {
+        "patch": [
+          {
+            "comment": "Add @babel/runtime for create-agros-app template package.json file"
+          }
+        ],
+        "dependency": [
+          {
+            "comment": "Updating dependency \"@agros/tools\" from `^0.4.2` to `^0.4.3`"
+          }
+        ]
+      }
+    },
+    {
       "version": "0.2.7",
       "tag": "@agros/create-app_v0.2.7",
       "date": "Mon, 03 Oct 2022 07:15:28 GMT",

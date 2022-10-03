@@ -209,7 +209,6 @@ importers:
       '@agros/platform-react': link:../agros-platform-react
       '@agros/platform-svelte': link:../agros-platform-svelte
       '@agros/platform-vue': link:../agros-platform-vue
-      '@babel/runtime': 7.19.0
       core-js: 3.24.1
       react: 17.0.2
       react-error-boundary: 3.1.4_react@17.0.2
@@ -218,6 +217,7 @@ importers:
       vue-router: 4.1.3_vue@3.2.37
     devDependencies:
       '@babel/core': 7.18.10
+      '@babel/runtime': 7.19.0
       '@types/jest': 28.1.6
       '@types/lodash': 4.14.182
       '@types/node': 15.14.9
@@ -3713,7 +3713,6 @@ packages:
     engines: {node: '>=6.9.0'}
     dependencies:
       regenerator-runtime: 0.13.9
-    dev: false
 
   /@babel/template/7.0.0-beta.53:
     resolution: {integrity: sha512-MCZLPfGfNBHdE5wNfY5eK1hpY3fyq8zq+NfbfFCUtIzHl7SfUzHzH8rKPBXSB2Ypetq2sBHdDyslSSgnG0Watg==}
@@ -9993,7 +9992,6 @@ packages:
 
   /regenerator-runtime/0.13.9:
     resolution: {integrity: sha512-p3VT+cOEgxFsRRA9X4lkI1E+k2/CtnKtU4gcxyaCUreilL/vqI6CdZ3wxVUx3UOUg+gnUOQQcRI7BmSI656MYA==}
-    dev: false
 
   /regenerator-transform/0.13.4:
     resolution: {integrity: sha512-T0QMBjK3J0MtxjPmdIMXm72Wvj2Abb0Bd4HADdfijwMdoIsyQZ6fWC7kDFhk2YinBBEMZDL7Y7wh0J1sGx3S4A==}
