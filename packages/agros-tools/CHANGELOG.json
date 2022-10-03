@@ -2,6 +2,18 @@
   "name": "@agros/tools",
   "entries": [
     {
+      "version": "0.4.1",
+      "tag": "@agros/tools_v0.4.1",
+      "date": "Sun, 02 Oct 2022 11:56:06 GMT",
+      "comments": {
+        "patch": [
+          {
+            "comment": "Fix npm client issues in Windows"
+          }
+        ]
+      }
+    },
+    {
       "version": "0.4.0",
       "tag": "@agros/tools_v0.4.0",
       "date": "Sat, 01 Oct 2022 09:14:32 GMT",
