@@ -2,6 +2,18 @@
   "name": "@agros/create-app",
   "entries": [
     {
+      "version": "0.2.7",
+      "tag": "@agros/create-app_v0.2.7",
+      "date": "Mon, 03 Oct 2022 07:15:28 GMT",
+      "comments": {
+        "patch": [
+          {
+            "comment": "Fix platform create project template files issues in Vue and Svelte"
+          }
+        ]
+      }
+    },
+    {
       "version": "0.2.6",
       "tag": "@agros/create-app_v0.2.6",
       "date": "Mon, 03 Oct 2022 02:44:43 GMT",

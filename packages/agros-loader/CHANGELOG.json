@@ -2,6 +2,18 @@
   "name": "@agros/loader",
   "entries": [
     {
+      "version": "1.1.5",
+      "tag": "@agros/loader_v1.1.5",
+      "date": "Mon, 03 Oct 2022 07:15:28 GMT",
+      "comments": {
+        "patch": [
+          {
+            "comment": "Svelte config files and absoluteFilepath issues"
+          }
+        ]
+      }
+    },
+    {
       "version": "1.1.4",
       "tag": "@agros/loader_v1.1.4",
       "date": "Mon, 03 Oct 2022 02:02:40 GMT",

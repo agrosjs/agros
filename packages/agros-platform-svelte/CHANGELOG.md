@@ -1,6 +1,14 @@
 # Change Log - @agros/platform-svelte
 
-This log was last generated on Mon, 03 Oct 2022 02:02:40 GMT and should not be manually modified.
+This log was last generated on Mon, 03 Oct 2022 07:15:28 GMT and should not be manually modified.
+
+## 1.2.5
+Mon, 03 Oct 2022 07:15:28 GMT
+
+### Patches
+
+- Fix platform create project template files issues in Vue and Svelte
+- Svelte config files and absoluteFilepath issues
 
 ## 1.2.4
 Mon, 03 Oct 2022 02:02:40 GMT

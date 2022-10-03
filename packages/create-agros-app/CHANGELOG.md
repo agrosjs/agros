@@ -1,6 +1,13 @@
 # Change Log - @agros/create-app
 
-This log was last generated on Mon, 03 Oct 2022 02:44:43 GMT and should not be manually modified.
+This log was last generated on Mon, 03 Oct 2022 07:15:28 GMT and should not be manually modified.
+
+## 0.2.7
+Mon, 03 Oct 2022 07:15:28 GMT
+
+### Patches
+
+- Fix platform create project template files issues in Vue and Svelte
 
 ## 0.2.6
 Mon, 03 Oct 2022 02:44:43 GMT
