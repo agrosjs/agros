@@ -1,6 +1,13 @@
 # Change Log - @agros/loader
 
-This log was last generated on Mon, 03 Oct 2022 02:02:40 GMT and should not be manually modified.
+This log was last generated on Mon, 03 Oct 2022 07:15:28 GMT and should not be manually modified.
+
+## 1.1.5
+Mon, 03 Oct 2022 07:15:28 GMT
+
+### Patches
+
+- Svelte config files and absoluteFilepath issues
 
 ## 1.1.4
 Mon, 03 Oct 2022 02:02:40 GMT

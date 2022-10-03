@@ -1,6 +1,13 @@
 # Change Log - @agros/platform-vue
 
-This log was last generated on Sat, 01 Oct 2022 09:14:32 GMT and should not be manually modified.
+This log was last generated on Mon, 03 Oct 2022 07:15:28 GMT and should not be manually modified.
+
+## 1.2.4
+Mon, 03 Oct 2022 07:15:28 GMT
+
+### Patches
+
+- Fix platform create project template files issues in Vue and Svelte
 
 ## 1.2.3
 Sat, 01 Oct 2022 09:14:32 GMT
