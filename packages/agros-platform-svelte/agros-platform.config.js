@@ -68,7 +68,8 @@ module.exports = {
             if (
                 typeof rule.use === 'string' && (
                     rule.use.indexOf('@agros/loader') !== -1 ||
-                /packages\/agros-loader/.test(rule.use)
+                    rule.use.indexOf(['@agros', 'loader'].join(path.sep)) !== -1 ||
+                    rule.use.indexOf(['packages', 'agros-loader'].join(path.sep)) !== -1
                 )
             ) {
                 return {

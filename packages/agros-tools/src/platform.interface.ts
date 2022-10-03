@@ -1,7 +1,7 @@
 import { ComponentInstance } from './component-instance.class';
 import { EnsureImportOptions } from './types';
 
-export type AddVirtualFile = (pathname: string, content: string) => void;
+export type AddVirtualFile = (pathname: string, content: string) => string;
 
 export interface GetComponentFactoryCodeData {
     ensuredImportsMap: Record<string, string>;
