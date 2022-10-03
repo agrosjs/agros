@@ -1,0 +1,10 @@
+{
+  "changes": [
+    {
+      "packageName": "@agros/platform-svelte",
+      "comment": "Fix issues on Windows",
+      "type": "patch"
+    }
+  ],
+  "packageName": "@agros/platform-svelte"
+}

@@ -1,0 +1,10 @@
+{
+  "changes": [
+    {
+      "packageName": "@agros/create-app",
+      "comment": "Fix issues on Windows",
+      "type": "patch"
+    }
+  ],
+  "packageName": "@agros/create-app"
+}

@@ -1,0 +1,10 @@
+{
+  "changes": [
+    {
+      "packageName": "@agros/tools",
+      "comment": "Fix issues on Windows",
+      "type": "patch"
+    }
+  ],
+  "packageName": "@agros/tools"
+}
