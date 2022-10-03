@@ -1,6 +1,13 @@
 # Change Log - @agros/tools
 
-This log was last generated on Mon, 03 Oct 2022 02:02:40 GMT and should not be manually modified.
+This log was last generated on Mon, 03 Oct 2022 09:41:41 GMT and should not be manually modified.
+
+## 0.4.3
+Mon, 03 Oct 2022 09:41:41 GMT
+
+### Patches
+
+- Fix Svelte platform issues for Windows
 
 ## 0.4.2
 Mon, 03 Oct 2022 02:02:40 GMT

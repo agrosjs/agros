@@ -2,6 +2,18 @@
   "name": "@agros/tools",
   "entries": [
     {
+      "version": "0.4.3",
+      "tag": "@agros/tools_v0.4.3",
+      "date": "Mon, 03 Oct 2022 09:41:41 GMT",
+      "comments": {
+        "patch": [
+          {
+            "comment": "Fix Svelte platform issues for Windows"
+          }
+        ]
+      }
+    },
+    {
       "version": "0.4.2",
       "tag": "@agros/tools_v0.4.2",
       "date": "Mon, 03 Oct 2022 02:02:40 GMT",

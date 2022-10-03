@@ -1,6 +1,14 @@
 # Change Log - @agros/platform-svelte
 
-This log was last generated on Mon, 03 Oct 2022 07:15:28 GMT and should not be manually modified.
+This log was last generated on Mon, 03 Oct 2022 09:41:41 GMT and should not be manually modified.
+
+## 1.2.6
+Mon, 03 Oct 2022 09:41:41 GMT
+
+### Patches
+
+- Fix Svelte platform issues for Windows
+- Add @babel/runtime for create-agros-app template package.json file
 
 ## 1.2.5
 Mon, 03 Oct 2022 07:15:28 GMT

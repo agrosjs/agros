@@ -2,6 +2,26 @@
   "name": "@agros/platform-svelte",
   "entries": [
     {
+      "version": "1.2.6",
+      "tag": "@agros/platform-svelte_v1.2.6",
+      "date": "Mon, 03 Oct 2022 09:41:41 GMT",
+      "comments": {
+        "patch": [
+          {
+            "comment": "Fix Svelte platform issues for Windows"
+          },
+          {
+            "comment": "Add @babel/runtime for create-agros-app template package.json file"
+          }
+        ],
+        "dependency": [
+          {
+            "comment": "Updating dependency \"@agros/tools\" from `^0.4.2` to `^0.4.3`"
+          }
+        ]
+      }
+    },
+    {
       "version": "1.2.5",
       "tag": "@agros/platform-svelte_v1.2.5",
       "date": "Mon, 03 Oct 2022 07:15:28 GMT",
