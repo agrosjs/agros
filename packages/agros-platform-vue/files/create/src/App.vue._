@@ -10,7 +10,9 @@
 import { getContainer } from '@agros/app';
 import { AppService } from '@/app.service';
 
-const container = getContainer(App);
+const container = getContainer();
 const appService = container.get<AppService>(AppService);
 appService.sayHello();
+
+export default {};
 </script>

@@ -1,0 +1,11 @@
+{
+  "changes": [
+    {
+      "comment": "Svelte config files and absoluteFilepath issues",
+      "type": "patch",
+      "packageName": "@agros/platform-svelte"
+    }
+  ],
+  "packageName": "@agros/platform-svelte",
+  "email": "i@lenconda.top"
+}
