@@ -2,6 +2,26 @@
   "name": "@agros/platform-svelte",
   "entries": [
     {
+      "version": "1.2.4",
+      "tag": "@agros/platform-svelte_v1.2.4",
+      "date": "Mon, 03 Oct 2022 02:02:40 GMT",
+      "comments": {
+        "patch": [
+          {
+            "comment": "Fix issues on Windows"
+          }
+        ],
+        "dependency": [
+          {
+            "comment": "Updating dependency \"@agros/loader\" from `^1.1.3` to `^1.1.4`"
+          },
+          {
+            "comment": "Updating dependency \"@agros/tools\" from `^0.4.1` to `^0.4.2`"
+          }
+        ]
+      }
+    },
+    {
       "version": "1.2.3",
       "tag": "@agros/platform-svelte_v1.2.3",
       "date": "Sat, 01 Oct 2022 09:14:32 GMT",
