@@ -2,7 +2,7 @@
   "changes": [
     {
       "packageName": "@agros/create-app",
-      "comment": "Fix issues on Windows",
+      "comment": "Optimize creating files",
       "type": "patch"
     }
   ],
