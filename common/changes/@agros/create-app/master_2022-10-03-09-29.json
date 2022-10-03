@@ -1,0 +1,11 @@
+{
+  "changes": [
+    {
+      "comment": "Add @babel/runtime for create-agros-app template package.json file",
+      "type": "patch",
+      "packageName": "@agros/create-app"
+    }
+  ],
+  "packageName": "@agros/create-app",
+  "email": "i@lenconda.top"
+}
