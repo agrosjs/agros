@@ -1,6 +1,13 @@
 # Change Log - @agros/tools
 
-This log was last generated on Sun, 02 Oct 2022 11:56:06 GMT and should not be manually modified.
+This log was last generated on Mon, 03 Oct 2022 02:02:40 GMT and should not be manually modified.
+
+## 0.4.2
+Mon, 03 Oct 2022 02:02:40 GMT
+
+### Patches
+
+- Fix issues on Windows
 
 ## 0.4.1
 Sun, 02 Oct 2022 11:56:06 GMT

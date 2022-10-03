@@ -2,6 +2,23 @@
   "name": "@agros/create-app",
   "entries": [
     {
+      "version": "0.2.5",
+      "tag": "@agros/create-app_v0.2.5",
+      "date": "Mon, 03 Oct 2022 02:02:40 GMT",
+      "comments": {
+        "patch": [
+          {
+            "comment": "Fix issues on Windows"
+          }
+        ],
+        "dependency": [
+          {
+            "comment": "Updating dependency \"@agros/tools\" from `^0.4.1` to `^0.4.2`"
+          }
+        ]
+      }
+    },
+    {
       "version": "0.2.4",
       "tag": "@agros/create-app_v0.2.4",
       "date": "Sun, 02 Oct 2022 11:56:06 GMT",
