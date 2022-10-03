@@ -230,14 +230,15 @@ export class AppCollectionFactory extends AbstractGeneratorFactory implements Ab
                     try {
                         const createFilesDir = platformConfig.getConfig<string>('files.create');
                         const platformPackageDir = platformConfig.getPlatformPackageDir();
-                        const files = glob.sync(createFilesDir, {
+                        const createFilesAbsoluteDir = path.resolve(platformPackageDir, createFilesDir);
+                        const files = glob.sync(createFilesDir.split(/\/|\\/g).join('/'), {
                             cwd: platformPackageDir,
                             nodir: true,
                         }).map((pathname) => path.resolve(platformPackageDir, pathname));
                         for (const pathname of files) {
                             const relativePath = path.resolve(
                                 path.relative(
-                                    parseGlob(createFilesDir).base,
+                                    parseGlob(createFilesAbsoluteDir).base,
                                     pathname,
                                 ).replace(/\.\_$/g, ''),
                             );

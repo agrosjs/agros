@@ -90,14 +90,14 @@ export const transformComponentFile = createLoaderAOP(
         let newScriptCode = generate(tree).code;
 
         newScriptCode = [
-            'import __AGROS_FACTORY__ from \'' +
-            path.resolve(
-                path.dirname(
-                    path.resolve(process.cwd(), configParser.getEntry()),
-                ),
-                factoryFilename,
-            ) +
-            '\';',
+            `import __AGROS_FACTORY__ from "${
+                path.resolve(
+                    path.dirname(
+                        path.resolve(process.cwd(), configParser.getEntry()),
+                    ),
+                    factoryFilename,
+                ).replace(/\\/g, '\\\\')
+            }";`,
             `const __AGROS_DEPS_MAP__ = __AGROS_FACTORY__.generateDependencyMap('${parsedQuery['component_uuid']}');`,
         ].join('\n') + newScriptCode;
 
