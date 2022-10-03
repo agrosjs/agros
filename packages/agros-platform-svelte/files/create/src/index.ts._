@@ -1,0 +1,8 @@
+import { hashMode } from '@agros/platform-svelte/lib/svelte-router';
+import { AppModule } from '@/app.module';
+
+export default {
+    module: AppModule,
+    container: document.getElementById('root'),
+    RouterComponent: hashMode,
+};
