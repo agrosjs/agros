@@ -1,7 +1,7 @@
 {
   "changes": [
     {
-      "comment": "Fix platform create project template files issues in Vue and Svelte",
+      "comment": "Fix Svelte platform issues for Windows",
       "type": "patch",
       "packageName": "@agros/platform-svelte"
     }

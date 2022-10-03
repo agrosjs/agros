@@ -183,7 +183,7 @@ const platform: Platform = {
                 {/await}
             `,
         );
-        return `() => import('${pathname}')`;
+        return `() => import('${pathname.replace(/\\/g, '\\\\')}')`;
     },
 };
 

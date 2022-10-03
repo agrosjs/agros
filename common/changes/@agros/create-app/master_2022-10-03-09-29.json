@@ -1,7 +1,7 @@
 {
   "changes": [
     {
-      "comment": "Fix platform create project template files issues in Vue and Svelte",
+      "comment": "Add @babel/runtime for create-agros-app template package.json file",
       "type": "patch",
       "packageName": "@agros/create-app"
     }
