@@ -160,7 +160,9 @@ export class AppCollectionFactory extends AbstractGeneratorFactory implements Ab
 
         try {
             const templateAbsolutePath = path.resolve(__dirname, '../files');
-            const paths = glob.sync(templateAbsolutePath + '/**/{.*,*}._');
+            const paths = glob.sync( '../files/**/{.*,*}._', {
+                cwd: __dirname,
+            }).map((pathname) => path.resolve(__dirname, pathname));
 
             for (const pathname of paths) {
                 const relativePath = path.relative(templateAbsolutePath, pathname).replace(/\.\_$/g, '');
@@ -227,13 +229,16 @@ export class AppCollectionFactory extends AbstractGeneratorFactory implements Ab
                     const platformConfig = new PlatformConfigParser(props.platform);
                     try {
                         const createFilesDir = platformConfig.getConfig<string>('files.create');
-                        const files = glob.sync(createFilesDir, {
+                        const platformPackageDir = platformConfig.getPlatformPackageDir();
+                        const createFilesAbsoluteDir = path.resolve(platformPackageDir, createFilesDir);
+                        const files = glob.sync(createFilesDir.split(/\/|\\/g).join('/'), {
+                            cwd: platformPackageDir,
                             nodir: true,
-                        });
+                        }).map((pathname) => path.resolve(platformPackageDir, pathname));
                         for (const pathname of files) {
                             const relativePath = path.resolve(
                                 path.relative(
-                                    parseGlob(createFilesDir).base,
+                                    parseGlob(createFilesAbsoluteDir).base,
                                     pathname,
                                 ).replace(/\.\_$/g, ''),
                             );

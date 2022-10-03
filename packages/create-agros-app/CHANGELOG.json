@@ -2,6 +2,23 @@
   "name": "@agros/create-app",
   "entries": [
     {
+      "version": "0.2.4",
+      "tag": "@agros/create-app_v0.2.4",
+      "date": "Sun, 02 Oct 2022 11:56:06 GMT",
+      "comments": {
+        "patch": [
+          {
+            "comment": "Fix npm client issues in Windows"
+          }
+        ],
+        "dependency": [
+          {
+            "comment": "Updating dependency \"@agros/tools\" from `^0.4.0` to `^0.4.1`"
+          }
+        ]
+      }
+    },
+    {
       "version": "0.2.3",
       "tag": "@agros/create-app_v0.2.3",
       "date": "Sat, 01 Oct 2022 09:14:32 GMT",

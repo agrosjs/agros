@@ -155,7 +155,7 @@ const platform: Platform = {
             `
                 <script>
                     ${lazy ? `const Component = () => import('${absoluteFilePath}');` : `const Component = import('${absoluteFilePath}');`}
-                    import __AGROS_FACTORY__ from '${factoryPath}';
+                    import __AGROS_FACTORY__ from '${factoryPath.replace(/\\/g, '\\\\')}';
                     const componentInstanceMap = __AGROS_FACTORY__.getComponentInstanceMap();
                     const componentInstance = Array.from(componentInstanceMap.values()).find((instance) => {
                         return instance.metadata.uuid === '${componentUuid}';

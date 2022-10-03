@@ -12,6 +12,7 @@ export const ensureImport = (options: EnsureImportOptions): EnsureImportResult =
     let importDeclaration: ImportDeclaration;
     let identifierName: string;
     const importType = options.type || 'named';
+    const libName = (options.libName || '').replace(/\\/g, '\\\\');
 
     importDeclaration = body.find((statement) => {
         return statement.type === 'ImportDeclaration' && statement.source.value === options.libName;
@@ -21,15 +22,15 @@ export const ensureImport = (options: EnsureImportOptions): EnsureImportResult =
         identifierName = prefix + options.identifierName;
         switch (importType) {
             case 'named': {
-                importDeclaration = template.ast(`import { ${options.identifierName} as ${identifierName} } from '${options.libName}';`) as ImportDeclaration;
+                importDeclaration = template.ast(`import { ${options.identifierName} as ${identifierName} } from '${libName}';`) as ImportDeclaration;
                 break;
             }
             case 'default': {
-                importDeclaration = template.ast(`import ${identifierName} from '${options.libName}';`) as ImportDeclaration;
+                importDeclaration = template.ast(`import ${identifierName} from '${libName}';`) as ImportDeclaration;
                 break;
             }
             case 'namespace': {
-                importDeclaration = template.ast(`import * as ${identifierName} from '${options.libName}';`) as ImportDeclaration;
+                importDeclaration = template.ast(`import * as ${identifierName} from '${libName}';`) as ImportDeclaration;
                 break;
             }
             default:
@@ -72,7 +73,7 @@ export const ensureImport = (options: EnsureImportOptions): EnsureImportResult =
                     body.splice(
                         0,
                         0,
-                        template.ast(`import * as ${identifierName} from '${options.libName}';`) as ImportDeclaration,
+                        template.ast(`import * as ${identifierName} from '${libName}';`) as ImportDeclaration,
                     );
                     break;
                 }

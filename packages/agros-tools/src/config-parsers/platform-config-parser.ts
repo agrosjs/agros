@@ -53,7 +53,7 @@ export class PlatformConfigParser {
             this.platformConfig = _.merge({}, _.clone(this.platformConfig), platformConfig);
             const configFileDirname = path.dirname(this.platformConfigFile);
             this.platformConfig.files = {
-                create: path.resolve(configFileDirname, './files/create/**/*'),
+                create: './files/create/**/*',
                 generate: {
                     componentDescription: path.resolve(configFileDirname, './files/generate/component.tsx._'),
                 },

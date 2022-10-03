@@ -2,7 +2,7 @@
   "changes": [
     {
       "packageName": "@agros/create-app",
-      "comment": "Fix npm client issues in Windows",
+      "comment": "Fix issues on Windows",
       "type": "patch"
     }
   ],
