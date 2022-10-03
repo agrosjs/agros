@@ -2,12 +2,12 @@
 import { getContainer } from '@agros/app';
 import { AppService } from '@/app.service';
 
-const container = getContainer(App);
+const container = getContainer();
 const appService = container.get<AppService>(AppService);
 appService.sayHello();
 </script>
 
-<div className="app">
+<div class="app">
     <img src="/logo192.png" />
     <span><strong>agros.js</strong></span>&nbsp;
     <span>is now working!</span>

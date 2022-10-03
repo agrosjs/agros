@@ -200,7 +200,9 @@ export const transformComponentDecorator = createLoaderAOP(
             componentIdentifierName,
             lazy,
             componentUuid: uuid,
-            absoluteFilePath: path.resolve(context.context, filePath),
+            absoluteFilePath: filePath.startsWith('@')
+                ? filePath
+                : path.resolve(context.context, filePath),
             factoryPath: path.resolve('src', factoryFilename),
             addVirtualFile,
         });
