@@ -15,11 +15,24 @@ module.exports = {
         },
     },
     configWebpack: defineBuilderConfig((config) => {
-        addBabelPreset(require.resolve('@babel/preset-env'))(config);
-        addBabelPreset(require.resolve('@vue/babel-preset-app'))(config);
-        addBabelPlugin(require.resolve('@babel/plugin-transform-typescript'))(config);
-        addBabelPlugin(require.resolve('@babel/plugin-transform-runtime'))(config);
-        addBabelPlugin(require.resolve('@babel/plugin-transform-parameters'))(config);
+        addBabelPreset([
+            require.resolve('@babel/preset-env'),
+            {
+                loose: true,
+            },
+        ])(config);
+        addBabelPreset([require.resolve('@vue/babel-preset-app'), {
+            loose: true,
+        }])(config);
+        addBabelPlugin([require.resolve('@babel/plugin-transform-typescript'), {
+            loose: true,
+        }])(config);
+        addBabelPlugin([require.resolve('@babel/plugin-transform-runtime'), {
+            loose: true,
+        }])(config);
+        addBabelPlugin([require.resolve('@babel/plugin-transform-parameters'), {
+            loose: true,
+        }])(config);
 
         config.module?.rules?.unshift({
             test: /\.vue$/,
