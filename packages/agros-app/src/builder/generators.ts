@@ -570,6 +570,8 @@ export const generateDevServerConfig = (proxy, allowedHost) => {
 
             middlewares.push(redirectServedPath(paths.publicUrlOrPath));
             middlewares.push(noopServiceWorkerMiddleware(paths.publicUrlOrPath));
+
+            return middlewares;
         },
     };
 
