@@ -125,6 +125,9 @@ export const generateBuildConfig = (webpackEnv) => {
     };
 
     let config: Configuration = {
+        ignoreWarnings: [
+            () => true,
+        ],
         target: ['browserslist'],
         stats: 'errors-only',
         mode: isEnvProduction ? 'production' : isEnvDevelopment ? 'development' : 'none',
@@ -550,15 +553,23 @@ export const generateDevServerConfig = (proxy, allowedHost) => {
             index: paths.publicUrlOrPath,
         },
         proxy,
-        onBeforeSetupMiddleware(devServer) {
-            devServer.app.use(evalSourceMapMiddleware(devServer));
+        setupMiddlewares(middlewares, devServer) {
+            if (!devServer) {
+                throw new Error('webpack-dev-server is not defined');
+            }
+
+            if (!Array.isArray(middlewares)) {
+                throw new Error('webpack-dev-server middlewares is not an array');
+            }
+
+            middlewares.unshift(evalSourceMapMiddleware(devServer));
+
             if (fs.existsSync(paths.proxySetup)) {
                 require(paths.proxySetup)(devServer.app);
             }
-        },
-        onAfterSetupMiddleware(devServer) {
-            devServer.app.use(redirectServedPath(paths.publicUrlOrPath));
-            devServer.app.use(noopServiceWorkerMiddleware(paths.publicUrlOrPath));
+
+            middlewares.push(redirectServedPath(paths.publicUrlOrPath));
+            middlewares.push(noopServiceWorkerMiddleware(paths.publicUrlOrPath));
         },
     };
 
