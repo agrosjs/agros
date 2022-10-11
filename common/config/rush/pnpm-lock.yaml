@@ -303,6 +303,7 @@ importers:
       '@types/qs': ^6.9.7
       '@types/react': ^17.0.0
       '@types/react-dom': ^17.0.0
+      '@types/react-router-dom': ^5.3.3
       '@types/webpack': ^5.28.0
       babel-plugin-transform-typescript-metadata: ^0.3.2
       babel-preset-react-app: ^10.0.1
@@ -311,7 +312,7 @@ importers:
       react: ^17.0.0
       react-app-rewired: ^2.2.1
       react-dom: ^17.0.0
-      react-router-dom: ^6.0.0
+      react-router-dom: ^6.3.0
       reflect-metadata: ^0.1.13
       rimraf: ^3.0.2
       typescript: ^4.5.5
@@ -347,6 +348,7 @@ importers:
       '@types/qs': 6.9.7
       '@types/react': 17.0.48
       '@types/react-dom': 17.0.17
+      '@types/react-router-dom': 5.3.3
       '@types/webpack': 5.28.0
       rimraf: 3.0.2
       typescript: 4.7.4
@@ -4466,6 +4468,10 @@ packages:
     resolution: {integrity: sha512-FdLBT93h3kcZ586Aee66HPCVJ6qvxVjBlDWNmxSGSbCZe9hTsjRKdSsl4y1T+3zfujxo9auykQMnFsfyHWD7wg==}
     dev: true
 
+  /@types/history/4.7.11:
+    resolution: {integrity: sha512-qjDJRrmvBMiTx+jyLxvLfJU7UznFuokDv4f3WRuriHKERccVpFU+8XMQUAbDzoiJCsmexxRExQeMwwCdamSKDA==}
+    dev: true
+
   /@types/html-minifier-terser/6.1.0:
     resolution: {integrity: sha512-oh/6byDPnL1zeNXFrDXFLyZjkr1MsBG667IM792caf1L2UPOOMf65NFzjUH/ltyfwjAGfs1rsX1eftK0jC/KIg==}
     dev: false
@@ -4582,6 +4588,21 @@ packages:
   /@types/react-dom/17.0.17:
     resolution: {integrity: sha512-VjnqEmqGnasQKV0CWLevqMTXBYG9GbwuE6x3VetERLh0cq2LTptFE73MrQi2S7GkKXCf2GgwItB/melLnxfnsg==}
     dependencies:
+      '@types/react': 17.0.48
+    dev: true
+
+  /@types/react-router-dom/5.3.3:
+    resolution: {integrity: sha512-kpqnYK4wcdm5UaWI3fLcELopqLrHgLqNsdpHauzlQktfkHL3npOSwtj1Uz9oKBAzs7lFtVkV8j83voAz2D8fhw==}
+    dependencies:
+      '@types/history': 4.7.11
+      '@types/react': 17.0.48
+      '@types/react-router': 5.1.19
+    dev: true
+
+  /@types/react-router/5.1.19:
+    resolution: {integrity: sha512-Fv/5kb2STAEMT3wHzdKQK2z8xKq38EDIGVrutYLmQVVLe+4orDFquU52hQrULnEHinMKv9FSA6lf9+uNT1ITtA==}
+    dependencies:
+      '@types/history': 4.7.11
       '@types/react': 17.0.48
     dev: true
 
