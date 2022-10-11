@@ -68,14 +68,16 @@ export class Factory implements IFactory {
     public async create<T = any>(ModuleClass: Type<T>): Promise<ComponentInstance> {
         const rootModuleInstance = await this.createModuleInstance(ModuleClass);
 
-        const rootModuleExportedComponentClasses = Array.from(rootModuleInstance.metadata?.exports || new Set<Type>()).filter((ExportedClass) => {
-            return Boolean(
-                Reflect.getMetadata(
-                    DI_METADATA_COMPONENT_SYMBOL,
-                    ExportedClass,
-                ),
-            );
-        });
+        const rootModuleExportedComponentClasses = Array
+            .from(rootModuleInstance.metadata?.exports || new Set<Type>())
+            .filter((ExportedClass) => {
+                return Boolean(
+                    Reflect.getMetadata(
+                        DI_METADATA_COMPONENT_SYMBOL,
+                        ExportedClass,
+                    ),
+                );
+            });
 
         if (rootModuleExportedComponentClasses.length !== 1) {
             throw new Error(`Root module is expected to export one component class, but got ${rootModuleExportedComponentClasses.length}`);

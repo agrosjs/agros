@@ -126,7 +126,7 @@ export const generateBuildConfig = (webpackEnv) => {
 
     let config: Configuration = {
         target: ['browserslist'],
-        stats: 'errors-warnings',
+        stats: 'errors-only',
         mode: isEnvProduction ? 'production' : isEnvDevelopment ? 'development' : 'none',
         bail: isEnvProduction,
         devtool: isEnvProduction
