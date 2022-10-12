@@ -1,6 +1,13 @@
 # Change Log - @agros/platform-vue
 
-This log was last generated on Mon, 03 Oct 2022 07:15:28 GMT and should not be manually modified.
+This log was last generated on Wed, 12 Oct 2022 04:01:12 GMT and should not be manually modified.
+
+## 1.2.5
+Wed, 12 Oct 2022 04:01:12 GMT
+
+### Patches
+
+- Fix mplatform warnings
 
 ## 1.2.4
 Mon, 03 Oct 2022 07:15:28 GMT

@@ -2,6 +2,24 @@
   "name": "@agros/app",
   "entries": [
     {
+      "version": "1.1.4",
+      "tag": "@agros/app_v1.1.4",
+      "date": "Wed, 12 Oct 2022 04:01:12 GMT",
+      "comments": {
+        "patch": [
+          {
+            "comment": "Optimize terminal outputs for dev-server"
+          },
+          {
+            "comment": "Fix dependencies missing for packages"
+          },
+          {
+            "comment": "Supress warnings for webpack-dev-server"
+          }
+        ]
+      }
+    },
+    {
       "version": "1.1.3",
       "tag": "@agros/app_v1.1.3",
       "date": "Sat, 01 Oct 2022 09:14:32 GMT",
