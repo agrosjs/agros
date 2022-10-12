@@ -1,0 +1,10 @@
+{
+  "changes": [
+    {
+      "packageName": "@agros/app",
+      "comment": "Optimize terminal outputs for dev-server",
+      "type": "patch"
+    }
+  ],
+  "packageName": "@agros/app"
+}

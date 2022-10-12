@@ -1,14 +1,16 @@
 lockfileVersion: 5.4
 
 specifiers:
-  '@agros/common': workspace:^0.6.4
-  '@agros/create-app': workspace:^0.1.9
-  '@agros/loader': workspace:^1.0.1
-  '@agros/tools': workspace:^0.0.0
+  '@agros/common': workspace:^0.7.3
+  '@agros/create-app': workspace:^0.2.8
+  '@agros/loader': workspace:^1.1.5
+  '@agros/tools': workspace:^0.4.3
   '@svgr/webpack': ^6.3.1
   '@types/fs-extra': ^9.0.13
+  '@types/prompts': ^2.4.1
   '@types/react-dev-utils': ^9.0.11
   '@types/webpack': ^5.28.0
+  address: ^1.2.1
   babel-loader: ^8.2.5
   bfj: ^7.0.2
   case-sensitive-paths-webpack-plugin: ^2.4.0
@@ -16,6 +18,7 @@ specifiers:
   crypto: ^1.0.1
   css-loader: ^6.7.1
   css-minimizer-webpack-plugin: ^4.0.0
+  detect-port-alt: ^1.1.6
   dotenv: ^16.0.1
   dotenv-expand: ^8.0.3
   escape-string-regexp: ^5.0.0
@@ -31,6 +34,7 @@ specifiers:
   postcss-loader: ^7.0.1
   postcss-normalize: ^10.0.1
   postcss-preset-env: ^7.7.2
+  prompts: ^2.4.2
   react-dev-utils: ^12.0.1
   resolve: ^1.22.1
   resolve-url-loader: ^5.0.0
@@ -50,6 +54,7 @@ dependencies:
   '@agros/loader': link:../agros-loader
   '@agros/tools': link:../agros-tools
   '@svgr/webpack': 6.3.1
+  address: 1.2.1
   babel-loader: 8.2.5_webpack@5.73.0
   bfj: 7.0.2
   case-sensitive-paths-webpack-plugin: 2.4.0
@@ -57,6 +62,7 @@ dependencies:
   crypto: 1.0.1
   css-loader: 6.7.1_webpack@5.73.0
   css-minimizer-webpack-plugin: 4.0.0_webpack@5.73.0
+  detect-port-alt: 1.1.6
   dotenv: 16.0.1
   dotenv-expand: 8.0.3
   escape-string-regexp: 5.0.0
@@ -72,6 +78,7 @@ dependencies:
   postcss-loader: 7.0.1_webpack@5.73.0
   postcss-normalize: 10.0.1
   postcss-preset-env: 7.7.2
+  prompts: 2.4.2
   react-dev-utils: 12.0.1
   resolve: 1.22.1
   resolve-url-loader: 5.0.0
@@ -87,6 +94,7 @@ dependencies:
 
 devDependencies:
   '@types/fs-extra': 9.0.13
+  '@types/prompts': 2.4.1
   '@types/react-dev-utils': 9.0.11
   '@types/webpack': 5.28.0
 
@@ -1885,6 +1893,12 @@ packages:
     resolution: {integrity: sha512-//oorEZjL6sbPcKUaCdIGlIUeH26mgzimjBB77G6XRgnDl/L5wOnpyBGRe/Mmf5CVW3PwEBE1NjiMZ/ssFh4wA==}
     dev: false
 
+  /@types/prompts/2.4.1:
+    resolution: {integrity: sha512-1Mqzhzi9W5KlooNE4o0JwSXGUDeQXKldbGn9NO4tpxwZbHXYd+WcKpCksG2lbhH7U9I9LigfsdVsP2QAY0lNPA==}
+    dependencies:
+      '@types/node': 15.14.9
+    dev: true
+
   /@types/qs/6.9.7:
     resolution: {integrity: sha512-FGa1F62FT09qcrueBA6qYTrJPVDzah9a+493+o2PCXsesWHIn27G98TsSMs3WPNbZIEj4+VJf6saSFpvD+3Zsw==}
 
@@ -2145,6 +2159,11 @@ packages:
 
   /address/1.2.0:
     resolution: {integrity: sha512-tNEZYz5G/zYunxFm7sfhAxkXEuLj3K6BKwv6ZURlsF6yiUQ65z0Q2wZW9L5cPUl9ocofGvXOdFYbFHp0+6MOig==}
+    engines: {node: '>= 10.0.0'}
+    dev: false
+
+  /address/1.2.1:
+    resolution: {integrity: sha512-B+6bi5D34+fDYENiH5qOlA0cV2rAGKuWZ9LeyUUehbXy8e0VS9e498yO0Jeeh+iM+6KbfudHTFjXw2MmJD4QRA==}
     engines: {node: '>= 10.0.0'}
     dev: false
 
@@ -3003,7 +3022,7 @@ packages:
     engines: {node: '>= 4.2.1'}
     hasBin: true
     dependencies:
-      address: 1.2.0
+      address: 1.2.1
       debug: 2.6.9
     transitivePeerDependencies:
       - supports-color
