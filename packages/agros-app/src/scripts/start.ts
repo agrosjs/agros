@@ -12,7 +12,7 @@ import {
     createCompiler,
     prepareProxy,
     prepareUrls,
-} from 'react-dev-utils/WebpackDevServerUtils';
+} from '../builder/wds-utils';
 import paths from '../builder/paths';
 // Ensure environment variables are read.
 import '../builder/env';

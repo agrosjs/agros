@@ -1,19 +1,22 @@
-const address = require('address');
-const fs = require('fs');
-const path = require('path');
-const url = require('url');
-const detect = require('detect-port-alt');
-const isRoot = require('is-root');
-const prompts = require('prompts');
-const formatWebpackMessages = require('react-dev-utils/formatWebpackMessages');
-const getProcessForPort = require('react-dev-utils/getProcessForPort');
-const forkTsCheckerWebpackPlugin = require('react-dev-utils/ForkTsCheckerWebpackPlugin');
 import { Logger } from '@agros/tools/lib/logger';
+import address from 'address';
+import * as fs from 'fs';
+import * as path from 'path';
+import * as url from 'url';
+import detect from 'detect-port-alt';
+import prompts, { PromptObject } from 'prompts';
+import formatWebpackMessages from 'react-dev-utils/formatWebpackMessages';
+import getProcessForPort from 'react-dev-utils/getProcessForPort';
+import forkTsCheckerWebpackPlugin from 'react-dev-utils/ForkTsCheckerWebpackPlugin';
 
 const isInteractive = process.stdout.isTTY;
 const logger = new Logger();
 
-function prepareUrls(protocol, host, port, pathname = '/') {
+function isRoot() {
+    return process.getuid && process.getuid() === 0;
+}
+
+export function prepareUrls(protocol, host, port, pathname = '/') {
     const formatUrl = (hostname) =>
         url.format({
             protocol,
@@ -67,14 +70,14 @@ function prepareUrls(protocol, host, port, pathname = '/') {
     };
 }
 
-function printInstructions(appName, urls, useYarn) {
+export function printInstructions(appName, urls, useYarn) {
     console.log();
     console.log(`You can now view ${appName} in the browser.`);
     console.log();
 
     if (urls.lanUrlForTerminal) {
         console.log(`  Local:            ${urls.localUrlForTerminal}`);
-        console.log(`  'On Your Network:  ${urls.lanUrlForTerminal}`);
+        console.log(`  On Your Network:  ${urls.lanUrlForTerminal}`);
     } else {
         console.log(`  ${urls.localUrlForTerminal}`);
     }
@@ -85,7 +88,7 @@ function printInstructions(appName, urls, useYarn) {
     console.log();
 }
 
-function createCompiler({
+export function createCompiler({
     appName,
     config,
     urls,
@@ -191,7 +194,7 @@ function createCompiler({
     return compiler;
 }
 
-function resolveLoopback(proxy) {
+export function resolveLoopback(proxy) {
     const o = url.parse(proxy);
     o.host = undefined;
     if (o.hostname !== 'localhost') {
@@ -222,7 +225,7 @@ function resolveLoopback(proxy) {
 
 // We need to provide a custom onError function for httpProxyMiddleware.
 // It allows us to log custom error messages on the console.
-function onProxyError(proxy) {
+export function onProxyError(proxy) {
     return (err, req, res) => {
         const host = req?.headers?.host;
         logger.error(
@@ -257,7 +260,7 @@ function onProxyError(proxy) {
     };
 }
 
-function prepareProxy(proxy, appPublicFolder, servedPathname) {
+export function prepareProxy(proxy, appPublicFolder, servedPathname) {
     // `proxy` lets you specify alternate servers for specific requests.
     if (!proxy) {
         return undefined;
@@ -336,17 +339,17 @@ function prepareProxy(proxy, appPublicFolder, servedPathname) {
     ];
 }
 
-function choosePort(host, defaultPort) {
+export function choosePort(host, defaultPort) {
     return detect(defaultPort, host).then(
         (port) =>
             new Promise((resolve) => {
                 if (port === defaultPort) {
                     resolve(port);
+                    return;
                 }
-                const message =
-          process.platform !== 'win32' && defaultPort < 1024 && !isRoot()
-              ? 'Admin permissions are required to run a server on a port below 1024.'
-              : `Something is already running on port ${defaultPort}.`;
+                const message = process.platform !== 'win32' && defaultPort < 1024 && !isRoot()
+                    ? 'Admin permissions are required to run a server on a port below 1024.'
+                    : `Something is already running on port ${defaultPort}.`;
                 if (isInteractive) {
                     const existingProcess = getProcessForPort(defaultPort);
                     const question = {
@@ -354,7 +357,7 @@ function choosePort(host, defaultPort) {
                         name: 'shouldChangePort',
                         message: message + `${existingProcess ? ` Probably:\n  ${existingProcess}` : ''}\n\nWould you like to run the app on another port instead?`,
                         initial: true,
-                    };
+                    } as PromptObject;
                     prompts(question).then((answer) => {
                         if (answer.shouldChangePort) {
                             resolve(port);
@@ -377,10 +380,3 @@ function choosePort(host, defaultPort) {
         },
     );
 }
-
-module.exports = {
-    choosePort,
-    createCompiler,
-    prepareProxy,
-    prepareUrls,
-};
