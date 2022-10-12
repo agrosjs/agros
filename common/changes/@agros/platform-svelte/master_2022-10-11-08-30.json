@@ -1,7 +1,7 @@
 {
   "changes": [
     {
-      "comment": "Fix Svelte platform issues for Windows",
+      "comment": "Fix mplatform warnings",
       "type": "patch",
       "packageName": "@agros/platform-svelte"
     }

@@ -12,7 +12,7 @@ import {
     createCompiler,
     prepareProxy,
     prepareUrls,
-} from 'react-dev-utils/WebpackDevServerUtils';
+} from '../builder/wds-utils';
 import paths from '../builder/paths';
 // Ensure environment variables are read.
 import '../builder/env';
@@ -103,7 +103,7 @@ export default () => {
             const devServer = new WebpackDevServer(serverConfig as any, compiler);
             // Launch WebpackDevServer.
             devServer.startCallback(() => {
-                logger.info('Starting the development server...\n');
+                logger.info('\n\nStarting the development server...\n');
             });
 
             ['SIGINT', 'SIGTERM'].forEach((sig) => {

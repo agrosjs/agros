@@ -1,6 +1,13 @@
 # Change Log - @agros/create-app
 
-This log was last generated on Mon, 03 Oct 2022 07:15:28 GMT and should not be manually modified.
+This log was last generated on Mon, 03 Oct 2022 09:41:41 GMT and should not be manually modified.
+
+## 0.2.8
+Mon, 03 Oct 2022 09:41:41 GMT
+
+### Patches
+
+- Add @babel/runtime for create-agros-app template package.json file
 
 ## 0.2.7
 Mon, 03 Oct 2022 07:15:28 GMT

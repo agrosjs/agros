@@ -2,6 +2,7 @@
 const { Logger } = require('@agros/tools/lib/logger');
 const { scanProjectEntities } = require('@agros/tools/lib/scanner');
 const { checkEntities } = require('@agros/tools/lib/check-entities');
+const { textSync } = require('figlet');
 
 const scripts = {
     start: require('../lib/scripts/start').default,
@@ -28,4 +29,5 @@ try {
     logger.error(e.message);
 }
 
+console.log(textSync('agros'));
 runScript();

@@ -8,9 +8,9 @@ importers:
   ../../packages/agros-app:
     specifiers:
       '@agros/common': workspace:^0.7.3
-      '@agros/create-app': workspace:^0.2.7
+      '@agros/create-app': workspace:^0.2.8
       '@agros/loader': workspace:^1.1.5
-      '@agros/tools': workspace:^0.4.2
+      '@agros/tools': workspace:^0.4.3
       '@babel/core': ^7.18.5
       '@babel/plugin-proposal-class-properties': ^7.17.12
       '@babel/plugin-proposal-decorators': ^7.18.2
@@ -21,8 +21,10 @@ importers:
       '@types/jest': ^28.1.1
       '@types/lodash': ^4.14.182
       '@types/node': ^15.12.2
+      '@types/prompts': ^2.4.1
       '@types/react-dev-utils': ^9.0.11
       '@types/webpack': ^5.28.0
+      address: ^1.2.1
       babel-loader: ^8.2.5
       babel-plugin-transform-typescript-metadata: ^0.3.2
       bfj: ^7.0.2
@@ -31,6 +33,7 @@ importers:
       crypto: ^1.0.1
       css-loader: ^6.7.1
       css-minimizer-webpack-plugin: ^4.0.0
+      detect-port-alt: ^1.1.6
       dotenv: ^16.0.1
       dotenv-expand: ^8.0.3
       escape-string-regexp: ^5.0.0
@@ -50,6 +53,7 @@ importers:
       postcss-loader: ^7.0.1
       postcss-normalize: ^10.0.1
       postcss-preset-env: ^7.7.2
+      prompts: ^2.4.2
       react-dev-utils: ^12.0.1
       reflect-metadata: ^0.1.13
       resolve: ^1.22.1
@@ -74,6 +78,7 @@ importers:
       '@babel/plugin-proposal-class-properties': 7.18.6_@babel+core@7.18.10
       '@babel/plugin-proposal-decorators': 7.18.10_@babel+core@7.18.10
       '@svgr/webpack': 6.3.1
+      address: 1.2.1
       babel-loader: 8.2.5_xc6oct4hcywdrbo4ned6ytbybm
       babel-plugin-transform-typescript-metadata: 0.3.2
       bfj: 7.0.2
@@ -82,6 +87,7 @@ importers:
       crypto: 1.0.1
       css-loader: 6.7.1_webpack@5.74.0
       css-minimizer-webpack-plugin: 4.0.0_webpack@5.74.0
+      detect-port-alt: 1.1.6
       dotenv: 16.0.1
       dotenv-expand: 8.0.3
       escape-string-regexp: 5.0.0
@@ -101,6 +107,7 @@ importers:
       postcss-loader: 7.0.1_webpack@5.74.0
       postcss-normalize: 10.0.1
       postcss-preset-env: 7.7.2
+      prompts: 2.4.2
       react-dev-utils: 12.0.1_xnp4kzegbjokq62cajex2ovgkm
       reflect-metadata: 0.1.13
       resolve: 1.22.1
@@ -121,6 +128,7 @@ importers:
       '@types/jest': 28.1.6
       '@types/lodash': 4.14.182
       '@types/node': 15.14.9
+      '@types/prompts': 2.4.1
       '@types/react-dev-utils': 9.0.11
       '@types/webpack': 5.28.0
       rimraf: 3.0.2
@@ -130,7 +138,7 @@ importers:
     specifiers:
       '@agros/app': workspace:^1.1.3
       '@agros/common': workspace:^0.7.3
-      '@agros/tools': workspace:^0.4.2
+      '@agros/tools': workspace:^0.4.3
       '@types/fs-extra': ^9.0.13
       '@types/inquirer': ~8.1.1
       '@types/jest': ^28.1.1
@@ -159,7 +167,7 @@ importers:
 
   ../../packages/agros-common:
     specifiers:
-      '@agros/tools': workspace:^0.4.2
+      '@agros/tools': workspace:^0.4.3
       '@types/is-promise': ^2.2.0
       '@types/jest': ^28.1.1
       '@types/node': ^15.12.2
@@ -183,7 +191,7 @@ importers:
       '@agros/app': workspace:^1.1.3
       '@agros/common': workspace:^0.7.3
       '@agros/platform-react': workspace:^1.2.3
-      '@agros/platform-svelte': workspace:^1.2.5
+      '@agros/platform-svelte': workspace:^1.2.6
       '@agros/platform-vue': workspace:^1.2.4
       '@babel/core': ^7.18.5
       '@babel/runtime': ^7.19.0
@@ -209,7 +217,6 @@ importers:
       '@agros/platform-react': link:../agros-platform-react
       '@agros/platform-svelte': link:../agros-platform-svelte
       '@agros/platform-vue': link:../agros-platform-vue
-      '@babel/runtime': 7.19.0
       core-js: 3.24.1
       react: 17.0.2
       react-error-boundary: 3.1.4_react@17.0.2
@@ -218,6 +225,7 @@ importers:
       vue-router: 4.1.3_vue@3.2.37
     devDependencies:
       '@babel/core': 7.18.10
+      '@babel/runtime': 7.19.0
       '@types/jest': 28.1.6
       '@types/lodash': 4.14.182
       '@types/node': 15.14.9
@@ -232,7 +240,7 @@ importers:
   ../../packages/agros-loader:
     specifiers:
       '@agros/common': workspace:^0.7.3
-      '@agros/tools': workspace:^0.4.2
+      '@agros/tools': workspace:^0.4.3
       '@babel/generator': ^7.18.2
       '@babel/parser': ^7.18.5
       '@babel/template': ^7.16.7
@@ -288,7 +296,7 @@ importers:
     specifiers:
       '@agros/common': workspace:^0.7.3
       '@agros/loader': workspace:^1.1.5
-      '@agros/tools': workspace:^0.4.2
+      '@agros/tools': workspace:^0.4.3
       '@babel/core': ^7.18.5
       '@babel/generator': ^7.18.10
       '@babel/plugin-proposal-class-properties': ^7.17.12
@@ -303,6 +311,7 @@ importers:
       '@types/qs': ^6.9.7
       '@types/react': ^17.0.0
       '@types/react-dom': ^17.0.0
+      '@types/react-router-dom': ^5.3.3
       '@types/webpack': ^5.28.0
       babel-plugin-transform-typescript-metadata: ^0.3.2
       babel-preset-react-app: ^10.0.1
@@ -311,7 +320,7 @@ importers:
       react: ^17.0.0
       react-app-rewired: ^2.2.1
       react-dom: ^17.0.0
-      react-router-dom: ^6.0.0
+      react-router-dom: ^6.3.0
       reflect-metadata: ^0.1.13
       rimraf: ^3.0.2
       typescript: ^4.5.5
@@ -347,6 +356,7 @@ importers:
       '@types/qs': 6.9.7
       '@types/react': 17.0.48
       '@types/react-dom': 17.0.17
+      '@types/react-router-dom': 5.3.3
       '@types/webpack': 5.28.0
       rimraf: 3.0.2
       typescript: 4.7.4
@@ -355,7 +365,7 @@ importers:
     specifiers:
       '@agros/common': workspace:^0.7.3
       '@agros/loader': workspace:^1.1.5
-      '@agros/tools': workspace:^0.4.2
+      '@agros/tools': workspace:^0.4.3
       '@babel/core': ^7.18.5
       '@babel/plugin-transform-parameters': ^7.18.8
       '@babel/plugin-transform-runtime': ^7.18.10
@@ -410,7 +420,7 @@ importers:
     specifiers:
       '@agros/common': workspace:^0.7.3
       '@agros/loader': workspace:^1.1.5
-      '@agros/tools': workspace:^0.4.2
+      '@agros/tools': workspace:^0.4.3
       '@babel/plugin-transform-parameters': ^7.18.8
       '@babel/plugin-transform-runtime': ^7.18.10
       '@babel/plugin-transform-typescript': ^7.18.12
@@ -547,7 +557,7 @@ importers:
   ../../packages/create-agros-app:
     specifiers:
       '@agros/common': workspace:^0.7.3
-      '@agros/tools': workspace:^0.4.2
+      '@agros/tools': workspace:^0.4.3
       '@types/commander': ^2.12.2
       '@types/fs-extra': ^9.0.13
       '@types/glob': ^7.2.0
@@ -3713,7 +3723,6 @@ packages:
     engines: {node: '>=6.9.0'}
     dependencies:
       regenerator-runtime: 0.13.9
-    dev: false
 
   /@babel/template/7.0.0-beta.53:
     resolution: {integrity: sha512-MCZLPfGfNBHdE5wNfY5eK1hpY3fyq8zq+NfbfFCUtIzHl7SfUzHzH8rKPBXSB2Ypetq2sBHdDyslSSgnG0Watg==}
@@ -4467,6 +4476,10 @@ packages:
     resolution: {integrity: sha512-FdLBT93h3kcZ586Aee66HPCVJ6qvxVjBlDWNmxSGSbCZe9hTsjRKdSsl4y1T+3zfujxo9auykQMnFsfyHWD7wg==}
     dev: true
 
+  /@types/history/4.7.11:
+    resolution: {integrity: sha512-qjDJRrmvBMiTx+jyLxvLfJU7UznFuokDv4f3WRuriHKERccVpFU+8XMQUAbDzoiJCsmexxRExQeMwwCdamSKDA==}
+    dev: true
+
   /@types/html-minifier-terser/6.1.0:
     resolution: {integrity: sha512-oh/6byDPnL1zeNXFrDXFLyZjkr1MsBG667IM792caf1L2UPOOMf65NFzjUH/ltyfwjAGfs1rsX1eftK0jC/KIg==}
     dev: false
@@ -4554,6 +4567,12 @@ packages:
     resolution: {integrity: sha512-RI1L7N4JnW5gQw2spvL7Sllfuf1SaHdrZpCHiBlCXjIlufi1SMNnbu2teze3/QE67Fg2tBlH7W+mi4hVNk4p0A==}
     dev: true
 
+  /@types/prompts/2.4.1:
+    resolution: {integrity: sha512-1Mqzhzi9W5KlooNE4o0JwSXGUDeQXKldbGn9NO4tpxwZbHXYd+WcKpCksG2lbhH7U9I9LigfsdVsP2QAY0lNPA==}
+    dependencies:
+      '@types/node': 15.14.9
+    dev: true
+
   /@types/prop-types/15.7.5:
     resolution: {integrity: sha512-JCB8C6SnDoQf0cNycqd/35A7MjcnK+ZTqE7judS6o7utxUCg6imJg3QK2qzHKszlTjcj2cn+NwMB2i96ubpj7w==}
     dev: true
@@ -4583,6 +4602,21 @@ packages:
   /@types/react-dom/17.0.17:
     resolution: {integrity: sha512-VjnqEmqGnasQKV0CWLevqMTXBYG9GbwuE6x3VetERLh0cq2LTptFE73MrQi2S7GkKXCf2GgwItB/melLnxfnsg==}
     dependencies:
+      '@types/react': 17.0.48
+    dev: true
+
+  /@types/react-router-dom/5.3.3:
+    resolution: {integrity: sha512-kpqnYK4wcdm5UaWI3fLcELopqLrHgLqNsdpHauzlQktfkHL3npOSwtj1Uz9oKBAzs7lFtVkV8j83voAz2D8fhw==}
+    dependencies:
+      '@types/history': 4.7.11
+      '@types/react': 17.0.48
+      '@types/react-router': 5.1.19
+    dev: true
+
+  /@types/react-router/5.1.19:
+    resolution: {integrity: sha512-Fv/5kb2STAEMT3wHzdKQK2z8xKq38EDIGVrutYLmQVVLe+4orDFquU52hQrULnEHinMKv9FSA6lf9+uNT1ITtA==}
+    dependencies:
+      '@types/history': 4.7.11
       '@types/react': 17.0.48
     dev: true
 
@@ -5121,8 +5155,8 @@ packages:
     engines: {node: '>=0.4.0'}
     hasBin: true
 
-  /address/1.2.0:
-    resolution: {integrity: sha512-tNEZYz5G/zYunxFm7sfhAxkXEuLj3K6BKwv6ZURlsF6yiUQ65z0Q2wZW9L5cPUl9ocofGvXOdFYbFHp0+6MOig==}
+  /address/1.2.1:
+    resolution: {integrity: sha512-B+6bi5D34+fDYENiH5qOlA0cV2rAGKuWZ9LeyUUehbXy8e0VS9e498yO0Jeeh+iM+6KbfudHTFjXw2MmJD4QRA==}
     engines: {node: '>= 10.0.0'}
     dev: false
 
@@ -6370,7 +6404,7 @@ packages:
     engines: {node: '>= 4.2.1'}
     hasBin: true
     dependencies:
-      address: 1.2.0
+      address: 1.2.1
       debug: 2.6.9
     transitivePeerDependencies:
       - supports-color
@@ -9823,7 +9857,7 @@ packages:
     engines: {node: '>=14'}
     dependencies:
       '@babel/code-frame': 7.18.6
-      address: 1.2.0
+      address: 1.2.1
       browserslist: 4.21.3
       chalk: 4.1.2
       cross-spawn: 7.0.3
@@ -9993,7 +10027,6 @@ packages:
 
   /regenerator-runtime/0.13.9:
     resolution: {integrity: sha512-p3VT+cOEgxFsRRA9X4lkI1E+k2/CtnKtU4gcxyaCUreilL/vqI6CdZ3wxVUx3UOUg+gnUOQQcRI7BmSI656MYA==}
-    dev: false
 
   /regenerator-transform/0.13.4:
     resolution: {integrity: sha512-T0QMBjK3J0MtxjPmdIMXm72Wvj2Abb0Bd4HADdfijwMdoIsyQZ6fWC7kDFhk2YinBBEMZDL7Y7wh0J1sGx3S4A==}
