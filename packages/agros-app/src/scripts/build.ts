@@ -119,7 +119,7 @@ export default () => {
 
     // Create the production build and print the deployment instructions.
     function build(previousFileSizes) {
-        console.log('Creating an optimized production build...');
+        console.log('\n\nCreating an optimized production build...');
 
         const compiler = webpack(config);
         return new Promise((resolve, reject) => {

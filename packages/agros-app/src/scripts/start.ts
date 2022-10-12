@@ -103,7 +103,7 @@ export default () => {
             const devServer = new WebpackDevServer(serverConfig as any, compiler);
             // Launch WebpackDevServer.
             devServer.startCallback(() => {
-                logger.info('Starting the development server...\n');
+                logger.info('\n\nStarting the development server...\n');
             });
 
             ['SIGINT', 'SIGTERM'].forEach((sig) => {
