@@ -7,3 +7,5 @@ export const DI_METADATA_USE_INTERCEPTORS_SYMBOL = Symbol('di:metadata:use_inter
 
 export const ROUTES_ROOT = 'agros:internal:routes:root';
 export const ROUTES_FEATURE = 'agros:internal:routes:feature';
+
+export const SELF_DECLARED_DEPS_METADATA = 'self:paramtypes';
