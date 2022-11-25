@@ -5,7 +5,7 @@ import {
     AsyncModuleClass,
     Factory,
     DynamicModule,
-    isClass,
+    isBasicProvider,
 } from '@agros/tools';
 import {
     ROUTES_ROOT,
@@ -76,7 +76,7 @@ export class RouterModule {
                 return await asyncModuleClass;
             }
 
-            if (isClass(asyncModuleClass)) {
+            if (!isBasicProvider(asyncModuleClass)) {
                 return asyncModuleClass as Type;
             }
 

@@ -10,12 +10,13 @@ import {
     ComponentInstance,
     ModuleInstance,
     Platform,
-    isClass,
     DynamicModule,
     Provider,
     BaseProvider,
     ProviderToken,
     BaseProviderWithValue,
+    isDynamicModule,
+    isBasicProvider,
 } from '@agros/tools';
 import isPromise from 'is-promise';
 import {
@@ -207,7 +208,7 @@ export class Factory implements IFactory {
     private async createModuleInstance<T>(ModuleClassOrPromiseOrDynamicModule: AsyncModuleClass<T>) {
         let ModuleClass: Type<any>;
 
-        if (isPromise(ModuleClassOrPromiseOrDynamicModule) || isClass(ModuleClassOrPromiseOrDynamicModule)) {
+        if (!isDynamicModule(ModuleClassOrPromiseOrDynamicModule)) {
             const moduleClassOrDynamicModule = await this.getModuleClassExceptDynamicModule(ModuleClassOrPromiseOrDynamicModule as Promise<Type<any>> | Type<any>);
             ModuleClass = moduleClassOrDynamicModule as Type;
 
@@ -351,7 +352,7 @@ export class Factory implements IFactory {
         let ModuleClass: Type<any>;
         let moduleInstance: ModuleInstance;
 
-        if (isClass(provider)) {
+        if (!isBasicProvider(provider)) {
             const ProviderClass = provider as Type<any>;
             providerKey = ProviderClass;
             if (this.providerInstanceMap.get(ProviderClass)) {
@@ -379,7 +380,7 @@ export class Factory implements IFactory {
                             throw new Error(`Provider ${ProviderClass.name} cannot depend on itself`);
                         }
 
-                        if (isClass(dependedProvider)) {
+                        if (!isBasicProvider(dependedProvider)) {
                             const DependedProviderClass = dependedProvider as Type<any>;
                             const dependedProviderName = DependedProviderClass.name;
 
@@ -545,16 +546,16 @@ export class Factory implements IFactory {
     }
 
     private getProviderKey(provider: Provider): Type<any> | string {
-        if (isClass(provider)) {
-            return provider as Type<any>;
-        } else {
+        if (isBasicProvider(provider)) {
             return (provider as BaseProvider).provide;
+        } else {
+            return provider as Type<any>;
         }
     }
 
     private async initializeSelfDeclaredDepsForProviders() {
         for (const [ProviderClass, providerInstance] of this.providerInstanceMap) {
-            if (!isClass(ProviderClass) || !providerInstance) {
+            if (isBasicProvider(ProviderClass) || !providerInstance) {
                 continue;
             }
 

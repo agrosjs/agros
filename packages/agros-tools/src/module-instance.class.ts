@@ -1,4 +1,4 @@
-import { isClass } from './is';
+import { isBasicProvider } from './is';
 import {
     BaseProvider,
     BaseProviderWithValue,
@@ -63,21 +63,21 @@ export class ModuleInstance {
                         }, [] as Provider[],
                     ),
                 )
-                .concat(Array.from(this.metadata.providers).filter((provider) => !isClass(provider))),
+                .concat(Array.from(this.metadata.providers).filter((provider) => isBasicProvider(provider))),
         );
     }
 
     public getBaseProvider(providerKey: ProviderToken) {
         return Array.from(this.getProviders())
             .filter((provider) => {
-                return !isClass(provider);
+                return isBasicProvider(provider);
             })
             .find((provider: BaseProvider) => provider.provide === providerKey) as BaseProviderWithValue;
     }
 
     public hasDependedProviderClass(providerKey: Type | ProviderToken) {
         const providers = this.getProviders();
-        if (isClass(providerKey)) {
+        if (!isBasicProvider(providerKey)) {
             return providers.has(providerKey as Type);
         } else {
             return Boolean(Array.from(providers).find((provider: BaseProvider) => {
