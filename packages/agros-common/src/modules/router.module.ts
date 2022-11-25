@@ -3,14 +3,19 @@ import {
     RouteOptionItem,
     Type,
     AsyncModuleClass,
-    ValueProvider,
     Factory,
+    DynamicModule,
+    isClass,
 } from '@agros/tools';
 import {
     ROUTES_ROOT,
     ROUTES_FEATURE,
 } from '../constants';
 import isPromise from 'is-promise';
+import {
+    Global,
+    Module,
+} from '../decorators';
 
 export interface RouterModuleRootOptions {
     routes: RouteOptionItem[];
@@ -18,15 +23,23 @@ export interface RouterModuleRootOptions {
 
 export type RouterModuleFeatureOptions = RouterModuleRootOptions;
 
+@Global()
+@Module()
 export class RouterModule {
     public static forRoot({
         routes = [],
-    }: RouterModuleRootOptions) {
+    }: RouterModuleRootOptions): DynamicModule {
         return {
-            provide: ROUTES_ROOT,
-            useValue: async () => {
-                return routes;
-            },
+            module: RouterModule,
+            global: true,
+            providers: [
+                {
+                    provide: ROUTES_ROOT,
+                    useValue: async () => {
+                        return routes;
+                    },
+                },
+            ],
         };
     }
 
@@ -58,12 +71,16 @@ export class RouterModule {
             return newPath;
         };
 
-        const getModuleClass = async (asyncModuleClass: AsyncModuleClass): Promise<Type<any> | ValueProvider> => {
+        const getModuleClass = async (asyncModuleClass: AsyncModuleClass): Promise<Type<any>> => {
             if (isPromise(asyncModuleClass)) {
                 return await asyncModuleClass;
             }
 
-            return asyncModuleClass;
+            if (isClass(asyncModuleClass)) {
+                return asyncModuleClass as Type;
+            }
+
+            return null;
         };
 
         const moduleInstanceMap = context.getModuleInstanceMap();
@@ -115,12 +132,7 @@ export class RouterModule {
                  */
                 const ModuleClass = (await getModuleClass(useModuleClass)) as Type;
                 const moduleInstance = moduleInstanceMap.get(ModuleClass);
-                let currentRouteOptionItems = moduleInstance.getProviderValue<RouteOptionItem[]>(ROUTES_FEATURE) || [];
-
-                if (typeof currentRouteOptionItems === 'function') {
-                    currentRouteOptionItems = await (currentRouteOptionItems as Function)(context);
-                }
-
+                let currentRouteOptionItems: RouteOptionItem[] = moduleInstance.getBaseProvider(ROUTES_FEATURE)?.value || [];
                 const currentRouterItems = await RouterModule.createRouterItems(
                     context,
                     currentRouteOptionItems,

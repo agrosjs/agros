@@ -43,10 +43,31 @@ export type ComponentMetadata = Omit<ComponentDecoratorOptions, 'declarations'> 
 export interface ValueProvider<T = any> {
     provide: string;
     useValue: T;
+    inject?: never;
+}
+
+export interface FactoryProvider<T = any> {
+    provide: string;
+    /**
+     * Factory function that returns an instance of the provider to be injected.
+     */
+    useFactory: (...args: any[]) => T | Promise<T>;
+    inject?: Type<any>[];
 }
 
 export type Type<T = any> = new (...args: Array<any>) => T;
-export type AsyncModuleClass<T = any> = Type<T> | Promise<Type> | ValueProvider;
+export type AsyncModuleClass<T = any> = Type<T> | Promise<Type<T>> | DynamicModule<T>;
+
+export type BaseProvider = ValueProvider | FactoryProvider;
+export type Provider<T = any> = Type<T> | BaseProvider;
+
+export type BaseProviderWithValue<T = any> = BaseProvider & {
+    value: T;
+};
+
+export type ProviderWithValue<T = any, V = any> = Type<T> | BaseProviderWithValue<V>;
+
+export type ProviderToken = string | symbol;
 
 export interface RouteProps<C = any, R = any> {
     caseSensitive?: boolean;
@@ -84,20 +105,41 @@ export interface BootstrapConfigItem extends RootContainerProps {
 
 export interface ModuleDecoratorOptions {
     imports?: Array<AsyncModuleClass>;
-    providers?: Array<Type>;
+    providers?: Array<Provider>;
     components?: Array<Type>;
     exports?: Array<Type>;
 }
 
 export interface ModuleMetadata {
     imports: Set<AsyncModuleClass>;
-    providers: Set<Type<any>>;
+    providers: Set<Provider>;
     exports: Set<Type<any>>;
     components: Set<Type<any>>;
-    routes: Set<RouteOptionItem>;
 }
 
-export interface ModuleInstanceMetadata extends ModuleMetadata {
+/**
+ * Interface defining a Dynamic Module.
+ * @publicApi
+ */
+export interface DynamicModule<T = any> extends ModuleDecoratorOptions {
+    /**
+     * A module reference
+     */
+    module: Type<T>;
+    /**
+     * When "true", makes a module global-scoped.
+     *
+     * Once imported into any module, a global-scoped module will be visible
+     * in all modules. Thereafter, modules that wish to inject a service exported
+     * from a global module do not need to import the provider module.
+     *
+     * @default false
+     */
+    global?: boolean;
+}
+
+export interface ModuleInstanceMetadata extends Omit<ModuleMetadata, 'imports'> {
+    imports: Set<Type<any> | Promise<Type<any>>>;
     Class: Type<any>;
     isGlobal: boolean;
 }

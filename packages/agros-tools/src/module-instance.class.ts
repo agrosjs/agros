@@ -1,7 +1,13 @@
+import { isClass } from './is';
 import {
-    Factory,
+    BaseProvider,
+    BaseProviderWithValue,
+    FactoryProvider,
     ModuleInstanceMetadata,
+    Provider,
+    ProviderToken,
     Type,
+    ValueProvider,
 } from './types';
 
 /**
@@ -10,7 +16,6 @@ import {
  */
 export class ModuleInstance {
     private importedModuleInstances = new Set<ModuleInstance>();
-    private valueProviderMap = new Map<string, any>();
 
     /**
      * @constructor
@@ -39,7 +44,7 @@ export class ModuleInstance {
      * @public
      * get provider classes recursively from imported modules
      */
-    public getProviderClasses() {
+    public getProviders() {
         return new Set(
             Array
                 .from(this.metadata.providers)
@@ -48,36 +53,65 @@ export class ModuleInstance {
                     Array.from(this.importedModuleInstances).reduce(
                         (providerClasses, importedModuleInstance) => {
                             return providerClasses.concat(Array.from(importedModuleInstance.metadata.exports));
-                        }, [] as Type[],
+                        }, [] as Provider[],
                     ),
                 )
                 .concat(
                     Array.from(this.globalModuleInstances).reduce(
                         (providerClasses, globalModuleInstances) => {
                             return providerClasses.concat(Array.from(globalModuleInstances.metadata.exports));
-                        }, [] as Type[],
+                        }, [] as Provider[],
                     ),
-                ),
+                )
+                .concat(Array.from(this.metadata.providers).filter((provider) => !isClass(provider))),
         );
     }
 
-    public hasDependedProviderClass(ProviderClass: Type) {
-        return this.getProviderClasses().has(ProviderClass);
+    public getBaseProvider(providerKey: ProviderToken) {
+        return Array.from(this.getProviders())
+            .filter((provider) => {
+                return !isClass(provider);
+            })
+            .find((provider: BaseProvider) => provider.provide === providerKey) as BaseProviderWithValue;
     }
 
-    public setValueProviderItem(key: string, value) {
-        this.valueProviderMap.set(key, value);
-    }
-
-    public async generateProviderValues(context: Factory) {
-        for (const [key, value] of Array.from(this.valueProviderMap.entries())) {
-            if (typeof value === 'function') {
-                this.valueProviderMap.set(key, await value(context));
-            }
+    public hasDependedProviderClass(providerKey: Type | ProviderToken) {
+        const providers = this.getProviders();
+        if (isClass(providerKey)) {
+            return providers.has(providerKey as Type);
+        } else {
+            return Boolean(Array.from(providers).find((provider: BaseProvider) => {
+                return provider.provide === providerKey as ProviderToken;
+            }));
         }
     }
 
-    public getProviderValue<T = any>(key: string) {
-        return this.valueProviderMap.get(key) as T;
+    public async generateBaseProviderValue(provider: BaseProvider, createProviderInstance?: (Class: Type) => any) {
+        if (!provider) {
+            return Promise.reject(new Error(`Cannot initialize or retrieve provider with token ${provider.provide}`));
+        }
+
+        if ((provider as ValueProvider).useValue) {
+            return (provider as ValueProvider).useValue;
+        } else if ((provider as FactoryProvider).useFactory) {
+            const {
+                useFactory,
+                inject = [],
+            } = provider as FactoryProvider;
+
+            return new Promise((resolve) => {
+                Promise.all(inject.map((InjectedProviderClass) => {
+                    return createProviderInstance(InjectedProviderClass);
+                })).then((factoryParameters) => {
+                    try {
+                        useFactory(...factoryParameters).then((value) => resolve(value));
+                    } catch (e) {
+                        resolve(useFactory(...factoryParameters));
+                    }
+                });
+            });
+        } else {
+            return undefined;
+        }
     }
 }
