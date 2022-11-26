@@ -75,7 +75,7 @@ const platform: Platform = {
                     if (factory) {
                         factoryPromise = factory.create(Module).then((componentInstance) => {
                             const rootModuleInstance = factory.getRootModuleInstance();
-                            const rootRoutes = rootModuleInstance.getProviderValue(map['ROUTES_ROOT']);
+                            const rootRoutes = rootModuleInstance.getBaseProvider(map['ROUTES_ROOT'])?.value;
                             return map['RouterModule'].createRouterItems(factory, rootRoutes).then((routeItems) => {
                                 const routes = map['createRoutes'](routeItems);
                                 if (routes && Array.isArray(routes) && routes.length > 0) {

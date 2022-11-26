@@ -45,12 +45,18 @@ export class RouterModule {
 
     public static forFeature({
         routes = [],
-    }: RouterModuleFeatureOptions) {
+    }: RouterModuleFeatureOptions): DynamicModule {
         return {
-            provide: ROUTES_FEATURE,
-            useValue: async () => {
-                return routes;
-            },
+            module: RouterModule,
+            global: true,
+            providers: [
+                {
+                    provide: ROUTES_FEATURE,
+                    useValue: async () => {
+                        return routes;
+                    },
+                },
+            ],
         };
     }
 

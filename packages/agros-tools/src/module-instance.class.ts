@@ -44,7 +44,7 @@ export class ModuleInstance {
      * @public
      * get provider classes recursively from imported modules
      */
-    public getProviders() {
+    public getProviders(): Set<any> {
         return new Set(
             Array
                 .from(this.metadata.providers)
@@ -52,7 +52,13 @@ export class ModuleInstance {
                 .concat(
                     Array.from(this.importedModuleInstances).reduce(
                         (providerClasses, importedModuleInstance) => {
-                            return providerClasses.concat(Array.from(importedModuleInstance.metadata.exports));
+                            return providerClasses
+                                .concat(Array.from(importedModuleInstance.metadata.exports))
+                                .concat(
+                                    Array
+                                        .from(importedModuleInstance.getProviders())
+                                        .filter((provider) => isBasicProvider(provider)) as Provider[],
+                                );
                         }, [] as Provider[],
                     ),
                 )
@@ -62,8 +68,7 @@ export class ModuleInstance {
                             return providerClasses.concat(Array.from(globalModuleInstances.metadata.exports));
                         }, [] as Provider[],
                     ),
-                )
-                .concat(Array.from(this.metadata.providers).filter((provider) => isBasicProvider(provider))),
+                ),
         );
     }
 

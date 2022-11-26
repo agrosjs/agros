@@ -103,6 +103,7 @@ export class Factory implements IFactory {
         await this.setImportedModuleInstances();
         this.createProviderClassToModuleClassMap();
         await this.createProviderInstances(rootModuleInstance);
+        await this.createAllBasicProviderInstances();
         this.createComponentInstances(rootModuleInstance);
         await this.generateComponentForInstances();
         this.rootModuleInstance = rootModuleInstance;
@@ -233,12 +234,7 @@ export class Factory implements IFactory {
                     {
                         Class: ModuleClass,
                         isGlobal,
-                        imports: new Set(Array.from(imports).map((importedItem) => {
-                            if ((importedItem as DynamicModule).module) {
-                                return (importedItem as DynamicModule).module as Type<any>;
-                            }
-                            return importedItem as Type<any> | Promise<Type<any>>;
-                        })),
+                        imports: new Set(Array.from(imports).map(this.processDynamicModule)),
                         providers: new Set(providers),
                         exports: new Set(exportedProviders),
                         components: new Set(components),
@@ -260,12 +256,7 @@ export class Factory implements IFactory {
             const moduleInstance = new ModuleInstance({
                 Class: DynamicModuleClass,
                 isGlobal,
-                imports: new Set(Array.from(moduleImports).map((importedItem) => {
-                    if ((importedItem as DynamicModule).module) {
-                        return (importedItem as DynamicModule).module as Type<any>;
-                    }
-                    return importedItem as Type | Promise<Type>;
-                })),
+                imports: new Set(Array.from(moduleImports).map(this.processDynamicModule)),
                 providers: new Set(providers),
                 exports: new Set(exportedProviders),
                 components: new Set(components),
@@ -428,9 +419,9 @@ export class Factory implements IFactory {
         } else {
             providerKey = (provider as BaseProvider).provide;
 
-            if (this.providerInstanceMap.get(providerKey)) {
-                return this.providerInstanceMap.get(providerKey);
-            }
+            // if (this.providerInstanceMap.get(providerKey)) {
+            //     return this.providerInstanceMap.get(providerKey);
+            // }
 
             ModuleClass = this.providerClassToModuleClassMap.get(providerKey);
             moduleInstance = this.moduleInstanceMap.get(ModuleClass);
@@ -553,6 +544,22 @@ export class Factory implements IFactory {
         }
     }
 
+    private async createAllBasicProviderInstances() {
+        for (const [ModuleClass, moduleInstance] of this.moduleInstanceMap.entries()) {
+            const providers = Array.from(moduleInstance.getProviders());
+            for (const provider of providers) {
+                if (!isBasicProvider(provider) || (provider as BaseProviderWithValue).value) {
+                    continue;
+                }
+                this.providerInstanceMap.set((provider as BaseProvider).provide, {
+                    ...(provider as BaseProvider),
+                    value: await moduleInstance.generateBaseProviderValue(provider as BaseProvider, this.createProviderInstance.bind(this)),
+                } as BaseProviderWithValue);
+                this.providerClassToModuleClassMap.set((provider as BaseProvider).provide, ModuleClass);
+            }
+        }
+    }
+
     private async initializeSelfDeclaredDepsForProviders() {
         for (const [ProviderClass, providerInstance] of this.providerInstanceMap) {
             if (isBasicProvider(ProviderClass) || !providerInstance) {
@@ -591,5 +598,37 @@ export class Factory implements IFactory {
                 });
             }
         }
+    }
+
+    private processDynamicModule(moduleClassOrDynamicModule: AsyncModuleClass): Type | Promise<Type> {
+        if ((moduleClassOrDynamicModule as DynamicModule).module) {
+            const dynamicModule = moduleClassOrDynamicModule as DynamicModule;
+            const {
+                module: ModuleClass,
+                imports = [],
+                providers = [],
+                exports: exportedProviders = [],
+                components = [],
+                global = false,
+            } = dynamicModule;
+
+            Reflect.defineMetadata(
+                DI_METADATA_MODULE_SYMBOL,
+                {
+                    imports: new Set(imports),
+                    providers: new Set(providers),
+                    components: new Set(components),
+                    exports: new Set(exportedProviders),
+                },
+                ModuleClass,
+            );
+
+            if (global) {
+                Reflect.defineMetadata(DI_GLOBAL_MODULE_SYMBOL, true, ModuleClass);
+            }
+
+            return dynamicModule.module as Type<any>;
+        }
+        return moduleClassOrDynamicModule as Type<any> | Promise<Type<any>>;
     }
 }
