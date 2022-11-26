@@ -1,11 +1,13 @@
+import 'reflect-metadata';
+import { PROVIDER_MODULE } from './constants';
 import { isBasicProvider } from './is';
 import {
     BaseProvider,
     BaseProviderWithValue,
     FactoryProvider,
     ModuleInstanceMetadata,
-    Provider,
     ProviderToken,
+    ProviderWithValue,
     Type,
     ValueProvider,
 } from './types';
@@ -24,7 +26,17 @@ export class ModuleInstance {
     public constructor(
         public readonly metadata: ModuleInstanceMetadata,
         private readonly globalModuleInstances: Set<ModuleInstance>,
-    ) {}
+    ) {
+        this.metadata.providers = new Set(
+            Array.from(this.metadata.providers).map((provider) => {
+                if (isBasicProvider(provider)) {
+                    Reflect.defineMetadata(PROVIDER_MODULE, this.metadata.Class, provider);
+                    (provider as BaseProviderWithValue).value = undefined;
+                }
+                return provider;
+            }),
+        );
+    }
 
     public addImportedModuleInstance(moduleInstance: ModuleInstance) {
         if (
@@ -57,16 +69,16 @@ export class ModuleInstance {
                                 .concat(
                                     Array
                                         .from(importedModuleInstance.getProviders())
-                                        .filter((provider) => isBasicProvider(provider)) as Provider[],
+                                        .filter((provider) => isBasicProvider(provider)) as ProviderWithValue[],
                                 );
-                        }, [] as Provider[],
+                        }, [] as ProviderWithValue[],
                     ),
                 )
                 .concat(
                     Array.from(this.globalModuleInstances).reduce(
                         (providerClasses, globalModuleInstances) => {
                             return providerClasses.concat(Array.from(globalModuleInstances.metadata.exports));
-                        }, [] as Provider[],
+                        }, [] as ProviderWithValue[],
                     ),
                 ),
         );
@@ -93,7 +105,7 @@ export class ModuleInstance {
 
     public async generateBaseProviderValue(provider: BaseProvider, createProviderInstance?: (Class: Type) => any) {
         if (!provider) {
-            return Promise.reject(new Error(`Cannot initialize or retrieve provider with token ${provider.provide}`));
+            return Promise.reject(new Error(`Cannot initialize or retrieve provider with token ${String(provider.provide)}`));
         }
 
         if ((provider as ValueProvider).useValue) {
@@ -118,5 +130,19 @@ export class ModuleInstance {
         } else {
             return undefined;
         }
+    }
+
+    public setBaseProviderWithValue(providerToken: ProviderToken, baseProviderWithValue: BaseProviderWithValue) {
+        const providers = Array.from(this.metadata.providers);
+        const providerIndex = providers.findIndex((provider) => {
+            return isBasicProvider(provider) && (provider as BaseProviderWithValue).provide === providerToken;
+        });
+
+        if (providerIndex === -1) {
+            return;
+        }
+
+        providers[providerIndex] = baseProviderWithValue;
+        this.metadata.providers = new Set(providers);
     }
 }

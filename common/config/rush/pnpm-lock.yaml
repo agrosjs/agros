@@ -513,6 +513,7 @@ importers:
       lodash: ^4.17.21
       parse-glob: ^3.0.4
       prettier: ^2.7.1
+      reflect-metadata: ^0.1.13
       rimraf: ^3.0.2
       typescript: ^4.5.5
       webpack: ^5.28.0
@@ -533,6 +534,7 @@ importers:
       lodash: 4.17.21
       parse-glob: 3.0.4
       prettier: 2.7.1
+      reflect-metadata: 0.1.13
       webpack: 5.74.0
     devDependencies:
       '@types/babel__generator': 7.6.4

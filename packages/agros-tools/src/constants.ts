@@ -1,0 +1,1 @@
+export const PROVIDER_MODULE = 'PROVIDER_MODULE';

@@ -41,13 +41,13 @@ export type ComponentMetadata = Omit<ComponentDecoratorOptions, 'declarations'> 
 };
 
 export interface ValueProvider<T = any> {
-    provide: string;
+    provide: ProviderToken;
     useValue: T;
     inject?: never;
 }
 
 export interface FactoryProvider<T = any> {
-    provide: string;
+    provide: ProviderToken;
     /**
      * Factory function that returns an instance of the provider to be injected.
      */
@@ -138,8 +138,9 @@ export interface DynamicModule<T = any> extends ModuleDecoratorOptions {
     global?: boolean;
 }
 
-export interface ModuleInstanceMetadata extends Omit<ModuleMetadata, 'imports'> {
+export interface ModuleInstanceMetadata extends Omit<ModuleMetadata, 'imports' | 'providers'> {
     imports: Set<Type<any> | Promise<Type<any>>>;
+    providers: Set<ProviderWithValue>;
     Class: Type<any>;
     isGlobal: boolean;
 }

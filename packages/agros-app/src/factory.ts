@@ -17,6 +17,8 @@ import {
     BaseProviderWithValue,
     isDynamicModule,
     isBasicProvider,
+    PROVIDER_MODULE,
+    ProviderWithValue,
 } from '@agros/tools';
 import isPromise from 'is-promise';
 import {
@@ -48,7 +50,7 @@ export class Factory implements IFactory {
      * @private
      * the flattened map for all provider instances exported by modules
      */
-    private providerInstanceMap = new Map<Type<any> | ProviderToken, any>();
+    private providerInstanceMap = new Map<Type<any>, any>();
     /**
      * @private
      * the flattened map for all provider instances provided by modules
@@ -58,7 +60,7 @@ export class Factory implements IFactory {
      * @private
      * a map for storing provider class to module class relationship
      */
-    private providerClassToModuleClassMap = new Map<Type<any> | ProviderToken, Type>();
+    private providerClassToModuleClassMap = new Map<Type<any>, Type>();
     /**
      * @private
      * a map for storing component class to module class relationship
@@ -235,7 +237,12 @@ export class Factory implements IFactory {
                         Class: ModuleClass,
                         isGlobal,
                         imports: new Set(Array.from(imports).map(this.processDynamicModule)),
-                        providers: new Set(providers),
+                        providers: new Set(Array.from(providers).map((provider) => {
+                            if (isBasicProvider(provider)) {
+                                (provider as BaseProviderWithValue).value = undefined;
+                            }
+                            return provider;
+                        }) as ProviderWithValue[]),
                         exports: new Set(exportedProviders),
                         components: new Set(components),
                     },
@@ -257,7 +264,12 @@ export class Factory implements IFactory {
                 Class: DynamicModuleClass,
                 isGlobal,
                 imports: new Set(Array.from(moduleImports).map(this.processDynamicModule)),
-                providers: new Set(providers),
+                providers: new Set(Array.from(providers).map((provider) => {
+                    if (isBasicProvider(provider)) {
+                        (provider as BaseProviderWithValue).value = undefined;
+                    }
+                    return provider;
+                }) as ProviderWithValue[]),
                 exports: new Set(exportedProviders),
                 components: new Set(components),
             }, this.globalModuleInstances);
@@ -323,8 +335,11 @@ export class Factory implements IFactory {
     private createProviderClassToModuleClassMap() {
         for (const [, moduleInstance] of this.moduleInstanceMap) {
             for (const provider of moduleInstance.metadata.providers) {
+                if (isBasicProvider(provider)) {
+                    continue;
+                }
                 this.providerClassToModuleClassMap.set(
-                    this.getProviderKey(provider),
+                    provider as Type,
                     moduleInstance.metadata.Class,
                 );
             }
@@ -416,28 +431,13 @@ export class Factory implements IFactory {
                     })),
                 ),
             );
+
+            return this.providerInstanceMap.get(providerKey);
         } else {
             providerKey = (provider as BaseProvider).provide;
-
-            // if (this.providerInstanceMap.get(providerKey)) {
-            //     return this.providerInstanceMap.get(providerKey);
-            // }
-
-            ModuleClass = this.providerClassToModuleClassMap.get(providerKey);
-            moduleInstance = this.moduleInstanceMap.get(ModuleClass);
-
-            const baseProviderValue = await moduleInstance.generateBaseProviderValue(
-                provider as BaseProvider,
-                this.createProviderInstance.bind(this),
-            );
-
-            this.providerInstanceMap.set(providerKey, {
-                ...provider,
-                baseProviderValue,
-            });
+            return await this.createBaseProviderInstance(provider as BaseProviderWithValue);
         }
 
-        return this.providerInstanceMap.get(providerKey);
     }
 
     /**
@@ -536,28 +536,35 @@ export class Factory implements IFactory {
         return asyncModuleClass as Type<any>;
     }
 
-    private getProviderKey(provider: Provider): Type<any> | string {
-        if (isBasicProvider(provider)) {
-            return (provider as BaseProvider).provide;
-        } else {
-            return provider as Type<any>;
+    private async createAllBasicProviderInstances() {
+        for (const [, moduleInstance] of this.moduleInstanceMap.entries()) {
+            const providers = Array.from(moduleInstance.getProviders());
+            for (const provider of providers) {
+                if (!isBasicProvider(provider) || (provider as BaseProviderWithValue).value !== undefined) {
+                    continue;
+                }
+                await this.createBaseProviderInstance(provider as BaseProviderWithValue);
+            }
         }
     }
 
-    private async createAllBasicProviderInstances() {
-        for (const [ModuleClass, moduleInstance] of this.moduleInstanceMap.entries()) {
-            const providers = Array.from(moduleInstance.getProviders());
-            for (const provider of providers) {
-                if (!isBasicProvider(provider) || (provider as BaseProviderWithValue).value) {
-                    continue;
-                }
-                this.providerInstanceMap.set((provider as BaseProvider).provide, {
-                    ...(provider as BaseProvider),
-                    value: await moduleInstance.generateBaseProviderValue(provider as BaseProvider, this.createProviderInstance.bind(this)),
-                } as BaseProviderWithValue);
-                this.providerClassToModuleClassMap.set((provider as BaseProvider).provide, ModuleClass);
-            }
-        }
+    private async createBaseProviderInstance(provider: BaseProvider) {
+        const providerKey = (provider as BaseProvider).provide;
+        const ModuleClass = Reflect.getMetadata(PROVIDER_MODULE, provider) as Type;
+        const moduleInstance = this.moduleInstanceMap.get(ModuleClass);
+        const baseProviderValue = await moduleInstance.generateBaseProviderValue(
+            provider as BaseProvider,
+            this.createProviderInstance.bind(this),
+        );
+        const baseProviderWithValue: BaseProviderWithValue = {
+            ...(provider as BaseProvider),
+            value: baseProviderValue,
+        };
+
+        Reflect.defineMetadata(PROVIDER_MODULE, ModuleClass, baseProviderWithValue);
+        moduleInstance.setBaseProviderWithValue(providerKey, baseProviderWithValue);
+
+        return baseProviderWithValue;
     }
 
     private async initializeSelfDeclaredDepsForProviders() {
