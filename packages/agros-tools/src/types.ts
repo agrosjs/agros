@@ -255,3 +255,8 @@ export interface AddImportedServiceToServiceOptions {
 export interface AddRouteToModuleOptions {
     path?: string;
 }
+
+export interface DynamicModuleListItem<T = any> {
+    HostModuleClass: Type<T>;
+    moduleInstance: ModuleInstance;
+}

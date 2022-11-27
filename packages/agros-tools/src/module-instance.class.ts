@@ -4,6 +4,7 @@ import { isBasicProvider } from './is';
 import {
     BaseProvider,
     BaseProviderWithValue,
+    DynamicModuleListItem,
     FactoryProvider,
     ModuleInstanceMetadata,
     ProviderToken,
@@ -26,6 +27,7 @@ export class ModuleInstance {
     public constructor(
         public readonly metadata: ModuleInstanceMetadata,
         private readonly globalModuleInstances: Set<ModuleInstance>,
+        private readonly dynamicModuleInstanceList: DynamicModuleListItem[],
     ) {
         this.metadata.providers = new Set(
             Array.from(this.metadata.providers).map((provider) => {
@@ -57,7 +59,7 @@ export class ModuleInstance {
      * get provider classes recursively from imported modules
      */
     public getProviders(): Set<any> {
-        return new Set(
+        const result = new Set(
             Array
                 .from(this.metadata.providers)
                 .concat(Array.from(this.metadata.components))
@@ -75,6 +77,26 @@ export class ModuleInstance {
                     ),
                 )
                 .concat(
+                    Array.from(this.dynamicModuleInstanceList).reduce(
+                        (providerClasses, {
+                            moduleInstance: dynamicModuleInstance,
+                            HostModuleClass,
+                        }) => {
+                            if (HostModuleClass !== this.metadata.Class) {
+                                return providerClasses;
+                            }
+
+                            return providerClasses
+                                .concat(Array.from(dynamicModuleInstance.metadata.exports))
+                                .concat(
+                                    Array
+                                        .from(dynamicModuleInstance.getProviders())
+                                        .filter((provider) => isBasicProvider(provider)) as ProviderWithValue[],
+                                );
+                        }, [] as ProviderWithValue[],
+                    ),
+                )
+                .concat(
                     Array.from(this.globalModuleInstances).reduce(
                         (providerClasses, globalModuleInstances) => {
                             return providerClasses.concat(Array.from(globalModuleInstances.metadata.exports));
@@ -82,6 +104,7 @@ export class ModuleInstance {
                     ),
                 ),
         );
+        return result;
     }
 
     public getBaseProvider(providerKey: ProviderToken) {

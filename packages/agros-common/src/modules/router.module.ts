@@ -35,9 +35,7 @@ export class RouterModule {
             providers: [
                 {
                     provide: ROUTES_ROOT,
-                    useValue: async () => {
-                        return routes;
-                    },
+                    useValue: routes,
                 },
             ],
         };
@@ -48,13 +46,11 @@ export class RouterModule {
     }: RouterModuleFeatureOptions): DynamicModule {
         return {
             module: RouterModule,
-            global: true,
+            global: false,
             providers: [
                 {
                     provide: ROUTES_FEATURE,
-                    useValue: async () => {
-                        return routes;
-                    },
+                    useValue: routes,
                 },
             ],
         };

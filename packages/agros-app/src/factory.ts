@@ -15,10 +15,10 @@ import {
     BaseProvider,
     ProviderToken,
     BaseProviderWithValue,
-    isDynamicModule,
     isBasicProvider,
     PROVIDER_MODULE,
     ProviderWithValue,
+    DynamicModuleListItem,
 } from '@agros/tools';
 import isPromise from 'is-promise';
 import {
@@ -27,6 +27,7 @@ import {
     DI_METADATA_COMPONENT_SYMBOL,
     DI_METADATA_MODULE_SYMBOL,
     DI_METADATA_USE_INTERCEPTORS_SYMBOL,
+    IS_DYNAMIC_MODULE,
     SELF_DECLARED_DEPS_METADATA,
 } from '@agros/common';
 
@@ -72,6 +73,7 @@ export class Factory implements IFactory {
      */
     private globalModuleInstances = new Set<ModuleInstance>();
     private rootModuleInstance: ModuleInstance;
+    private dynamicModuleList: DynamicModuleListItem[] = [];
 
     public constructor(protected readonly platform: Platform) {}
 
@@ -85,7 +87,7 @@ export class Factory implements IFactory {
      * create a route config with the root module
      */
     public async create<T = any>(ModuleClass: Type<T>): Promise<ComponentInstance> {
-        const rootModuleInstance = await this.createModuleInstance(ModuleClass);
+        const rootModuleInstance = await this.createModuleInstance(ModuleClass, ModuleClass);
 
         const rootModuleExportedComponentClasses = Array
             .from(rootModuleInstance.metadata?.exports || new Set<Type>())
@@ -208,82 +210,69 @@ export class Factory implements IFactory {
      * create flattened module instances using a root module class
      * this is a recursive function
      */
-    private async createModuleInstance<T>(ModuleClassOrPromiseOrDynamicModule: AsyncModuleClass<T>) {
-        let ModuleClass: Type<any>;
+    private async createModuleInstance<T>(
+        HostModuleClass: Type<T>,
+        ModuleClassOrPromiseOrDynamicModule: Type<T> | Promise<Type<T>>,
+    ) {
+        let ModuleClass: Type<any> = await this.getModuleClassExceptDynamicModule(ModuleClassOrPromiseOrDynamicModule);
+        const isDynamicModule = Reflect.getMetadata(IS_DYNAMIC_MODULE, ModuleClass);
+        let currentModuleInstance: ModuleInstance;
 
-        if (!isDynamicModule(ModuleClassOrPromiseOrDynamicModule)) {
-            const moduleClassOrDynamicModule = await this.getModuleClassExceptDynamicModule(ModuleClassOrPromiseOrDynamicModule as Promise<Type<any>> | Type<any>);
-            ModuleClass = moduleClassOrDynamicModule as Type;
+        if (
+            !this.moduleInstanceMap.get(ModuleClass) ||
+            !this.dynamicModuleList.some((item) => item?.moduleInstance?.metadata.Class === ModuleClass)
+        ) {
+            const metadataValue: ModuleMetadata = Reflect.getMetadata(
+                DI_METADATA_MODULE_SYMBOL,
+                ModuleClass,
+            );
+            const isGlobal: boolean = Reflect.getMetadata(DI_GLOBAL_MODULE_SYMBOL, ModuleClass) || false;
 
-            if (!this.moduleInstanceMap.get(ModuleClass)) {
-                const metadataValue: ModuleMetadata = Reflect.getMetadata(
-                    DI_METADATA_MODULE_SYMBOL,
-                    ModuleClass,
-                );
-                const isGlobal: boolean = Reflect.getMetadata(DI_GLOBAL_MODULE_SYMBOL, ModuleClass) || false;
-
-                const {
-                    imports,
-                    providers,
-                    components,
-                    exports: exportedProviders,
-                } = metadataValue;
-
-                /**
-                 * create current module instance by module class
-                 */
-                const moduleInstance = new ModuleInstance(
-                    {
-                        Class: ModuleClass,
-                        isGlobal,
-                        imports: new Set(Array.from(imports).map(this.processDynamicModule)),
-                        providers: new Set(Array.from(providers).map((provider) => {
-                            if (isBasicProvider(provider)) {
-                                (provider as BaseProviderWithValue).value = undefined;
-                            }
-                            return provider;
-                        }) as ProviderWithValue[]),
-                        exports: new Set(exportedProviders),
-                        components: new Set(components),
-                    },
-                    this.globalModuleInstances,
-                );
-
-                this.moduleInstanceMap.set(ModuleClass, moduleInstance);
-            }
-        } else {
             const {
-                module: DynamicModuleClass,
-                imports: moduleImports = [],
-                providers = [],
-                exports: exportedProviders = [],
-                components = [],
-                global: isGlobal = false,
-            } = ModuleClassOrPromiseOrDynamicModule as DynamicModule;
-            const moduleInstance = new ModuleInstance({
-                Class: DynamicModuleClass,
-                isGlobal,
-                imports: new Set(Array.from(moduleImports).map(this.processDynamicModule)),
-                providers: new Set(Array.from(providers).map((provider) => {
-                    if (isBasicProvider(provider)) {
-                        (provider as BaseProviderWithValue).value = undefined;
-                    }
-                    return provider;
-                }) as ProviderWithValue[]),
-                exports: new Set(exportedProviders),
-                components: new Set(components),
-            }, this.globalModuleInstances);
+                imports,
+                providers,
+                components,
+                exports: exportedProviders,
+            } = metadataValue;
 
-            this.moduleInstanceMap.set(ModuleClass, moduleInstance);
+            /**
+             * create current module instance by module class
+             */
+            const moduleInstance = new ModuleInstance(
+                {
+                    Class: ModuleClass,
+                    isGlobal,
+                    imports: new Set(Array.from(imports).map(this.processDynamicModule)),
+                    providers: new Set(Array.from(providers).map((provider) => {
+                        if (isBasicProvider(provider)) {
+                            (provider as BaseProviderWithValue).value = undefined;
+                        }
+                        return provider;
+                    }) as ProviderWithValue[]),
+                    exports: new Set(exportedProviders),
+                    components: new Set(components),
+                },
+                this.globalModuleInstances,
+                this.dynamicModuleList,
+            );
+
+            if (isDynamicModule) {
+                this.dynamicModuleList.push({
+                    HostModuleClass,
+                    moduleInstance,
+                });
+                currentModuleInstance = moduleInstance;
+            } else {
+                this.moduleInstanceMap.set(ModuleClass, moduleInstance);
+                currentModuleInstance = this.moduleInstanceMap.get(ModuleClass);
+            }
         }
-
-        const currentModuleInstance = this.moduleInstanceMap.get(ModuleClass);
 
         /**
          * get all imported module classes and create them recursively
          */
         for (const ImportedModuleClassOrPromise of currentModuleInstance.metadata.imports) {
-            await this.createModuleInstance(ImportedModuleClassOrPromise);
+            await this.createModuleInstance(ModuleClass, ImportedModuleClassOrPromise);
         }
 
         return currentModuleInstance;
@@ -551,7 +540,21 @@ export class Factory implements IFactory {
     private async createBaseProviderInstance(provider: BaseProvider) {
         const providerKey = (provider as BaseProvider).provide;
         const ModuleClass = Reflect.getMetadata(PROVIDER_MODULE, provider) as Type;
-        const moduleInstance = this.moduleInstanceMap.get(ModuleClass);
+        let moduleInstance = this.moduleInstanceMap.get(ModuleClass);
+
+        if (!moduleInstance) {
+            moduleInstance = this.dynamicModuleList.find((item) => {
+                return item.moduleInstance.metadata.Class === ModuleClass;
+            })?.moduleInstance;
+        }
+
+        if (!moduleInstance) {
+            return {
+                ...(provider as BaseProvider),
+                value: undefined,
+            } as BaseProviderWithValue;
+        }
+
         const baseProviderValue = await moduleInstance.generateBaseProviderValue(
             provider as BaseProvider,
             this.createProviderInstance.bind(this),
@@ -629,6 +632,7 @@ export class Factory implements IFactory {
                 },
                 ModuleClass,
             );
+            Reflect.defineMetadata(IS_DYNAMIC_MODULE, true, ModuleClass);
 
             if (global) {
                 Reflect.defineMetadata(DI_GLOBAL_MODULE_SYMBOL, true, ModuleClass);
