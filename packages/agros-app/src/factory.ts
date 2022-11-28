@@ -18,7 +18,7 @@ import {
     isBasicProvider,
     PROVIDER_MODULE,
     ProviderWithValue,
-    // DynamicModuleListItem,
+    isDynamicModule,
 } from '@agros/tools';
 import isPromise from 'is-promise';
 import {
@@ -73,7 +73,6 @@ export class Factory implements IFactory {
      */
     private globalModuleInstances = new Set<ModuleInstance>();
     private rootModuleInstance: ModuleInstance;
-    // private dynamicModuleList: DynamicModuleListItem[] = [];
 
     public constructor(protected readonly platform: Platform) {}
 
@@ -113,9 +112,6 @@ export class Factory implements IFactory {
         this.rootModuleInstance = rootModuleInstance;
         await this.initializeSelfDeclaredDepsForProviders();
         const [RootComponentClass] = rootModuleExportedComponentClasses;
-
-        // console.log('LENCONDA:dynamicModuleList', this.dynamicModuleList);
-        console.log(this.moduleInstanceMap);
 
         return Array.from(this.componentInstanceMap.values()).find((componentInstance) => {
             return componentInstance.metadata.Class === RootComponentClass;
@@ -222,19 +218,22 @@ export class Factory implements IFactory {
         let currentModuleInstance: ModuleInstance;
 
         if (!this.moduleInstanceMap.get(ModuleClass) || isDynamicModule) {
-            const metadataValue: ModuleMetadata = Reflect.getMetadata(
-                DI_METADATA_MODULE_SYMBOL,
-                ModuleClass,
-            );
+            const metadataValue: ModuleMetadata = !isDynamicModule
+                ? Reflect.getMetadata(
+                    DI_METADATA_MODULE_SYMBOL,
+                    ModuleClass,
+                )
+                : (Reflect.getMetadata(
+                    DI_METADATA_MODULE_SYMBOL,
+                    ModuleClass,
+                ) as ImmutableMap<Type, ModuleMetadata>).get(HostModuleClass);
             const isGlobal: boolean = Reflect.getMetadata(DI_GLOBAL_MODULE_SYMBOL, ModuleClass) || false;
-
             const {
                 imports,
                 providers,
                 components,
                 exports: exportedProviders,
             } = metadataValue;
-
             /**
              * create current module instance by module class
              */
@@ -242,7 +241,7 @@ export class Factory implements IFactory {
                 {
                     Class: ModuleClass,
                     isGlobal,
-                    imports: new Set(Array.from(imports).map((imported) => this.processDynamicModule(HostModuleClass, imported))),
+                    imports: new Set(Array.from(imports).map((imported) => this.processDynamicModule(ModuleClass, imported))),
                     providers: new Set(Array.from(providers).map((provider) => {
                         if (isBasicProvider(provider)) {
                             (provider as BaseProviderWithValue).value = undefined;
@@ -253,14 +252,9 @@ export class Factory implements IFactory {
                     components: new Set(components),
                 },
                 this.globalModuleInstances,
-                // this.dynamicModuleList,
             );
 
             if (isDynamicModule) {
-                // this.dynamicModuleList.push({
-                //     HostModuleClass,
-                //     moduleInstance,
-                // });
                 const hostModuleInstance = this.moduleInstanceMap.get(HostModuleClass);
 
                 if (hostModuleInstance) {
@@ -273,24 +267,30 @@ export class Factory implements IFactory {
                 currentModuleInstance = moduleInstance;
             }
 
-            if (ModuleClass.name === 'AppModule') {
-                console.log('LENCONDA:', {
-                    HostModuleClass,
-                    currentModuleInstance,
-                    ModuleClass,
-                    metadataValue,
-                    imports: new Set(Array.from(imports).map((imported) => this.processDynamicModule(HostModuleClass, imported))),
-                });
-            }
+            // if (ModuleClass.name === 'AppModule') {
+            //     console.log('LENCONDA:', {
+            //         HostModuleClass,
+            //         currentModuleInstance,
+            //         ModuleClass,
+            //         metadataValue,
+            //         imports: new Set(Array.from(imports).map((imported) => this.processDynamicModule(HostModuleClass, imported))),
+            //     });
+            // }
         }
 
-        console.log('CURRENT', currentModuleInstance);
+        if (!currentModuleInstance) {
+            currentModuleInstance = this.moduleInstanceMap.get(ModuleClass);
+        }
 
-        /**
-         * get all imported module classes and create them recursively
-         */
-        for (const ImportedModuleClassOrPromise of currentModuleInstance.metadata.imports) {
-            await this.createModuleInstance(ModuleClass, ImportedModuleClassOrPromise);
+        // console.log('CURRENT', currentModuleInstance);
+
+        if (currentModuleInstance) {
+            /**
+             * get all imported module classes and create them recursively
+             */
+            for (const ImportedModuleClassOrPromise of currentModuleInstance.metadata.imports) {
+                await this.createModuleInstance(ModuleClass, ImportedModuleClassOrPromise);
+            }
         }
 
         return currentModuleInstance;
@@ -628,40 +628,42 @@ export class Factory implements IFactory {
         }
     }
 
-    private processDynamicModule(HostModuleClass, moduleClassOrDynamicModule: AsyncModuleClass): Type | Promise<Type> {
-        if ((moduleClassOrDynamicModule as DynamicModule).module) {
+    private processDynamicModule(HostModuleClass: Type, moduleClassOrDynamicModule: AsyncModuleClass): Type | Promise<Type> {
+        if (isDynamicModule(moduleClassOrDynamicModule)) {
             const dynamicModule = moduleClassOrDynamicModule as DynamicModule;
             const {
-                module: ModuleClass,
+                module: DynamicModuleClass,
                 imports = [],
                 providers = [],
                 exports: exportedProviders = [],
                 components = [],
                 global = false,
             } = dynamicModule;
+            let metadata = Reflect.getMetadata(DI_METADATA_MODULE_SYMBOL, DynamicModuleClass) as ImmutableMap<Type, ModuleMetadata>;
 
-            console.log('LENCONDA:process', {
-                dynamicModule,
-                HostModuleClass,
+            if (!metadata) {
+                metadata = ImmutableMap();
+            }
+
+            metadata = metadata.set(HostModuleClass, {
+                imports: new Set(imports),
+                providers: new Set(providers),
+                components: new Set(components),
+                exports: new Set(exportedProviders),
             });
 
             Reflect.defineMetadata(
                 DI_METADATA_MODULE_SYMBOL,
-                {
-                    imports: new Set(imports),
-                    providers: new Set(providers),
-                    components: new Set(components),
-                    exports: new Set(exportedProviders),
-                },
-                ModuleClass,
+                metadata,
+                DynamicModuleClass,
             );
-            Reflect.defineMetadata(IS_DYNAMIC_MODULE, true, ModuleClass);
+            Reflect.defineMetadata(IS_DYNAMIC_MODULE, true, DynamicModuleClass);
 
             if (global) {
-                Reflect.defineMetadata(DI_GLOBAL_MODULE_SYMBOL, true, ModuleClass);
+                Reflect.defineMetadata(DI_GLOBAL_MODULE_SYMBOL, true, DynamicModuleClass);
             }
 
-            return dynamicModule.module as Type<any>;
+            return DynamicModuleClass as Type<any>;
         }
         return moduleClassOrDynamicModule as Type<any> | Promise<Type<any>>;
     }

@@ -4,7 +4,6 @@ import { isBasicProvider } from './is';
 import {
     BaseProvider,
     BaseProviderWithValue,
-    // DynamicModuleListItem,
     FactoryProvider,
     ModuleInstanceMetadata,
     ProviderToken,
@@ -27,7 +26,6 @@ export class ModuleInstance {
     public constructor(
         public readonly metadata: ModuleInstanceMetadata,
         private readonly globalModuleInstances: Set<ModuleInstance>,
-        // private readonly dynamicModuleInstanceList: DynamicModuleListItem[],
     ) {
         this.metadata.providers = new Set(
             Array.from(this.metadata.providers).map((provider) => {
@@ -66,40 +64,27 @@ export class ModuleInstance {
                 .concat(
                     Array.from(this.importedModuleInstances).reduce(
                         (providerClasses, importedModuleInstance) => {
-                            return providerClasses
-                                .concat(Array.from(importedModuleInstance.metadata.exports))
-                                .concat(
-                                    Array
-                                        .from(importedModuleInstance.getProviders())
-                                        .filter((provider) => isBasicProvider(provider)) as ProviderWithValue[],
-                                );
+                            return providerClasses.concat(Array.from(importedModuleInstance.metadata.exports));
                         }, [] as ProviderWithValue[],
                     ),
                 )
-                // .concat(
-                //     Array.from(this.dynamicModuleInstanceList).reduce(
-                //         (providerClasses, {
-                //             moduleInstance: dynamicModuleInstance,
-                //             HostModuleClass,
-                //         }) => {
-                //             if (HostModuleClass !== this.metadata.Class) {
-                //                 return providerClasses;
-                //             }
-
-                //             return providerClasses
-                //                 .concat(Array.from(dynamicModuleInstance.metadata.exports))
-                //                 .concat(
-                //                     Array
-                //                         .from(dynamicModuleInstance.getProviders())
-                //                         .filter((provider) => isBasicProvider(provider)) as ProviderWithValue[],
-                //                 );
-                //         }, [] as ProviderWithValue[],
-                //     ),
-                // )
+                .concat(
+                    Array.from(this.importedModuleInstances).reduce((result, importedModuleInstance) => {
+                        return result.concat(
+                            Array
+                                .from(importedModuleInstance.metadata.providers)
+                                .filter((provider) => isBasicProvider(provider)),
+                        );
+                    }, [] as ProviderWithValue[]),
+                )
                 .concat(
                     Array.from(this.globalModuleInstances).reduce(
                         (providerClasses, globalModuleInstances) => {
-                            return providerClasses.concat(Array.from(globalModuleInstances.metadata.exports));
+                            return providerClasses
+                                .concat(Array.from(globalModuleInstances.metadata.exports))
+                                .concat(Array.from(globalModuleInstances.metadata.providers).filter((provider) => {
+                                    return isBasicProvider(provider);
+                                }));
                         }, [] as ProviderWithValue[],
                     ),
                 ),

@@ -69,7 +69,7 @@ const platform: Platform = {
             ${factoryIdentifier}.create(Module).then((componentInstance) => {
                 const rootModuleInstance = ${factoryIdentifier}.getRootModuleInstance();
                 const rootRoutes = rootModuleInstance.getBaseProvider(${ensuredImportsMap['ROUTES_ROOT']})?.value;
-                console.log('LENCONDA:', rootRoutes);
+                console.log('LENCONDA:', rootModuleInstance.getBaseProvider(${ensuredImportsMap['ROUTES_ROOT']}));
                 ${ensuredImportsMap['RouterModule']}.createRouterItems(${factoryIdentifier}, rootRoutes).then((routes) => {
                     if (routes && Array.isArray(routes) && routes.length > 0) {
                         const RootContainer = ({

@@ -12,10 +12,6 @@ import {
     ROUTES_FEATURE,
 } from '../constants';
 import isPromise from 'is-promise';
-import {
-    Global,
-    Module,
-} from '../decorators';
 
 export interface RouterModuleRootOptions {
     routes: RouteOptionItem[];
@@ -23,8 +19,6 @@ export interface RouterModuleRootOptions {
 
 export type RouterModuleFeatureOptions = RouterModuleRootOptions;
 
-@Global()
-@Module()
 export class RouterModule {
     public static forRoot({
         routes = [],
