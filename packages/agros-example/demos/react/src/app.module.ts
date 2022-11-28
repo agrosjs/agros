@@ -18,7 +18,7 @@ const FooModule = import('./modules/foo/foo.module').then((({ FooModule }) => Fo
         BarModule,
         BazModule,
         LoremModule,
-        RouterModule.forRoot({
+        RouterModule.register({
             routes: [
                 {
                     path: '',

@@ -7,7 +7,7 @@ import { LoremService } from './lorem.service';
 
 @Module({
     imports: [
-        RouterModule.forFeature({
+        RouterModule.register({
             routes: [
                 {
                     path: 'lorem',

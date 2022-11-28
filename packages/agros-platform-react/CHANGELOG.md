@@ -1,6 +1,13 @@
 # Change Log - @agros/platform-react
 
-This log was last generated on Sat, 01 Oct 2022 09:14:32 GMT and should not be manually modified.
+This log was last generated on Wed, 12 Oct 2022 04:01:12 GMT and should not be manually modified.
+
+## 1.2.4
+Wed, 12 Oct 2022 04:01:12 GMT
+
+### Patches
+
+- Fix dependencies missing for packages
 
 ## 1.2.3
 Sat, 01 Oct 2022 09:14:32 GMT

@@ -1,8 +1,8 @@
 {
   "changes": [
     {
-      "comment": "Fix mplatform warnings",
-      "type": "patch",
+      "comment": "Support dynamic modules",
+      "type": "major",
       "packageName": "@agros/platform-vue"
     }
   ],

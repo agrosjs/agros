@@ -1,6 +1,13 @@
 # Change Log - @agros/platform-svelte
 
-This log was last generated on Mon, 03 Oct 2022 09:41:41 GMT and should not be manually modified.
+This log was last generated on Wed, 12 Oct 2022 04:01:12 GMT and should not be manually modified.
+
+## 1.2.7
+Wed, 12 Oct 2022 04:01:12 GMT
+
+### Patches
+
+- Fix mplatform warnings
 
 ## 1.2.6
 Mon, 03 Oct 2022 09:41:41 GMT

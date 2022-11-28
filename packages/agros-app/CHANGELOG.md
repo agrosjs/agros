@@ -1,6 +1,15 @@
 # Change Log - @agros/app
 
-This log was last generated on Sat, 01 Oct 2022 09:14:32 GMT and should not be manually modified.
+This log was last generated on Wed, 12 Oct 2022 04:01:12 GMT and should not be manually modified.
+
+## 1.1.4
+Wed, 12 Oct 2022 04:01:12 GMT
+
+### Patches
+
+- Optimize terminal outputs for dev-server
+- Fix dependencies missing for packages
+- Supress warnings for webpack-dev-server
 
 ## 1.1.3
 Sat, 01 Oct 2022 09:14:32 GMT

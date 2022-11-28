@@ -1,8 +1,8 @@
 {
   "changes": [
     {
-      "comment": "Fix dependencies missing for packages",
-      "type": "patch",
+      "comment": "Support dynamic modules",
+      "type": "major",
       "packageName": "@agros/app"
     }
   ],
