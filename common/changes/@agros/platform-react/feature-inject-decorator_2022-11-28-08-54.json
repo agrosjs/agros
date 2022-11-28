@@ -1,0 +1,11 @@
+{
+  "changes": [
+    {
+      "comment": "Support dynamic modules",
+      "type": "major",
+      "packageName": "@agros/platform-react"
+    }
+  ],
+  "packageName": "@agros/platform-react",
+  "email": "i@lenconda.top"
+}

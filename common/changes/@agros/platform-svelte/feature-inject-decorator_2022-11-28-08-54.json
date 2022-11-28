@@ -1,0 +1,11 @@
+{
+  "changes": [
+    {
+      "comment": "Support dynamic modules",
+      "type": "major",
+      "packageName": "@agros/platform-svelte"
+    }
+  ],
+  "packageName": "@agros/platform-svelte",
+  "email": "i@lenconda.top"
+}

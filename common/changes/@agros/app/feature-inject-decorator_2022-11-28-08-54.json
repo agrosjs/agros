@@ -1,0 +1,11 @@
+{
+  "changes": [
+    {
+      "comment": "Support dynamic modules",
+      "type": "major",
+      "packageName": "@agros/app"
+    }
+  ],
+  "packageName": "@agros/app",
+  "email": "i@lenconda.top"
+}
