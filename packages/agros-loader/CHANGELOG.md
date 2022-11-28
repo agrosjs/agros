@@ -1,6 +1,11 @@
 # Change Log - @agros/loader
 
-This log was last generated on Mon, 03 Oct 2022 07:15:28 GMT and should not be manually modified.
+This log was last generated on Mon, 28 Nov 2022 09:15:00 GMT and should not be manually modified.
+
+## 1.1.6
+Mon, 28 Nov 2022 09:15:00 GMT
+
+_Version update only_
 
 ## 1.1.5
 Mon, 03 Oct 2022 07:15:28 GMT
