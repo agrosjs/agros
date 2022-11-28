@@ -441,8 +441,9 @@ export class Factory implements IFactory {
 
             return this.providerInstanceMap.get(providerKey);
         } else {
+            ModuleClass = Reflect.getMetadata(PROVIDER_MODULE, provider) as Type;
             providerKey = (provider as BaseProvider).provide;
-            return await this.createBaseProviderInstance(provider as BaseProviderWithValue);
+            return await this.createBaseProviderInstance(ModuleClass, provider as BaseProviderWithValue);
         }
 
     }
@@ -544,27 +545,32 @@ export class Factory implements IFactory {
     }
 
     private async createAllBasicProviderInstances() {
-        for (const [, moduleInstance] of this.moduleInstanceMap.entries()) {
+        for (const [HostModuleClass, moduleInstance] of this.moduleInstanceMap.entries()) {
             const providers = Array.from(moduleInstance.getProviders());
             for (const provider of providers) {
                 if (!isBasicProvider(provider) || (provider as BaseProviderWithValue).value !== undefined) {
                     continue;
                 }
-                await this.createBaseProviderInstance(provider as BaseProviderWithValue);
+                await this.createBaseProviderInstance(HostModuleClass, provider as BaseProviderWithValue);
             }
         }
     }
 
-    private async createBaseProviderInstance(provider: BaseProvider) {
+    private async createBaseProviderInstance(HostModuleClass: Type, provider: BaseProvider) {
         const providerKey = (provider as BaseProvider).provide;
         const ModuleClass = Reflect.getMetadata(PROVIDER_MODULE, provider) as Type;
-        let moduleInstance = this.moduleInstanceMap.get(ModuleClass);
+        const hostModuleInstance = this.moduleInstanceMap.get(HostModuleClass);
+        let moduleInstance: ModuleInstance;
 
-        // if (!moduleInstance) {
-        //     moduleInstance = this.dynamicModuleList.find((item) => {
-        //         return item.moduleInstance.metadata.Class === ModuleClass;
-        //     })?.moduleInstance;
-        // }
+        if (hostModuleInstance) {
+            moduleInstance = Array
+                .from(hostModuleInstance.getImportedModuleInstances())
+                .find((moduleInstance) => moduleInstance.metadata.Class === ModuleClass);
+        }
+
+        if (!moduleInstance) {
+            moduleInstance = this.moduleInstanceMap.get(ModuleClass);;
+        }
 
         if (!moduleInstance) {
             return {
