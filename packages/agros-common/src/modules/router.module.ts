@@ -7,43 +7,25 @@ import {
     DynamicModule,
     isBasicProvider,
 } from '@agros/tools';
-import {
-    ROUTES_ROOT,
-    ROUTES_FEATURE,
-} from '../constants';
+import { ROUTES } from '../constants';
 import isPromise from 'is-promise';
 
-export interface RouterModuleRootOptions {
+export interface RouterModuleOptions {
     routes: RouteOptionItem[];
 }
 
-export type RouterModuleFeatureOptions = RouterModuleRootOptions;
+// export type RouterModuleFeatureOptions = RouterModuleRootOptions;
 
 export class RouterModule {
-    public static forRoot({
+    public static register({
         routes = [],
-    }: RouterModuleRootOptions): DynamicModule {
+    }: RouterModuleOptions): DynamicModule {
         return {
             module: RouterModule,
             global: false,
             providers: [
                 {
-                    provide: ROUTES_ROOT,
-                    useValue: routes,
-                },
-            ],
-        };
-    }
-
-    public static forFeature({
-        routes = [],
-    }: RouterModuleFeatureOptions): DynamicModule {
-        return {
-            module: RouterModule,
-            global: false,
-            providers: [
-                {
-                    provide: ROUTES_FEATURE,
+                    provide: ROUTES,
                     useValue: routes,
                 },
             ],
@@ -128,7 +110,7 @@ export class RouterModule {
                  */
                 const ModuleClass = (await getModuleClass(useModuleClass)) as Type;
                 const moduleInstance = moduleInstanceMap.get(ModuleClass);
-                let currentRouteOptionItems: RouteOptionItem[] = moduleInstance.getBaseProvider(ROUTES_FEATURE)?.value || [];
+                let currentRouteOptionItems: RouteOptionItem[] = moduleInstance.getBaseProvider(ROUTES)?.value || [];
                 const currentRouterItems = await RouterModule.createRouterItems(
                     context,
                     currentRouteOptionItems,

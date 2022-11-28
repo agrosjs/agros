@@ -36,7 +36,7 @@ const platform: Platform = {
             },
             {
                 libName: '@agros/common',
-                identifierName: 'ROUTES_ROOT',
+                identifierName: 'ROUTES',
             },
             {
                 libName: '@agros/common',
@@ -75,7 +75,7 @@ const platform: Platform = {
                     if (factory) {
                         factoryPromise = factory.create(Module).then((componentInstance) => {
                             const rootModuleInstance = factory.getRootModuleInstance();
-                            const rootRoutes = rootModuleInstance.getBaseProvider(map['ROUTES_ROOT'])?.value;
+                            const rootRoutes = rootModuleInstance.getBaseProvider(map['ROUTES'])?.value;
                             return map['RouterModule'].createRouterItems(factory, rootRoutes).then((routeItems) => {
                                 const routes = map['createRoutes'](routeItems);
                                 if (routes && Array.isArray(routes) && routes.length > 0) {
