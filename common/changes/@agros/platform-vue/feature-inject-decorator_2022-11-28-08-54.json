@@ -1,0 +1,11 @@
+{
+  "changes": [
+    {
+      "comment": "Support dynamic modules",
+      "type": "major",
+      "packageName": "@agros/platform-vue"
+    }
+  ],
+  "packageName": "@agros/platform-vue",
+  "email": "i@lenconda.top"
+}

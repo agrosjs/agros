@@ -15,7 +15,7 @@ import { FooService } from './foo.service';
     ],
     imports: [
         BarModule,
-        RouterModule.forFeature({
+        RouterModule.register({
             routes: [
                 {
                     path: 'foo',

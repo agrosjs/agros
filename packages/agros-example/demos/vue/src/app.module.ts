@@ -14,7 +14,7 @@ import { FooModule } from './modules/foo/foo.module';
         AppComponent,
     ],
     imports: [
-        RouterModule.forRoot({
+        RouterModule.register({
             routes: [
                 {
                     path: '',

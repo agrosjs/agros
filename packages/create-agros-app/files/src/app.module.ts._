@@ -8,7 +8,7 @@ import { AppInterceptor } from '@/app.interceptor';
 
 @Module({
     imports: [
-        RouterModule.forRoot({
+        RouterModule.register({
             routes: [
                 {
                     path: '',

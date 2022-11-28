@@ -3,41 +3,55 @@ import {
     RouteOptionItem,
     Type,
     AsyncModuleClass,
-    ValueProvider,
     Factory,
+    DynamicModule,
+    isBasicProvider,
 } from '@agros/tools';
-import {
-    ROUTES_ROOT,
-    ROUTES_FEATURE,
-} from '../constants';
+import { ROUTES } from '../constants';
 import isPromise from 'is-promise';
 
-export interface RouterModuleRootOptions {
+export interface RouterModuleOptions {
     routes: RouteOptionItem[];
 }
 
-export type RouterModuleFeatureOptions = RouterModuleRootOptions;
+export interface RouterModuleAsyncOptions {
+    imports: Array<AsyncModuleClass>;
+    inject: Array<Type>;
+    useFactory: (...args: any[]) => Promise<RouteOptionItem[]>;
+}
 
 export class RouterModule {
-    public static forRoot({
+    public static register({
         routes = [],
-    }: RouterModuleRootOptions) {
+    }: RouterModuleOptions): DynamicModule {
         return {
-            provide: ROUTES_ROOT,
-            useValue: async () => {
-                return routes;
-            },
+            module: RouterModule,
+            global: false,
+            providers: [
+                {
+                    provide: ROUTES,
+                    useValue: routes,
+                },
+            ],
         };
     }
 
-    public static forFeature({
-        routes = [],
-    }: RouterModuleFeatureOptions) {
+    public static registerAsync({
+        imports = [],
+        inject = [],
+        useFactory = async () => ([]),
+    }: RouterModuleAsyncOptions): DynamicModule {
         return {
-            provide: ROUTES_FEATURE,
-            useValue: async () => {
-                return routes;
-            },
+            module: RouterModule,
+            global: false,
+            imports,
+            providers: [
+                {
+                    inject,
+                    provide: ROUTES,
+                    useFactory,
+                },
+            ],
         };
     }
 
@@ -58,12 +72,16 @@ export class RouterModule {
             return newPath;
         };
 
-        const getModuleClass = async (asyncModuleClass: AsyncModuleClass): Promise<Type<any> | ValueProvider> => {
+        const getModuleClass = async (asyncModuleClass: AsyncModuleClass): Promise<Type<any>> => {
             if (isPromise(asyncModuleClass)) {
                 return await asyncModuleClass;
             }
 
-            return asyncModuleClass;
+            if (!isBasicProvider(asyncModuleClass)) {
+                return asyncModuleClass as Type;
+            }
+
+            return null;
         };
 
         const moduleInstanceMap = context.getModuleInstanceMap();
@@ -115,12 +133,7 @@ export class RouterModule {
                  */
                 const ModuleClass = (await getModuleClass(useModuleClass)) as Type;
                 const moduleInstance = moduleInstanceMap.get(ModuleClass);
-                let currentRouteOptionItems = moduleInstance.getProviderValue<RouteOptionItem[]>(ROUTES_FEATURE) || [];
-
-                if (typeof currentRouteOptionItems === 'function') {
-                    currentRouteOptionItems = await (currentRouteOptionItems as Function)(context);
-                }
-
+                let currentRouteOptionItems: RouteOptionItem[] = moduleInstance.getBaseProvider(ROUTES)?.value || [];
                 const currentRouterItems = await RouterModule.createRouterItems(
                     context,
                     currentRouteOptionItems,

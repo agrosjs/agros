@@ -69,6 +69,7 @@
         "lodash": "^4.17.21",
         "parse-glob": "^3.0.4",
         "prettier": "^2.7.1",
+        "reflect-metadata": "^0.1.13",
         "webpack": "^5.28.0"
     }
 }

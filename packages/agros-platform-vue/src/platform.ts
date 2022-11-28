@@ -17,7 +17,7 @@ const platform: Platform = {
             },
             {
                 libName: '@agros/common',
-                identifierName: 'ROUTES_ROOT',
+                identifierName: 'ROUTES',
             },
             {
                 libName: '@agros/common',
@@ -45,7 +45,7 @@ const platform: Platform = {
             } = config;
             ${ensuredImportsMap['factory'] || 'factory'}.create(Module).then((componentInstance) => {
                 const rootModuleInstance = ${factoryIdentifier}.getRootModuleInstance();
-                const rootRoutes = rootModuleInstance.getProviderValue(${ensuredImportsMap['ROUTES_ROOT']});
+                const rootRoutes = rootModuleInstance.getBaseProvider(${ensuredImportsMap['ROUTES']})?.value;
                 ${ensuredImportsMap['RouterModule']}.createRouterItems(${factoryIdentifier}, rootRoutes).then((routeItems) => {
                     if (routeItems && Array.isArray(routeItems) && routeItems.length > 0) {
                         const routes = ${ensuredImportsMap['createRoutes']}(routeItems).map((route) => {
