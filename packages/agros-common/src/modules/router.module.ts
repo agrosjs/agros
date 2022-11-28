@@ -31,7 +31,7 @@ export class RouterModule {
     }: RouterModuleRootOptions): DynamicModule {
         return {
             module: RouterModule,
-            global: true,
+            global: false,
             providers: [
                 {
                     provide: ROUTES_ROOT,

@@ -18,7 +18,7 @@ import {
     isBasicProvider,
     PROVIDER_MODULE,
     ProviderWithValue,
-    DynamicModuleListItem,
+    // DynamicModuleListItem,
 } from '@agros/tools';
 import isPromise from 'is-promise';
 import {
@@ -73,7 +73,7 @@ export class Factory implements IFactory {
      */
     private globalModuleInstances = new Set<ModuleInstance>();
     private rootModuleInstance: ModuleInstance;
-    private dynamicModuleList: DynamicModuleListItem[] = [];
+    // private dynamicModuleList: DynamicModuleListItem[] = [];
 
     public constructor(protected readonly platform: Platform) {}
 
@@ -113,6 +113,9 @@ export class Factory implements IFactory {
         this.rootModuleInstance = rootModuleInstance;
         await this.initializeSelfDeclaredDepsForProviders();
         const [RootComponentClass] = rootModuleExportedComponentClasses;
+
+        // console.log('LENCONDA:dynamicModuleList', this.dynamicModuleList);
+        console.log(this.moduleInstanceMap);
 
         return Array.from(this.componentInstanceMap.values()).find((componentInstance) => {
             return componentInstance.metadata.Class === RootComponentClass;
@@ -218,10 +221,7 @@ export class Factory implements IFactory {
         const isDynamicModule = Reflect.getMetadata(IS_DYNAMIC_MODULE, ModuleClass);
         let currentModuleInstance: ModuleInstance;
 
-        if (
-            !this.moduleInstanceMap.get(ModuleClass) ||
-            !this.dynamicModuleList.some((item) => item?.moduleInstance?.metadata.Class === ModuleClass)
-        ) {
+        if (!this.moduleInstanceMap.get(ModuleClass) || isDynamicModule) {
             const metadataValue: ModuleMetadata = Reflect.getMetadata(
                 DI_METADATA_MODULE_SYMBOL,
                 ModuleClass,
@@ -242,7 +242,7 @@ export class Factory implements IFactory {
                 {
                     Class: ModuleClass,
                     isGlobal,
-                    imports: new Set(Array.from(imports).map(this.processDynamicModule)),
+                    imports: new Set(Array.from(imports).map((imported) => this.processDynamicModule(HostModuleClass, imported))),
                     providers: new Set(Array.from(providers).map((provider) => {
                         if (isBasicProvider(provider)) {
                             (provider as BaseProviderWithValue).value = undefined;
@@ -253,20 +253,38 @@ export class Factory implements IFactory {
                     components: new Set(components),
                 },
                 this.globalModuleInstances,
-                this.dynamicModuleList,
+                // this.dynamicModuleList,
             );
 
             if (isDynamicModule) {
-                this.dynamicModuleList.push({
-                    HostModuleClass,
-                    moduleInstance,
-                });
+                // this.dynamicModuleList.push({
+                //     HostModuleClass,
+                //     moduleInstance,
+                // });
+                const hostModuleInstance = this.moduleInstanceMap.get(HostModuleClass);
+
+                if (hostModuleInstance) {
+                    hostModuleInstance.addImportedModuleInstance(moduleInstance);
+                }
+
                 currentModuleInstance = moduleInstance;
             } else {
                 this.moduleInstanceMap.set(ModuleClass, moduleInstance);
-                currentModuleInstance = this.moduleInstanceMap.get(ModuleClass);
+                currentModuleInstance = moduleInstance;
+            }
+
+            if (ModuleClass.name === 'AppModule') {
+                console.log('LENCONDA:', {
+                    HostModuleClass,
+                    currentModuleInstance,
+                    ModuleClass,
+                    metadataValue,
+                    imports: new Set(Array.from(imports).map((imported) => this.processDynamicModule(HostModuleClass, imported))),
+                });
             }
         }
+
+        console.log('CURRENT', currentModuleInstance);
 
         /**
          * get all imported module classes and create them recursively
@@ -542,11 +560,11 @@ export class Factory implements IFactory {
         const ModuleClass = Reflect.getMetadata(PROVIDER_MODULE, provider) as Type;
         let moduleInstance = this.moduleInstanceMap.get(ModuleClass);
 
-        if (!moduleInstance) {
-            moduleInstance = this.dynamicModuleList.find((item) => {
-                return item.moduleInstance.metadata.Class === ModuleClass;
-            })?.moduleInstance;
-        }
+        // if (!moduleInstance) {
+        //     moduleInstance = this.dynamicModuleList.find((item) => {
+        //         return item.moduleInstance.metadata.Class === ModuleClass;
+        //     })?.moduleInstance;
+        // }
 
         if (!moduleInstance) {
             return {
@@ -610,7 +628,7 @@ export class Factory implements IFactory {
         }
     }
 
-    private processDynamicModule(moduleClassOrDynamicModule: AsyncModuleClass): Type | Promise<Type> {
+    private processDynamicModule(HostModuleClass, moduleClassOrDynamicModule: AsyncModuleClass): Type | Promise<Type> {
         if ((moduleClassOrDynamicModule as DynamicModule).module) {
             const dynamicModule = moduleClassOrDynamicModule as DynamicModule;
             const {
@@ -621,6 +639,11 @@ export class Factory implements IFactory {
                 components = [],
                 global = false,
             } = dynamicModule;
+
+            console.log('LENCONDA:process', {
+                dynamicModule,
+                HostModuleClass,
+            });
 
             Reflect.defineMetadata(
                 DI_METADATA_MODULE_SYMBOL,
