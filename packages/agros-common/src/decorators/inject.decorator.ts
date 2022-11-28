@@ -17,7 +17,7 @@ export function Inject<T = any>(token?: T) {
             return;
         }
 
-        let properties = Reflect.getMetadata(SELF_DECLARED_DEPS_METADATA, target) || [];
+        let properties = Reflect.getMetadata(SELF_DECLARED_DEPS_METADATA, target?.constructor) || [];
 
         properties = [
             ...properties,
@@ -30,7 +30,7 @@ export function Inject<T = any>(token?: T) {
         Reflect.defineMetadata(
             SELF_DECLARED_DEPS_METADATA,
             properties,
-            target,
+            target?.constructor,
         );
     };
 }

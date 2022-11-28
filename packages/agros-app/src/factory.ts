@@ -113,7 +113,7 @@ export class Factory implements IFactory {
         this.createComponentInstances(rootModuleInstance);
         await this.generateComponentForInstances();
         this.rootModuleInstance = rootModuleInstance;
-        await this.initializeSelfDeclaredDepsForProviders();
+        // await this.initializeSelfDeclaredDepsForProviders();
         const [RootComponentClass] = rootModuleExportedComponentClasses;
 
         return Array.from(this.componentInstanceMap.values()).find((componentInstance) => {
@@ -385,69 +385,69 @@ export class Factory implements IFactory {
                 throw new Error(`Provider ${ProviderClass.name} cannot be injected, did you add \`@Injectable()\` into it?`);
             }
 
+            const providerInstance = new ProviderClass(
+                ...await Promise.all(dependedProviders.map((dependedProvider) => {
+                    if (dependedProvider === ProviderClass) {
+                        throw new Error(`Provider ${ProviderClass.name} cannot depend on itself`);
+                    }
+
+                    if (!dependedProvider) {
+                        return undefined;
+                    }
+
+                    if (!isParameterDep(dependedProvider)) {
+                        const DependedProviderClass = dependedProvider as Type<any>;
+                        const dependedProviderName = DependedProviderClass.name;
+
+                        /**
+                         * get the module class that the provider depended on
+                         */
+                        const DependedModuleClass = this.providerClassToModuleClassMap.get(DependedProviderClass);
+
+                        if (!DependedModuleClass) {
+                            throw new Error(`Cannot find the module that provides ${dependedProviderName}, please make sure it is exported by a module`);
+                        }
+
+                        /**
+                         * check depended provider class be exported from the module,
+                         * if not, it will throw an error
+                         */
+                        if (!moduleInstance.hasDependedProviderClass(providerKey)) {
+                            throw new Error(
+                                `Cannot inject provider ${dependedProviderName} into provider ${ProviderClass.name}, did you import ${DependedModuleClass.name}?`,
+                            );
+                        }
+
+                        return this.createProviderInstance(DependedProviderClass);
+                    } else {
+                        const { param } = dependedProvider as ParameterDep;
+
+                        if (!param) {
+                            throw new Error(`Cannot get parameter name from token provider: ${dependedProvider}`);
+                        }
+
+                        const baseProvider = moduleInstance.getBaseProvider(param);
+
+                        if (!baseProvider) {
+                            throw new Error(`Cannot inject provider with token ${String(param)} into provider ${ProviderClass.name}`);
+                        }
+
+                        return this
+                            .createProviderInstance(baseProvider)
+                            .then((provider: BaseProviderWithValue) => {
+                                return provider?.value;
+                            });
+                    }
+                })),
+            );
+
+            this.initializeSelfDeclaredDepsForProvider(ProviderClass, providerInstance);
             /**
              * set to provider instance map directly so that other provider
              * who depends on it can get it during creating provider instances,
              * even if it does not be fully created.
              */
-            this.providerInstanceMap.set(
-                ProviderClass,
-                new ProviderClass(
-                    ...await Promise.all(dependedProviders.map((dependedProvider) => {
-                        if (dependedProvider === ProviderClass) {
-                            throw new Error(`Provider ${ProviderClass.name} cannot depend on itself`);
-                        }
-
-                        if (!dependedProvider) {
-                            return undefined;
-                        }
-
-                        if (!isParameterDep(dependedProvider)) {
-                            const DependedProviderClass = dependedProvider as Type<any>;
-                            const dependedProviderName = DependedProviderClass.name;
-
-                            /**
-                             * get the module class that the provider depended on
-                             */
-                            const DependedModuleClass = this.providerClassToModuleClassMap.get(DependedProviderClass);
-
-                            if (!DependedModuleClass) {
-                                throw new Error(`Cannot find the module that provides ${dependedProviderName}, please make sure it is exported by a module`);
-                            }
-
-                            /**
-                             * check depended provider class be exported from the module,
-                             * if not, it will throw an error
-                             */
-                            if (!moduleInstance.hasDependedProviderClass(providerKey)) {
-                                throw new Error(
-                                    `Cannot inject provider ${dependedProviderName} into provider ${ProviderClass.name}, did you import ${DependedModuleClass.name}?`,
-                                );
-                            }
-
-                            return this.createProviderInstance(DependedProviderClass);
-                        } else {
-                            const { param } = dependedProvider as ParameterDep;
-
-                            if (!param) {
-                                throw new Error(`Cannot get parameter name from token provider: ${dependedProvider}`);
-                            }
-
-                            const baseProvider = moduleInstance.getBaseProvider(param);
-
-                            if (!baseProvider) {
-                                throw new Error(`Cannot inject provider with token ${String(param)} into provider ${ProviderClass.name}`);
-                            }
-
-                            return this
-                                .createProviderInstance(baseProvider)
-                                .then((provider: BaseProviderWithValue) => {
-                                    return provider?.value;
-                                });
-                        }
-                    })),
-                ),
-            );
+            this.providerInstanceMap.set(ProviderClass, providerInstance);
 
             return this.providerInstanceMap.get(providerKey);
         } else {
@@ -603,43 +603,44 @@ export class Factory implements IFactory {
         return baseProviderWithValue;
     }
 
-    private async initializeSelfDeclaredDepsForProviders() {
-        for (const [ProviderClass, providerInstance] of this.providerInstanceMap) {
-            if (isBasicProvider(ProviderClass) || !providerInstance) {
-                continue;
+    private async initializeSelfDeclaredDepsForProvider(ProviderClass: Type, providerInstance: any) {
+        if (isBasicProvider(ProviderClass) || !providerInstance) {
+            return;
+        }
+
+        const ModuleClass = this.providerClassToModuleClassMap.get(ProviderClass);
+        const moduleInstance = this.moduleInstanceMap.get(ModuleClass);
+        const selfDeclaredDeps: SelfDeclaredDep[] = Reflect.getMetadata(SELF_DECLARED_DEPS_METADATA, ProviderClass) || [];
+        const selfDeclaredDepInstances: Array<SelfDeclaredDep & { value: any }> = await Promise.all(selfDeclaredDeps.map((selfDeclaredDep) => {
+            let baseProvider: BaseProviderWithValue = moduleInstance.getBaseProvider(selfDeclaredDep.type);
+
+            if (!baseProvider) {
+                return undefined;
             }
 
-            const ModuleClass = this.providerClassToModuleClassMap.get(ProviderClass);
-            const moduleInstance = this.moduleInstanceMap.get(ModuleClass);
-            const selfDeclaredDeps: SelfDeclaredDep[] = Reflect.getMetadata(SELF_DECLARED_DEPS_METADATA, ProviderClass) || [];
-            const selfDeclaredDepInstances: Array<SelfDeclaredDep & { value: any }> = await Promise.all(selfDeclaredDeps.map((selfDeclaredDep) => {
-                if (!moduleInstance.hasDependedProviderClass(selfDeclaredDep.key)) {
-                    return undefined;
-                }
-
-                const baseProvider = moduleInstance.getBaseProvider(selfDeclaredDep.key);
-
-                if (!baseProvider) {
-                    return undefined;
-                }
-
-                return this.createProviderInstance(baseProvider).then((baseProviderWithValue: BaseProviderWithValue) => {
-                    return {
-                        ...selfDeclaredDep,
-                        value: baseProviderWithValue.value,
-                    } as SelfDeclaredDep & { value: any };
-                });
-            }));
-
-            for (const selfDeclaredDepInstance of selfDeclaredDepInstances) {
-                const {
-                    key: propertyKey,
-                    value,
-                } = selfDeclaredDepInstance;
-                Object.defineProperty(providerInstance, propertyKey, {
-                    value,
-                });
+            if (baseProvider.value) {
+                return {
+                    ...selfDeclaredDep,
+                    value: baseProvider.value,
+                } as SelfDeclaredDep & { value: any };
             }
+
+            return this.createProviderInstance(baseProvider).then((baseProviderWithValue: BaseProviderWithValue) => {
+                return {
+                    ...selfDeclaredDep,
+                    value: baseProviderWithValue.value,
+                } as SelfDeclaredDep & { value: any };
+            });
+        }));
+
+        for (const selfDeclaredDepInstance of selfDeclaredDepInstances) {
+            const {
+                key: propertyKey,
+                value,
+            } = selfDeclaredDepInstance;
+            Object.defineProperty(providerInstance, propertyKey, {
+                value,
+            });
         }
     }
 
