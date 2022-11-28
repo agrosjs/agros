@@ -545,13 +545,13 @@ export class Factory implements IFactory {
     }
 
     private async createAllBasicProviderInstances() {
-        for (const [HostModuleClass, moduleInstance] of this.moduleInstanceMap.entries()) {
+        for (const moduleInstance of Array.from(this.moduleInstanceMap.values()).concat(Array.from(this.globalModuleInstances))) {
             const providers = Array.from(moduleInstance.getProviders());
             for (const provider of providers) {
                 if (!isBasicProvider(provider) || (provider as BaseProviderWithValue).value !== undefined) {
                     continue;
                 }
-                await this.createBaseProviderInstance(HostModuleClass, provider as BaseProviderWithValue);
+                await this.createBaseProviderInstance(moduleInstance.metadata.Class, provider as BaseProviderWithValue);
             }
         }
     }
