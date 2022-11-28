@@ -2,6 +2,29 @@
   "name": "@agros/platform-svelte",
   "entries": [
     {
+      "version": "2.0.0",
+      "tag": "@agros/platform-svelte_v2.0.0",
+      "date": "Mon, 28 Nov 2022 09:15:00 GMT",
+      "comments": {
+        "major": [
+          {
+            "comment": "Support dynamic modules"
+          }
+        ],
+        "dependency": [
+          {
+            "comment": "Updating dependency \"@agros/common\" from `^0.7.3` to `^1.0.0`"
+          },
+          {
+            "comment": "Updating dependency \"@agros/loader\" from `^1.1.5` to `^1.1.6`"
+          },
+          {
+            "comment": "Updating dependency \"@agros/tools\" from `^0.4.3` to `^1.0.0`"
+          }
+        ]
+      }
+    },
+    {
       "version": "1.2.7",
       "tag": "@agros/platform-svelte_v1.2.7",
       "date": "Wed, 12 Oct 2022 04:01:12 GMT",

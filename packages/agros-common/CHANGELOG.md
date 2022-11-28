@@ -1,6 +1,13 @@
 # Change Log - @agros/common
 
-This log was last generated on Sat, 01 Oct 2022 09:14:32 GMT and should not be manually modified.
+This log was last generated on Mon, 28 Nov 2022 09:15:00 GMT and should not be manually modified.
+
+## 1.0.0
+Mon, 28 Nov 2022 09:15:00 GMT
+
+### Breaking changes
+
+- Support dynamic modules
 
 ## 0.7.3
 Sat, 01 Oct 2022 09:14:32 GMT

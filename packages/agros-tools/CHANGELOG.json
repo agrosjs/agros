@@ -2,6 +2,18 @@
   "name": "@agros/tools",
   "entries": [
     {
+      "version": "1.0.0",
+      "tag": "@agros/tools_v1.0.0",
+      "date": "Mon, 28 Nov 2022 09:15:00 GMT",
+      "comments": {
+        "major": [
+          {
+            "comment": "Support dynamic modules"
+          }
+        ]
+      }
+    },
+    {
       "version": "0.4.3",
       "tag": "@agros/tools_v0.4.3",
       "date": "Mon, 03 Oct 2022 09:41:41 GMT",
