@@ -1,5 +1,5 @@
 import {
-    DI_DEPS_SYMBOL,
+    DI_METADATA_PARAM_BASE_PROVIDER_SYMBOL,
     SELF_DECLARED_DEPS_METADATA,
 } from '../constants';
 
@@ -8,15 +8,12 @@ export function Inject<T = any>(token?: T) {
         const type = token || Reflect.getMetadata('design:type', target, key);
 
         if (typeof index === 'number') {
-            let dependencies = Reflect.getMetadata(DI_DEPS_SYMBOL, target) || [];
-            dependencies = [
-                ...dependencies,
-                {
-                    index,
-                    param: type,
-                },
-            ];
-            Reflect.defineMetadata(DI_DEPS_SYMBOL, dependencies, target);
+            const dependencies = Array.from(Reflect.getMetadata(DI_METADATA_PARAM_BASE_PROVIDER_SYMBOL, target) || []);
+            dependencies.splice(index, 0, {
+                index,
+                param: type,
+            });
+            Reflect.defineMetadata(DI_METADATA_PARAM_BASE_PROVIDER_SYMBOL, dependencies, target);
             return;
         }
 

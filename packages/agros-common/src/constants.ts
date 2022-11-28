@@ -4,6 +4,7 @@ export const DI_GLOBAL_MODULE_SYMBOL = Symbol('di:global_module');
 export const DI_METADATA_MODULE_SYMBOL = Symbol('di:metadata:module');
 export const DI_METADATA_COMPONENT_SYMBOL = Symbol('di:metadata:component');
 export const DI_METADATA_USE_INTERCEPTORS_SYMBOL = Symbol('di:metadata:use_interceptors');
+export const DI_METADATA_PARAM_BASE_PROVIDER_SYMBOL = Symbol('di:metadata:param_base_provider');
 
 export const ROUTES = 'agros:internal:routes';
 

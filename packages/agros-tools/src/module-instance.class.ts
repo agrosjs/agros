@@ -1,6 +1,10 @@
 import 'reflect-metadata';
-import { PROVIDER_MODULE } from './constants';
-import { isBasicProvider } from './is';
+import { HOST_MODULE, PROVIDER_MODULE } from './constants';
+import {
+    isBasicProvider,
+    isFactoryProvider,
+    isValueProvider,
+} from './is';
 import {
     BaseProvider,
     BaseProviderWithValue,
@@ -26,11 +30,13 @@ export class ModuleInstance {
     public constructor(
         public readonly metadata: ModuleInstanceMetadata,
         private readonly globalModuleInstances: Set<ModuleInstance>,
+        private readonly HostModuleClass: Type,
     ) {
         this.metadata.providers = new Set(
             Array.from(this.metadata.providers).map((provider) => {
                 if (isBasicProvider(provider)) {
                     Reflect.defineMetadata(PROVIDER_MODULE, this.metadata.Class, provider);
+                    Reflect.defineMetadata(HOST_MODULE, this.HostModuleClass, provider);
                     (provider as BaseProviderWithValue).value = undefined;
                 }
                 return provider;
@@ -116,9 +122,9 @@ export class ModuleInstance {
             return Promise.reject(new Error(`Cannot initialize or retrieve provider with token ${String(provider.provide)}`));
         }
 
-        if ((provider as ValueProvider).useValue) {
+        if (isValueProvider(provider)) {
             return (provider as ValueProvider).useValue;
-        } else if ((provider as FactoryProvider).useFactory) {
+        } else if (isFactoryProvider(provider)) {
             const {
                 useFactory,
                 inject = [],

@@ -11,7 +11,7 @@ export const isDynamicModule = (object: any) => {
     return Boolean(object.module);
 };
 
-export const isBasicProvider = (object: any) => Boolean(object.provide) && (typeof object.provide === 'string' || typeof object.provide === 'symbol');
+export const isBasicProvider = (object: any) => Boolean(object?.provide) && (typeof object.provide === 'string' || typeof object.provide === 'symbol');
 
 export const isValueProvider = (object: any) => {
     return object.useValue && isBasicProvider(object);
@@ -20,3 +20,5 @@ export const isValueProvider = (object: any) => {
 export const isFactoryProvider = (object: any) => {
     return typeof object.useFactory === 'function' && isBasicProvider(object);
 };
+
+export const isParameterDep = (object: any) => typeof object?.index === 'number';

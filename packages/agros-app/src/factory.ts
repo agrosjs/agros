@@ -19,6 +19,8 @@ import {
     PROVIDER_MODULE,
     ProviderWithValue,
     isDynamicModule,
+    isParameterDep,
+    HOST_MODULE,
 } from '@agros/tools';
 import isPromise from 'is-promise';
 import {
@@ -29,6 +31,7 @@ import {
     DI_METADATA_USE_INTERCEPTORS_SYMBOL,
     IS_DYNAMIC_MODULE,
     SELF_DECLARED_DEPS_METADATA,
+    DI_METADATA_PARAM_BASE_PROVIDER_SYMBOL,
 } from '@agros/common';
 
 interface ParameterDep<T = any> {
@@ -252,6 +255,7 @@ export class Factory implements IFactory {
                     components: new Set(components),
                 },
                 this.globalModuleInstances,
+                HostModuleClass,
             );
 
             if (isDynamicModule) {
@@ -266,23 +270,11 @@ export class Factory implements IFactory {
                 this.moduleInstanceMap.set(ModuleClass, moduleInstance);
                 currentModuleInstance = moduleInstance;
             }
-
-            // if (ModuleClass.name === 'AppModule') {
-            //     console.log('LENCONDA:', {
-            //         HostModuleClass,
-            //         currentModuleInstance,
-            //         ModuleClass,
-            //         metadataValue,
-            //         imports: new Set(Array.from(imports).map((imported) => this.processDynamicModule(HostModuleClass, imported))),
-            //     });
-            // }
         }
 
         if (!currentModuleInstance) {
             currentModuleInstance = this.moduleInstanceMap.get(ModuleClass);
         }
-
-        // console.log('CURRENT', currentModuleInstance);
 
         if (currentModuleInstance) {
             /**
@@ -374,9 +366,22 @@ export class Factory implements IFactory {
 
             ModuleClass = this.providerClassToModuleClassMap.get(ProviderClass);
             moduleInstance = this.moduleInstanceMap.get(ModuleClass);
-            const dependedProviderClasses = Reflect.getMetadata(DI_DEPS_SYMBOL, ProviderClass) as Array<Type | ParameterDep>;
+            let dependedProviders = Reflect.getMetadata(
+                DI_DEPS_SYMBOL,
+                ProviderClass,
+            ) as Array<Type | ParameterDep>;
+            const paramBaseProviders = Reflect.getMetadata(
+                DI_METADATA_PARAM_BASE_PROVIDER_SYMBOL,
+                ProviderClass,
+            ) as ParameterDep[];
 
-            if (!Array.isArray(dependedProviderClasses)) {
+            if (paramBaseProviders && Array.isArray(paramBaseProviders)) {
+                for (const paramBaseProvider of paramBaseProviders) {
+                    dependedProviders.splice(paramBaseProvider.index, 1, paramBaseProvider);
+                }
+            }
+
+            if (!Array.isArray(dependedProviders)) {
                 throw new Error(`Provider ${ProviderClass.name} cannot be injected, did you add \`@Injectable()\` into it?`);
             }
 
@@ -388,12 +393,16 @@ export class Factory implements IFactory {
             this.providerInstanceMap.set(
                 ProviderClass,
                 new ProviderClass(
-                    ...await Promise.all(dependedProviderClasses.map((dependedProvider) => {
+                    ...await Promise.all(dependedProviders.map((dependedProvider) => {
                         if (dependedProvider === ProviderClass) {
                             throw new Error(`Provider ${ProviderClass.name} cannot depend on itself`);
                         }
 
-                        if (!isBasicProvider(dependedProvider)) {
+                        if (!dependedProvider) {
+                            return undefined;
+                        }
+
+                        if (!isParameterDep(dependedProvider)) {
                             const DependedProviderClass = dependedProvider as Type<any>;
                             const dependedProviderName = DependedProviderClass.name;
 
@@ -424,16 +433,17 @@ export class Factory implements IFactory {
                                 throw new Error(`Cannot get parameter name from token provider: ${dependedProvider}`);
                             }
 
-                            if (!moduleInstance.hasDependedProviderClass(param)) {
-                                throw new Error(`Cannot inject provider with token ${param} into provider ${ProviderClass.name}`);
-                            }
-
                             const baseProvider = moduleInstance.getBaseProvider(param);
+
+                            if (!baseProvider) {
+                                throw new Error(`Cannot inject provider with token ${String(param)} into provider ${ProviderClass.name}`);
+                            }
 
                             return this
                                 .createProviderInstance(baseProvider)
-                                .then((provider: BaseProviderWithValue) => provider?.value);
-                            // .then((provider: BaseProvider) => moduleInstance.generateBaseProviderValue(provider, this.createProviderInstance.bind(this)));
+                                .then((provider: BaseProviderWithValue) => {
+                                    return provider?.value;
+                                });
                         }
                     })),
                 ),
@@ -441,11 +451,10 @@ export class Factory implements IFactory {
 
             return this.providerInstanceMap.get(providerKey);
         } else {
-            ModuleClass = Reflect.getMetadata(PROVIDER_MODULE, provider) as Type;
+            ModuleClass = Reflect.getMetadata(HOST_MODULE, provider) as Type;
             providerKey = (provider as BaseProvider).provide;
             return await this.createBaseProviderInstance(ModuleClass, provider as BaseProviderWithValue);
         }
-
     }
 
     /**
