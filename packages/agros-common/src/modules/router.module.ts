@@ -14,7 +14,11 @@ export interface RouterModuleOptions {
     routes: RouteOptionItem[];
 }
 
-// export type RouterModuleFeatureOptions = RouterModuleRootOptions;
+export interface RouterModuleAsyncOptions {
+    imports: Array<AsyncModuleClass>;
+    inject: Array<Type>;
+    useFactory: (...args: any[]) => Promise<RouteOptionItem[]>;
+}
 
 export class RouterModule {
     public static register({
@@ -27,6 +31,25 @@ export class RouterModule {
                 {
                     provide: ROUTES,
                     useValue: routes,
+                },
+            ],
+        };
+    }
+
+    public static registerAsync({
+        imports = [],
+        inject = [],
+        useFactory = async () => ([]),
+    }: RouterModuleAsyncOptions): DynamicModule {
+        return {
+            module: RouterModule,
+            global: false,
+            imports,
+            providers: [
+                {
+                    inject,
+                    provide: ROUTES,
+                    useFactory,
                 },
             ],
         };
